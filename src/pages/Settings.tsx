@@ -32,15 +32,15 @@ const Settings = () => {
   // Modal states
   const [showNameEdit, setShowNameEdit] = useState(false);
   const [showBirthdayEdit, setShowBirthdayEdit] = useState(false);
-  const [showGenderEdit, setShowGenderEdit] = useState(false);
   const [showHeightEdit, setShowHeightEdit] = useState(false);
+  const [showEmailEdit, setShowEmailEdit] = useState(false);
+  const [showPasswordEdit, setShowPasswordEdit] = useState(false);
 
   // Form states
   const [editName, setEditName] = useState(user.name);
   const [editBirthday, setEditBirthday] = useState(
     user.birthday.toISOString().split("T")[0],
   );
-  const [editGender, setEditGender] = useState(user.gender);
   const [editHeightFeet, setEditHeightFeet] = useState(
     Math.floor(user.height / 30.48),
   );
@@ -48,10 +48,16 @@ const Settings = () => {
     Math.round((user.height % 30.48) / 2.54),
   );
   const [editHeightCm, setEditHeightCm] = useState(user.height);
+  const [editEmail, setEditEmail] = useState(user.email);
+  const [editPassword, setEditPassword] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   const handleUnitsChange = (checked: boolean) => {
     updateSettings({ units: checked ? "metric" : "imperial" });
+  };
+
+  const handleGenderChange = (value: "male" | "female") => {
+    updateUser({ gender: value });
   };
 
   const handleHealthKitToggle = (checked: boolean) => {
@@ -90,11 +96,6 @@ const Settings = () => {
     setShowBirthdayEdit(false);
   };
 
-  const handleSaveGender = () => {
-    updateUser({ gender: editGender });
-    setShowGenderEdit(false);
-  };
-
   const handleSaveHeight = () => {
     let heightInCm;
     if (settings.units === "imperial") {
@@ -104,6 +105,18 @@ const Settings = () => {
     }
     updateUser({ height: Math.round(heightInCm) });
     setShowHeightEdit(false);
+  };
+
+  const handleSaveEmail = () => {
+    updateUser({ email: editEmail });
+    setShowEmailEdit(false);
+  };
+
+  const handleSavePassword = () => {
+    // In real app, this would update password
+    console.log("Password updated");
+    setEditPassword("");
+    setShowPasswordEdit(false);
   };
 
   return (
@@ -158,20 +171,33 @@ const Settings = () => {
               </div>
             </div>
 
-            {/* Biological Sex */}
-            <div
-              className="flex items-center justify-between py-3 border-b border-border cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
-              onClick={() => setShowGenderEdit(true)}
-            >
-              <div className="text-base font-medium text-foreground">
-                Biological sex
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="text-muted-foreground capitalize">
-                  {user.gender}
+            {/* Biological Sex - Inline */}
+            <div className="py-3 border-b border-border">
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-base font-medium text-foreground">
+                  Biological sex
                 </div>
-                <Edit className="h-4 w-4 text-muted-foreground" />
               </div>
+              <Tabs
+                value={user.gender}
+                onValueChange={handleGenderChange}
+                className="w-full"
+              >
+                <TabsList className="grid w-full grid-cols-2 bg-secondary border border-border">
+                  <TabsTrigger
+                    value="male"
+                    className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-muted-foreground/20"
+                  >
+                    Male
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="female"
+                    className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-muted-foreground/20"
+                  >
+                    Female
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
 
             {/* Height */}
@@ -313,22 +339,30 @@ const Settings = () => {
           </h2>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-4">
-              <div>
-                <div className="text-base font-medium text-foreground">
-                  Email
-                </div>
+            {/* Email */}
+            <div
+              className="flex items-center justify-between py-4 cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+              onClick={() => setShowEmailEdit(true)}
+            >
+              <div className="text-base font-medium text-foreground">Email</div>
+              <div className="flex items-center gap-2">
+                <div className="text-muted-foreground">{user.email}</div>
+                <Edit className="h-4 w-4 text-muted-foreground" />
               </div>
-              <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
             </div>
 
-            <div className="flex items-center justify-between py-4">
-              <div>
-                <div className="text-base font-medium text-foreground">
-                  Password
-                </div>
+            {/* Password */}
+            <div
+              className="flex items-center justify-between py-4 cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+              onClick={() => setShowPasswordEdit(true)}
+            >
+              <div className="text-base font-medium text-foreground">
+                Password
               </div>
-              <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
+              <div className="flex items-center gap-2">
+                <div className="text-muted-foreground">••••••••</div>
+                <Edit className="h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
 
             <div className="flex items-center justify-between py-4">
@@ -412,45 +446,6 @@ const Settings = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Gender Edit Modal */}
-      <Dialog open={showGenderEdit} onOpenChange={setShowGenderEdit}>
-        <DialogContent className="bg-background border-border text-foreground max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold">
-              Edit Biological Sex
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-3">
-              <Label>Biological Sex</Label>
-              <Tabs
-                value={editGender}
-                onValueChange={(value: "male" | "female") =>
-                  setEditGender(value)
-                }
-              >
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="male">Male</TabsTrigger>
-                  <TabsTrigger value="female">Female</TabsTrigger>
-                </TabsList>
-              </Tabs>
-            </div>
-            <div className="flex gap-2 pt-4">
-              <Button
-                variant="outline"
-                onClick={() => setShowGenderEdit(false)}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button onClick={handleSaveGender} className="flex-1">
-                Save
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       {/* Height Edit Modal */}
       <Dialog open={showHeightEdit} onOpenChange={setShowHeightEdit}>
         <DialogContent className="bg-background border-border text-foreground max-w-md">
@@ -524,6 +519,77 @@ const Settings = () => {
               </Button>
               <Button onClick={handleSaveHeight} className="flex-1">
                 Save
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Email Edit Modal */}
+      <Dialog open={showEmailEdit} onOpenChange={setShowEmailEdit}>
+        <DialogContent className="bg-background border-border text-foreground max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              Edit Email
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={editEmail}
+                onChange={(e) => setEditEmail(e.target.value)}
+                className="bg-secondary border-border text-foreground"
+              />
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowEmailEdit(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSaveEmail} className="flex-1">
+                Save
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Password Edit Modal */}
+      <Dialog open={showPasswordEdit} onOpenChange={setShowPasswordEdit}>
+        <DialogContent className="bg-background border-border text-foreground max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-semibold">
+              Change Password
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="password">New Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={editPassword}
+                onChange={(e) => setEditPassword(e.target.value)}
+                className="bg-secondary border-border text-foreground"
+                placeholder="Enter new password"
+              />
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button
+                variant="outline"
+                onClick={() => setShowPasswordEdit(false)}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleSavePassword} className="flex-1">
+                Update Password
               </Button>
             </div>
           </div>
