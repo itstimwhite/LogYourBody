@@ -2,11 +2,16 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
+import { useSubscription } from "@/hooks/use-subscription";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { startTrial, hasAccess } = useSubscription();
 
-  const handleGetStarted = () => {
+  const handleGetStarted = async () => {
+    if (!hasAccess) {
+      await startTrial();
+    }
     navigate("/dashboard");
   };
 

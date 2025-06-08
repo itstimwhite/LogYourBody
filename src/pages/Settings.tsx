@@ -1,15 +1,18 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { ArrowLeft, Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
+import { useSubscription } from "@/hooks/use-subscription";
 
 const Settings = () => {
   const navigate = useNavigate();
   const { user, getUserAge, settings, updateSettings, getFormattedHeight } =
     useBodyMetrics();
 
+  const { subscriptionInfo } = useSubscription();
   const handleUnitsChange = (checked: boolean) => {
     updateSettings({ units: checked ? "metric" : "imperial" });
   };
@@ -90,6 +93,47 @@ const Settings = () => {
               <div className="text-muted-foreground">
                 {getFormattedHeight(user.height)}
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Subscription */}
+        <div className="space-y-6">
+          <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3">
+            Subscription
+          </h2>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between py-4">
+              <div className="flex items-center gap-4">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                  <Crown className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <div className="text-base font-medium text-foreground flex items-center gap-2">
+                    Premium
+                    {subscriptionInfo.status === "trial" && (
+                      <Badge variant="outline" className="text-xs">
+                        {subscriptionInfo.daysRemainingInTrial}d left
+                      </Badge>
+                    )}
+                    {subscriptionInfo.status === "active" && (
+                      <Badge className="text-xs bg-green-500">Active</Badge>
+                    )}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    {subscriptionInfo.status === "trial"
+                      ? "Free trial"
+                      : subscriptionInfo.status === "active"
+                        ? "Premium subscription"
+                        : "Manage your subscription"}
+                  </div>
+                </div>
+              </div>
+              <ArrowLeft
+                className="h-4 w-4 text-muted-foreground rotate-180 cursor-pointer"
+                onClick={() => navigate("/subscription")}
+              />
             </div>
           </div>
         </div>
