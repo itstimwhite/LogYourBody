@@ -57,6 +57,7 @@ const Settings = () => {
   };
 
   const handleGenderChange = (value: "male" | "female") => {
+    console.log("Gender changing to:", value);
     updateUser({ gender: value });
   };
 
