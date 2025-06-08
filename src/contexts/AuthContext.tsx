@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session, AuthError } from "@supabase/supabase-js";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 interface AuthContextType {
   user: User | null;
@@ -41,6 +41,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      // If Supabase is not configured, create a mock user for development
+      console.warn("Supabase not configured, using mock user for development");
+      const mockUser = {
+        id: "mock-user-id",
+        email: "demo@logyourbody.com",
+        user_metadata: { name: "Demo User" },
+        aud: "authenticated",
+        role: "authenticated",
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        app_metadata: {},
+        identities: [],
+        factors: [],
+      } as User;
+
+      setUser(mockUser);
+      setLoading(false);
+      return;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -66,6 +87,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const createUserProfile = async (user: User) => {
+    if (!isSupabaseConfigured || !supabase) {
+      console.log("Supabase not configured, skipping profile creation");
+      return;
+    }
+
     try {
       // Check if profile exists
       const { data: existingProfile } = await supabase
@@ -110,6 +136,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const signInWithEmail = async (email: string, password: string) => {
+    if (!isSupabaseConfigured || !supabase) {
+      console.log("Mock sign in with email:", email);
+      return { error: null };
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -122,6 +153,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
     password: string,
     name: string,
   ) => {
+    if (!isSupabaseConfigured || !supabase) {
+      console.log("Mock sign up with email:", email);
+      return { error: null };
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -135,6 +171,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const signInWithGoogle = async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      console.log("Mock Google sign in");
+      return { error: null };
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
@@ -145,6 +186,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const signInWithApple = async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      console.log("Mock Apple sign in");
+      return { error: null };
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "apple",
       options: {
@@ -152,6 +198,45 @@ export function AuthProvider({ children }: AuthProviderProps) {
       },
     });
     return { error };
+  };
+
+  const signOut = async () => {
+    if (!isSupabaseConfigured || !supabase) {
+      console.log("Mock sign out");
+      setUser(null);
+      setSession(null);
+      return { error: null };
+    }
+
+    const { error } = await supabase.auth.signOut();
+    return { error };
+  };
+
+  const startTrial = async () => {
+    if (!user) return;
+
+    if (!isSupabaseConfigured || !supabase) {
+      console.log("Mock trial started for user:", user.id);
+      return;
+    }
+
+    try {
+      const now = new Date();
+      const trialEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days
+
+      const { error } = await supabase.from("subscriptions").upsert({
+        user_id: user.id,
+        status: "trial",
+        trial_start_date: now.toISOString(),
+        trial_end_date: trialEnd.toISOString(),
+      });
+
+      if (error) {
+        console.error("Error starting trial:", error);
+      }
+    } catch (error) {
+      console.error("Error in startTrial:", error);
+    }
   };
 
   const signOut = async () => {

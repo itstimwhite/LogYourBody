@@ -8,10 +8,16 @@ import { TimelineSlider } from "@/components/TimelineSlider";
 import { LogEntryModal } from "@/components/LogEntryModal";
 import { TrialGuard } from "@/components/TrialGuard";
 import { AuthGuard } from "@/components/AuthGuard";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
+import { useBodyMetrics } from "@/hooks/use-body-metrics";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  // Use Supabase hook if configured, otherwise use local hook
+  const supabaseHook = useSupabaseBodyMetrics();
+  const localHook = useBodyMetrics();
+
   const {
     user,
     metrics,
@@ -24,9 +30,10 @@ const Dashboard = () => {
     getFormattedHeight,
     getFormattedLeanBodyMass,
     settings,
-    loading,
     utils,
-  } = useSupabaseBodyMetrics();
+  } = isSupabaseConfigured ? supabaseHook : localHook;
+
+  const loading = isSupabaseConfigured ? supabaseHook.loading : false;
 
   const [showPhoto, setShowPhoto] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
