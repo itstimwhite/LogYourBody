@@ -17,29 +17,13 @@ const Index = () => {
         <div className="text-center mb-12">
           {/* Logo */}
           <div className="mb-8">
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-secondary flex items-center justify-center">
-              <svg
-                className="w-10 h-10 text-foreground"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                />
-              </svg>
-            </div>
             <h1 className="text-4xl font-bold font-inter tracking-tight">
-              BodyMetrics
+              Log Your Body
             </h1>
             <p className="text-muted-foreground mt-3 text-lg font-medium">
               Track your body composition with precision
             </p>
           </div>
-
           {/* Login Form */}
           <div className="w-full max-w-sm mx-auto space-y-4">
             <div>
