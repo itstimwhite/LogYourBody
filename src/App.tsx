@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SEOHead } from "@/components/SEOHead";
+import { VercelAnalytics } from "@/components/Analytics";
+import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import Index from "./pages/Index";
 import Splash from "./pages/Splash";
 import Login from "./pages/Login";
@@ -38,6 +40,8 @@ const App = () => (
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
+        <VercelAnalytics />
+        <PerformanceMonitor />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
