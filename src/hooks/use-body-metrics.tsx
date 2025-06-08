@@ -92,7 +92,7 @@ function calculateFFMI(leanBodyMass: number, heightCm: number): number {
 }
 
 export function useBodyMetrics() {
-  const [user] = useState<UserProfile>(mockUser);
+  const [user, setUser] = useState<UserProfile>(mockUser);
   const [metrics, setMetrics] = useState<BodyMetrics[]>(mockMetrics);
   const [selectedDateIndex, setSelectedDateIndex] = useState<number>(
     metrics.length - 1,
@@ -149,6 +149,7 @@ export function useBodyMetrics() {
   const updateUser = useCallback((updates: Partial<UserProfile>) => {
     // In real app, this would update the user in the backend
     console.log("User updates:", updates);
+    setUser((prev) => ({ ...prev, ...updates }));
   }, []);
 
   const updateSettings = useCallback((updates: Partial<UserSettings>) => {
