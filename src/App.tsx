@@ -1,9 +1,11 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthGuard } from "@/components/AuthGuard";
 import { SEOHead } from "@/components/SEOHead";
 import { VercelAnalytics } from "@/components/Analytics";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
@@ -19,32 +21,58 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const publicRoutes = [
+  { path: "/", element: <Index /> },
+  { path: "/splash", element: <Splash /> },
+  { path: "/login", element: <Login /> },
+  { path: "/terms", element: <Terms /> },
+  { path: "/privacy", element: <Privacy /> },
+];
+
+const protectedRoutes = [
+  { path: "/dashboard", element: <Dashboard /> },
+  { path: "/settings", element: <Settings /> },
+  { path: "/subscription", element: <Subscription /> },
+];
+
+const AppProviders = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
-          <SEOHead />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/splash" element={<Splash />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/subscription" element={<Subscription />} />
-            <Route path="/terms" element={<Terms />} />
-            <Route path="/privacy" element={<Privacy />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        {children}
         <VercelAnalytics />
         <PerformanceMonitor />
       </TooltipProvider>
     </AuthProvider>
   </QueryClientProvider>
+);
+
+const AppRoutes = () => (
+  <Routes>
+    {publicRoutes.map(({ path, element }) => (
+      <Route key={path} path={path} element={element} />
+    ))}
+    {protectedRoutes.map(({ path, element }) => (
+      <Route 
+        key={path} 
+        path={path} 
+        element={<AuthGuard>{element}</AuthGuard>} 
+      />
+    ))}
+    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+    <Route path="*" element={<NotFound />} />
+  </Routes>
+);
+
+const App = () => (
+  <AppProviders>
+    <BrowserRouter>
+      <SEOHead />
+      <AppRoutes />
+    </BrowserRouter>
+  </AppProviders>
 );
 
 export default App;
