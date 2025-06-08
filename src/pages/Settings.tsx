@@ -18,6 +18,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 
 const Settings = () => {
   const navigate = useNavigate();
+  const { signOut } = useAuth();
   const {
     user,
     getUserAge,
@@ -25,9 +26,10 @@ const Settings = () => {
     updateSettings,
     updateUser,
     getFormattedHeight,
-  } = useBodyMetrics();
+    loading
+  } = useSupabaseBodyMetrics();
 
-  const { subscriptionInfo } = useSubscription();
+  const { subscriptionInfo } = useSupabaseSubscription();
 
   // Modal states
   const [showNameEdit, setShowNameEdit] = useState(false);
@@ -115,12 +117,33 @@ const Settings = () => {
 
   const handleSavePassword = () => {
     // In real app, this would update password
-    console.log("Password updated");
-    setEditPassword("");
+    console.log('Password updated');
+    setEditPassword('');
     setShowPasswordEdit(false);
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  if (loading || !user || !settings) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading settings...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
+    <AuthGuard>
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <div className="flex items-center gap-4 px-6 py-4 border-b border-border">
@@ -366,11 +389,13 @@ const Settings = () => {
               </div>
             </div>
 
-            <div className="flex items-center justify-between py-4">
-              <div>
-                <div className="text-base font-medium text-destructive">
-                  Logout
-                </div>
+            <div
+              className="flex items-center justify-between py-4 cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+              onClick={handleLogout}
+            >
+              <div className="flex items-center gap-3">
+                <LogOut className="h-4 w-4 text-destructive" />
+                <div className="text-base font-medium text-destructive">Logout</div>
               </div>
               <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
             </div>
@@ -596,7 +621,7 @@ const Settings = () => {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </AuthGuard>
   );
 };
 

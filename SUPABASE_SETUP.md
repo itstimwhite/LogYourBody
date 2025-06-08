@@ -1,0 +1,95 @@
+# Supabase Setup Instructions
+
+## 1. Create Supabase Project
+
+1. Go to [supabase.com](https://supabase.com)
+2. Click "Start your project"
+3. Create a new organization or use existing one
+4. Create a new project
+5. Choose a region close to your users
+6. Set a strong database password
+
+## 2. Get Project Credentials
+
+1. Go to Project Settings > API
+2. Copy the Project URL
+3. Copy the anon/public key
+
+## 3. Configure Environment Variables
+
+1. Copy `.env.example` to `.env`
+2. Add your Supabase credentials:
+
+```env
+VITE_SUPABASE_URL=your_project_url_here
+VITE_SUPABASE_ANON_KEY=your_anon_key_here
+```
+
+## 4. Run Database Migration
+
+1. Go to your Supabase Dashboard
+2. Navigate to SQL Editor
+3. Copy and paste the contents of `supabase-migration.sql`
+4. Click "Run" to execute the migration
+
+This will create:
+
+- `profiles` table for user information
+- `user_settings` table for app preferences
+- `body_metrics` table for body composition data
+- `subscriptions` table for trial/subscription management
+- Row Level Security (RLS) policies
+- Indexes for performance
+
+## 5. Configure Authentication Providers
+
+### Google OAuth (Optional)
+
+1. Go to Authentication > Providers
+2. Enable Google provider
+3. Add your Google OAuth credentials
+
+### Apple OAuth (Optional)
+
+1. Go to Authentication > Providers
+2. Enable Apple provider
+3. Add your Apple OAuth credentials
+
+## 6. Test the Integration
+
+1. Start your development server: `npm run dev`
+2. Try creating a new account
+3. Verify data is being saved to Supabase
+4. Test the subscription trial flow
+
+## Database Schema
+
+### Tables Created:
+
+- **profiles**: User profile information (name, email, gender, birthday, height)
+- **user_settings**: App preferences (units, sync settings, notifications)
+- **body_metrics**: Body composition measurements (weight, body fat %, method)
+- **subscriptions**: Trial and subscription status
+
+### Security:
+
+- Row Level Security (RLS) enabled on all tables
+- Users can only access their own data
+- Policies prevent unauthorized access
+
+## Features Enabled:
+
+✅ User authentication (email, Google, Apple)
+✅ User profile management
+✅ Body metrics tracking
+✅ Subscription/trial management
+✅ Settings synchronization
+✅ Real-time data updates
+✅ Secure data access with RLS
+
+## Next Steps:
+
+1. Configure RevenueCat for subscription payments
+2. Set up push notifications
+3. Add file upload for profile images
+4. Configure backup and monitoring
