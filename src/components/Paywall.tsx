@@ -209,7 +209,12 @@ export function Paywall({
         <div className="flex justify-center">
           <Button
             variant="ghost"
-            onClick={handleRestore}
+            onClick={() =>
+              window.open(
+                "mailto:support@logyourbody.com?subject=LogYourBody Support Request",
+                "_blank",
+              )
+            }
             disabled={isLoading}
             className="text-muted-foreground hover:text-foreground"
           >
