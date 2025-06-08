@@ -167,21 +167,26 @@ export function useBodyMetrics() {
     [settings.units],
   );
 
-  const getFormattedHeight = useCallback((heightCm: number) => {
-    if (settings.units === 'metric') {
-      return `${heightCm} cm`;
-    } else {
-      return cmToFeet(heightCm);
-    }
-  }, [settings.units]);
+  const getFormattedHeight = useCallback(
+    (heightCm: number) => {
+      if (settings.units === "metric") {
+        return `${heightCm} cm`;
+      } else {
+        return cmToFeet(heightCm);
+      }
+    },
+    [settings.units],
+  );
 
-  const getFormattedLeanBodyMass = useCallback((lbmKg: number) => {
-    if (settings.units === 'metric') {
-      return `${Math.round(lbmKg * 10) / 10} kg`;
-    } else {
-      return `${Math.round(kgToLbs(lbmKg))} lbs`;
-    }
-  }, [settings.units]);
+  const getFormattedLeanBodyMass = useCallback(
+    (lbmKg: number) => {
+      if (settings.units === "metric") {
+        return `${Math.round(lbmKg * 10) / 10} kg`;
+      } else {
+        return `${Math.round(kgToLbs(lbmKg))} lbs`;
+      }
+    },
+    [settings.units],
   );
 
   const getUserAge = useCallback(() => {
