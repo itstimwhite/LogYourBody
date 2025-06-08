@@ -24,7 +24,7 @@ interface PaywallProps {
 export function Paywall({
   onClose,
   title = "Access Paused",
-  subtitle = "Choose a plan to resume access",
+  subtitle = "Continue tracking your body composition with LogYourBody Premium",
   showCloseButton = false,
 }: PaywallProps) {
   const {
@@ -99,9 +99,6 @@ export function Paywall({
           <div className="space-y-3">
             <h1 className="text-4xl font-light text-foreground">ACCESS</h1>
             <h2 className="text-4xl font-bold text-primary">PAUSED</h2>
-            <p className="text-muted-foreground text-lg">{subtitle}</p>
-              {title.split(" ")[1]}
-            </h2>
             <p className="text-muted-foreground text-lg">{subtitle}</p>
             {subscriptionInfo.isTrialActive && (
               <div className="text-sm text-primary font-medium">
