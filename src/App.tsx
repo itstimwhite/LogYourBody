@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AuthGuard } from "@/components/AuthGuard";
+import { ProfileGuard } from "@/components/ProfileGuard";
 import { SEOHead } from "@/components/SEOHead";
 import { VercelAnalytics } from "@/components/Analytics";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
@@ -60,7 +61,13 @@ const AppRoutes = () => (
       <Route 
         key={path} 
         path={path} 
-        element={<AuthGuard>{element}</AuthGuard>} 
+        element={
+          <AuthGuard>
+            <ProfileGuard>
+              {element}
+            </ProfileGuard>
+          </AuthGuard>
+        } 
       />
     ))}
     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}

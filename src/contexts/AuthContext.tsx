@@ -89,14 +89,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .single();
 
       if (!existingProfile) {
-        // Create new profile
+        // Create minimal profile that will trigger ProfileSetup
         const { error: profileError } = await supabase.from("profiles").insert({
           id: user.id,
           email: user.email || "",
-          name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
-          gender: "male",
-          birthday: new Date().toISOString().split("T")[0],
-          height: 180,
+          name: user.user_metadata?.name || user.email?.split("@")[0] || "",
+          // Don't set default values - let ProfileGuard handle the setup
         });
 
         if (profileError) {
