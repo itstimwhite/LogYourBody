@@ -1,15 +1,13 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React from "react";
+import { LandingPage } from "@/components/LandingPage";
+import { useResponsive } from "@/hooks/use-responsive";
+import Splash from "./Splash";
 
 const Index = () => {
-  const navigate = useNavigate();
+  const { isMobile } = useResponsive();
 
-  useEffect(() => {
-    // Redirect to splash screen
-    navigate("/splash");
-  }, [navigate]);
-
-  return null;
+  // Show landing page for tablet/desktop, splash for mobile
+  return isMobile ? <Splash /> : <LandingPage />;
 };
 
 export default Index;
