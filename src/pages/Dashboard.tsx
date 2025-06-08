@@ -21,6 +21,7 @@ const Dashboard = () => {
     getUserAge,
     getFormattedWeight,
     getFormattedHeight,
+    getFormattedLeanBodyMass,
     settings,
     utils,
   } = useBodyMetrics();
@@ -97,6 +98,9 @@ const Dashboard = () => {
               userAge={getUserAge()}
               formattedWeight={getFormattedWeight(currentMetrics.weight)}
               formattedHeight={getFormattedHeight(user.height)}
+              formattedLeanBodyMass={getFormattedLeanBodyMass(
+                currentMetrics.leanBodyMass,
+              )}
             />
           </div>
         </div>

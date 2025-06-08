@@ -8,6 +8,7 @@ interface MetricsPanelProps {
   userAge: number;
   formattedWeight: string;
   formattedHeight: string;
+  formattedLeanBodyMass: string;
   className?: string;
 }
 
@@ -17,6 +18,7 @@ export function MetricsPanel({
   userAge,
   formattedWeight,
   formattedHeight,
+  formattedLeanBodyMass,
   className,
 }: MetricsPanelProps) {
   return (
@@ -57,10 +59,10 @@ export function MetricsPanel({
 
         <div>
           <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
-            {metrics.leanBodyMass}
+            {formattedLeanBodyMass}
           </div>
           <div className="text-muted-foreground text-sm font-medium mt-1 tracking-wide uppercase">
-            Lean Body Mass (kg)
+            Lean Body Mass
           </div>
         </div>
       </div>
