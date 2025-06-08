@@ -47,8 +47,8 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
   },
   {
     id: "yearly",
-    name: "Yearly",
-    price: "$79.99",
+    name: "Annual",
+    price: "$69.99",
     period: "yearly",
     features: [
       "Unlimited body measurements",
@@ -57,7 +57,7 @@ export const SUBSCRIPTION_PLANS: SubscriptionPlan[] = [
       "Health app sync",
       "Export data",
       "Priority support",
-      "Save 33% vs monthly",
+      "Save 42% vs monthly",
     ],
     isPopular: true,
     revenueCatProductId: "logyourbody_yearly",

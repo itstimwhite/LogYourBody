@@ -1,7 +1,15 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, Crown, X } from "lucide-react";
+import {
+  Check,
+  Crown,
+  X,
+  BarChart3,
+  Camera,
+  Smartphone,
+  TrendingUp,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { SUBSCRIPTION_PLANS } from "@/types/subscription";
 import { useSubscription } from "@/hooks/use-subscription";
@@ -15,8 +23,8 @@ interface PaywallProps {
 
 export function Paywall({
   onClose,
-  title = "Unlock LogYourBody Premium",
-  subtitle = "Continue tracking your body composition with unlimited access",
+  title = "Access Paused",
+  subtitle = "Choose a plan to resume access",
   showCloseButton = false,
 }: PaywallProps) {
   const {
@@ -44,20 +52,40 @@ export function Paywall({
     }
   };
 
+  const features = [
+    {
+      icon: BarChart3,
+      title: "Advanced Analytics",
+      subtitle: "& Trends",
+    },
+    {
+      icon: TrendingUp,
+      title: "Progress Tracking",
+      subtitle: "& Insights",
+    },
+    {
+      icon: Camera,
+      title: "Photo Progress",
+      subtitle: "Tracking",
+    },
+    {
+      icon: Smartphone,
+      title: "Health App",
+      subtitle: "Sync",
+    },
+  ];
+
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-border">
-        <div className="flex items-center gap-2">
-          <Crown className="h-6 w-6 text-primary" />
-          <span className="text-lg font-semibold">Premium</span>
-        </div>
+      <div className="flex items-center justify-between p-6">
+        <div className="text-sm text-muted-foreground">LogYourBody</div>
         {showCloseButton && onClose && (
           <Button
             size="icon"
-            variant="outline"
+            variant="ghost"
             onClick={onClose}
-            className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
+            className="text-muted-foreground hover:text-foreground h-8 w-8"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -65,12 +93,17 @@ export function Paywall({
       </div>
 
       {/* Content */}
-      <div className="flex-1 p-6 overflow-y-auto">
+      <div className="flex-1 px-6 overflow-y-auto">
         <div className="max-w-md mx-auto space-y-8">
           {/* Title */}
-          <div className="text-center space-y-2">
-            <h1 className="text-2xl font-bold tracking-tight">{title}</h1>
-            <p className="text-muted-foreground">{subtitle}</p>
+          <div className="space-y-3">
+            <h1 className="text-4xl font-light text-foreground">
+              {title.split(" ")[0]}
+            </h1>
+            <h2 className="text-4xl font-bold text-primary">
+              {title.split(" ")[1]}
+            </h2>
+            <p className="text-muted-foreground text-lg">{subtitle}</p>
             {subscriptionInfo.isTrialActive && (
               <div className="text-sm text-primary font-medium">
                 {subscriptionInfo.daysRemainingInTrial} days left in trial
@@ -78,87 +111,99 @@ export function Paywall({
             )}
           </div>
 
-          {/* Plans */}
-          <div className="space-y-3">
-            {SUBSCRIPTION_PLANS.map((plan) => (
+          {/* Features Grid */}
+          <div className="grid grid-cols-2 gap-4">
+            {features.map((feature, index) => (
               <div
-                key={plan.id}
-                onClick={() => setSelectedPlan(plan.id)}
-                className={cn(
-                  "relative p-4 rounded-lg border-2 cursor-pointer transition-all",
-                  selectedPlan === plan.id
-                    ? "border-primary bg-primary/5"
-                    : "border-border bg-secondary/30 hover:border-border",
-                )}
+                key={index}
+                className="bg-secondary/30 rounded-lg p-4 border border-border"
               >
-                {plan.isPopular && (
-                  <Badge className="absolute -top-2 left-4 bg-primary text-primary-foreground">
-                    Most Popular
-                  </Badge>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold text-foreground">
-                      {plan.name}
-                    </div>
-                    <div className="text-2xl font-bold text-foreground">
-                      {plan.price}
-                      <span className="text-sm font-normal text-muted-foreground">
-                        /{plan.period}
-                      </span>
-                    </div>
-                    {plan.id === "yearly" && (
-                      <div className="text-sm text-primary font-medium">
-                        Save 33%
-                      </div>
-                    )}
+                <feature.icon className="h-8 w-8 text-primary mb-3" />
+                <div className="space-y-1">
+                  <div className="font-semibold text-foreground text-sm">
+                    {feature.title}
                   </div>
-
-                  <div
-                    className={cn(
-                      "w-5 h-5 rounded-full border-2 flex items-center justify-center",
-                      selectedPlan === plan.id
-                        ? "border-primary bg-primary"
-                        : "border-muted-foreground",
-                    )}
-                  >
-                    {selectedPlan === plan.id && (
-                      <Check className="h-3 w-3 text-primary-foreground" />
-                    )}
+                  <div className="text-muted-foreground text-sm">
+                    {feature.subtitle}
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Features */}
-          <div className="space-y-3">
-            <h3 className="font-semibold text-foreground">Premium Features:</h3>
-            <div className="grid grid-cols-1 gap-2">
-              {SUBSCRIPTION_PLANS[0].features.map((feature, index) => (
-                <div key={index} className="flex items-center gap-3">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  <span className="text-sm text-muted-foreground">
-                    {feature}
-                  </span>
+          {/* Plans */}
+          <div className="space-y-4">
+            {/* Annual Plan */}
+            <div
+              onClick={() => setSelectedPlan("yearly")}
+              className={cn(
+                "relative p-4 rounded-lg border-2 cursor-pointer transition-all",
+                selectedPlan === "yearly"
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-secondary/30",
+              )}
+            >
+              {selectedPlan === "yearly" && (
+                <Badge className="absolute -top-2 right-4 bg-primary text-primary-foreground text-xs">
+                  Save 42% with Annual
+                </Badge>
+              )}
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xl font-semibold text-foreground">
+                    Annual
+                  </div>
+                  <div className="text-muted-foreground">
+                    $69.99 billed yearly
+                  </div>
                 </div>
-              ))}
+                <div className="text-right">
+                  <div className="text-xl font-bold text-foreground">
+                    $5.83/mo
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Monthly Plan */}
+            <div
+              onClick={() => setSelectedPlan("monthly")}
+              className={cn(
+                "relative p-4 rounded-lg border-2 cursor-pointer transition-all",
+                selectedPlan === "monthly"
+                  ? "border-primary bg-primary/5"
+                  : "border-border bg-secondary/30",
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-xl font-semibold text-foreground">
+                    Monthly
+                  </div>
+                  <div className="text-muted-foreground">
+                    $9.99 billed monthly
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-xl font-bold text-foreground">
+                    $9.99/mo
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Footer */}
-      <div className="p-6 border-t border-border space-y-3">
+      <div className="p-6 space-y-4">
         <Button
           onClick={handlePurchase}
           disabled={isLoading}
-          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-12"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-14 text-lg rounded-xl"
         >
-          {isLoading
-            ? "Processing..."
-            : `Start Premium - ${SUBSCRIPTION_PLANS.find((p) => p.id === selectedPlan)?.price}`}
+          {isLoading ? "Processing..." : "Resume Now"}
         </Button>
 
         <div className="flex justify-center">
@@ -166,9 +211,9 @@ export function Paywall({
             variant="ghost"
             onClick={handleRestore}
             disabled={isLoading}
-            className="text-sm text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground hover:text-foreground"
           >
-            Restore Purchases
+            Need Help?
           </Button>
         </div>
 
