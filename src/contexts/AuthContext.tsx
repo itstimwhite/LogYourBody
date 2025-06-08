@@ -41,23 +41,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    console.log("AuthContext initialization - isSupabaseConfigured:", isSupabaseConfigured);
+    console.log("AuthContext initialization - supabase client:", !!supabase);
+    
     if (!isSupabaseConfigured || !supabase) {
-      // If Supabase is not configured, create a mock user for development
-      console.warn("Supabase not configured, using mock user for development");
-      const mockUser = {
-        id: "mock-user-id",
-        email: "demo@logyourbody.com",
-        user_metadata: { name: "Demo User" },
-        aud: "authenticated",
-        role: "authenticated",
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        app_metadata: {},
-        identities: [],
-        factors: [],
-      } as User;
-
-      setUser(mockUser);
+      console.warn("Supabase not configured - authentication disabled");
       setLoading(false);
       return;
     }
@@ -137,14 +125,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signInWithEmail = async (email: string, password: string) => {
     if (!isSupabaseConfigured || !supabase) {
-      console.log("Mock sign in with email:", email);
-      return { error: null };
+      return { 
+        error: { 
+          message: "Authentication service not available",
+          name: "AuthError",
+          status: 500 
+        } as any 
+      };
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    console.log("Attempting Supabase sign in with email:", email);
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
+    
+    if (error) {
+      console.error("Supabase sign in error:", error);
+    } else {
+      console.log("Supabase sign in successful:", data);
+    }
+    
     return { error };
   };
 
@@ -154,11 +155,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     name: string,
   ) => {
     if (!isSupabaseConfigured || !supabase) {
-      console.log("Mock sign up with email:", email);
-      return { error: null };
+      return { 
+        error: { 
+          message: "Authentication service not available",
+          name: "AuthError",
+          status: 500 
+        } as any 
+      };
     }
 
-    const { error } = await supabase.auth.signUp({
+    console.log("Attempting Supabase sign up with email:", email);
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -167,13 +174,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
         },
       },
     });
+    
+    if (error) {
+      console.error("Supabase sign up error:", error);
+    } else {
+      console.log("Supabase sign up successful:", data);
+    }
+    
     return { error };
   };
 
   const signInWithGoogle = async () => {
     if (!isSupabaseConfigured || !supabase) {
-      console.log("Mock Google sign in");
-      return { error: null };
+      return { 
+        error: { 
+          message: "Authentication service not available",
+          name: "AuthError",
+          status: 500 
+        } as any 
+      };
     }
 
     const { error } = await supabase.auth.signInWithOAuth({
@@ -187,8 +206,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signInWithApple = async () => {
     if (!isSupabaseConfigured || !supabase) {
-      console.log("Mock Apple sign in");
-      return { error: null };
+      return { 
+        error: { 
+          message: "Authentication service not available",
+          name: "AuthError",
+          status: 500 
+        } as any 
+      };
     }
 
     const { error } = await supabase.auth.signInWithOAuth({
@@ -202,10 +226,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signOut = async () => {
     if (!isSupabaseConfigured || !supabase) {
-      console.log("Mock sign out");
-      setUser(null);
-      setSession(null);
-      return { error: null };
+      return { 
+        error: { 
+          message: "Authentication service not available",
+          name: "AuthError",
+          status: 500 
+        } as any 
+      };
     }
 
     const { error } = await supabase.auth.signOut();
@@ -216,7 +243,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     if (!user) return;
 
     if (!isSupabaseConfigured || !supabase) {
-      console.log("Mock trial started for user:", user.id);
+      console.warn("Cannot start trial - authentication service not available");
       return;
     }
 
