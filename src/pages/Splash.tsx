@@ -23,8 +23,8 @@ const Splash = () => {
       {/* Main Content */}
       <div className="flex-1 flex flex-col justify-center items-center px-6 text-center">
         {/* Hero Text */}
-        <div className="max-w-4xl mx-auto mb-16">
-          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white leading-tight tracking-tight">
+        <div className="max-w-4xl mx-auto mb-20">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-black text-white leading-[0.9] tracking-tighter text-center">
             TRACK
             <br />
             YOUR
@@ -33,26 +33,29 @@ const Splash = () => {
             <br />
             WITH
             <br />
-            <span className="text-primary">PRECISION</span>
+            PRECISION
           </h1>
         </div>
       </div>
 
       {/* Bottom Button */}
-      <div className="w-full px-6 pb-12">
+      <div className="w-full px-6 pb-16">
         <Button
           onClick={handleGetStarted}
-          className="w-full h-16 bg-white text-black hover:bg-white/90 rounded-full text-xl font-bold tracking-wide flex items-center justify-center gap-3 transition-all duration-300 hover:scale-105"
+          className="w-full h-20 bg-white text-black hover:bg-white/90 rounded-full text-2xl font-black tracking-wide flex items-center justify-center gap-4 transition-all duration-300 hover:scale-105 shadow-lg"
         >
-          GET STARTED
-          <ChevronRight className="h-6 w-6" />
+          NEXT
+          <div className="flex">
+            <ChevronRight className="h-7 w-7" />
+            <ChevronRight className="h-7 w-7 -ml-2" />
+          </div>
         </Button>
       </div>
 
       {/* Progress Indicator */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-        <div className="w-16 h-1 bg-white/30 rounded-full">
-          <div className="w-4 h-1 bg-white rounded-full"></div>
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+        <div className="w-20 h-1 bg-white/40 rounded-full">
+          <div className="w-5 h-1 bg-white rounded-full"></div>
         </div>
       </div>
     </div>
