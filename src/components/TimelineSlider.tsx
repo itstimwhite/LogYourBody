@@ -37,17 +37,17 @@ export function TimelineSlider({
   return (
     <div
       className={cn(
-        "w-full px-6 py-4 bg-black border-t border-white/10",
+        "w-full px-6 py-6 bg-background border-t border-border",
         className,
       )}
     >
-      <div className="space-y-3">
+      <div className="space-y-4">
         {/* Current date display */}
         <div className="text-center">
-          <div className="text-white text-lg font-medium">
+          <div className="text-foreground text-lg font-semibold tracking-tight">
             {currentDate ? formatDate(currentDate) : "No date"}
           </div>
-          <div className="text-white/60 text-sm">
+          <div className="text-muted-foreground text-sm font-medium mt-1">
             Entry {selectedIndex + 1} of {metrics.length}
           </div>
         </div>
@@ -65,7 +65,7 @@ export function TimelineSlider({
         </div>
 
         {/* Date range */}
-        <div className="flex justify-between text-xs text-white/40 px-4">
+        <div className="flex justify-between text-xs text-muted-foreground font-medium px-4">
           <span>{formatDate(metrics[0].date)}</span>
           <span>{formatDate(metrics[metrics.length - 1].date)}</span>
         </div>
