@@ -239,33 +239,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   };
 
-  const signOut = async () => {
-    const { error } = await supabase.auth.signOut();
-    return { error };
-  };
-
-  const startTrial = async () => {
-    if (!user) return;
-
-    try {
-      const now = new Date();
-      const trialEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days
-
-      const { error } = await supabase.from("subscriptions").upsert({
-        user_id: user.id,
-        status: "trial",
-        trial_start_date: now.toISOString(),
-        trial_end_date: trialEnd.toISOString(),
-      });
-
-      if (error) {
-        console.error("Error starting trial:", error);
-      }
-    } catch (error) {
-      console.error("Error in startTrial:", error);
-    }
-  };
-
   const value = {
     user,
     session,
