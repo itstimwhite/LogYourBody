@@ -63,10 +63,38 @@ function calculateFFMI(leanBodyMass: number, heightCm: number): number {
   return leanBodyMass / (heightM * heightM);
 }
 
+// Utility functions for unit conversion
+function lbsToKg(lbs: number): number {
+  return lbs / 2.20462;
+}
+
+function kgToLbs(kg: number): number {
+  return kg * 2.20462;
+}
+
+function cmToFeet(cm: number): string {
+  const totalInches = cm / 2.54;
+  const feet = Math.floor(totalInches / 12);
+  const inches = Math.round(totalInches % 12);
+  return `${feet}'${inches}"`;
+}
+
+function cmToInches(cm: number): number {
+  return cm / 2.54;
+}
+
+const mockSettings: UserSettings = {
+  userId: '1',
+  units: 'imperial',
+  healthKitSyncEnabled: false,
+  googleFitSyncEnabled: false,
+};
+
 export function useBodyMetrics() {
   const [user] = useState<UserProfile>(mockUser);
   const [metrics, setMetrics] = useState<BodyMetrics[]>(mockMetrics);
-  const [selectedDateIndex, setSelectedDateIndex] = useState<number>(
+  const [selectedDateIndex, setSelectedDateIndex] = useState<number>(metrics.length - 1);
+  const [settings, setSettings] = useState<UserSettings>(mockSettings);
     metrics.length - 1,
   );
 
@@ -119,8 +147,28 @@ export function useBodyMetrics() {
 
   const updateUser = useCallback((updates: Partial<UserProfile>) => {
     // In real app, this would update the user in the backend
-    console.log("User updates:", updates);
+    console.log('User updates:', updates);
   }, []);
+
+  const updateSettings = useCallback((updates: Partial<UserSettings>) => {
+    setSettings(prev => ({ ...prev, ...updates }));
+  }, []);
+
+  const getFormattedWeight = useCallback((weightKg: number) => {
+    if (settings.units === 'metric') {
+      return `${Math.round(weightKg * 10) / 10} kg`;
+    } else {
+      return `${Math.round(kgToLbs(weightKg))} lbs`;
+    }
+  }, [settings.units]);
+
+  const getFormattedHeight = useCallback((heightCm: number) => {
+    if (settings.units === 'metric') {
+      return `${heightCm} cm`;
+    } else {
+      return cmToFeet(heightCm);
+    }
+  }, [settings.units]);
 
   const getUserAge = useCallback(() => {
     const today = new Date();
@@ -147,5 +195,15 @@ export function useBodyMetrics() {
     addMetric,
     updateUser,
     getUserAge,
+    settings,
+    updateSettings,
+    getFormattedWeight,
+    getFormattedHeight,
+    utils: {
+      lbsToKg,
+      kgToLbs,
+      cmToFeet,
+      cmToInches,
+    },
   };
 }

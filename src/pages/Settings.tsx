@@ -1,36 +1,25 @@
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Smartphone, Activity } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
 
 const Settings = () => {
   const navigate = useNavigate();
-  const { user, updateUser } = useBodyMetrics();
+  const { user, getUserAge, settings, updateSettings, getFormattedHeight } =
+    useBodyMetrics();
 
-  const [name] = useState(user.name);
-  const [gender] = useState(user.gender);
-  const [height] = useState(user.height.toString());
-  const [birthday] = useState(user.birthday.toISOString().split("T")[0]);
-  const [healthKitEnabled, setHealthKitEnabled] = useState(true);
-  const [googleFitEnabled, setGoogleFitEnabled] = useState(false);
-
-  const handleSave = () => {
-    updateUser({
-      name,
-      gender,
-      height: parseInt(height),
-      birthday: new Date(birthday),
-    });
-    navigate("/dashboard");
+  const handleUnitsChange = (checked: boolean) => {
+    updateSettings({ units: checked ? "metric" : "imperial" });
   };
 
-  const formatHeight = (cm: number) => {
-    const totalInches = cm / 2.54;
-    const feet = Math.floor(totalInches / 12);
-    const inches = Math.round(totalInches % 12);
-    return `${feet}'${inches}"`;
+  const handleHealthKitToggle = (checked: boolean) => {
+    updateSettings({ healthKitSyncEnabled: checked });
+  };
+
+  const handleGoogleFitToggle = (checked: boolean) => {
+    updateSettings({ googleFitSyncEnabled: checked });
   };
 
   return (
@@ -53,6 +42,17 @@ const Settings = () => {
         {/* Personal Information */}
         <div className="space-y-6">
           <div className="space-y-6">
+            {/* User Name */}
+            <div className="flex items-center justify-between py-3 border-b border-border">
+              <div>
+                <div className="text-base font-medium text-foreground">
+                  Name
+                </div>
+              </div>
+              <div className="text-muted-foreground">{user.name}</div>
+            </div>
+
+            {/* Birthday */}
             <div className="flex items-center justify-between py-3 border-b border-border">
               <div>
                 <div className="text-base font-medium text-foreground">
@@ -60,7 +60,7 @@ const Settings = () => {
                 </div>
               </div>
               <div className="text-muted-foreground">
-                {new Date(birthday).toLocaleDateString("en-US", {
+                {user.birthday.toLocaleDateString("en-US", {
                   month: "short",
                   day: "numeric",
                   year: "numeric",
@@ -68,54 +68,86 @@ const Settings = () => {
               </div>
             </div>
 
+            {/* Biological Sex */}
             <div className="flex items-center justify-between py-3 border-b border-border">
               <div>
                 <div className="text-base font-medium text-foreground">
                   Biological sex
                 </div>
               </div>
-              <div className="text-muted-foreground capitalize">{gender}</div>
+              <div className="text-muted-foreground capitalize">
+                {user.gender}
+              </div>
+            </div>
+
+            {/* Height */}
+            <div className="flex items-center justify-between py-3 border-b border-border">
+              <div>
+                <div className="text-base font-medium text-foreground">
+                  Height
+                </div>
+              </div>
+              <div className="text-muted-foreground">
+                {getFormattedHeight(user.height)}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Integrations */}
+        {/* Settings */}
         <div className="space-y-6">
           <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3">
             Settings
           </h2>
 
           <div className="space-y-4">
-            {/* HealthKit */}
+            {/* Units Toggle */}
             <div className="flex items-center justify-between py-4">
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="text-base font-medium text-foreground">
-                    Share data with Apple Health
-                  </div>
+              <div>
+                <div className="text-base font-medium text-foreground">
+                  Metric units
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {settings.units === "metric" ? "kg, cm" : "lbs, ft/in"}
                 </div>
               </div>
               <Switch
-                checked={healthKitEnabled}
-                onCheckedChange={setHealthKitEnabled}
+                checked={settings.units === "metric"}
+                onCheckedChange={handleUnitsChange}
               />
             </div>
 
-            {/* Google Fit */}
+            {/* Sync from Apple HealthKit */}
             <div className="flex items-center justify-between py-4">
-              <div className="flex items-center gap-4">
-                <div>
-                  <div className="text-base font-medium text-foreground">
-                    Real temperatures
-                  </div>
+              <div>
+                <div className="text-base font-medium text-foreground">
+                  Sync from Apple HealthKit
+                </div>
+                <div className="text-sm text-muted-foreground">iOS only</div>
+              </div>
+              <Switch
+                checked={settings.healthKitSyncEnabled}
+                onCheckedChange={handleHealthKitToggle}
+              />
+            </div>
+
+            {/* Sync from Google Fit */}
+            <div className="flex items-center justify-between py-4">
+              <div>
+                <div className="text-base font-medium text-foreground">
+                  Sync from Google Fit
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  All platforms
                 </div>
               </div>
               <Switch
-                checked={googleFitEnabled}
-                onCheckedChange={setGoogleFitEnabled}
+                checked={settings.googleFitSyncEnabled}
+                onCheckedChange={handleGoogleFitToggle}
               />
             </div>
 
+            {/* Notifications */}
             <div className="flex items-center justify-between py-4">
               <div>
                 <div className="text-base font-medium text-foreground">
@@ -127,6 +159,7 @@ const Settings = () => {
           </div>
         </div>
 
+        {/* Account */}
         <div className="space-y-6">
           <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3">
             Account
@@ -146,15 +179,6 @@ const Settings = () => {
               <div>
                 <div className="text-base font-medium text-foreground">
                   Password
-                </div>
-              </div>
-              <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
-            </div>
-
-            <div className="flex items-center justify-between py-4">
-              <div>
-                <div className="text-base font-medium text-foreground">
-                  Upgrade Autopilot plan
                 </div>
               </div>
               <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />

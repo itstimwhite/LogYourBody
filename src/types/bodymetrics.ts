@@ -23,10 +23,9 @@ export type MeasurementMethod = "dexa" | "scale" | "calipers" | "visual";
 
 export interface UserSettings {
   userId: string;
-  weightUnit: "kg" | "lbs";
-  heightUnit: "cm" | "ft";
-  healthKitEnabled: boolean;
-  googleFitEnabled: boolean;
+  units: "imperial" | "metric";
+  healthKitSyncEnabled: boolean;
+  googleFitSyncEnabled: boolean;
 }
 
 export interface DashboardMetrics {

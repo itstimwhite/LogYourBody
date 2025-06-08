@@ -18,6 +18,9 @@ const Dashboard = () => {
     setSelectedDateIndex,
     addMetric,
     getUserAge,
+    getFormattedWeight,
+    settings,
+    utils,
   } = useBodyMetrics();
 
   const [showPhoto, setShowPhoto] = useState(false);
@@ -33,8 +36,8 @@ const Dashboard = () => {
     method: any;
     date: Date;
   }) => {
-    // Convert weight from lbs to kg for storage
-    const weightInKg = data.weight / 2.20462;
+    // Always store weight in kg (imperial) - convert if needed
+    const weightInKg = utils.lbsToKg(data.weight);
     addMetric({
       ...data,
       weight: weightInKg,
@@ -86,6 +89,7 @@ const Dashboard = () => {
             metrics={currentMetrics}
             user={user}
             userAge={getUserAge()}
+            formattedWeight={getFormattedWeight(currentMetrics.weight)}
           />
         </div>
       </div>
@@ -102,6 +106,7 @@ const Dashboard = () => {
         open={showLogModal}
         onOpenChange={setShowLogModal}
         onSave={handleAddMetric}
+        units={settings.units}
       />
     </div>
   );

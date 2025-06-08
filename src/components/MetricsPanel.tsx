@@ -41,13 +41,12 @@ export function MetricsPanel({
 
         <div>
           <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
-            {formatWeight(metrics.weight)}
+            {formattedWeight}
           </div>
           <div className="text-muted-foreground text-sm font-medium mt-1 tracking-wide uppercase">
             Weight
           </div>
         </div>
-
         <div>
           <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
             {metrics.ffmi}

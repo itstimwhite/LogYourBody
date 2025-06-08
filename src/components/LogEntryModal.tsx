@@ -29,7 +29,7 @@ interface LogEntryModalProps {
   }) => void;
 }
 
-export function LogEntryModal({
+export function LogEntryModal({ open, onOpenChange, onSave, units }: LogEntryModalProps) {
   open,
   onOpenChange,
   onSave,
@@ -78,11 +78,8 @@ export function LogEntryModal({
         <div className="space-y-6 py-4">
           {/* Weight Input */}
           <div className="space-y-3">
-            <Label
-              htmlFor="weight"
-              className="text-sm font-medium text-muted-foreground uppercase tracking-wide"
-            >
-              Weight (lbs)
+            <Label htmlFor="weight" className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+              Weight ({units === 'metric' ? 'kg' : 'lbs'})
             </Label>
             <Input
               id="weight"
