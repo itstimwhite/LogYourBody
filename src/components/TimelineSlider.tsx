@@ -1,0 +1,75 @@
+import React from "react";
+import { Slider } from "@/components/ui/slider";
+import { BodyMetrics } from "@/types/bodymetrics";
+import { cn } from "@/lib/utils";
+
+interface TimelineSliderProps {
+  metrics: BodyMetrics[];
+  selectedIndex: number;
+  onIndexChange: (index: number) => void;
+  className?: string;
+}
+
+export function TimelineSlider({
+  metrics,
+  selectedIndex,
+  onIndexChange,
+  className,
+}: TimelineSliderProps) {
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  const handleValueChange = (value: number[]) => {
+    onIndexChange(value[0]);
+  };
+
+  if (metrics.length === 0) {
+    return null;
+  }
+
+  const currentDate = metrics[selectedIndex]?.date;
+
+  return (
+    <div
+      className={cn(
+        "w-full px-6 py-4 bg-black border-t border-white/10",
+        className,
+      )}
+    >
+      <div className="space-y-3">
+        {/* Current date display */}
+        <div className="text-center">
+          <div className="text-white text-lg font-medium">
+            {currentDate ? formatDate(currentDate) : "No date"}
+          </div>
+          <div className="text-white/60 text-sm">
+            Entry {selectedIndex + 1} of {metrics.length}
+          </div>
+        </div>
+
+        {/* Slider */}
+        <div className="px-4">
+          <Slider
+            value={[selectedIndex]}
+            onValueChange={handleValueChange}
+            max={metrics.length - 1}
+            min={0}
+            step={1}
+            className="w-full"
+          />
+        </div>
+
+        {/* Date range */}
+        <div className="flex justify-between text-xs text-white/40 px-4">
+          <span>{formatDate(metrics[0].date)}</span>
+          <span>{formatDate(metrics[metrics.length - 1].date)}</span>
+        </div>
+      </div>
+    </div>
+  );
+}
