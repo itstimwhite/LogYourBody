@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 import { 
   BarChart3, 
   Camera, 
@@ -17,8 +18,24 @@ import { useNavigate } from "react-router-dom";
 
 export function LandingPage() {
   const navigate = useNavigate();
+  const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
 
-  const features = [
+  const pricing = {
+    monthly: {
+      price: 9.99,
+      period: "month",
+      yearlyTotal: 119.88,
+    },
+    annual: {
+      price: 69.99,
+      period: "year",
+      monthlyEquivalent: 5.83,
+      savings: 49.89,
+      savingsPercent: 42,
+    }
+  };
+
+  const appFeatures = [
     {
       icon: BarChart3,
       title: "Advanced Analytics",
@@ -72,36 +89,17 @@ export function LandingPage() {
     }
   ];
 
-  const pricingPlans = [
-    {
-      name: "Monthly",
-      price: "$9.99",
-      period: "per month",
-      description: "Perfect for getting started",
-      features: [
-        "Unlimited measurements",
-        "Advanced analytics",
-        "Progress photos",
-        "Health app sync",
-        "Data export",
-        "Priority support"
-      ]
-    },
-    {
-      name: "Annual",
-      price: "$69.99",
-      period: "per year",
-      description: "Best value - Save 42%",
-      popular: true,
-      features: [
-        "Everything in Monthly",
-        "Save $50 annually",
-        "Extended data history",
-        "Advanced insights",
-        "Priority feature access",
-        "Dedicated support"
-      ]
-    }
+  const currentPlan = isAnnual ? pricing.annual : pricing.monthly;
+  
+  const features = [
+    "Unlimited body measurements",
+    "Advanced analytics & trends", 
+    "Progress photo tracking",
+    "Health app synchronization",
+    "Data export capabilities",
+    "Priority customer support",
+    "Detailed progress insights",
+    "FFMI calculations"
   ];
 
   return (
@@ -171,7 +169,7 @@ export function LandingPage() {
           </p>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
+          {appFeatures.map((feature, index) => (
             <Card key={index} className="border-border bg-card hover:shadow-lg transition-shadow">
               <CardHeader>
                 <feature.icon className="h-12 w-12 text-primary mb-4" />
@@ -229,44 +227,75 @@ export function LandingPage() {
             Start your 3-day free trial today. No hidden fees.
           </p>
         </div>
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {pricingPlans.map((plan, index) => (
-            <Card 
-              key={index} 
-              className={`border-border relative ${plan.popular ? 'ring-2 ring-primary shadow-lg' : ''}`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
-                  Most Popular
-                </Badge>
-              )}
-              <CardHeader className="text-center">
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">{plan.price}</span>
-                  <span className="text-muted-foreground">/{plan.period}</span>
+        
+        {/* Billing Toggle */}
+        <div className="flex items-center justify-center gap-4 mb-12">
+          <span className={`text-lg font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+            Monthly
+          </span>
+          <Switch
+            checked={isAnnual}
+            onCheckedChange={setIsAnnual}
+            className="data-[state=checked]:bg-primary"
+          />
+          <span className={`text-lg font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+            Annual
+          </span>
+          {isAnnual && (
+            <Badge className="ml-2 bg-green-100 text-green-800 border-green-200">
+              Save {pricing.annual.savingsPercent}%
+            </Badge>
+          )}
+        </div>
+
+        {/* Single Pricing Card */}
+        <div className="max-w-md mx-auto">
+          <Card className="border-border ring-2 ring-primary shadow-lg relative">
+            <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
+              3-Day Free Trial
+            </Badge>
+            <CardHeader className="text-center">
+              <CardTitle className="text-2xl">LogYourBody Pro</CardTitle>
+              <div className="mt-4">
+                <span className="text-4xl font-bold transition-all duration-300 ease-in-out">
+                  ${currentPlan.price}
+                </span>
+                <span className="text-muted-foreground transition-all duration-300 ease-in-out">/{currentPlan.period}</span>
+              </div>
+              {isAnnual && (
+                <div className="mt-2 transition-all duration-300 ease-in-out">
+                  <span className="text-sm text-muted-foreground">
+                    ${pricing.annual.monthlyEquivalent}/month when billed annually
+                  </span>
+                  <div className="text-sm text-green-600 font-medium">
+                    Save ${pricing.annual.savings} vs monthly billing
+                  </div>
                 </div>
-                <CardDescription className="text-base">{plan.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 mb-6">
-                  {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center">
-                      <Check className="h-5 w-5 text-primary mr-3" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Button 
-                  className="w-full" 
-                  variant={plan.popular ? "default" : "outline"}
-                  onClick={() => navigate("/login")}
-                >
-                  Start Free Trial
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+              )}
+              <CardDescription className="text-base mt-4">
+                Professional body composition tracking with advanced analytics
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3 mb-6">
+                {features.map((feature, index) => (
+                  <li key={index} className="flex items-center">
+                    <Check className="h-5 w-5 text-primary mr-3" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+              <Button 
+                className="w-full" 
+                onClick={() => navigate("/login")}
+              >
+                Start Free Trial
+              </Button>
+              <p className="text-xs text-muted-foreground text-center mt-3">
+                No credit card required • Cancel anytime
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
