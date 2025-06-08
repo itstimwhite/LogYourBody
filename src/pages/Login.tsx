@@ -38,7 +38,7 @@ const Login = () => {
       if (result.error) {
         setError(result.error.message);
       } else {
-        // Start trial for new users
+        // Start trial for new users (signup flow will handle this automatically)
         if (!isLogin) {
           await startTrial();
         }

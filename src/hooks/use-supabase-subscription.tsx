@@ -76,6 +76,10 @@ export function useSupabaseSubscription() {
             currency: "USD",
           });
         }
+      } else {
+        // No subscription record found - automatically start trial for new user
+        console.log("No subscription found, starting trial for new user");
+        await startTrial();
       }
     } catch (error) {
       console.error("Error loading subscription data:", error);
