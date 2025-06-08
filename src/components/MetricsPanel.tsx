@@ -7,10 +7,11 @@ interface MetricsPanelProps {
   user: UserProfile;
   userAge: number;
   formattedWeight: string;
+  formattedHeight: string;
   className?: string;
 }
 
-export function MetricsPanel({
+export function MetricsPanel({ metrics, user, userAge, formattedWeight, formattedHeight, className }: MetricsPanelProps) {
   metrics,
   user,
   userAge,
@@ -55,21 +56,30 @@ export function MetricsPanel({
 
         <div>
           <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
-            {metrics.leanBodyMass} kg
+            {metrics.leanBodyMass}
           </div>
-          <div className="text-muted-foreground text-sm font-medium mt-1 tracking-wide uppercase">
-            Lean Body Mass
-          </div>
+          <div className="text-muted-foreground text-sm font-medium mt-1 tracking-wide uppercase">Lean Body Mass (kg)</div>
         </div>
       </div>
 
-      {/* User info */}
-      <div className="border-t border-border pt-6 mt-auto">
-        <div className="text-muted-foreground text-sm font-medium">
-          {userAge}-year-old {user.gender}
-        </div>
-        <div className="text-foreground text-lg font-semibold mt-1">
+      {/* User info - Horizontal Layout */}
+      <div className="border-t border-border pt-6 mt-auto space-y-3">
+        <div className="text-foreground text-lg font-semibold">
           {user.name}
+        </div>
+        <div className="grid grid-cols-3 gap-4 text-sm">
+          <div>
+            <div className="text-muted-foreground font-medium uppercase tracking-wide">Age</div>
+            <div className="text-foreground font-medium">{userAge}</div>
+          </div>
+          <div>
+            <div className="text-muted-foreground font-medium uppercase tracking-wide">Height</div>
+            <div className="text-foreground font-medium">{formattedHeight}</div>
+          </div>
+          <div>
+            <div className="text-muted-foreground font-medium uppercase tracking-wide">Sex</div>
+            <div className="text-foreground font-medium capitalize">{user.gender}</div>
+          </div>
         </div>
       </div>
     </div>

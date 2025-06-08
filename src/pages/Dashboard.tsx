@@ -20,6 +20,7 @@ const Dashboard = () => {
     addMetric,
     getUserAge,
     getFormattedWeight,
+    getFormattedHeight,
     settings,
     utils,
   } = useBodyMetrics();
@@ -37,8 +38,11 @@ const Dashboard = () => {
     method: any;
     date: Date;
   }) => {
-    // Always store weight in kg (imperial) - convert if needed
-    const weightInKg = utils.lbsToKg(data.weight);
+    // Convert weight to kg for storage based on current units
+    let weightInKg = data.weight;
+    if (settings.units === "imperial") {
+      weightInKg = utils.lbsToKg(data.weight);
+    }
     addMetric({
       ...data,
       weight: weightInKg,
@@ -92,6 +96,7 @@ const Dashboard = () => {
               user={user}
               userAge={getUserAge()}
               formattedWeight={getFormattedWeight(currentMetrics.weight)}
+              formattedHeight={getFormattedHeight(user.height)}
             />
           </div>
         </div>
