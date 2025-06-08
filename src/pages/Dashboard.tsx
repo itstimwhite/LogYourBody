@@ -42,16 +42,16 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Header */}
-      <div className="flex justify-between items-center p-4 border-b border-white/10">
-        <h1 className="text-xl font-semibold">BodyMetrics</h1>
-        <div className="flex gap-2">
+      <div className="flex justify-between items-center px-6 py-4 border-b border-border">
+        <h1 className="text-xl font-semibold tracking-tight">BodyMetrics</h1>
+        <div className="flex gap-3">
           <Button
             size="icon"
             variant="outline"
             onClick={() => setShowLogModal(true)}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -59,7 +59,7 @@ const Dashboard = () => {
             size="icon"
             variant="outline"
             onClick={() => navigate("/settings")}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+            className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
           >
             <Settings className="h-4 w-4" />
           </Button>
@@ -81,7 +81,7 @@ const Dashboard = () => {
         </div>
 
         {/* Right Side - Metrics (1/3) */}
-        <div className="md:w-1/3 border-t md:border-t-0 md:border-l border-white/10">
+        <div className="md:w-1/3 border-t md:border-t-0 md:border-l border-border bg-secondary/30">
           <MetricsPanel
             metrics={currentMetrics}
             user={user}

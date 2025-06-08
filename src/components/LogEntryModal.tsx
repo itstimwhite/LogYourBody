@@ -68,17 +68,20 @@ export function LogEntryModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-black border-white/20 text-white max-w-md">
+      <DialogContent className="bg-background border-border text-foreground max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-white">
+          <DialogTitle className="text-xl font-semibold text-foreground tracking-tight">
             Log New Measurement
           </DialogTitle>
         </DialogHeader>
 
         <div className="space-y-6 py-4">
           {/* Weight Input */}
-          <div className="space-y-2">
-            <Label htmlFor="weight" className="text-white/80">
+          <div className="space-y-3">
+            <Label
+              htmlFor="weight"
+              className="text-sm font-medium text-muted-foreground uppercase tracking-wide"
+            >
               Weight (lbs)
             </Label>
             <Input
@@ -87,13 +90,13 @@ export function LogEntryModal({
               placeholder="Enter weight"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+              className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
             />
           </div>
 
           {/* Body Fat Percentage Slider */}
-          <div className="space-y-3">
-            <Label className="text-white/80">
+          <div className="space-y-4">
+            <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
               Body Fat: {bodyFatPercentage[0].toFixed(1)}%
             </Label>
             <Slider
@@ -104,28 +107,30 @@ export function LogEntryModal({
               step={0.1}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-white/40">
+            <div className="flex justify-between text-xs text-muted-foreground font-medium">
               <span>3%</span>
               <span>50%</span>
             </div>
           </div>
 
           {/* Measurement Method */}
-          <div className="space-y-2">
-            <Label className="text-white/80">Method</Label>
+          <div className="space-y-3">
+            <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+              Method
+            </Label>
             <Select
               value={method}
               onValueChange={(value: MeasurementMethod) => setMethod(value)}
             >
-              <SelectTrigger className="bg-white/10 border-white/20 text-white">
+              <SelectTrigger className="bg-secondary border-border text-foreground h-12">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-black border-white/20">
+              <SelectContent className="bg-background border-border">
                 {Object.entries(MEASUREMENT_METHODS).map(([key, label]) => (
                   <SelectItem
                     key={key}
                     value={key}
-                    className="text-white hover:bg-white/10"
+                    className="text-foreground hover:bg-muted"
                   >
                     {label}
                   </SelectItem>
@@ -139,7 +144,7 @@ export function LogEntryModal({
         <div className="pt-4">
           <Button
             onClick={handleSave}
-            className="w-full bg-white text-black hover:bg-white/90 font-semibold"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-12 text-base"
             disabled={!weight || parseFloat(weight) <= 0}
           >
             Save Measurement

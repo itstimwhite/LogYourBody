@@ -11,15 +11,15 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-background text-foreground flex flex-col">
       {/* Logo Section */}
       <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="text-center mb-12">
           {/* Logo */}
           <div className="mb-8">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-white/10 flex items-center justify-center">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-secondary flex items-center justify-center">
               <svg
-                className="w-10 h-10 text-white"
+                className="w-10 h-10 text-foreground"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -32,8 +32,10 @@ const Index = () => {
                 />
               </svg>
             </div>
-            <h1 className="text-4xl font-bold font-inter">BodyMetrics</h1>
-            <p className="text-white/60 mt-2 text-lg">
+            <h1 className="text-4xl font-bold font-inter tracking-tight">
+              BodyMetrics
+            </h1>
+            <p className="text-muted-foreground mt-3 text-lg font-medium">
               Track your body composition with precision
             </p>
           </div>
@@ -44,7 +46,7 @@ const Index = () => {
               <Input
                 type="email"
                 placeholder="Email address"
-                className="bg-white/10 border-white/20 text-white placeholder:text-white/40 h-12"
+                className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
               />
             </div>
 
@@ -52,7 +54,7 @@ const Index = () => {
             <div className="space-y-3">
               <Button
                 variant="outline"
-                className="w-full h-12 bg-white/10 border-white/20 text-white hover:bg-white/20"
+                className="w-full h-12 bg-secondary border-border text-foreground hover:bg-muted font-medium"
               >
                 <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
                   <path
@@ -77,7 +79,7 @@ const Index = () => {
 
               <Button
                 variant="outline"
-                className="w-full h-12 bg-white/10 border-white/20 text-white hover:bg-white/20"
+                className="w-full h-12 bg-secondary border-border text-foreground hover:bg-muted font-medium"
               >
                 <svg
                   className="w-5 h-5 mr-3"
@@ -93,7 +95,7 @@ const Index = () => {
             {/* Main CTA */}
             <Button
               onClick={handleGetStarted}
-              className="w-full h-12 bg-white text-black hover:bg-white/90 font-semibold text-base font-inter mt-6"
+              className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-base font-inter mt-6"
             >
               Get Started
             </Button>
@@ -103,7 +105,7 @@ const Index = () => {
 
       {/* Footer */}
       <div className="p-6 text-center">
-        <p className="text-white/40 text-sm">
+        <p className="text-muted-foreground text-sm font-medium">
           By continuing, you agree to our Terms of Service and Privacy Policy
         </p>
       </div>

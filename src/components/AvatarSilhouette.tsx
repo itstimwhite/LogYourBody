@@ -97,12 +97,17 @@ export function AvatarSilhouette({
   return (
     <div className={cn("relative h-full w-full", className)}>
       {/* Toggle buttons */}
-      <div className="absolute top-4 left-4 z-10 flex gap-2">
+      <div className="absolute top-6 left-6 z-10 flex gap-2">
         <Button
           variant={!showPhoto ? "default" : "outline"}
           size="sm"
           onClick={onToggleView}
-          className="text-xs bg-white/10 border-white/20 text-white hover:bg-white/20"
+          className={cn(
+            "text-xs h-8 px-3 font-medium transition-all",
+            !showPhoto
+              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+              : "bg-secondary border-border text-muted-foreground hover:bg-muted hover:text-foreground",
+          )}
         >
           Avatar
         </Button>
@@ -110,7 +115,12 @@ export function AvatarSilhouette({
           variant={showPhoto ? "default" : "outline"}
           size="sm"
           onClick={onToggleView}
-          className="text-xs bg-white/10 border-white/20 text-white hover:bg-white/20"
+          className={cn(
+            "text-xs h-8 px-3 font-medium transition-all",
+            showPhoto
+              ? "bg-primary text-primary-foreground hover:bg-primary/90"
+              : "bg-secondary border-border text-muted-foreground hover:bg-muted hover:text-foreground",
+          )}
         >
           Photo
         </Button>
@@ -132,8 +142,8 @@ export function AvatarSilhouette({
       </div>
 
       {/* Body fat percentage indicator */}
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-        <div className="text-white/60 text-xs text-center">
+      <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
+        <div className="text-muted-foreground text-sm text-center font-medium">
           {bodyFatPercentage.toFixed(1)}% body fat
         </div>
       </div>
