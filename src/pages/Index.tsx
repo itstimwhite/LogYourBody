@@ -18,7 +18,7 @@ const Index = () => {
           {/* Logo */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold font-inter tracking-tight">
-              Log Your Body
+              LogYourBody
             </h1>
             <p className="text-muted-foreground mt-3 text-lg font-medium">
               Track your body composition with precision
@@ -90,7 +90,20 @@ const Index = () => {
       {/* Footer */}
       <div className="p-6 text-center">
         <p className="text-muted-foreground text-sm font-medium">
-          By continuing, you agree to our Terms of Service and Privacy Policy
+          By continuing, you agree to our{" "}
+          <button
+            onClick={() => navigate("/terms")}
+            className="text-primary hover:underline"
+          >
+            Terms of Service
+          </button>{" "}
+          and{" "}
+          <button
+            onClick={() => navigate("/privacy")}
+            className="text-primary hover:underline"
+          >
+            Privacy Policy
+          </button>
         </p>
       </div>
     </div>
