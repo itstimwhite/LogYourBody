@@ -135,7 +135,7 @@ export function LandingPage() {
           Professional body composition tracking for fitness enthusiasts. Monitor body fat percentage, 
           weight, FFMI, and lean body mass with advanced analytics and insights.
         </p>
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="flex justify-center">
           <Button 
             size="lg" 
             className="text-lg px-8 py-6"
@@ -143,14 +143,6 @@ export function LandingPage() {
           >
             Start Your Free Trial
             <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-          <Button 
-            variant="outline" 
-            size="lg" 
-            className="text-lg px-8 py-6"
-            onClick={() => navigate("/splash")}
-          >
-            View Demo
           </Button>
         </div>
         <p className="text-sm text-muted-foreground mt-4">
