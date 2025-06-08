@@ -97,10 +97,9 @@ export function Paywall({
         <div className="max-w-md mx-auto space-y-8">
           {/* Title */}
           <div className="space-y-3">
-            <h1 className="text-4xl font-light text-foreground">
-              {title.split(" ")[0]}
-            </h1>
-            <h2 className="text-4xl font-bold text-primary">
+            <h1 className="text-4xl font-light text-foreground">ACCESS</h1>
+            <h2 className="text-4xl font-bold text-primary">PAUSED</h2>
+            <p className="text-muted-foreground text-lg">{subtitle}</p>
               {title.split(" ")[1]}
             </h2>
             <p className="text-muted-foreground text-lg">{subtitle}</p>
@@ -209,7 +208,12 @@ export function Paywall({
         <div className="flex justify-center">
           <Button
             variant="ghost"
-            onClick={handleRestore}
+            onClick={() =>
+              window.open(
+                "mailto:support@logyourbody.com?subject=LogYourBody Support Request",
+                "_blank",
+              )
+            }
             disabled={isLoading}
             className="text-muted-foreground hover:text-foreground"
           >
