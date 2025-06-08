@@ -6,6 +6,7 @@ interface MetricsPanelProps {
   metrics: DashboardMetrics;
   user: UserProfile;
   userAge: number;
+  formattedWeight: string;
   className?: string;
 }
 
@@ -13,14 +14,9 @@ export function MetricsPanel({
   metrics,
   user,
   userAge,
+  formattedWeight,
   className,
 }: MetricsPanelProps) {
-  const formatWeight = (weight: number) => {
-    // Convert from kg to lbs for display (can be made configurable)
-    const lbs = weight * 2.20462;
-    return `${Math.round(lbs)} lbs`;
-  };
-
   return (
     <div
       className={cn(
@@ -47,6 +43,7 @@ export function MetricsPanel({
             Weight
           </div>
         </div>
+
         <div>
           <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
             {metrics.ffmi}

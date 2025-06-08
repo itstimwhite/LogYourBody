@@ -27,12 +27,14 @@ interface LogEntryModalProps {
     method: MeasurementMethod;
     date: Date;
   }) => void;
+  units: "imperial" | "metric";
 }
 
-export function LogEntryModal({ open, onOpenChange, onSave, units }: LogEntryModalProps) {
+export function LogEntryModal({
   open,
   onOpenChange,
   onSave,
+  units,
 }: LogEntryModalProps) {
   const [weight, setWeight] = useState<string>("");
   const [bodyFatPercentage, setBodyFatPercentage] = useState<number[]>([15]);
@@ -78,8 +80,11 @@ export function LogEntryModal({ open, onOpenChange, onSave, units }: LogEntryMod
         <div className="space-y-6 py-4">
           {/* Weight Input */}
           <div className="space-y-3">
-            <Label htmlFor="weight" className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-              Weight ({units === 'metric' ? 'kg' : 'lbs'})
+            <Label
+              htmlFor="weight"
+              className="text-sm font-medium text-muted-foreground uppercase tracking-wide"
+            >
+              Weight ({units === "metric" ? "kg" : "lbs"})
             </Label>
             <Input
               id="weight"

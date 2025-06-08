@@ -4,6 +4,7 @@ import {
   UserProfile,
   DashboardMetrics,
   MeasurementMethod,
+  UserSettings,
 } from "@/types/bodymetrics";
 
 // Mock data for demonstration
@@ -51,17 +52,12 @@ const mockMetrics: BodyMetrics[] = [
   },
 ];
 
-function calculateLeanBodyMass(
-  weight: number,
-  bodyFatPercentage: number,
-): number {
-  return weight * (1 - bodyFatPercentage / 100);
-}
-
-function calculateFFMI(leanBodyMass: number, heightCm: number): number {
-  const heightM = heightCm / 100;
-  return leanBodyMass / (heightM * heightM);
-}
+const mockSettings: UserSettings = {
+  userId: "1",
+  units: "imperial",
+  healthKitSyncEnabled: false,
+  googleFitSyncEnabled: false,
+};
 
 // Utility functions for unit conversion
 function lbsToKg(lbs: number): number {
@@ -83,20 +79,25 @@ function cmToInches(cm: number): number {
   return cm / 2.54;
 }
 
-const mockSettings: UserSettings = {
-  userId: '1',
-  units: 'imperial',
-  healthKitSyncEnabled: false,
-  googleFitSyncEnabled: false,
-};
+function calculateLeanBodyMass(
+  weight: number,
+  bodyFatPercentage: number,
+): number {
+  return weight * (1 - bodyFatPercentage / 100);
+}
+
+function calculateFFMI(leanBodyMass: number, heightCm: number): number {
+  const heightM = heightCm / 100;
+  return leanBodyMass / (heightM * heightM);
+}
 
 export function useBodyMetrics() {
   const [user] = useState<UserProfile>(mockUser);
   const [metrics, setMetrics] = useState<BodyMetrics[]>(mockMetrics);
-  const [selectedDateIndex, setSelectedDateIndex] = useState<number>(metrics.length - 1);
-  const [settings, setSettings] = useState<UserSettings>(mockSettings);
+  const [selectedDateIndex, setSelectedDateIndex] = useState<number>(
     metrics.length - 1,
   );
+  const [settings, setSettings] = useState<UserSettings>(mockSettings);
 
   const sortedMetrics = useMemo(
     () => [...metrics].sort((a, b) => a.date.getTime() - b.date.getTime()),
@@ -147,28 +148,34 @@ export function useBodyMetrics() {
 
   const updateUser = useCallback((updates: Partial<UserProfile>) => {
     // In real app, this would update the user in the backend
-    console.log('User updates:', updates);
+    console.log("User updates:", updates);
   }, []);
 
   const updateSettings = useCallback((updates: Partial<UserSettings>) => {
-    setSettings(prev => ({ ...prev, ...updates }));
+    setSettings((prev) => ({ ...prev, ...updates }));
   }, []);
 
-  const getFormattedWeight = useCallback((weightKg: number) => {
-    if (settings.units === 'metric') {
-      return `${Math.round(weightKg * 10) / 10} kg`;
-    } else {
-      return `${Math.round(kgToLbs(weightKg))} lbs`;
-    }
-  }, [settings.units]);
+  const getFormattedWeight = useCallback(
+    (weightKg: number) => {
+      if (settings.units === "metric") {
+        return `${Math.round(weightKg * 10) / 10} kg`;
+      } else {
+        return `${Math.round(kgToLbs(weightKg))} lbs`;
+      }
+    },
+    [settings.units],
+  );
 
-  const getFormattedHeight = useCallback((heightCm: number) => {
-    if (settings.units === 'metric') {
-      return `${heightCm} cm`;
-    } else {
-      return cmToFeet(heightCm);
-    }
-  }, [settings.units]);
+  const getFormattedHeight = useCallback(
+    (heightCm: number) => {
+      if (settings.units === "metric") {
+        return `${heightCm} cm`;
+      } else {
+        return cmToFeet(heightCm);
+      }
+    },
+    [settings.units],
+  );
 
   const getUserAge = useCallback(() => {
     const today = new Date();
