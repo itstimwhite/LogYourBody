@@ -1,18 +1,88 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
-import { useSubscription } from "@/hooks/use-subscription";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Index = () => {
   const navigate = useNavigate();
-  const { startTrial, hasAccess } = useSubscription();
+  const {
+    signInWithGoogle,
+    signInWithApple,
+    signInWithEmail,
+    signUpWithEmail,
+    startTrial,
+  } = useAuth();
 
-  const handleGetStarted = async () => {
-    if (!hasAccess) {
-      await startTrial();
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleEmailAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      let result;
+      if (isLogin) {
+        result = await signInWithEmail(email, password);
+      } else {
+        result = await signUpWithEmail(email, password, name);
+      }
+
+      if (result.error) {
+        setError(result.error.message);
+      } else {
+        // Start trial for new users
+        if (!isLogin) {
+          await startTrial();
+        }
+        navigate("/dashboard");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred");
+    } finally {
+      setLoading(false);
     }
-    navigate("/dashboard");
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const { error } = await signInWithGoogle();
+      if (error) {
+        setError(error.message);
+      }
+      // Navigation will be handled by the redirect
+    } catch (err) {
+      setError("Failed to sign in with Google");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const { error } = await signInWithApple();
+      if (error) {
+        setError(error.message);
+      }
+      // Navigation will be handled by the redirect
+    } catch (err) {
+      setError("Failed to sign in with Apple");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -29,20 +99,94 @@ const Index = () => {
               Track your body composition with precision
             </p>
           </div>
-          {/* Login Form */}
+
+          {/* Auth Form */}
           <div className="w-full max-w-sm mx-auto space-y-4">
-            <div>
-              <Input
-                type="email"
-                placeholder="Email address"
-                className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
-              />
+            {error && (
+              <div className="text-destructive text-sm text-center p-3 bg-destructive/10 rounded-md">
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleEmailAuth} className="space-y-4">
+              {!isLogin && (
+                <div>
+                  <Label htmlFor="name" className="sr-only">
+                    Name
+                  </Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Full name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
+                  />
+                </div>
+              )}
+
+              <div>
+                <Label htmlFor="email" className="sr-only">
+                  Email
+                </Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Email address"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="password" className="sr-only">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
+                />
+              </div>
+
+              <Button
+                type="submit"
+                disabled={loading}
+                className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-base font-inter"
+              >
+                {loading
+                  ? "Please wait..."
+                  : isLogin
+                    ? "Sign In"
+                    : "Create Account"}
+              </Button>
+            </form>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
             </div>
 
             {/* Social Login Buttons */}
             <div className="space-y-3">
               <Button
+                type="button"
                 variant="outline"
+                onClick={handleGoogleSignIn}
+                disabled={loading}
                 className="w-full h-12 bg-secondary border-border text-foreground hover:bg-muted font-medium"
               >
                 <svg className="w-5 h-5 mr-3" viewBox="0 0 24 24">
@@ -67,7 +211,10 @@ const Index = () => {
               </Button>
 
               <Button
+                type="button"
                 variant="outline"
+                onClick={handleAppleSignIn}
+                disabled={loading}
                 className="w-full h-12 bg-secondary border-border text-foreground hover:bg-muted font-medium"
               >
                 <svg
@@ -81,13 +228,19 @@ const Index = () => {
               </Button>
             </div>
 
-            {/* Main CTA */}
-            <Button
-              onClick={handleGetStarted}
-              className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-base font-inter mt-6"
-            >
-              Get Started
-            </Button>
+            {/* Toggle between login/signup */}
+            <div className="text-center">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setIsLogin(!isLogin)}
+                className="text-sm text-muted-foreground hover:text-foreground"
+              >
+                {isLogin
+                  ? "Don't have an account? Sign up"
+                  : "Already have an account? Sign in"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
