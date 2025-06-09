@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import { VersionDisplay } from "@/components/VersionDisplay";
-import { ArrowLeft, GitCommit, Calendar, User, ExternalLink, Github } from "lucide-react";
+import { ArrowLeft, GitCommit, Calendar, ExternalLink, Github, Mail, Check, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/lib/supabase";
 
 interface GitCommit {
   sha: string;
@@ -49,6 +51,12 @@ const Changelog = () => {
   const [commits, setCommits] = useState<GitCommit[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Email subscription state
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [subscriptionMessage, setSubscriptionMessage] = useState("");
 
   useEffect(() => {
     fetchCommits();
@@ -178,6 +186,59 @@ const Changelog = () => {
 
   const getShortSha = (sha: string) => sha.substring(0, 7);
 
+  const handleEmailSubscription = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      setSubscriptionStatus('error');
+      setSubscriptionMessage('Please enter a valid email address');
+      return;
+    }
+
+    setIsSubscribing(true);
+    setSubscriptionStatus('idle');
+
+    try {
+      // Insert email subscription
+      const { error: insertError } = await supabase
+        .from('email_subscriptions')
+        .insert({
+          email: email.toLowerCase(),
+          subscription_type: 'changelog',
+          metadata: {
+            source: 'changelog_page',
+            subscribed_via: 'web_form'
+          }
+        });
+
+      if (insertError) {
+        // Check if it's a unique constraint error (already subscribed)
+        if (insertError.code === '23505') {
+          setSubscriptionStatus('success');
+          setSubscriptionMessage('You are already subscribed to changelog updates!');
+        } else {
+          throw insertError;
+        }
+      } else {
+        setSubscriptionStatus('success');
+        setSubscriptionMessage('Successfully subscribed to changelog updates!');
+        setEmail('');
+      }
+    } catch (err: any) {
+      console.error('Subscription error:', err);
+      setSubscriptionStatus('error');
+      setSubscriptionMessage('Failed to subscribe. Please try again later.');
+    } finally {
+      setIsSubscribing(false);
+      
+      // Clear status after 5 seconds
+      setTimeout(() => {
+        setSubscriptionStatus('idle');
+        setSubscriptionMessage('');
+      }, 5000);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -191,7 +252,7 @@ const Changelog = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
+      {/* Navigation */}
       <div className="border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-40">
         <div className="container max-w-6xl mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
@@ -203,14 +264,78 @@ const Changelog = () => {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
-            <div className="flex items-center gap-4">
+            <VersionDisplay />
+          </div>
+        </div>
+      </div>
+
+      {/* Hero Header */}
+      <div className="relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
+        <div className="relative container max-w-6xl mx-auto px-6 py-16">
+          <div className="max-w-3xl">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+                <GitCommit className="h-6 w-6 text-primary" />
+              </div>
               <div>
-                <h1 className="text-2xl font-bold tracking-tight">Changelog</h1>
-                <p className="text-muted-foreground">
-                  Track the latest updates and improvements to LogYourBody
+                <h1 className="text-4xl font-bold tracking-tight">Changelog</h1>
+                <p className="text-xl text-muted-foreground mt-2">
+                  Stay up to date with the latest features, improvements, and fixes
                 </p>
               </div>
-              <VersionDisplay />
+            </div>
+            
+            {/* Email Subscription */}
+            <div className="bg-card border border-border rounded-lg p-6 mt-8">
+              <div className="flex items-start gap-4">
+                <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                  <Mail className="h-5 w-5 text-primary" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-2">Subscribe to updates</h3>
+                  <p className="text-muted-foreground mb-4">
+                    Get notified when we ship new features and improvements
+                  </p>
+                  
+                  <form onSubmit={handleEmailSubscription} className="flex gap-2">
+                    <Input
+                      type="email"
+                      placeholder="Enter your email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      disabled={isSubscribing}
+                      className="flex-1"
+                    />
+                    <Button 
+                      type="submit" 
+                      disabled={isSubscribing || !email}
+                      className="flex-shrink-0"
+                    >
+                      {isSubscribing ? (
+                        <div className="h-4 w-4 border-2 border-current border-r-transparent rounded-full animate-spin" />
+                      ) : (
+                        "Subscribe"
+                      )}
+                    </Button>
+                  </form>
+                  
+                  {subscriptionMessage && (
+                    <div className={`mt-3 flex items-center gap-2 text-sm ${
+                      subscriptionStatus === 'success' 
+                        ? 'text-green-600' 
+                        : 'text-destructive'
+                    }`}>
+                      {subscriptionStatus === 'success' ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <AlertCircle className="h-4 w-4" />
+                      )}
+                      {subscriptionMessage}
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -287,10 +412,6 @@ const Changelog = () => {
 
                       {/* Commit metadata */}
                       <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
-                          <User className="h-3 w-3" />
-                          <span>{commit.author.name}</span>
-                        </div>
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
                           <span>

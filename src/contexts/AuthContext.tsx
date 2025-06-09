@@ -61,18 +61,56 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state change:", event, session?.user?.email);
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
 
       if (event === "SIGNED_IN" && session?.user) {
+        console.log("User signed in, creating profile...");
         // Create or update user profile
-        await createUserProfile(session.user);
+        try {
+          await createUserProfile(session.user);
+          console.log("Profile creation completed");
+          
+          // Sync email subscriptions
+          await syncEmailSubscriptions(session.user);
+        } catch (error) {
+          console.error("Profile creation failed:", error);
+        }
       }
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const syncEmailSubscriptions = async (user: User) => {
+    if (!isSupabaseConfigured || !supabase || !user.email) {
+      console.log("Skipping email subscription sync");
+      return;
+    }
+
+    try {
+      console.log("Syncing email subscriptions for:", user.email);
+      
+      const { error } = await supabase
+        .from('email_subscriptions')
+        .update({ 
+          user_id: user.id,
+          updated_at: new Date().toISOString()
+        })
+        .eq('email', user.email.toLowerCase())
+        .is('user_id', null);
+
+      if (error) {
+        console.error("Error syncing email subscriptions:", error);
+      } else {
+        console.log("Email subscriptions synced successfully");
+      }
+    } catch (err) {
+      console.error("Failed to sync email subscriptions:", err);
+    }
+  };
 
   const createUserProfile = async (user: User) => {
     if (!isSupabaseConfigured || !supabase) {
@@ -80,15 +118,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
+    console.log("Creating profile for user:", user.id, user.email);
+
     try {
       // Check if profile exists
-      const { data: existingProfile } = await supabase
+      console.log("Checking for existing profile...");
+      const { data: existingProfile, error: selectError } = await supabase
         .from("profiles")
         .select("id")
         .eq("id", user.id)
         .single();
 
+      if (selectError && selectError.code !== 'PGRST116') {
+        console.error("Error checking profile:", selectError);
+        return;
+      }
+
       if (!existingProfile) {
+        console.log("Creating new profile...");
         // Create minimal profile that will trigger ProfileSetup
         const { error: profileError } = await supabase.from("profiles").insert({
           id: user.id,
@@ -133,18 +180,79 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     console.log("Attempting Supabase sign in with email:", email);
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
     
-    if (error) {
-      console.error("Supabase sign in error:", error);
-    } else {
-      console.log("Supabase sign in successful:", data);
+    // Check network connectivity first
+    if (!navigator.onLine) {
+      return {
+        error: {
+          message: "No internet connection. Please check your network and try again.",
+          name: "NetworkError",
+          status: 0
+        } as any
+      };
     }
     
-    return { error };
+    try {
+      console.log("Starting Supabase auth request...");
+      
+      // Try the auth request without timeout first
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+      
+      console.log("Auth request completed:", { data: !!data, error: !!error });
+      
+      if (error) {
+        console.error("Supabase sign in error:", error);
+        
+        // Provide more specific error messages
+        if (error.message.includes('Invalid login credentials')) {
+          return {
+            error: {
+              message: "Invalid email or password. Please check your credentials and try again.",
+              name: "InvalidCredentials",
+              status: 401
+            } as any
+          };
+        }
+        
+        if (error.message.includes('Email not confirmed')) {
+          return {
+            error: {
+              message: "Please check your email and click the confirmation link before signing in.",
+              name: "EmailNotConfirmed",
+              status: 401
+            } as any
+          };
+        }
+      } else {
+        console.log("Supabase sign in successful:", data);
+      }
+      
+      return { error };
+    } catch (networkError: any) {
+      console.error("Network or other error during sign in:", networkError);
+      
+      // Check if it's a network-related error
+      if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
+        return {
+          error: {
+            message: "Network error. Please check your connection and try again.",
+            name: "NetworkError",
+            status: 0
+          } as any
+        };
+      }
+      
+      return {
+        error: {
+          message: "An unexpected error occurred. Please try again.",
+          name: "UnknownError",
+          status: 500
+        } as any
+      };
+    }
   };
 
   const signUpWithEmail = async (
