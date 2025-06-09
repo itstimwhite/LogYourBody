@@ -22,31 +22,44 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
+    console.log("Starting email auth flow...");
+
     try {
       let result;
       if (isLogin) {
+        console.log("Attempting sign in...");
         result = await signInWithEmail(email, password);
+        console.log("Sign in result:", result);
       } else {
+        console.log("Attempting sign up...");
         result = await signUpWithEmail(email, password, name);
+        console.log("Sign up result:", result);
       }
 
       if (result.error) {
+        console.error("Auth error:", result.error);
         setError(result.error.message);
       } else {
+        console.log("Auth successful, proceeding...");
         // Start trial for new users (signup flow will handle this automatically)
         if (!isLogin) {
+          console.log("Starting trial...");
           await startTrial();
         }
+        console.log("Navigating to dashboard...");
         navigate("/dashboard");
       }
     } catch (err) {
+      console.error("Unexpected error in auth flow:", err);
       setError("An unexpected error occurred");
     } finally {
+      console.log("Auth flow completed, setting loading to false");
       setLoading(false);
     }
   };
@@ -84,6 +97,7 @@ const Login = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -190,6 +204,7 @@ const Login = () => {
                 </span>
               </div>
             </div>
+
 
             {/* Social Login Buttons */}
             <div className="space-y-3">
