@@ -38,9 +38,17 @@
     "supabase:migrate": "npx supabase db push",
     "supabase:generate-types": "npx supabase gen types typescript --local > src/types/supabase.ts",
     "revenuecat:validate": "node -e \"console.log('RevenueCat configuration:', {configured: !!process.env.VITE_REVENUECAT_PUBLIC_KEY, key: process.env.VITE_REVENUECAT_PUBLIC_KEY?.slice(0,20) + '...'})\"",
-    "revenuecat:test": "echo 'Testing RevenueCat integration...' && npm run dev"
+    "revenuecat:test": "echo 'Testing RevenueCat integration...' && npm run dev",
+    "ios:build": "npm run build && npx cap copy ios",
+    "ios:open": "npx cap open ios",
+    "ios:run": "npm run ios:build && npm run ios:open"
   },
   "dependencies": {
+    "@capacitor/cli": "^7.3.0",
+    "@capacitor/core": "^7.3.0",
+    "@capacitor/ios": "^7.3.0",
+    "@capacitor/splash-screen": "^7.0.1",
+    "@capacitor/status-bar": "^7.0.1",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
