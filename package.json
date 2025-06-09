@@ -1,5 +1,28 @@
 {
-  "name": "fusion-starter",
+  "name": "logyourbody",
+  "version": "1.0.0",
+  "description": "A modern body composition tracking application built with React and TypeScript",
+  "author": "Tim White <tim@timwhite.dev>",
+  "license": "MIT",
+  "homepage": "https://github.com/itstimwhite/LogYourBody#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/itstimwhite/LogYourBody.git"
+  },
+  "bugs": {
+    "url": "https://github.com/itstimwhite/LogYourBody/issues"
+  },
+  "keywords": [
+    "fitness",
+    "body-composition",
+    "health",
+    "tracking",
+    "react",
+    "typescript",
+    "pwa",
+    "supabase",
+    "subscription"
+  ],
   "private": true,
   "type": "module",
   "scripts": {

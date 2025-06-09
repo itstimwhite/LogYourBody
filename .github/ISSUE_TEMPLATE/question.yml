@@ -1,0 +1,78 @@
+name: Question
+description: Ask a question about LogYourBody
+title: "[Question]: "
+labels: ["question", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have a question about LogYourBody? We're here to help!
+        
+        Before asking, please check:
+        - [README.md](../README.md) for setup and usage instructions
+        - [Existing issues](../../issues) to see if your question has been answered
+        - [Discussions](../../discussions) for community Q&A
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your Question
+      description: What would you like to know?
+      placeholder: How do I...?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Question Category
+      description: What is your question about?
+      options:
+        - Setup & Installation
+        - Usage & Features
+        - Troubleshooting
+        - Development & Contributing
+        - Subscription & Payments
+        - Data & Privacy
+        - Mobile App
+        - API & Integrations
+        - Other
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: |
+        Provide any additional context that might help us answer your question.
+        Include relevant details about your setup, what you've tried, etc.
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment (if relevant)
+      description: |
+        If your question is technical, please provide:
+        - OS: [e.g. macOS 13.0, Windows 11]
+        - Browser: [e.g. Chrome 108, Safari 16]
+        - App version: [e.g. 1.0.0]
+      placeholder: |
+        OS: macOS 13.0
+        Browser: Chrome 108.0.5359.124
+        App version: 1.0.0
+
+  - type: checkboxes
+    id: search
+    attributes:
+      label: I have searched for existing answers
+      options:
+        - label: I have checked the README and existing issues/discussions
+          required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our Code of Conduct
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
