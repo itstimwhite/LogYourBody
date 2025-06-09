@@ -104,110 +104,195 @@ export function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Skip Links */}
+      <div className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 z-50">
+        <button 
+          className="bg-primary text-primary-foreground px-4 py-2 rounded focus:ring-4 focus:ring-primary/50"
+          onClick={() => document.getElementById('main-content')?.focus()}
+        >
+          Skip to main content
+        </button>
+      </div>
       {/* Header */}
-      <header className="border-b border-border">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-primary">LogYourBody</h1>
-          </div>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" onClick={() => navigate("/login")}>
-              Sign In
-            </Button>
-            <Button onClick={() => navigate("/login")}>
-              Start Free Trial
-            </Button>
-          </div>
+      <header className="border-b border-border" role="banner">
+        <div className="container mx-auto px-6 py-4">
+          <nav className="flex items-center justify-between" role="navigation" aria-label="Main navigation">
+            <div className="flex items-center space-x-2">
+              <div className="text-2xl font-bold text-white uppercase">
+                <span className="sr-only">LogYourBody - </span>LOGYOURBODY
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button 
+                variant="ghost" 
+                onClick={() => navigate("/login")}
+                aria-label="Sign in to your account"
+                className="focus:ring-4 focus:ring-primary/50"
+              >
+                Sign In
+              </Button>
+              <Button 
+                onClick={() => navigate("/login")}
+                aria-label="Start your 3-day free trial"
+                className="focus:ring-4 focus:ring-primary/50"
+              >
+                Start Free Trial
+              </Button>
+            </div>
+          </nav>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="container mx-auto px-6 py-20 text-center">
-        <Badge className="mb-6 bg-primary/10 text-primary border-primary/20">
-          3-Day Free Trial Available
-        </Badge>
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
-          Track Your Body Composition
-          <br />
-          <span className="text-primary">With Precision</span>
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-3xl mx-auto mb-10 leading-relaxed">
-          Professional body composition tracking for fitness enthusiasts. Monitor body fat percentage, 
-          weight, FFMI, and lean body mass with advanced analytics and insights.
-        </p>
-        <div className="flex justify-center">
-          <Button 
-            size="lg" 
-            className="text-lg px-8 py-6"
-            onClick={() => navigate("/login")}
-          >
-            Start Your Free Trial
-            <ArrowRight className="ml-2 h-5 w-5" />
-          </Button>
-        </div>
-        <p className="text-sm text-muted-foreground mt-4">
-          No credit card required • 3-day free trial • Cancel anytime
-        </p>
-      </section>
-
-      {/* Features Section */}
-      <section className="container mx-auto px-6 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Everything You Need for Body Composition Tracking
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Professional-grade tools and analytics to help you understand and optimize your body composition.
-          </p>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {appFeatures.map((feature, index) => (
-            <Card key={index} className="border-border bg-card hover:shadow-lg transition-shadow">
-              <CardHeader>
-                <feature.icon className="h-12 w-12 text-primary mb-4" />
-                <CardTitle className="text-xl">{feature.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-base leading-relaxed">
-                  {feature.description}
-                </CardDescription>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section className="bg-secondary/30 py-20">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Trusted by Fitness Professionals
-            </h2>
-            <p className="text-xl text-muted-foreground">
-              See what our users say about LogYourBody
+      {/* Main Content */}
+      <main id="main-content" tabIndex="-1">
+        {/* Hero Section */}
+        <section 
+          className="relative min-h-[80vh] flex items-center justify-center overflow-hidden"
+          role="banner"
+          aria-labelledby="hero-heading"
+        >
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+            style={{
+              backgroundImage: "url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80')",
+              filter: "grayscale(100%) contrast(1.2) brightness(0.3)"
+            }}
+            role="img"
+            aria-label="Fitness professional using body composition tracking equipment"
+          />
+          
+          {/* Enhanced overlay for better contrast */}
+          <div className="absolute inset-0 bg-black/70" />
+          
+          {/* Content */}
+          <div className="relative z-10 container mx-auto px-6 py-20 text-center">
+            <Badge 
+              className="mb-6 bg-primary text-white border-2 border-white/30 shadow-lg"
+              role="status"
+              aria-label="Special offer: 3-day free trial available"
+            >
+              3-Day Free Trial Available
+            </Badge>
+            <h1 
+              id="hero-heading"
+              className="text-5xl md:text-6xl font-bold mb-6 text-white drop-shadow-lg"
+            >
+              Track Your Body Composition
+              <br />
+              <span className="text-primary drop-shadow-lg">With Precision</span>
+            </h1>
+            <p className="text-xl text-white max-w-3xl mx-auto mb-10 leading-relaxed drop-shadow-md">
+              Professional body composition tracking for fitness enthusiasts. Monitor body fat percentage, 
+              weight, FFMI, and lean body mass with advanced analytics and insights.
+            </p>
+            <div className="flex justify-center">
+              <Button 
+                size="lg" 
+                className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 text-white shadow-lg focus:ring-4 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-black"
+                onClick={() => navigate("/login")}
+                aria-describedby="trial-details"
+              >
+                Start Your Free Trial
+                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
+              </Button>
+            </div>
+            <p 
+              id="trial-details"
+              className="text-sm text-white/90 mt-4"
+              role="note"
+            >
+              No credit card required • 3-day free trial • Cancel anytime
             </p>
           </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
-              <Card key={index} className="border-border bg-card">
-                <CardContent className="pt-6">
-                  <div className="flex mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-primary text-primary" />
-                    ))}
-                  </div>
-                  <p className="text-base mb-4 leading-relaxed">"{testimonial.content}"</p>
-                  <div>
-                    <p className="font-semibold">{testimonial.name}</p>
-                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                  </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="container mx-auto px-6 py-20" aria-labelledby="features-heading">
+          <div className="text-center mb-16">
+            <h2 id="features-heading" className="text-3xl md:text-4xl font-bold mb-4">
+              Everything You Need for Body Composition Tracking
+            </h2>
+            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+              Professional-grade tools and analytics to help you understand and optimize your body composition.
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8" role="list">
+            {appFeatures.map((feature, index) => (
+              <Card 
+                key={index} 
+                className="border-border bg-card hover:shadow-lg transition-shadow focus-within:ring-2 focus-within:ring-primary/50"
+                role="listitem"
+                tabIndex="0"
+                aria-labelledby={`feature-title-${index}`}
+                aria-describedby={`feature-desc-${index}`}
+              >
+                <CardHeader>
+                  <feature.icon 
+                    className="h-12 w-12 text-primary mb-4" 
+                    aria-hidden="true"
+                  />
+                  <CardTitle id={`feature-title-${index}`} className="text-xl">
+                    {feature.title}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription 
+                    id={`feature-desc-${index}`}
+                    className="text-base leading-relaxed"
+                  >
+                    {feature.description}
+                  </CardDescription>
                 </CardContent>
               </Card>
             ))}
           </div>
-        </div>
-      </section>
+        </section>
+
+        {/* Testimonials Section */}
+        <section className="bg-secondary/30 py-20" aria-labelledby="testimonials-heading">
+          <div className="container mx-auto px-6">
+            <div className="text-center mb-16">
+              <h2 id="testimonials-heading" className="text-3xl md:text-4xl font-bold mb-4">
+                Trusted by Fitness Professionals
+              </h2>
+              <p className="text-xl text-muted-foreground">
+                See what our users say about LogYourBody
+              </p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8" role="list">
+              {testimonials.map((testimonial, index) => (
+                <Card 
+                  key={index} 
+                  className="border-border bg-card focus-within:ring-2 focus-within:ring-primary/50"
+                  role="listitem"
+                  tabIndex="0"
+                >
+                  <CardContent className="pt-6">
+                    <div className="flex mb-4" role="img" aria-label={`${testimonial.rating} out of 5 stars`}>
+                      {[...Array(5)].map((_, i) => (
+                        <Star 
+                          key={i} 
+                          className={`h-5 w-5 ${
+                            i < testimonial.rating ? 'fill-primary text-primary' : 'text-gray-300'
+                          }`}
+                          aria-hidden="true"
+                        />
+                      ))}
+                    </div>
+                    <blockquote className="text-base mb-4 leading-relaxed">
+                      "{testimonial.content}"
+                    </blockquote>
+                    <cite className="not-italic">
+                      <p className="font-semibold">{testimonial.name}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                    </cite>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
 
       {/* Pricing Section */}
       <section className="container mx-auto px-6 py-20">
@@ -221,20 +306,33 @@ export function LandingPage() {
         </div>
         
         {/* Billing Toggle */}
-        <div className="flex items-center justify-center gap-4 mb-12">
-          <span className={`text-lg font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+        <div className="flex items-center justify-center gap-4 mb-12" role="group" aria-labelledby="billing-toggle-label">
+          <span id="billing-toggle-label" className="sr-only">Choose billing frequency</span>
+          <span 
+            className={`text-lg font-medium ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}
+            id="monthly-label"
+          >
             Monthly
           </span>
           <Switch
             checked={isAnnual}
             onCheckedChange={setIsAnnual}
-            className="data-[state=checked]:bg-primary"
+            className="data-[state=checked]:bg-primary focus:ring-4 focus:ring-primary/50"
+            aria-labelledby="monthly-label annual-label"
+            aria-describedby="billing-savings"
           />
-          <span className={`text-lg font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+          <span 
+            className={`text-lg font-medium ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}
+            id="annual-label"
+          >
             Annual
           </span>
           {isAnnual && (
-            <Badge className="ml-2 bg-green-100 text-green-800 border-green-200">
+            <Badge 
+              id="billing-savings"
+              className="ml-2 bg-green-100 text-green-800 border-green-200"
+              role="status"
+            >
               Save {pricing.annual.savingsPercent}%
             </Badge>
           )}
@@ -242,17 +340,27 @@ export function LandingPage() {
 
         {/* Single Pricing Card */}
         <div className="max-w-md mx-auto">
-          <Card className="border-border ring-2 ring-primary shadow-lg relative">
-            <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground">
+          <Card 
+            className="border-border ring-2 ring-primary shadow-lg relative focus-within:ring-4 focus-within:ring-primary/50"
+            role="region"
+            aria-labelledby="pricing-title"
+            aria-describedby="pricing-description"
+          >
+            <Badge 
+              className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-primary text-primary-foreground"
+              role="status"
+            >
               3-Day Free Trial
             </Badge>
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">LogYourBody Pro</CardTitle>
+              <CardTitle id="pricing-title" className="text-2xl">LogYourBody Pro</CardTitle>
               <div className="mt-4">
                 <span className="text-4xl font-bold transition-all duration-300 ease-in-out">
-                  ${currentPlan.price}
+                  <span className="sr-only">Price: </span>${currentPlan.price}
                 </span>
-                <span className="text-muted-foreground transition-all duration-300 ease-in-out">/{currentPlan.period}</span>
+                <span className="text-muted-foreground transition-all duration-300 ease-in-out">
+                  /{currentPlan.period}
+                </span>
               </div>
               {isAnnual && (
                 <div className="mt-2 transition-all duration-300 ease-in-out">
@@ -264,26 +372,27 @@ export function LandingPage() {
                   </div>
                 </div>
               )}
-              <CardDescription className="text-base mt-4">
+              <CardDescription id="pricing-description" className="text-base mt-4">
                 Professional body composition tracking with advanced analytics
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-3 mb-6">
+              <ul className="space-y-3 mb-6" role="list">
                 {features.map((feature, index) => (
-                  <li key={index} className="flex items-center">
-                    <Check className="h-5 w-5 text-primary mr-3" />
+                  <li key={index} className="flex items-center" role="listitem">
+                    <Check className="h-5 w-5 text-primary mr-3" aria-hidden="true" />
                     <span>{feature}</span>
                   </li>
                 ))}
               </ul>
               <Button 
-                className="w-full" 
+                className="w-full focus:ring-4 focus:ring-primary/50" 
                 onClick={() => navigate("/login")}
+                aria-describedby="trial-terms"
               >
                 Start Free Trial
               </Button>
-              <p className="text-xs text-muted-foreground text-center mt-3">
+              <p id="trial-terms" className="text-xs text-muted-foreground text-center mt-3">
                 No credit card required • Cancel anytime
               </p>
             </CardContent>
@@ -315,8 +424,10 @@ export function LandingPage() {
         </div>
       </section>
 
+      </main>
+
       {/* Footer */}
-      <footer className="border-t border-border py-12">
+      <footer className="border-t border-border py-12" role="contentinfo">
         <div className="container mx-auto px-6 text-center">
           <div className="mb-8">
             <h3 className="text-2xl font-bold text-primary mb-4">LogYourBody</h3>
