@@ -1,6 +1,15 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { setupBrowserExtensionErrorHandler, logBrowserEnvironment } from "./lib/browser-compat";
+
+// Setup browser extension error handling
+setupBrowserExtensionErrorHandler();
+
+// Log browser environment for debugging
+if (process.env.NODE_ENV === 'development') {
+  logBrowserEnvironment();
+}
 
 // Register service worker for PWA functionality
 if ('serviceWorker' in navigator) {

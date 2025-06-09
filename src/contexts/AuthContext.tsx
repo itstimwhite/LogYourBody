@@ -65,23 +65,28 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change:", event, session?.user?.email);
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+      try {
+        console.log("Auth state change:", event, session?.user?.email);
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
 
-      if (event === "SIGNED_IN" && session?.user) {
-        console.log("User signed in, creating profile...");
-        // Create or update user profile
-        try {
-          await createUserProfile(session.user);
-          console.log("Profile creation completed");
-          
-          // Sync email subscriptions
-          await syncEmailSubscriptions(session.user);
-        } catch (error) {
-          console.error("Profile creation failed:", error);
+        if (event === "SIGNED_IN" && session?.user) {
+          console.log("User signed in, creating profile...");
+          // Create or update user profile
+          try {
+            await createUserProfile(session.user);
+            console.log("Profile creation completed");
+            
+            // Sync email subscriptions
+            await syncEmailSubscriptions(session.user);
+          } catch (error) {
+            console.error("Profile creation failed:", error);
+          }
         }
+      } catch (error) {
+        console.error("Error in auth state change handler:", error);
+        setLoading(false);
       }
     });
 

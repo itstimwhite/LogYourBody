@@ -35,6 +35,19 @@ const Login = () => {
     }
   }, [user, authLoading, navigate]);
 
+  // Add error handler for browser extension issues
+  useEffect(() => {
+    const handleError = (event: ErrorEvent) => {
+      if (event.filename && event.filename.includes('injected.js')) {
+        console.warn('Browser extension error detected - this is harmless and does not affect app functionality');
+        event.preventDefault();
+      }
+    };
+
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+
   // Show loading while checking authentication
   if (authLoading) {
     return (
@@ -82,11 +95,19 @@ const Login = () => {
           await startTrial();
         }
         console.log("Navigating to dashboard...");
-        navigate("/dashboard");
+        // Add a small delay to ensure state updates are processed
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 100);
       }
     } catch (err) {
       console.error("Unexpected error in auth flow:", err);
-      setError("An unexpected error occurred");
+      // More specific error handling for different error types
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred during authentication");
+      }
     } finally {
       console.log("Auth flow completed, setting loading to false");
       setLoading(false);
