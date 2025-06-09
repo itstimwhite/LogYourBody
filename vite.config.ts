@@ -15,6 +15,22 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}"],
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\./,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-cache",
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+        ],
+      },
+      devOptions: {
+        enabled: true,
+        type: "module",
       },
       manifest: {
         name: "LogYourBody - Body Composition Tracker",
