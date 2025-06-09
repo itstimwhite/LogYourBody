@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { TimelineSlider } from "@/components/TimelineSlider";
 import { LogEntryModal } from "@/components/LogEntryModal";
+import { WeightPrompt } from "@/components/WeightPrompt";
 import { TrialGuard } from "@/components/TrialGuard";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -49,6 +50,7 @@ const Dashboard = () => {
 
   const [showPhoto, setShowPhoto] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
+  const [showWeightPrompt, setShowWeightPrompt] = useState(false);
 
   const handleToggleView = () => {
     setShowPhoto(!showPhoto);
@@ -71,6 +73,16 @@ const Dashboard = () => {
     });
   };
 
+  // Check if user has any weight data
+  const hasWeightData = metrics.length > 0 && metrics.some(m => m.weight > 0);
+
+  // Show weight prompt if no data and not loading (use useEffect to avoid infinite re-renders)
+  React.useEffect(() => {
+    if (!loading && user && settings && !hasWeightData && !showWeightPrompt) {
+      setShowWeightPrompt(true);
+    }
+  }, [loading, user, settings, hasWeightData, showWeightPrompt]);
+
   if (loading || !user || !settings) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -79,6 +91,23 @@ const Dashboard = () => {
           <p className="text-muted-foreground">Loading your data...</p>
         </div>
       </div>
+    );
+  }
+
+  // Show weight prompt for new users
+  if (showWeightPrompt && !hasWeightData) {
+    return (
+      <TrialGuard>
+        <div className="min-h-screen bg-background flex items-center justify-center p-6">
+          <WeightPrompt
+            onComplete={(data) => {
+              handleAddMetric(data);
+              setShowWeightPrompt(false);
+            }}
+            units={settings.units}
+          />
+        </div>
+      </TrialGuard>
     );
   }
 
@@ -97,7 +126,13 @@ const Dashboard = () => {
             <Button
               size="icon"
               variant="outline"
-              onClick={() => setShowLogModal(true)}
+              onClick={() => {
+                if (!hasWeightData) {
+                  setShowWeightPrompt(true);
+                } else {
+                  setShowLogModal(true);
+                }
+              }}
               className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
             >
               <Plus className="h-4 w-4" />
