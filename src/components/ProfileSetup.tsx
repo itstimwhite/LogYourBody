@@ -141,7 +141,7 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
         .from("profiles")
         .upsert({
           id: user.id,
-          email: user.email || "",
+          email: formData.email || user.email || "",
           name: formData.name || user?.user_metadata?.name || user?.email?.split("@")[0] || "User",
           gender: (healthKitData?.biologicalSex || formData.gender) as "male" | "female",
           birthday,
@@ -209,6 +209,23 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
               className="text-center text-lg h-12"
               autoFocus
             />
+          </div>
+        );
+
+      case 'email':
+        return (
+          <div className="space-y-4">
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              placeholder="your@email.com (optional)"
+              className="text-center text-lg h-12"
+              autoFocus
+            />
+            <p className="text-sm text-muted-foreground text-center">
+              This is optional. You can add it later in Settings.
+            </p>
           </div>
         );
 
@@ -401,6 +418,8 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
     switch (currentStepData.id) {
       case 'name':
         return formData.name.trim().length > 0;
+      case 'email':
+        return true; // Email is optional for SMS users
       case 'gender':
         return formData.gender !== '';
       case 'birthday':

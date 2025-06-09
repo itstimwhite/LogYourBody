@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => ({
         manualChunks: {
           // React ecosystem
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-          // UI components library
+          // UI components library (only packages that exist)
           'ui-vendor': [
             '@radix-ui/react-dialog',
             '@radix-ui/react-dropdown-menu',
@@ -40,8 +40,6 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-accordion',
             '@radix-ui/react-alert-dialog',
             '@radix-ui/react-avatar',
-            '@radix-ui/react-button',
-            '@radix-ui/react-card',
             '@radix-ui/react-checkbox',
             '@radix-ui/react-collapsible',
             '@radix-ui/react-context-menu',
@@ -55,7 +53,10 @@ export default defineConfig(({ mode }) => ({
             '@radix-ui/react-scroll-area',
             '@radix-ui/react-separator',
             '@radix-ui/react-slider',
-            '@radix-ui/react-switch'
+            '@radix-ui/react-switch',
+            '@radix-ui/react-slot',
+            '@radix-ui/react-toggle',
+            '@radix-ui/react-toggle-group'
           ],
           // Data/API related
           'data-vendor': [

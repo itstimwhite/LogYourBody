@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { SMSLogin } from "@/components/SMSLogin";
+import { Smartphone } from "lucide-react";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,6 +25,7 @@ const Login = () => {
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showSMSLogin, setShowSMSLogin] = useState(false);
 
   useEffect(() => {
     // If user is already authenticated, redirect to dashboard
@@ -124,6 +127,21 @@ const Login = () => {
     }
   };
 
+
+  // Show SMS login interface
+  if (showSMSLogin) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-6">
+        <SMSLogin
+          onBack={() => setShowSMSLogin(false)}
+          onSuccess={() => {
+            console.log("SMS login successful, navigating to dashboard");
+            navigate("/dashboard");
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -234,6 +252,18 @@ const Login = () => {
 
             {/* Social Login Buttons */}
             <div className="space-y-3">
+              {/* SMS Login Button */}
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowSMSLogin(true)}
+                disabled={loading}
+                className="w-full h-12 bg-secondary border-border text-foreground hover:bg-muted font-medium"
+              >
+                <Smartphone className="w-5 h-5 mr-3" />
+                Continue with SMS
+              </Button>
+              
               {/* Google auth temporarily disabled */}
 
               <Button

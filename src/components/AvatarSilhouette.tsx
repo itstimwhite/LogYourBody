@@ -150,4 +150,4 @@ export const AvatarSilhouette = React.memo(function AvatarSilhouette({
       </div>
     </div>
   );
-}
+});
