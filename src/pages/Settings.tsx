@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
@@ -46,20 +46,32 @@ const Settings = () => {
   const [showPasswordEdit, setShowPasswordEdit] = useState(false);
 
   // Form states
-  const [editName, setEditName] = useState(user.name);
+  const [editName, setEditName] = useState(user?.name || "");
   const [editBirthday, setEditBirthday] = useState(
-    user.birthday.toISOString().split("T")[0],
+    user?.birthday ? user.birthday.toISOString().split("T")[0] : "",
   );
   const [editHeightFeet, setEditHeightFeet] = useState(
-    Math.floor(user.height / 30.48),
+    user?.height ? Math.floor(user.height / 30.48) : 5,
   );
   const [editHeightInches, setEditHeightInches] = useState(
-    Math.round((user.height % 30.48) / 2.54),
+    user?.height ? Math.round((user.height % 30.48) / 2.54) : 9,
   );
-  const [editHeightCm, setEditHeightCm] = useState(user.height);
-  const [editEmail, setEditEmail] = useState(user.email);
+  const [editHeightCm, setEditHeightCm] = useState(user?.height || 175);
+  const [editEmail, setEditEmail] = useState(user?.email || "");
   const [editPassword, setEditPassword] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+
+  // Update form states when user data loads
+  useEffect(() => {
+    if (user) {
+      setEditName(user.name || "");
+      setEditBirthday(user.birthday ? user.birthday.toISOString().split("T")[0] : "");
+      setEditHeightFeet(user.height ? Math.floor(user.height / 30.48) : 5);
+      setEditHeightInches(user.height ? Math.round((user.height % 30.48) / 2.54) : 9);
+      setEditHeightCm(user.height || 175);
+      setEditEmail(user.email || "");
+    }
+  }, [user]);
 
   const handleUnitsChange = (checked: boolean) => {
     updateSettings({ units: checked ? "metric" : "imperial" });
@@ -108,7 +120,7 @@ const Settings = () => {
 
   const handleSaveHeight = () => {
     let heightInCm;
-    if (settings.units === "imperial") {
+    if (settings?.units === "imperial") {
       heightInCm = (editHeightFeet * 12 + editHeightInches) * 2.54;
     } else {
       heightInCm = editHeightCm;
@@ -179,7 +191,7 @@ const Settings = () => {
                   Name
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-muted-foreground">{user.name}</div>
+                  <div className="text-muted-foreground">{user?.name || "Not set"}</div>
                   <Edit className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
@@ -194,11 +206,11 @@ const Settings = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="text-muted-foreground">
-                    {user.birthday.toLocaleDateString("en-US", {
+                    {user?.birthday ? user.birthday.toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
-                    })}
+                    }) : "Not set"}
                   </div>
                   <Edit className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -212,7 +224,7 @@ const Settings = () => {
                   </div>
                 </div>
                 <Tabs
-                  value={user.gender}
+                  value={user?.gender || "male"}
                   onValueChange={handleGenderChange}
                   className="w-full"
                 >
@@ -243,7 +255,7 @@ const Settings = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="text-muted-foreground">
-                    {getFormattedHeight(user.height)}
+                    {user?.height ? getFormattedHeight(user.height) : "Not set"}
                   </div>
                   <Edit className="h-4 w-4 text-muted-foreground" />
                 </div>
@@ -306,13 +318,13 @@ const Settings = () => {
                     Units
                   </div>
                   <div className="text-sm text-muted-foreground">
-                    {settings.units === "metric"
+                    {settings?.units === "metric"
                       ? "Metric (kg, cm)"
                       : "Imperial (lbs, ft/in)"}
                   </div>
                 </div>
                 <Switch
-                  checked={settings.units === "metric"}
+                  checked={settings?.units === "metric"}
                   onCheckedChange={handleUnitsChange}
                 />
               </div>
@@ -342,7 +354,7 @@ const Settings = () => {
                   <div className="text-sm text-muted-foreground">iOS only</div>
                 </div>
                 <Switch
-                  checked={settings.healthKitSyncEnabled}
+                  checked={settings?.healthKitSyncEnabled || false}
                   onCheckedChange={handleHealthKitToggle}
                 />
               </div>
@@ -358,7 +370,7 @@ const Settings = () => {
                   </div>
                 </div>
                 <Switch
-                  checked={settings.googleFitSyncEnabled}
+                  checked={settings?.googleFitSyncEnabled || false}
                   onCheckedChange={handleGoogleFitToggle}
                 />
               </div>
@@ -381,7 +393,7 @@ const Settings = () => {
                   Email
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-muted-foreground">{user.email}</div>
+                  <div className="text-muted-foreground">{user?.email || "Not set"}</div>
                   <Edit className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
@@ -507,7 +519,7 @@ const Settings = () => {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              {settings.units === "imperial" ? (
+              {settings?.units === "imperial" ? (
                 <div className="space-y-4">
                   <Label>Height (feet and inches)</Label>
                   <div className="flex gap-4">
