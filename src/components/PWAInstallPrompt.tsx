@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { X, Download } from "lucide-react";
+import { X, Download, Share, Plus } from "lucide-react";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -11,11 +11,46 @@ interface BeforeInstallPromptEvent extends Event {
   prompt(): Promise<void>;
 }
 
+// Detect iOS Safari
+const isIOS = () => {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+};
+
+// Detect Android
+const isAndroid = () => {
+  return /Android/.test(navigator.userAgent);
+};
+
+// Detect if app is running in standalone mode
+const isStandalone = () => {
+  return window.matchMedia("(display-mode: standalone)").matches || 
+         (window.navigator as any).standalone === true;
+};
+
+// Detect if browser supports PWA install
+const supportsPWAInstall = () => {
+  return 'serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window;
+};
+
 export function PWAInstallPrompt() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
+  const [showIOSInstructions, setShowIOSInstructions] = useState(false);
+  const [installPromptDismissed, setInstallPromptDismissed] = useState(false);
 
   useEffect(() => {
+    // Check if dismissed in this session
+    const dismissed = sessionStorage.getItem('pwa-install-dismissed');
+    if (dismissed) {
+      setInstallPromptDismissed(true);
+      return;
+    }
+
+    // Check if app is already installed
+    if (isStandalone()) {
+      return;
+    }
+
     const handler = (e: Event) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
@@ -27,13 +62,23 @@ export function PWAInstallPrompt() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // Check if app is already installed
-    if (window.matchMedia("(display-mode: standalone)").matches) {
-      setShowInstallPrompt(false);
+    // For iOS Safari or Android browsers that don't support beforeinstallprompt, 
+    // show instructions after a delay if no beforeinstallprompt fired
+    if ((isIOS() || isAndroid()) && !isStandalone()) {
+      const timer = setTimeout(() => {
+        if (!deferredPrompt && !installPromptDismissed) {
+          setShowIOSInstructions(true);
+        }
+      }, 3000); // Show after 3 seconds
+
+      return () => {
+        clearTimeout(timer);
+        window.removeEventListener("beforeinstallprompt", handler);
+      };
     }
 
     return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, []);
+  }, [deferredPrompt, installPromptDismissed]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
@@ -57,8 +102,77 @@ export function PWAInstallPrompt() {
 
   const handleDismiss = () => {
     setShowInstallPrompt(false);
+    setShowIOSInstructions(false);
     setDeferredPrompt(null);
+    setInstallPromptDismissed(true);
+    sessionStorage.setItem('pwa-install-dismissed', 'true');
   };
+
+  const handleIOSDismiss = () => {
+    setShowIOSInstructions(false);
+    setInstallPromptDismissed(true);
+    sessionStorage.setItem('pwa-install-dismissed', 'true');
+  };
+
+  // Show iOS instructions
+  if (showIOSInstructions && !installPromptDismissed) {
+    return (
+      <div className="fixed bottom-4 left-4 right-4 bg-background border border-border rounded-lg p-4 shadow-lg z-50 md:left-auto md:right-4 md:w-80">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Download className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold text-sm">Install LogYourBody</h3>
+          </div>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={handleIOSDismiss}
+            className="h-6 w-6 text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </div>
+        
+        <p className="text-sm text-muted-foreground mb-3">
+          Install LogYourBody on your device for a better experience:
+        </p>
+        
+        <div className="space-y-2 mb-3">
+          {isIOS() ? (
+            <>
+              <div className="flex items-center gap-2 text-sm">
+                <Share className="h-4 w-4 text-primary" />
+                <span>1. Tap the Share button</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Plus className="h-4 w-4 text-primary" />
+                <span>2. Select "Add to Home Screen"</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-2 text-sm">
+                <Download className="h-4 w-4 text-primary" />
+                <span>1. Open browser menu (⋮)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <Plus className="h-4 w-4 text-primary" />
+                <span>2. Select "Add to Home screen"</span>
+              </div>
+            </>
+          )}
+        </div>
+        
+        <Button
+          variant="outline"
+          onClick={handleIOSDismiss}
+          className="w-full h-9 text-sm"
+        >
+          Got it
+        </Button>
+      </div>
+    );
+  }
 
   if (!showInstallPrompt || !deferredPrompt) {
     return null;
