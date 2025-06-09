@@ -311,10 +311,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       };
     }
 
+    const redirectUrl = `${window.location.origin}/dashboard`;
+    console.log("Google OAuth redirect URL:", redirectUrl);
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: redirectUrl,
       },
     });
     return { error };
@@ -331,10 +334,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       };
     }
 
+    const redirectUrl = `${window.location.origin}/dashboard`;
+    console.log("Apple OAuth redirect URL:", redirectUrl);
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "apple",
       options: {
-        redirectTo: `${window.location.origin}/dashboard`,
+        redirectTo: redirectUrl,
       },
     });
     return { error };
