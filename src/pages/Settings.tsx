@@ -15,6 +15,13 @@ import { ArrowLeft, Crown, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
 import { useSubscription } from "@/hooks/use-subscription";
+import { BiometricSetup } from "@/components/BiometricSetup";
+import { VersionDisplay } from "@/components/VersionDisplay";
+import { AuthGuard } from "@/components/AuthGuard";
+import { useAuth } from "@/contexts/AuthContext";
+import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
+import { useSupabaseSubscription } from "@/hooks/use-supabase-subscription";
+import { LogOut } from "lucide-react";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -392,7 +399,20 @@ const Settings = () => {
                   <Edit className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
+            </div>
 
+            {/* Biometric Authentication Section */}
+            <div className="p-6">
+              <BiometricSetup />
+            </div>
+
+            {/* Version Information Section */}
+            <div className="p-6 border-t border-border">
+              <VersionDisplay showBuildInfo={true} />
+            </div>
+
+            {/* Logout Section */}
+            <div className="space-y-1 p-6">
               <div
                 className="flex items-center justify-between py-4 cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
                 onClick={handleLogout}

@@ -2,6 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from "vite-plugin-pwa";
 import path from "path";
+import { readFileSync } from "fs";
+
+// Read package.json for version info
+const packageJson = JSON.parse(readFileSync(path.resolve(__dirname, "package.json"), "utf8"));
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -9,11 +13,21 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
+  define: {
+    'import.meta.env.PACKAGE_VERSION': JSON.stringify(packageJson.version),
+    'import.meta.env.VITE_BUILD_HASH': JSON.stringify(
+      process.env.VERCEL_GIT_COMMIT_SHA || 
+      process.env.GITHUB_SHA || 
+      Date.now().toString()
+    ),
+  },
   plugins: [
     react(),
     VitePWA({
-      registerType: "autoUpdate",
+      registerType: "prompt",
       workbox: {
+        skipWaiting: false,
+        clientsClaim: false,
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,jpg,jpeg}"],
         runtimeCaching: [
           {
@@ -27,6 +41,9 @@ export default defineConfig(({ mode }) => ({
             },
           },
         ],
+        // Exclude auth requests from caching
+        navigateFallback: null,
+        navigateFallbackDenylist: [/^\/auth/, /supabase/],
       },
       devOptions: {
         enabled: true,
@@ -42,6 +59,8 @@ export default defineConfig(({ mode }) => ({
         orientation: "portrait-primary",
         scope: "/",
         start_url: "/",
+        id: "/",
+        version: packageJson.version,
         icons: [
           {
             src: "/android-chrome-192x192.png",

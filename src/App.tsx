@@ -11,6 +11,7 @@ import { SEOHead } from "@/components/SEOHead";
 import { VercelAnalytics } from "@/components/Analytics";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 import Index from "./pages/Index";
 import Splash from "./pages/Splash";
 import Login from "./pages/Login";
@@ -45,6 +46,7 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
         <Sonner />
         {children}
         <PWAInstallPrompt />
+        <PWAUpdatePrompt />
         <VercelAnalytics />
         <PerformanceMonitor />
       </TooltipProvider>

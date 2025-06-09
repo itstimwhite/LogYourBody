@@ -7,6 +7,7 @@ import { MetricsPanel } from "@/components/MetricsPanel";
 import { TimelineSlider } from "@/components/TimelineSlider";
 import { LogEntryModal } from "@/components/LogEntryModal";
 import { TrialGuard } from "@/components/TrialGuard";
+import { VersionDisplay } from "@/components/VersionDisplay";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
@@ -74,9 +75,12 @@ const Dashboard = () => {
       <div className="min-h-screen bg-background text-foreground flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-border">
-          <h1 className="text-xl font-semibold tracking-tight">
-            LogYourBody
-          </h1>
+          <div className="flex items-center gap-3">
+            <h1 className="text-xl font-semibold tracking-tight">
+              LogYourBody
+            </h1>
+            <VersionDisplay />
+          </div>
           <div className="flex gap-3">
             <Button
               size="icon"
