@@ -234,7 +234,8 @@ const Login = () => {
 
             {/* Social Login Buttons */}
             <div className="space-y-3">
-              <Button
+              {/* Temporarily disabled Google auth */}
+              {/* <Button
                 type="button"
                 variant="outline"
                 onClick={handleGoogleSignIn}
@@ -260,7 +261,7 @@ const Login = () => {
                   />
                 </svg>
                 Continue with Google
-              </Button>
+              </Button> */
 
               <Button
                 type="button"
