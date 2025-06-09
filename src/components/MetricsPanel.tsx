@@ -12,7 +12,7 @@ interface MetricsPanelProps {
   className?: string;
 }
 
-export function MetricsPanel({
+export const MetricsPanel = React.memo(function MetricsPanel({
   metrics,
   user,
   userAge,
@@ -95,4 +95,4 @@ export function MetricsPanel({
       </div>
     </div>
   );
-}
+});

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import { Slider } from "@/components/ui/slider";
 import { BodyMetrics } from "@/types/bodymetrics";
 import { cn } from "@/lib/utils";
@@ -10,29 +10,31 @@ interface TimelineSliderProps {
   className?: string;
 }
 
-export function TimelineSlider({
+export const TimelineSlider = React.memo(function TimelineSlider({
   metrics,
   selectedIndex,
   onIndexChange,
   className,
 }: TimelineSliderProps) {
-  const formatDate = (date: Date) => {
+  const formatDate = useCallback((date: Date) => {
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
-  };
+  }, []);
 
-  const handleValueChange = (value: number[]) => {
+  const handleValueChange = useCallback((value: number[]) => {
     onIndexChange(value[0]);
-  };
+  }, [onIndexChange]);
+
+  const selectedMetric = useMemo(() => metrics[selectedIndex], [metrics, selectedIndex]);
 
   if (metrics.length === 0) {
     return null;
   }
 
-  const currentDate = metrics[selectedIndex]?.date;
+  const currentDate = selectedMetric?.date;
 
   return (
     <div
@@ -72,4 +74,4 @@ export function TimelineSlider({
       </div>
     </div>
   );
-}
+});

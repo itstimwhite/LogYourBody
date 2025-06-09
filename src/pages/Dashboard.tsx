@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { AvatarSilhouette } from "@/components/AvatarSilhouette";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { TimelineSlider } from "@/components/TimelineSlider";
 import { LogEntryModal } from "@/components/LogEntryModal";
@@ -11,6 +10,19 @@ import { VersionDisplay } from "@/components/VersionDisplay";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
+
+// Lazy load heavy 3D component
+const AvatarSilhouette = React.lazy(() => import("@/components/AvatarSilhouette").then(module => ({ default: module.AvatarSilhouette })));
+
+// Loading fallback for avatar
+const AvatarLoader = () => (
+  <div className="h-full min-h-[400px] md:min-h-0 flex items-center justify-center bg-muted/30">
+    <div className="text-center">
+      <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+      <p className="text-sm text-muted-foreground">Loading 3D avatar...</p>
+    </div>
+  </div>
+);
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -105,14 +117,16 @@ const Dashboard = () => {
         <div className="flex-1 flex flex-col md:flex-row">
           {/* Left Side - Avatar (2/3) */}
           <div className="flex-1 md:w-2/3 relative">
-            <AvatarSilhouette
-              gender={user.gender}
-              bodyFatPercentage={currentMetrics.bodyFatPercentage}
-              showPhoto={showPhoto}
-              profileImage={user.profileImage}
-              onToggleView={handleToggleView}
-              className="h-full min-h-[400px] md:min-h-0"
-            />
+            <Suspense fallback={<AvatarLoader />}>
+              <AvatarSilhouette
+                gender={user.gender}
+                bodyFatPercentage={currentMetrics.bodyFatPercentage}
+                showPhoto={showPhoto}
+                profileImage={user.profileImage}
+                onToggleView={handleToggleView}
+                className="h-full min-h-[400px] md:min-h-0"
+              />
+            </Suspense>
           </div>
 
           {/* Right Side - Metrics (1/3) */}

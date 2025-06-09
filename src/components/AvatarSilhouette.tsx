@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { LazyImage } from "@/components/ui/lazy-image";
 
 interface AvatarSilhouetteProps {
   gender: "male" | "female";
@@ -11,7 +12,7 @@ interface AvatarSilhouetteProps {
   className?: string;
 }
 
-export function AvatarSilhouette({
+export const AvatarSilhouette = React.memo(function AvatarSilhouette({
   gender,
   bodyFatPercentage,
   showPhoto,
@@ -20,9 +21,9 @@ export function AvatarSilhouette({
   className,
 }: AvatarSilhouetteProps) {
   // Calculate fill opacity based on body fat percentage (0-50% range)
-  const fillOpacity = Math.min(bodyFatPercentage / 25, 1);
+  const fillOpacity = useMemo(() => Math.min(bodyFatPercentage / 25, 1), [bodyFatPercentage]);
 
-  const maleSilhouette = (
+  const maleSilhouette = useMemo(() => (
     <svg viewBox="0 0 200 400" className="w-full h-full">
       {/* Body outline */}
       <path
@@ -56,9 +57,9 @@ export function AvatarSilhouette({
         opacity={fillOpacity * 0.3}
       />
     </svg>
-  );
+  ), [fillOpacity]);
 
-  const femaleSilhouette = (
+  const femaleSilhouette = useMemo(() => (
     <svg viewBox="0 0 200 400" className="w-full h-full">
       {/* Body outline - female shape */}
       <path
@@ -92,7 +93,7 @@ export function AvatarSilhouette({
         opacity={fillOpacity * 0.3}
       />
     </svg>
-  );
+  ), [fillOpacity]);
 
   return (
     <div className={cn("relative h-full w-full", className)}>
@@ -129,7 +130,7 @@ export function AvatarSilhouette({
       {/* Content */}
       <div className="flex items-center justify-center h-full">
         {showPhoto && profileImage ? (
-          <img
+          <LazyImage
             src={profileImage}
             alt="Profile"
             className="max-h-full max-w-full object-contain rounded-lg"

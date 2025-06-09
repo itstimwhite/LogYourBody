@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { VirtualList } from "@/components/ui/virtual-list";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import { ArrowLeft, GitCommit, Calendar, ExternalLink, Github, Mail, Check, AlertCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -349,15 +350,19 @@ const Changelog = () => {
           </div>
         )}
 
-        {/* Commit Timeline */}
-        <div className="space-y-8">
-          {commits.map((commit, index) => {
+        {/* Commit Timeline with Virtual Scrolling */}
+        <VirtualList
+          items={commits}
+          itemHeight={280} // Approximate height per commit item
+          containerHeight={800} // Fixed container height for virtual scrolling
+          className="space-y-8"
+          renderItem={(commit, index) => {
             const { title, body } = parseCommitMessage(commit.message);
             const commitType = getCommitType(title);
             const isLastItem = index === commits.length - 1;
 
             return (
-              <div key={commit.sha} className="relative">
+              <div className="relative mb-8">
                 {/* Timeline line */}
                 {!isLastItem && (
                   <div className="absolute left-5 top-12 bottom-0 w-px bg-border" />
@@ -424,8 +429,8 @@ const Changelog = () => {
                 </div>
               </div>
             );
-          })}
-        </div>
+          }}
+        />
 
         {/* Footer */}
         <div className="mt-12 pt-8 border-t border-border">

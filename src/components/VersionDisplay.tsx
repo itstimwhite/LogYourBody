@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -9,19 +9,21 @@ interface VersionDisplayProps {
   showBuildInfo?: boolean;
 }
 
-export function VersionDisplay({ className = '', showBuildInfo = false }: VersionDisplayProps) {
+export const VersionDisplay = React.memo(function VersionDisplay({ className = '', showBuildInfo = false }: VersionDisplayProps) {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
   const [buildTime] = useState(new Date().toISOString());
   
-  const version = import.meta.env.PACKAGE_VERSION || '1.0.0';
-  const buildHash = import.meta.env.VITE_BUILD_HASH || 'dev';
-  const environment = import.meta.env.MODE || 'development';
+  const versionInfo = useMemo(() => ({
+    version: import.meta.env.PACKAGE_VERSION || '1.0.0',
+    buildHash: import.meta.env.VITE_BUILD_HASH || 'dev',
+    environment: import.meta.env.MODE || 'development'
+  }), []);
+
+  const handleOnline = useCallback(() => setIsOnline(true), []);
+  const handleOffline = useCallback(() => setIsOnline(false), []);
 
   useEffect(() => {
-    const handleOnline = () => setIsOnline(true);
-    const handleOffline = () => setIsOnline(false);
-
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
@@ -29,7 +31,7 @@ export function VersionDisplay({ className = '', showBuildInfo = false }: Versio
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
-  }, []);
+  }, [handleOnline, handleOffline]);
 
   const checkForUpdates = async () => {
     if ('serviceWorker' in navigator) {
@@ -58,14 +60,14 @@ export function VersionDisplay({ className = '', showBuildInfo = false }: Versio
               variant="outline" 
               className={`text-xs ${className}`}
             >
-              v{version}
+              v{versionInfo.version}
             </Badge>
           </TooltipTrigger>
           <TooltipContent>
             <div className="space-y-1 text-xs">
-              <div>Version: {version}</div>
-              <div>Environment: {environment}</div>
-              <div>Build: {buildHash}</div>
+              <div>Version: {versionInfo.version}</div>
+              <div>Environment: {versionInfo.environment}</div>
+              <div>Build: {versionInfo.buildHash}</div>
               <div className="flex items-center gap-1">
                 <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
                 {isOnline ? 'Online' : 'Offline'}
@@ -96,7 +98,7 @@ export function VersionDisplay({ className = '', showBuildInfo = false }: Versio
         <div>
           <span className="font-medium">Version:</span>
           <Badge variant="outline" className="ml-2 text-xs">
-            v{version}
+            v{versionInfo.version}
           </Badge>
         </div>
         
@@ -113,17 +115,17 @@ export function VersionDisplay({ className = '', showBuildInfo = false }: Versio
         <div>
           <span className="font-medium">Environment:</span>
           <Badge 
-            variant={environment === 'production' ? 'default' : 'secondary'} 
+            variant={versionInfo.environment === 'production' ? 'default' : 'secondary'} 
             className="ml-2 text-xs"
           >
-            {environment}
+            {versionInfo.environment}
           </Badge>
         </div>
         
         <div>
           <span className="font-medium">Build:</span>
           <span className="ml-2 font-mono text-xs">
-            {buildHash.slice(0, 8)}
+            {versionInfo.buildHash.slice(0, 8)}
           </span>
         </div>
       </div>
@@ -135,4 +137,4 @@ export function VersionDisplay({ className = '', showBuildInfo = false }: Versio
       )}
     </div>
   );
-}
+});

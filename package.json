@@ -41,7 +41,9 @@
     "revenuecat:test": "echo 'Testing RevenueCat integration...' && npm run dev",
     "ios:build": "npm run build && npx cap copy ios",
     "ios:open": "npx cap open ios",
-    "ios:run": "npm run ios:build && npm run ios:open"
+    "ios:run": "npm run ios:build && npm run ios:open",
+    "analyze": "vite build --mode analyze",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@capacitor/cli": "^7.3.0",
@@ -119,6 +121,7 @@
     "globals": "^15.9.0",
     "postcss": "^8.4.47",
     "prettier": "^3.5.3",
+    "rollup-plugin-visualizer": "^6.0.3",
     "supabase": "^2.24.3",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
