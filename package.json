@@ -13,7 +13,9 @@
     "supabase:reset": "npx supabase db reset",
     "supabase:studio": "npx supabase studio",
     "supabase:migrate": "npx supabase db push",
-    "supabase:generate-types": "npx supabase gen types typescript --local > src/types/supabase.ts"
+    "supabase:generate-types": "npx supabase gen types typescript --local > src/types/supabase.ts",
+    "revenuecat:validate": "node -e \"console.log('RevenueCat configuration:', {configured: !!process.env.VITE_REVENUECAT_PUBLIC_KEY, key: process.env.VITE_REVENUECAT_PUBLIC_KEY?.slice(0,20) + '...'})\"",
+    "revenuecat:test": "echo 'Testing RevenueCat integration...' && npm run dev"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -45,6 +47,7 @@
     "@radix-ui/react-toggle-group": "^1.1.0",
     "@radix-ui/react-tooltip": "^1.1.4",
     "@react-three/fiber": "^8.18.0",
+    "@revenuecat/purchases-js": "^1.5.2",
     "@supabase/supabase-js": "^2.50.0",
     "@swc/core": "^1.11.24",
     "@tanstack/react-query": "^5.56.2",

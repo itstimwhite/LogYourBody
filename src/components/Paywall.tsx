@@ -13,6 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 import { SUBSCRIPTION_PLANS } from "@/types/subscription";
 import { useSubscription } from "@/hooks/use-subscription";
+import { RevenueCatPaywall } from "./RevenueCatPaywall";
 
 interface PaywallProps {
   onClose?: () => void;
@@ -23,7 +24,7 @@ interface PaywallProps {
 
 export function Paywall({
   onClose,
-  title = "Access Paused",
+  title = "Access Paused", 
   subtitle = "Continue tracking your body composition with LogYourBody Premium",
   showCloseButton = false,
 }: PaywallProps) {
@@ -34,7 +35,20 @@ export function Paywall({
     subscriptionInfo,
   } = useSubscription();
   const [selectedPlan, setSelectedPlan] = useState(SUBSCRIPTION_PLANS[1].id); // Default to yearly
+  const [useRevenueCat, setUseRevenueCat] = useState(true);
 
+  // RevenueCat handlers
+  const handleRevenueCatSuccess = () => {
+    onClose?.();
+  };
+
+  const handleRevenueCatError = (error: string) => {
+    console.error('RevenueCat error:', error);
+    // Fallback to legacy system if RevenueCat fails
+    setUseRevenueCat(false);
+  };
+
+  // Legacy handlers
   const handlePurchase = async () => {
     const plan = SUBSCRIPTION_PLANS.find((p) => p.id === selectedPlan);
     if (plan) {
@@ -75,6 +89,68 @@ export function Paywall({
     },
   ];
 
+  // Use RevenueCat if available, fallback to legacy paywall
+  if (useRevenueCat) {
+    return (
+      <div className="fixed inset-0 bg-background z-50 flex flex-col">
+        {/* Header */}
+        <div className="flex items-center justify-between p-6">
+          <div className="text-sm text-muted-foreground">LogYourBody</div>
+          {showCloseButton && onClose && (
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={onClose}
+              className="text-muted-foreground hover:text-foreground h-8 w-8"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 px-6 overflow-y-auto">
+          <div className="max-w-md mx-auto space-y-8">
+            {/* Title */}
+            <div className="space-y-3">
+              <h1 className="text-4xl font-light text-foreground">{title.split(' ')[0] || 'ACCESS'}</h1>
+              <h2 className="text-4xl font-bold text-primary">{title.split(' ')[1] || 'PAUSED'}</h2>
+              <p className="text-muted-foreground text-lg">{subtitle}</p>
+              {subscriptionInfo.isTrialActive && (
+                <div className="text-sm text-primary font-medium">
+                  {subscriptionInfo.daysRemainingInTrial} days left in trial
+                </div>
+              )}
+            </div>
+
+            {/* RevenueCat Paywall */}
+            <RevenueCatPaywall 
+              onSuccess={handleRevenueCatSuccess}
+              onError={handleRevenueCatError}
+            />
+
+            {/* Support Link */}
+            <div className="flex justify-center">
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  window.open(
+                    "mailto:support@logyourbody.com?subject=LogYourBody Support Request",
+                    "_blank",
+                  )
+                }
+                className="text-muted-foreground hover:text-foreground"
+              >
+                Need Help?
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Legacy paywall fallback
   return (
     <div className="fixed inset-0 bg-background z-50 flex flex-col">
       {/* Header */}
