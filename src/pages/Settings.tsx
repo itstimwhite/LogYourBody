@@ -17,6 +17,7 @@ import { useBodyMetrics } from "@/hooks/use-body-metrics";
 import { useSubscription } from "@/hooks/use-subscription";
 import { BiometricSetup } from "@/components/BiometricSetup";
 import { VersionDisplay } from "@/components/VersionDisplay";
+import { DatabaseDebug } from "@/components/DatabaseDebug";
 import { AuthGuard } from "@/components/AuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
@@ -416,6 +417,11 @@ const Settings = () => {
             {/* Biometric Authentication Section */}
             <div className="p-6">
               <BiometricSetup />
+            </div>
+
+            {/* Database Status Section */}
+            <div className="p-6 border-t border-border">
+              <DatabaseDebug />
             </div>
 
             {/* Version Information Section */}

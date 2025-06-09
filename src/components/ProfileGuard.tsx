@@ -34,9 +34,12 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
   const loadProfile = async () => {
     if (!user || !isSupabaseConfigured || !supabase) {
       // In development/mock mode, assume profile is complete
+      console.log("ProfileGuard: Supabase not configured, allowing access");
       setLoading(false);
       return;
     }
+
+    console.log("ProfileGuard: Loading profile for user:", user.id);
 
     try {
       const { data: profileData, error } = await supabase
@@ -45,20 +48,27 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
         .eq("id", user.id)
         .single();
 
+      console.log("ProfileGuard: Profile query result:", { profileData, error });
+
       if (error && error.code !== "PGRST116") {
-        console.error("Error loading profile:", error);
+        console.error("ProfileGuard: Error loading profile:", error);
+        // If there's a database error, allow access and let the user try again
         setLoading(false);
         return;
       }
 
       if (!profileData || isProfileIncomplete(profileData)) {
+        console.log("ProfileGuard: Profile incomplete, showing setup");
         setNeedsSetup(true);
       } else {
+        console.log("ProfileGuard: Profile complete, allowing access");
         setProfile(profileData);
         setNeedsSetup(false);
       }
     } catch (error) {
-      console.error("Profile loading error:", error);
+      console.error("ProfileGuard: Profile loading error:", error);
+      // On error, allow access rather than blocking the user
+      setLoading(false);
     } finally {
       setLoading(false);
     }

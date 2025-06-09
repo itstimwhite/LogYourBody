@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { User, Session, AuthError } from "@supabase/supabase-js";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { checkDatabaseStatus, logDatabaseStatus } from "@/lib/database-check";
 
 interface AuthContextType {
   user: User | null;
@@ -49,6 +50,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setLoading(false);
       return;
     }
+
+    // Check database status on initialization
+    checkDatabaseStatus().then(logDatabaseStatus);
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -146,6 +150,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         if (profileError) {
           console.error("Error creating profile:", profileError);
+          // Check if it's a missing table error (migrations not applied)
+          if (profileError.message.includes('relation "profiles" does not exist')) {
+            console.error("MIGRATION ERROR: profiles table does not exist. Please run database migrations.");
+          }
+        } else {
+          console.log("Profile created successfully");
         }
 
         // Create default settings

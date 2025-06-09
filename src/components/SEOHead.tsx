@@ -14,12 +14,12 @@ export function SEOHead({
   title = "LogYourBody - Track Your Body Composition with Precision",
   description = "Professional body composition tracking app. Monitor body fat percentage, weight, FFMI, and lean body mass with advanced analytics. Start your 3-day free trial today.",
   keywords = "body composition, body fat tracker, FFMI calculator, weight tracking, fitness app",
-  image = "https://logyourbody.com/og-image.jpg",
+  image = "/placeholder.svg",
   url,
   type = "website",
 }: SEOHeadProps) {
   const location = useLocation();
-  const currentUrl = url || `https://logyourbody.com${location.pathname}`;
+  const currentUrl = url || `${window.location.origin}${location.pathname}`;
 
   useEffect(() => {
     // Update document title
