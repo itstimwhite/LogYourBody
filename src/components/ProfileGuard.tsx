@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { ProfileSetup } from "./ProfileSetup";
+import { HealthKitSetup } from "./HealthKitSetup";
+import { Capacitor } from "@capacitor/core";
 
 interface ProfileGuardProps {
   children: React.ReactNode;
@@ -21,6 +23,8 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [needsSetup, setNeedsSetup] = useState(false);
+  const [showHealthKitSetup, setShowHealthKitSetup] = useState(false);
+  const [healthKitData, setHealthKitData] = useState<any>(null);
 
   useEffect(() => {
     if (!user) {
@@ -58,8 +62,14 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       }
 
       if (!profileData || isProfileIncomplete(profileData)) {
-        console.log("ProfileGuard: Profile incomplete, showing setup");
-        setNeedsSetup(true);
+        console.log("ProfileGuard: Profile incomplete, checking for HealthKit");
+        
+        // Show HealthKit setup first on iOS if profile is incomplete
+        if (Capacitor.getPlatform() === 'ios' && !healthKitData) {
+          setShowHealthKitSetup(true);
+        } else {
+          setNeedsSetup(true);
+        }
       } else {
         console.log("ProfileGuard: Profile complete, allowing access");
         setProfile(profileData);
@@ -86,6 +96,19 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     return hasDefaultGender || hasDefaultBirthday || hasDefaultHeight || hasEmptyName;
   };
 
+  const handleHealthKitComplete = (data?: any) => {
+    console.log("HealthKit setup completed with data:", data);
+    setHealthKitData(data);
+    setShowHealthKitSetup(false);
+    setNeedsSetup(true); // Now show profile setup with HealthKit data
+  };
+
+  const handleHealthKitSkip = () => {
+    console.log("HealthKit setup skipped");
+    setShowHealthKitSetup(false);
+    setNeedsSetup(true); // Show profile setup without HealthKit data
+  };
+
   const handleProfileComplete = () => {
     setNeedsSetup(false);
     loadProfile(); // Reload to get updated profile
@@ -102,8 +125,22 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     );
   }
 
+  if (showHealthKitSetup) {
+    return (
+      <HealthKitSetup
+        onComplete={handleHealthKitComplete}
+        onSkip={handleHealthKitSkip}
+      />
+    );
+  }
+
   if (needsSetup) {
-    return <ProfileSetup onComplete={handleProfileComplete} />;
+    return (
+      <ProfileSetup
+        onComplete={handleProfileComplete}
+        healthKitData={healthKitData}
+      />
+    );
   }
 
   return <>{children}</>;

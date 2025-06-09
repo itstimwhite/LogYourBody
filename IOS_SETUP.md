@@ -87,7 +87,15 @@ npm run ios:run
 The app includes these Capacitor plugins:
 - **StatusBar**: Control status bar appearance
 - **SplashScreen**: Native splash screen management
+- **HealthKit**: Read/write health data (height, weight, body composition)
 - **Core**: Basic device and platform APIs
+
+### HealthKit Integration
+The app automatically prompts users to connect Apple Health on iOS:
+- **Auto-fill Profile**: Height, weight, and birthday from Health app
+- **Weight History Sync**: Import existing weight data from Health app
+- **Bi-directional Sync**: Write body composition data back to Health app
+- **Privacy Protected**: Users control what data is shared
 
 ## Development vs Production
 

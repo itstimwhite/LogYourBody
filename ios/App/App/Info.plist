@@ -29,6 +29,7 @@
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
 		<string>armv7</string>
+		<string>healthkit</string>
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
@@ -45,5 +46,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSHealthShareUsageDescription</key>
+	<string>LogYourBody needs access to read your health data including weight, height, and body composition metrics to track your progress and provide personalized insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>LogYourBody needs access to write body composition data to your Health app to keep your metrics in sync across all your health apps.</string>
 </dict>
 </plist>

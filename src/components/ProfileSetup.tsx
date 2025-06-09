@@ -1,48 +1,140 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, User, Ruler } from "lucide-react";
+import { Calendar, User, Ruler, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface ProfileSetupProps {
   onComplete: () => void;
+  healthKitData?: {
+    height?: number;
+    dateOfBirth?: Date;
+    biologicalSex?: 'male' | 'female' | 'other';
+  };
 }
 
-export function ProfileSetup({ onComplete }: ProfileSetupProps) {
+interface FormData {
+  name: string;
+  gender: string;
+  birthMonth: string;
+  birthDay: string;
+  birthYear: string;
+  heightFeet: string;
+  heightInches: string;
+  heightCm: string;
+  units: "imperial" | "metric";
+}
+
+export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
   const { user } = useAuth();
+  const [currentStep, setCurrentStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   
-  const [formData, setFormData] = useState({
-    name: user?.user_metadata?.name || user?.email?.split("@")[0] || "",
-    gender: "",
-    birthday: "",
-    height: "",
-    units: "imperial" as "imperial" | "metric",
+  // Initialize form data with HealthKit data if available
+  const [formData, setFormData] = useState<FormData>(() => {
+    const defaultHeight = healthKitData?.height || 170; // cm
+    const defaultBirthDate = healthKitData?.dateOfBirth || new Date();
+    
+    return {
+      name: user?.user_metadata?.name || user?.email?.split("@")[0] || "",
+      gender: healthKitData?.biologicalSex || "",
+      birthMonth: (defaultBirthDate.getMonth() + 1).toString().padStart(2, '0'),
+      birthDay: defaultBirthDate.getDate().toString().padStart(2, '0'),
+      birthYear: defaultBirthDate.getFullYear().toString(),
+      heightFeet: Math.floor(defaultHeight / 30.48).toString(),
+      heightInches: Math.round((defaultHeight / 2.54) % 12).toString(),
+      heightCm: Math.round(defaultHeight).toString(),
+      units: "imperial" as "imperial" | "metric",
+    };
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) return;
+  // Steps configuration - only show steps for data we need
+  const steps = [
+    // Always show name step unless we have it from auth
+    ...((!user?.user_metadata?.name && !formData.name.trim()) ? [{
+      id: 'name',
+      title: 'What\'s your name?',
+      description: 'This helps us personalize your experience',
+      icon: User,
+    }] : []),
+    
+    // Only show gender if we don't have it from HealthKit
+    ...(!healthKitData?.biologicalSex ? [{
+      id: 'gender',
+      title: 'What\'s your gender?',
+      description: 'This helps us calculate accurate body composition metrics',
+      icon: User,
+    }] : []),
+    
+    // Only show birthday if we don't have it from HealthKit
+    ...(!healthKitData?.dateOfBirth ? [{
+      id: 'birthday',
+      title: 'When were you born?',
+      description: 'We use this to calculate age-adjusted metrics',
+      icon: Calendar,
+    }] : []),
+    
+    // Always show units preference
+    {
+      id: 'units',
+      title: 'Measurement preference',
+      description: 'Choose your preferred units for tracking',
+      icon: Ruler,
+    },
+    
+    // Only show height if we don't have it from HealthKit
+    ...(!healthKitData?.height ? [{
+      id: 'height',
+      title: 'How tall are you?',
+      description: 'This is essential for accurate body composition calculations',
+      icon: Ruler,
+    }] : []),
+  ];
 
-    // Validation
-    if (!formData.gender || !formData.birthday || !formData.height) {
-      setError("Please fill in all required fields");
-      return;
+  const currentStepData = steps[currentStep];
+  const isLastStep = currentStep === steps.length - 1;
+
+  const handleNext = () => {
+    if (isLastStep) {
+      handleSubmit();
+    } else {
+      setCurrentStep(prev => prev + 1);
     }
+  };
+
+  const handleBack = () => {
+    setCurrentStep(prev => prev - 1);
+  };
+
+  const handleSubmit = async () => {
+    if (!user) return;
 
     setLoading(true);
     setError("");
 
     try {
-      // Convert height to cm for storage
-      const heightInCm = formData.units === "imperial" 
-        ? parseFloat(formData.height) * 2.54 // inches to cm
-        : parseFloat(formData.height); // already in cm
+      // Calculate height in cm
+      let heightInCm: number;
+      if (formData.units === "imperial") {
+        const feet = parseInt(formData.heightFeet) || 0;
+        const inches = parseInt(formData.heightInches) || 0;
+        heightInCm = (feet * 12 + inches) * 2.54;
+      } else {
+        heightInCm = parseInt(formData.heightCm) || 0;
+      }
+
+      // Construct birthday from individual fields or use HealthKit data
+      let birthday: string;
+      if (healthKitData?.dateOfBirth) {
+        birthday = healthKitData.dateOfBirth.toISOString().split('T')[0];
+      } else {
+        birthday = `${formData.birthYear}-${formData.birthMonth}-${formData.birthDay}`;
+      }
 
       // Update profile
       const { error: profileError } = await supabase
@@ -50,9 +142,9 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
         .upsert({
           id: user.id,
           email: user.email || "",
-          name: formData.name,
-          gender: formData.gender as "male" | "female",
-          birthday: formData.birthday,
+          name: formData.name || user?.user_metadata?.name || user?.email?.split("@")[0] || "User",
+          gender: (healthKitData?.biologicalSex || formData.gender) as "male" | "female",
+          birthday,
           height: Math.round(heightInCm),
           updated_at: new Date().toISOString(),
         });
@@ -65,7 +157,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
         .upsert({
           user_id: user.id,
           units: formData.units,
-          health_kit_sync_enabled: false,
+          health_kit_sync_enabled: !!healthKitData,
           google_fit_sync_enabled: false,
           notifications_enabled: true,
           updated_at: new Date().toISOString(),
@@ -81,128 +173,339 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
     }
   };
 
+  // Skip setup if we have all required data
+  useEffect(() => {
+    if (steps.length === 0) {
+      handleSubmit();
+    }
+  }, []);
+
+  if (steps.length === 0) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <Card className="w-full max-w-md">
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const currentYear = new Date().getFullYear();
   const minYear = currentYear - 100;
   const maxYear = currentYear - 13; // Minimum age 13
 
-  return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl">Complete Your Profile</CardTitle>
-          <CardDescription>
-            Help us personalize your body composition tracking experience
-          </CardDescription>
-        </CardHeader>
-        
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="text-destructive text-sm text-center p-3 bg-destructive/10 rounded-md">
-                {error}
+  const renderStepContent = () => {
+    switch (currentStepData.id) {
+      case 'name':
+        return (
+          <div className="space-y-4">
+            <Input
+              type="text"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              placeholder="Enter your full name"
+              className="text-center text-lg h-12"
+              autoFocus
+            />
+          </div>
+        );
+
+      case 'gender':
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                variant={formData.gender === 'male' ? 'default' : 'outline'}
+                onClick={() => setFormData({ ...formData, gender: 'male' })}
+                className="h-16 text-lg"
+              >
+                Male
+              </Button>
+              <Button
+                type="button"
+                variant={formData.gender === 'female' ? 'default' : 'outline'}
+                onClick={() => setFormData({ ...formData, gender: 'female' })}
+                className="h-16 text-lg"
+              >
+                Female
+              </Button>
+            </div>
+          </div>
+        );
+
+      case 'birthday':
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Month</Label>
+                <Select 
+                  value={formData.birthMonth} 
+                  onValueChange={(value) => setFormData({ ...formData, birthMonth: value })}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 12 }, (_, i) => (
+                      <SelectItem key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                        {new Date(2000, i).toLocaleDateString('en', { month: 'short' })}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Day</Label>
+                <Select 
+                  value={formData.birthDay} 
+                  onValueChange={(value) => setFormData({ ...formData, birthDay: value })}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: 31 }, (_, i) => (
+                      <SelectItem key={i + 1} value={(i + 1).toString().padStart(2, '0')}>
+                        {i + 1}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label className="text-sm text-muted-foreground">Year</Label>
+                <Select 
+                  value={formData.birthYear} 
+                  onValueChange={(value) => setFormData({ ...formData, birthYear: value })}
+                >
+                  <SelectTrigger className="h-12">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Array.from({ length: maxYear - minYear + 1 }, (_, i) => {
+                      const year = maxYear - i;
+                      return (
+                        <SelectItem key={year} value={year.toString()}>
+                          {year}
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'units':
+        return (
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <Button
+                type="button"
+                variant={formData.units === 'imperial' ? 'default' : 'outline'}
+                onClick={() => setFormData({ ...formData, units: 'imperial' })}
+                className="h-20 flex flex-col gap-1"
+              >
+                <span className="font-semibold">Imperial</span>
+                <span className="text-sm opacity-80">lbs, ft/in</span>
+              </Button>
+              <Button
+                type="button"
+                variant={formData.units === 'metric' ? 'default' : 'outline'}
+                onClick={() => setFormData({ ...formData, units: 'metric' })}
+                className="h-20 flex flex-col gap-1"
+              >
+                <span className="font-semibold">Metric</span>
+                <span className="text-sm opacity-80">kg, cm</span>
+              </Button>
+            </div>
+          </div>
+        );
+
+      case 'height':
+        return (
+          <div className="space-y-4">
+            {formData.units === 'imperial' ? (
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label className="text-sm text-muted-foreground">Feet</Label>
+                  <Select 
+                    value={formData.heightFeet} 
+                    onValueChange={(value) => setFormData({ ...formData, heightFeet: value })}
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 6 }, (_, i) => (
+                        <SelectItem key={i + 3} value={(i + 3).toString()}>
+                          {i + 3} ft
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-sm text-muted-foreground">Inches</Label>
+                  <Select 
+                    value={formData.heightInches} 
+                    onValueChange={(value) => setFormData({ ...formData, heightInches: value })}
+                  >
+                    <SelectTrigger className="h-12">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <SelectItem key={i} value={i.toString()}>
+                          {i} in
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <Input
+                  type="number"
+                  value={formData.heightCm}
+                  onChange={(e) => setFormData({ ...formData, heightCm: e.target.value })}
+                  placeholder="Height in cm"
+                  className="text-center text-lg h-12"
+                  min="90"
+                  max="250"
+                  autoFocus
+                />
+                <p className="text-xs text-muted-foreground text-center">
+                  Enter your height in centimeters
+                </p>
               </div>
             )}
+          </div>
+        );
 
-            {/* Name */}
-            <div className="space-y-2">
-              <Label htmlFor="name" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Full Name
-              </Label>
-              <Input
-                id="name"
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Enter your name"
-                required
+      default:
+        return null;
+    }
+  };
+
+  const canProceed = () => {
+    switch (currentStepData.id) {
+      case 'name':
+        return formData.name.trim().length > 0;
+      case 'gender':
+        return formData.gender !== '';
+      case 'birthday':
+        return formData.birthMonth && formData.birthDay && formData.birthYear;
+      case 'units':
+        return true; // Always has a default value
+      case 'height':
+        if (formData.units === 'imperial') {
+          return formData.heightFeet && formData.heightInches !== '';
+        } else {
+          return formData.heightCm && parseInt(formData.heightCm) > 0;
+        }
+      default:
+        return true;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center p-6">
+      <Card className="w-full max-w-md bg-background border-border">
+        <CardHeader className="text-center space-y-4">
+          {/* Progress Indicator */}
+          <div className="flex justify-center space-x-2">
+            {steps.map((_, index) => (
+              <div
+                key={index}
+                className={`w-2 h-2 rounded-full transition-colors ${
+                  index <= currentStep ? 'bg-primary' : 'bg-muted'
+                }`}
               />
-            </div>
+            ))}
+          </div>
 
-            {/* Gender */}
-            <div className="space-y-2">
-              <Label>Gender *</Label>
-              <Select 
-                value={formData.gender} 
-                onValueChange={(value) => setFormData({ ...formData, gender: value })}
-                required
+          {/* Step Icon */}
+          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
+            <currentStepData.icon className="w-8 h-8 text-primary" />
+          </div>
+
+          {/* Step Title */}
+          <div>
+            <CardTitle className="text-2xl font-semibold text-foreground">
+              {currentStepData.title}
+            </CardTitle>
+            <CardDescription className="text-muted-foreground mt-2">
+              {currentStepData.description}
+            </CardDescription>
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-6">
+          {error && (
+            <div className="text-destructive text-sm text-center p-3 bg-destructive/10 rounded-md">
+              {error}
+            </div>
+          )}
+
+          {renderStepContent()}
+
+          {/* Navigation Buttons */}
+          <div className="flex gap-3">
+            {currentStep > 0 && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleBack}
+                className="flex-1 h-12"
+                disabled={loading}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            )}
 
-            {/* Birthday */}
-            <div className="space-y-2">
-              <Label htmlFor="birthday" className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                Birthday *
-              </Label>
-              <Input
-                id="birthday"
-                type="date"
-                value={formData.birthday}
-                onChange={(e) => setFormData({ ...formData, birthday: e.target.value })}
-                min={`${minYear}-01-01`}
-                max={`${maxYear}-12-31`}
-                required
-              />
-            </div>
-
-            {/* Units */}
-            <div className="space-y-2">
-              <Label>Measurement Units</Label>
-              <Select 
-                value={formData.units} 
-                onValueChange={(value: "imperial" | "metric") => setFormData({ ...formData, units: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="imperial">Imperial (lbs, inches)</SelectItem>
-                  <SelectItem value="metric">Metric (kg, cm)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Height */}
-            <div className="space-y-2">
-              <Label htmlFor="height" className="flex items-center gap-2">
-                <Ruler className="h-4 w-4" />
-                Height * ({formData.units === "imperial" ? "inches" : "cm"})
-              </Label>
-              <Input
-                id="height"
-                type="number"
-                value={formData.height}
-                onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                placeholder={formData.units === "imperial" ? "e.g. 70" : "e.g. 178"}
-                min={formData.units === "imperial" ? "36" : "90"}
-                max={formData.units === "imperial" ? "96" : "250"}
-                step="0.1"
-                required
-              />
-              {formData.units === "imperial" && (
-                <p className="text-xs text-muted-foreground">
-                  Enter total inches (e.g. 5'10" = 70 inches)
-                </p>
-              )}
-            </div>
-
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={loading}
+            <Button
+              onClick={handleNext}
+              disabled={!canProceed() || loading}
+              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90"
             >
-              {loading ? "Saving..." : "Complete Setup"}
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-spin h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
+                  Saving...
+                </div>
+              ) : isLastStep ? (
+                <div className="flex items-center gap-2">
+                  <Check className="w-4 h-4" />
+                  Complete
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  Continue
+                  <ChevronRight className="w-4 h-4" />
+                </div>
+              )}
             </Button>
-          </form>
+          </div>
+
+          {/* HealthKit Data Notice */}
+          {healthKitData && (
+            <div className="text-center">
+              <p className="text-xs text-muted-foreground">
+                Some info pre-filled from Apple Health
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
