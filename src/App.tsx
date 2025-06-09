@@ -20,6 +20,7 @@ import Settings from "./pages/Settings";
 import Subscription from "./pages/Subscription";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Changelog from "./pages/Changelog";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const publicRoutes = [
   { path: "/login", element: <Login /> },
   { path: "/terms", element: <Terms /> },
   { path: "/privacy", element: <Privacy /> },
+  { path: "/changelog", element: <Changelog /> },
 ];
 
 const protectedRoutes = [

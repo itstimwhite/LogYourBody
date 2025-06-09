@@ -289,6 +289,14 @@ const Login = () => {
             Privacy Policy
           </button>
         </p>
+        <div className="mt-4 flex justify-center gap-4">
+          <button
+            onClick={() => navigate("/changelog")}
+            className="text-muted-foreground hover:text-foreground text-sm transition-colors"
+          >
+            Changelog
+          </button>
+        </div>
       </div>
     </div>
   );

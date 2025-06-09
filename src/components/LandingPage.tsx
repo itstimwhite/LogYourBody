@@ -442,6 +442,9 @@ export function LandingPage() {
             <Button variant="ghost" onClick={() => navigate("/terms")}>
               Terms of Service
             </Button>
+            <Button variant="ghost" onClick={() => navigate("/changelog")}>
+              Changelog
+            </Button>
             <Button 
               variant="ghost" 
               onClick={() => window.open("mailto:support@logyourbody.com")}
