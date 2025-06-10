@@ -19,6 +19,7 @@ import { useSubscription } from "@/hooks/use-subscription";
 import { BiometricSetup } from "@/components/BiometricSetup";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import { DatabaseDebug } from "@/components/DatabaseDebug";
+import { RevenueCatDebug } from "@/components/RevenueCatDebug";
 import { AuthGuard } from "@/components/AuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
@@ -477,6 +478,14 @@ const Settings = () => {
                 System Status
               </h2>
               <DatabaseDebug />
+            </div>
+
+            {/* RevenueCat Debug Section */}
+            <div className="border-t border-border pt-6">
+              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3 mb-6">
+                RevenueCat Integration
+              </h2>
+              <RevenueCatDebug />
             </div>
 
             {/* Version Information Section */}
