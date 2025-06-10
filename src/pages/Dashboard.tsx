@@ -207,7 +207,7 @@ const Dashboard = () => {
         {/* Main Content - Mobile-first design with desktop fallback */}
         <div className="flex-1 flex flex-col md:flex-row min-h-0">
           {/* Mobile Top Bar with Toggle and Action Buttons */}
-          <div className="md:hidden w-full px-6 py-4 bg-secondary/30 border-b border-border">
+          <div className="md:hidden w-full px-4 py-3 bg-secondary/30 border-b border-border">
             <div className="flex items-center gap-4">
               {/* Avatar/Photo Toggle */}
               <div className="flex-1 bg-secondary rounded-lg p-1">
@@ -297,12 +297,14 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Timeline Slider */}
-        <TimelineSlider
-          metrics={metrics}
-          selectedIndex={selectedDateIndex}
-          onIndexChange={setSelectedDateIndex}
-        />
+        {/* Timeline Slider - Flex shrink on mobile */}
+        <div className="flex-shrink-0">
+          <TimelineSlider
+            metrics={metrics}
+            selectedIndex={selectedDateIndex}
+            onIndexChange={setSelectedDateIndex}
+          />
+        </div>
 
         {/* Log Entry Modal */}
         <LogEntryModal

@@ -26,12 +26,12 @@ export const MetricsPanel = React.memo(function MetricsPanel({
   return (
     <div
       className={cn(
-        "h-full w-full flex flex-col justify-center p-4 md:p-6 lg:p-8",
+        "h-full w-full flex flex-col justify-center p-3 md:p-6 lg:p-8",
         className,
       )}
     >
       {/* Main metrics - 2x2 Grid on mobile, vertical stack on desktop */}
-      <div className="grid grid-cols-2 md:flex md:flex-col gap-6 md:gap-4 lg:gap-6 mb-8">
+      <div className="grid grid-cols-2 md:flex md:flex-col gap-4 md:gap-4 lg:gap-6 mb-6 md:mb-8">
         {/* Body Fat */}
         <div className="text-right md:text-left">
           <div className="text-white text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold font-inter tracking-tight">
@@ -74,8 +74,8 @@ export const MetricsPanel = React.memo(function MetricsPanel({
       </div>
 
       {/* User info - Single row with three equal cells */}
-      <div className="border-t border-border pt-4 md:pt-6 mt-auto">
-        <div className="text-white text-sm md:text-base lg:text-lg font-semibold mb-3">{user.name}</div>
+      <div className="border-t border-border pt-3 md:pt-6 mt-auto">
+        <div className="text-white text-sm md:text-base lg:text-lg font-semibold mb-2 md:mb-3">{user.name}</div>
         <div className="grid grid-cols-3 gap-4 text-xs md:text-sm">
           <div className="text-center md:text-left">
             <div className="text-white/80 font-medium uppercase tracking-[0.1em] mb-1">

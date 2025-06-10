@@ -193,7 +193,7 @@ const Settings = () => {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="h-screen md:min-h-screen bg-background text-foreground flex flex-col overflow-hidden md:overflow-auto">
         {/* Header */}
         <div className="flex items-center gap-4 px-6 py-4 border-b border-border">
           <Button
@@ -208,7 +208,7 @@ const Settings = () => {
         </div>
 
         {/* Settings List */}
-        <div className="p-6 space-y-8">
+        <div className="flex-1 p-6 space-y-8 overflow-y-auto md:overflow-visible">
           {/* Personal Information */}
           <div className="space-y-6">
             <div className="space-y-6">
