@@ -9,7 +9,7 @@ const config: CapacitorConfig = {
     cleartext: true
   },
   ios: {
-    scheme: 'logyourbody',
+    scheme: 'App',
     contentInset: 'automatic',
     scrollEnabled: true,
     backgroundColor: '#000000'
