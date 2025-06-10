@@ -20,6 +20,7 @@ import { BiometricSetup } from "@/components/BiometricSetup";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import { DatabaseDebug } from "@/components/DatabaseDebug";
 import { RevenueCatDebug } from "@/components/RevenueCatDebug";
+import { HealthKitSyncButton } from "@/components/HealthKitSyncButton";
 import { AuthGuard } from "@/components/AuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
@@ -396,17 +397,7 @@ const Settings = () => {
                   />
                 </div>
                 {settings?.healthKitSyncEnabled && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      // TODO: Implement manual sync
-                      console.log('Manual HealthKit sync requested');
-                    }}
-                    className="w-full bg-secondary border-border text-foreground hover:bg-muted"
-                  >
-                    Sync now
-                  </Button>
+                  <HealthKitSyncButton />
                 )}
               </div>
 
