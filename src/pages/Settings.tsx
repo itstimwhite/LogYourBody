@@ -23,6 +23,7 @@ import { AuthGuard } from "@/components/AuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useSupabaseSubscription } from "@/hooks/use-supabase-subscription";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { LogOut } from "lucide-react";
 
 const Settings = () => {
@@ -139,6 +140,12 @@ const Settings = () => {
       console.error("Error signing out:", error);
     }
   };
+
+  // Add swipe navigation to go back to dashboard
+  useSwipeNavigation({
+    onSwipeRight: () => navigate("/dashboard"),
+    threshold: 100,
+  });
 
   // Show loading skeleton for better perceived performance
   if (loading) {

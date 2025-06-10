@@ -169,17 +169,14 @@ const Dashboard = () => {
 
   return (
     <TrialGuard>
-      <div className="min-h-screen bg-background text-foreground flex flex-col">
-        {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 md:py-4 pt-6 border-b border-border">
+      <div className="h-screen md:min-h-screen bg-background text-foreground flex flex-col overflow-hidden md:overflow-auto">
+        {/* Header - Desktop only */}
+        <div className="hidden md:flex justify-between items-center px-6 py-4 border-b border-border">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-semibold tracking-tight">
               LogYourBody
             </h1>
-            {/* Hide version on mobile, show on desktop */}
-            <div className="hidden md:block">
-              <VersionDisplay />
-            </div>
+            <VersionDisplay />
           </div>
           <div className="flex gap-3">
             <Button
@@ -208,61 +205,95 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content - Mobile-first design with desktop fallback */}
-        <div className="flex-1 flex flex-col md:flex-row">
-          {/* Avatar/Photo Toggle - Full width on mobile, positioned above avatar */}
+        <div className="flex-1 flex flex-col md:flex-row min-h-0">
+          {/* Mobile Top Bar with Toggle and Action Buttons */}
           <div className="md:hidden w-full px-6 py-4 bg-secondary/30 border-b border-border">
-            <div className="flex w-full bg-secondary rounded-lg p-1">
-              <button
-                onClick={() => setShowPhoto(false)}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
-                  !showPhoto
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Avatar
-              </button>
-              <button
-                onClick={() => setShowPhoto(true)}
-                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
-                  showPhoto
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                Photo
-              </button>
+            <div className="flex items-center gap-4">
+              {/* Avatar/Photo Toggle */}
+              <div className="flex-1 bg-secondary rounded-lg p-1">
+                <div className="flex">
+                  <button
+                    onClick={() => setShowPhoto(false)}
+                    className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
+                      !showPhoto
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Avatar
+                  </button>
+                  <button
+                    onClick={() => setShowPhoto(true)}
+                    className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
+                      showPhoto
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
+                    Photo
+                  </button>
+                </div>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => {
+                    if (!hasWeightData) {
+                      setShowWeightPrompt(true);
+                    } else {
+                      setShowLogModal(true);
+                    }
+                  }}
+                  className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="outline"
+                  onClick={() => navigate("/settings")}
+                  className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
+                >
+                  <Settings className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </div>
 
-          {/* Avatar Section - Full width on mobile, 2/3 on desktop */}
-          <div className="flex-1 md:w-2/3 relative">
-            <Suspense fallback={<AvatarLoader />}>
-              <AvatarSilhouette
-                gender={user.gender}
-                bodyFatPercentage={currentMetrics.bodyFatPercentage}
-                showPhoto={showPhoto}
-                profileImage={user.profileImage}
-                onToggleView={handleToggleView}
-                className="h-full min-h-[300px] sm:min-h-[400px]"
-                hideToggleOnMobile={true}
-              />
-            </Suspense>
-          </div>
+          {/* Content Area - Flexible layout for mobile/desktop */}
+          <div className="flex-1 flex flex-col md:flex-row min-h-0">
+            {/* Avatar Section - Top half on mobile, 2/3 on desktop */}
+            <div className="flex-1 md:w-2/3 relative min-h-0">
+              <Suspense fallback={<AvatarLoader />}>
+                <AvatarSilhouette
+                  gender={user.gender}
+                  bodyFatPercentage={currentMetrics.bodyFatPercentage}
+                  showPhoto={showPhoto}
+                  profileImage={user.profileImage}
+                  onToggleView={handleToggleView}
+                  className="h-full w-full"
+                  hideToggleOnMobile={true}
+                />
+              </Suspense>
+            </div>
 
-          {/* Metrics Panel - Full width on mobile, 1/3 on desktop */}
-          <div className="w-full md:w-1/3 md:border-l border-border bg-secondary/30">
-            <MetricsPanel
-              metrics={currentMetrics}
-              user={user}
-              userAge={getUserAge()}
-              formattedWeight={getFormattedWeight(currentMetrics.weight)}
-              formattedHeight={getFormattedHeight(user.height)}
-              formattedLeanBodyMass={getFormattedLeanBodyMass(
-                currentMetrics.leanBodyMass,
-              )}
-              showPhoto={showPhoto}
-            />
+            {/* Metrics Panel - Bottom half on mobile, 1/3 on desktop */}
+            <div className="flex-1 md:flex-none md:w-1/3 md:border-l border-border bg-secondary/30 min-h-0">
+              <MetricsPanel
+                metrics={currentMetrics}
+                user={user}
+                userAge={getUserAge()}
+                formattedWeight={getFormattedWeight(currentMetrics.weight)}
+                formattedHeight={getFormattedHeight(user.height)}
+                formattedLeanBodyMass={getFormattedLeanBodyMass(
+                  currentMetrics.leanBodyMass,
+                )}
+                showPhoto={showPhoto}
+              />
+            </div>
           </div>
         </div>
 

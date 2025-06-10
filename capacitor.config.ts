@@ -12,7 +12,8 @@ const config: CapacitorConfig = {
     scheme: 'App',
     contentInset: 'automatic',
     scrollEnabled: true,
-    backgroundColor: '#000000'
+    backgroundColor: '#000000',
+    orientation: 'portrait'
   },
   plugins: {
     SplashScreen: {
