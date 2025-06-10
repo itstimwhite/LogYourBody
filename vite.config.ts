@@ -177,7 +177,7 @@ export default defineConfig(({ mode }) => ({
         ],
       },
       devOptions: {
-        enabled: true,
+        enabled: false, // Disable in development to prevent MIME type errors
         type: "module",
       },
       manifest: {

@@ -46,11 +46,18 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     console.log("ProfileGuard: Loading profile for user:", user.id);
 
     try {
-      const { data: profileData, error } = await supabase
+      // Add timeout to prevent hanging
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Profile query timeout')), 10000);
+      });
+
+      const queryPromise = supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .single();
+
+      const { data: profileData, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
 
       console.log("ProfileGuard: Profile query result:", { profileData, error });
 
@@ -77,7 +84,8 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       }
     } catch (error) {
       console.error("ProfileGuard: Profile loading error:", error);
-      // On error, allow access rather than blocking the user
+      // On timeout or error, allow access rather than blocking the user
+      console.log("ProfileGuard: Allowing access due to error");
       setLoading(false);
     } finally {
       setLoading(false);
