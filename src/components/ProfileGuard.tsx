@@ -38,15 +38,13 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     
     // Fallback timeout to ensure we never hang indefinitely
     const fallbackTimeout = setTimeout(() => {
-      if (loading) {
-        console.warn("ProfileGuard: Fallback timeout triggered, showing profile setup");
-        setNeedsSetup(true);
-        setLoading(false);
-      }
-    }, 15000); // 15 second fallback
+      console.warn("ProfileGuard: Fallback timeout triggered, showing profile setup");
+      setNeedsSetup(true);
+      setLoading(false);
+    }, 10000); // 10 second fallback
     
     return () => clearTimeout(fallbackTimeout);
-  }, [user, loading]);
+  }, [user]); // Remove loading from dependencies to avoid infinite loop
 
   const loadProfile = async () => {
     if (!user || !isSupabaseConfigured || !supabase) {

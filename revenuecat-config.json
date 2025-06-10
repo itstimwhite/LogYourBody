@@ -1,7 +1,7 @@
 {
   "project_name": "LogYourBody",
   "app_name": "LogYourBody",
-  "platforms": ["web"],
+  "platforms": ["web", "ios"],
   "stripe_integration": {
     "connected": true,
     "webhook_url": "https://api.revenuecat.com/v1/subscribers/webhooks/stripe"

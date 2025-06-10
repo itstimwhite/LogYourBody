@@ -6,7 +6,8 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { SMSLogin } from "@/components/SMSLogin";
 import { Smartphone } from "lucide-react";
-import { shouldShowEmailAuth, logPlatformInfo } from "@/lib/platform";
+import { shouldShowEmailAuth, logPlatformInfo, isNativeiOS } from "@/lib/platform";
+import { useAppleSignIn } from "@/hooks/use-apple-signin";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -28,6 +29,9 @@ const Login = () => {
   const [error, setError] = useState("");
   const [showSMSLogin, setShowSMSLogin] = useState(false);
   const showEmailAuth = shouldShowEmailAuth();
+  
+  // Native Apple Sign In hook for iOS
+  const { signInWithApple: nativeAppleSignIn, loading: appleLoading } = useAppleSignIn();
 
   useEffect(() => {
     // If user is already authenticated, redirect to dashboard
@@ -113,12 +117,8 @@ const Login = () => {
           console.log("Starting trial...");
           await startTrial();
         }
-        console.log("Navigating to dashboard...");
-        // Add a longer delay to ensure auth state is fully settled
-        setTimeout(() => {
-          console.log("Actually navigating to dashboard now...");
-          navigate("/dashboard", { replace: true });
-        }, 500);
+        console.log("Auth successful - navigation will be handled by auth state change");
+        // Don't manually navigate - let the useEffect handle it when auth state updates
       }
     } catch (err) {
       console.error("Unexpected error in auth flow:", err);
@@ -156,12 +156,25 @@ const Login = () => {
     setError("");
 
     try {
-      const { error } = await signInWithApple();
-      if (error) {
-        setError(error.message);
+      if (isNativeiOS()) {
+        // Use native Apple Sign In on iOS
+        console.log("Using native Apple Sign In on iOS");
+        const result = await nativeAppleSignIn();
+        if (!result.success) {
+          setError(result.error || "Apple Sign In failed");
+        }
+        // Navigation will be handled by auth state change
+      } else {
+        // Use web Apple Sign In on other platforms
+        console.log("Using web Apple Sign In");
+        const { error } = await signInWithApple();
+        if (error) {
+          setError(error.message);
+        }
+        // Navigation will be handled by the redirect
       }
-      // Navigation will be handled by the redirect
     } catch (err) {
+      console.error("Apple Sign In error:", err);
       setError("Failed to sign in with Apple");
     } finally {
       setLoading(false);
@@ -303,25 +316,28 @@ const Login = () => {
 
             {/* Social Login Buttons */}
             <div className="space-y-3">
-              {/* SMS Login Button */}
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowSMSLogin(true)}
-                disabled={loading}
-                className="w-full h-12 bg-secondary border-border text-foreground hover:bg-muted font-medium"
-              >
-                <Smartphone className="w-5 h-5 mr-3" />
-                Continue with SMS
-              </Button>
+              {/* SMS Login Button - temporarily hidden */}
+              {false && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setShowSMSLogin(true)}
+                  disabled={loading}
+                  className="w-full h-12 bg-secondary border-border text-foreground hover:bg-muted font-medium"
+                >
+                  <Smartphone className="w-5 h-5 mr-3" />
+                  Continue with SMS
+                </Button>
+              )}
               
               {/* Google auth temporarily disabled */}
 
+              {/* Apple Sign In - uses native on iOS, web on other platforms */}
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleAppleSignIn}
-                disabled={loading}
+                disabled={loading || appleLoading}
                 className="w-full h-12 bg-secondary border-border text-foreground hover:bg-muted font-medium"
               >
                 <svg
@@ -331,7 +347,7 @@ const Login = () => {
                 >
                   <path d="M12.152 6.896c-.948 0-2.415-1.078-3.96-1.04-2.04.027-3.91 1.183-4.961 3.014-2.117 3.675-.546 9.103 1.519 12.09 1.013 1.454 2.208 3.09 3.792 3.039 1.52-.065 2.09-.987 3.935-.987 1.831 0 2.35.987 3.96.948 1.637-.026 2.676-1.48 3.676-2.948 1.156-1.688 1.636-3.325 1.662-3.415-.039-.013-3.182-1.221-3.22-4.857-.026-3.04 2.48-4.494 2.597-4.559-1.429-2.09-3.623-2.324-4.39-2.376-2-.156-3.675 1.09-4.61 1.09zM15.53 3.83c.843-1.012 1.4-2.427 1.245-3.83-1.207.052-2.662.805-3.532 1.818-.78.896-1.454 2.338-1.273 3.714 1.338.104 2.715-.688 3.559-1.701" />
                 </svg>
-                Continue with Apple
+                {(loading || appleLoading) ? "Signing in..." : "Continue with Apple"}
               </Button>
             </div>
 

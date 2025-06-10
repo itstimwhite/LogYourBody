@@ -36,20 +36,27 @@ export async function checkDatabaseStatus(): Promise<DatabaseStatus> {
 
     const userSettingsTableExists = !settingsError || settingsError.code !== 'PGRST301';
 
-    // Check email_subscriptions table
-    const { error: emailError } = await supabase
-      .from('email_subscriptions')
-      .select('id')
-      .limit(1);
-
-    const emailSubscriptionsTableExists = !emailError || emailError.code !== 'PGRST301';
+    // Check email_subscriptions table (optional)
+    let emailSubscriptionsTableExists = false;
+    let emailError = null;
+    try {
+      const { error } = await supabase
+        .from('email_subscriptions')
+        .select('id')
+        .limit(1);
+      emailError = error;
+      emailSubscriptionsTableExists = !error || error.code !== 'PGRST301';
+    } catch (err) {
+      console.warn('Email subscriptions table check failed:', err);
+      emailSubscriptionsTableExists = false;
+    }
 
     return {
       connected: true,
       profilesTableExists,
       userSettingsTableExists,
       emailSubscriptionsTableExists,
-      error: connectionError?.message || settingsError?.message || emailError?.message
+      error: connectionError?.message || settingsError?.message || (emailError && emailError.code !== 'PGRST116' ? emailError.message : undefined)
     };
 
   } catch (error: any) {

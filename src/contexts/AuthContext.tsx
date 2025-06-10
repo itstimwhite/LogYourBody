@@ -51,8 +51,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return;
     }
 
-    // Check database status on initialization
-    checkDatabaseStatus().then(logDatabaseStatus);
+    // Check database status on initialization with timeout
+    Promise.race([
+      checkDatabaseStatus(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Database check timeout')), 5000))
+    ]).then(logDatabaseStatus).catch(err => {
+      console.warn('Database status check failed or timed out:', err);
+      logDatabaseStatus({
+        connected: false,
+        profilesTableExists: false,
+        userSettingsTableExists: false,
+        emailSubscriptionsTableExists: false,
+        error: 'Timeout or connection failed'
+      });
+    });
 
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -78,8 +90,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
             await createUserProfile(session.user);
             console.log("Profile creation completed");
             
-            // Sync email subscriptions
-            await syncEmailSubscriptions(session.user);
+            // Skip email subscriptions sync for now to prevent hanging
+            // await syncEmailSubscriptions(session.user);
           } catch (error) {
             console.error("Profile creation failed:", error);
           }
@@ -112,12 +124,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .is('user_id', null);
 
       if (error) {
-        console.error("Error syncing email subscriptions:", error);
+        // Don't log table missing errors as errors - they're expected
+        if (error.message.includes('relation "public.email_subscriptions" does not exist')) {
+          console.log("Email subscriptions table not found - skipping sync");
+        } else {
+          console.error("Error syncing email subscriptions:", error);
+        }
       } else {
         console.log("Email subscriptions synced successfully");
       }
     } catch (err) {
-      console.error("Failed to sync email subscriptions:", err);
+      console.warn("Failed to sync email subscriptions (table may not exist):", err);
     }
   };
 
@@ -417,7 +434,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const isNative = window.location.protocol === 'capacitor:';
     const redirectUrl = isNative 
       ? 'logyourbody://auth/callback'  // Native app custom scheme
-      : `${window.location.origin}/`; // Web app - redirect to home to avoid loop
+      : `${window.location.origin}/dashboard`; // Web app - redirect to dashboard directly
     
     console.log("Apple OAuth redirect URL:", redirectUrl, "isNative:", isNative);
 
