@@ -343,7 +343,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const isNative = window.location.protocol === 'capacitor:';
     const redirectUrl = isNative 
       ? 'logyourbody://auth/callback'  // Native app custom scheme
-      : `${window.location.origin}/dashboard`; // Web app
+      : `${window.location.origin}/`; // Web app - redirect to home to avoid loop
     
     console.log("Apple OAuth redirect URL:", redirectUrl, "isNative:", isNative);
 
