@@ -35,7 +35,18 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     // Log platform info for debugging
     logPlatformInfo();
     loadProfile();
-  }, [user]);
+    
+    // Fallback timeout to ensure we never hang indefinitely
+    const fallbackTimeout = setTimeout(() => {
+      if (loading) {
+        console.warn("ProfileGuard: Fallback timeout triggered, showing profile setup");
+        setNeedsSetup(true);
+        setLoading(false);
+      }
+    }, 15000); // 15 second fallback
+    
+    return () => clearTimeout(fallbackTimeout);
+  }, [user, loading]);
 
   const loadProfile = async () => {
     if (!user || !isSupabaseConfigured || !supabase) {
@@ -72,6 +83,10 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
 
       if (!profileData || isProfileIncomplete(profileData)) {
         console.log("ProfileGuard: Profile incomplete, checking platform for next step");
+        console.log("ProfileGuard: Profile data:", profileData);
+        console.log("ProfileGuard: isProfileIncomplete result:", isProfileIncomplete(profileData));
+        console.log("ProfileGuard: isNativeiOS result:", isNativeiOS());
+        console.log("ProfileGuard: healthKitData:", healthKitData);
         
         // Show HealthKit setup first ONLY on native iOS if profile is incomplete
         if (isNativeiOS() && !healthKitData) {
@@ -88,8 +103,9 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       }
     } catch (error) {
       console.error("ProfileGuard: Profile loading error:", error);
-      // On timeout or error, allow access rather than blocking the user
-      console.log("ProfileGuard: Allowing access due to error");
+      // On timeout or error, show profile setup rather than blocking the user
+      console.log("ProfileGuard: Showing profile setup due to error");
+      setNeedsSetup(true);
       setLoading(false);
     } finally {
       setLoading(false);

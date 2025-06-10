@@ -100,10 +100,11 @@ const Login = () => {
           await startTrial();
         }
         console.log("Navigating to dashboard...");
-        // Add a small delay to ensure state updates are processed
+        // Add a longer delay to ensure auth state is fully settled
         setTimeout(() => {
+          console.log("Actually navigating to dashboard now...");
           navigate("/dashboard", { replace: true });
-        }, 100);
+        }, 500);
       }
     } catch (err) {
       console.error("Unexpected error in auth flow:", err);

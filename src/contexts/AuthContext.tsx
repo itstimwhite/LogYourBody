@@ -149,8 +149,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const { error: profileError } = await supabase.from("profiles").insert({
           id: user.id,
           email: user.email || "",
-          name: user.user_metadata?.name || user.email?.split("@")[0] || "",
-          // Don't set default values - let ProfileGuard handle the setup
+          name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
+          // Don't set gender, birthday, height - let ProfileGuard show ProfileSetup
         });
 
         if (profileError) {
