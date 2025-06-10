@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Download, Share, Plus } from "lucide-react";
+import { shouldShowPWAFeatures } from "@/lib/platform";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -39,6 +40,11 @@ export function PWAInstallPrompt() {
   const [installPromptDismissed, setInstallPromptDismissed] = useState(false);
 
   useEffect(() => {
+    // Don't show PWA features in native apps
+    if (!shouldShowPWAFeatures()) {
+      return;
+    }
+
     // Check if dismissed in this session
     const dismissed = sessionStorage.getItem('pwa-install-dismissed');
     if (dismissed) {

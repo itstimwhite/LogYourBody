@@ -19,7 +19,7 @@ export interface BodyMetrics {
   ffmi?: number; // calculated
 }
 
-export type MeasurementMethod = "dexa" | "scale" | "calipers" | "visual";
+export type MeasurementMethod = "dexa" | "scale" | "calipers" | "visual" | "healthkit";
 
 export interface UserSettings {
   userId: string;
@@ -41,4 +41,5 @@ export const MEASUREMENT_METHODS: Record<MeasurementMethod, string> = {
   scale: "Smart Scale",
   calipers: "Calipers",
   visual: "Visual Estimate",
+  healthkit: "HealthKit",
 };

@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { SMSLogin } from "@/components/SMSLogin";
 import { Smartphone } from "lucide-react";
+import { shouldShowEmailAuth, logPlatformInfo } from "@/lib/platform";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showSMSLogin, setShowSMSLogin] = useState(false);
+  const showEmailAuth = shouldShowEmailAuth();
 
   useEffect(() => {
     // If user is already authenticated, redirect to dashboard
@@ -33,6 +35,9 @@ const Login = () => {
       console.log("Authenticated user detected on login page, redirecting to dashboard");
       navigate("/dashboard", { replace: true });
     }
+    
+    // Log platform info for debugging
+    logPlatformInfo();
   }, [user, authLoading, navigate]);
 
   // Add error handler for browser extension issues
@@ -198,77 +203,83 @@ const Login = () => {
               </div>
             )}
 
-            <form onSubmit={handleEmailAuth} className="space-y-4">
-              {!isLogin && (
+            {/* Only show email auth on web and Android */}
+            {showEmailAuth && (
+              <form onSubmit={handleEmailAuth} className="space-y-4">
+                {!isLogin && (
+                  <div>
+                    <Label htmlFor="name" className="sr-only">
+                      Name
+                    </Label>
+                    <Input
+                      id="name"
+                      type="text"
+                      placeholder="Full name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
+                    />
+                  </div>
+                )}
+
                 <div>
-                  <Label htmlFor="name" className="sr-only">
-                    Name
+                  <Label htmlFor="email" className="sr-only">
+                    Email
                   </Label>
                   <Input
-                    id="name"
-                    type="text"
-                    placeholder="Full name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    id="email"
+                    type="email"
+                    placeholder="Email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
                   />
                 </div>
-              )}
 
-              <div>
-                <Label htmlFor="email" className="sr-only">
-                  Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
-                />
-              </div>
+                <div>
+                  <Label htmlFor="password" className="sr-only">
+                    Password
+                  </Label>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="Password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
+                  />
+                </div>
 
-              <div>
-                <Label htmlFor="password" className="sr-only">
-                  Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
-                />
-              </div>
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-base font-inter"
+                >
+                  {loading
+                    ? "Please wait..."
+                    : isLogin
+                      ? "Sign In"
+                      : "Create Account"}
+                </Button>
+              </form>
+            )}
 
-              <Button
-                type="submit"
-                disabled={loading}
-                className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-base font-inter"
-              >
-                {loading
-                  ? "Please wait..."
-                  : isLogin
-                    ? "Sign In"
-                    : "Create Account"}
-              </Button>
-            </form>
-
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-border" />
+            {/* Only show divider if email auth is visible */}
+            {showEmailAuth && (
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">
+                    Or continue with
+                  </span>
+                </div>
               </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
-            </div>
+            )}
 
 
             {/* Social Login Buttons */}
@@ -305,19 +316,21 @@ const Login = () => {
               </Button>
             </div>
 
-            {/* Toggle between login/signup */}
-            <div className="text-center">
-              <Button
-                type="button"
-                variant="ghost"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                {isLogin
-                  ? "Don't have an account? Sign up"
-                  : "Already have an account? Sign in"}
-              </Button>
-            </div>
+            {/* Toggle between login/signup - only show if email auth is available */}
+            {showEmailAuth && (
+              <div className="text-center">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setIsLogin(!isLogin)}
+                  className="text-sm text-muted-foreground hover:text-foreground"
+                >
+                  {isLogin
+                    ? "Don't have an account? Sign up"
+                    : "Already have an account? Sign in"}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </div>

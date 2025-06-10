@@ -24,53 +24,53 @@ export const MetricsPanel = React.memo(function MetricsPanel({
   return (
     <div
       className={cn(
-        "h-full flex flex-col justify-center space-y-8 p-8",
+        "h-full flex flex-col justify-center space-y-4 sm:space-y-6 lg:space-y-8 p-3 sm:p-6 lg:p-8",
         className,
       )}
     >
       {/* Main metrics */}
-      <div className="space-y-6">
+      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
         <div>
-          <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
+          <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground font-inter tracking-tight">
             {metrics.bodyFatPercentage.toFixed(1)}%
           </div>
-          <div className="text-muted-foreground text-sm font-medium mt-1 tracking-wide uppercase">
+          <div className="text-muted-foreground text-xs sm:text-sm font-medium mt-1 tracking-wide uppercase">
             Body Fat
           </div>
         </div>
 
         <div>
-          <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
+          <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground font-inter tracking-tight">
             {formattedWeight}
           </div>
-          <div className="text-muted-foreground text-sm font-medium mt-1 tracking-wide uppercase">
+          <div className="text-muted-foreground text-xs sm:text-sm font-medium mt-1 tracking-wide uppercase">
             Weight
           </div>
         </div>
 
         <div>
-          <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
+          <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground font-inter tracking-tight">
             {metrics.ffmi}
           </div>
-          <div className="text-muted-foreground text-sm font-medium mt-1 tracking-wide uppercase">
+          <div className="text-muted-foreground text-xs sm:text-sm font-medium mt-1 tracking-wide uppercase">
             FFMI
           </div>
         </div>
 
         <div>
-          <div className="text-4xl md:text-5xl font-bold text-foreground font-inter tracking-tight">
+          <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground font-inter tracking-tight">
             {formattedLeanBodyMass}
           </div>
-          <div className="text-muted-foreground text-sm font-medium mt-1 tracking-wide uppercase">
+          <div className="text-muted-foreground text-xs sm:text-sm font-medium mt-1 tracking-wide uppercase">
             Lean Body Mass
           </div>
         </div>
       </div>
 
       {/* User info - Horizontal Layout */}
-      <div className="border-t border-border pt-6 mt-auto space-y-3">
-        <div className="text-foreground text-lg font-semibold">{user.name}</div>
-        <div className="grid grid-cols-3 gap-4 text-sm">
+      <div className="border-t border-border pt-3 sm:pt-4 lg:pt-6 mt-auto space-y-2 sm:space-y-3">
+        <div className="text-foreground text-sm sm:text-base lg:text-lg font-semibold">{user.name}</div>
+        <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm">
           <div>
             <div className="text-muted-foreground font-medium uppercase tracking-wide">
               Age

@@ -58,7 +58,7 @@ export const VersionDisplay = React.memo(function VersionDisplay({ className = '
           <TooltipTrigger asChild>
             <Badge 
               variant="outline" 
-              className={`text-xs ${className}`}
+              className={`text-xs opacity-50 ${className}`}
             >
               v{versionInfo.version}
             </Badge>

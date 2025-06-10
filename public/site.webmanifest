@@ -4,7 +4,7 @@
   "description": "Track your body composition with precision. Monitor body fat percentage, weight, FFMI, and lean body mass.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#000000",
+  "background_color": "#0073ff",
   "theme_color": "#0073ff",
   "orientation": "portrait-primary",
   "scope": "/",

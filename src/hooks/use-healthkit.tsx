@@ -72,6 +72,17 @@ export function useHealthKit(): UseHealthKitReturn {
 
   useEffect(() => {
     checkAvailability();
+    
+    // Safety timeout to prevent hanging on HealthKit initialization
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.warn('HealthKit initialization timed out');
+        setLoading(false);
+        setIsAvailable(false);
+      }
+    }, 3000); // 3 second timeout
+    
+    return () => clearTimeout(timeout);
   }, []);
 
   const checkAvailability = async () => {

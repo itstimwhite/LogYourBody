@@ -89,6 +89,16 @@
     outline-offset: 2px;
   }
 
+  /* Hide scrollbars for wheel picker */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   /* Screen reader only content */
   .sr-only {
     position: absolute;

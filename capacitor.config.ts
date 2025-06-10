@@ -9,19 +9,22 @@ const config: CapacitorConfig = {
     cleartext: true
   },
   ios: {
-    scheme: 'LogYourBody',
+    scheme: 'logyourbody',
     contentInset: 'automatic',
     scrollEnabled: true,
     backgroundColor: '#000000'
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2000,
-      backgroundColor: '#000000',
+      launchShowDuration: 2000, // Show for 2 seconds minimum
+      launchAutoHide: false, // Let the app control when to hide
+      backgroundColor: '#0073ff', // Blue background to match icon
       showSpinner: false,
       androidSpinnerStyle: 'large',
       iosSpinnerStyle: 'small',
-      spinnerColor: '#0073ff'
+      spinnerColor: '#ffffff',
+      splashFullScreen: true,
+      splashImmersive: true
     },
     StatusBar: {
       style: 'dark',

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Heart, Activity, TrendingUp, Lock, ChevronRight } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Heart, Activity, Scale, TrendingUp, Shield, ArrowRight } from 'lucide-react';
 import { useHealthKit } from '@/hooks/use-healthkit';
+import { isNativeiOS } from '@/lib/platform';
 
 interface HealthKitSetupProps {
   onComplete: (healthData?: any) => void;
@@ -35,7 +36,8 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
     }
   };
 
-  if (!isAvailable) {
+  // Only show on native iOS
+  if (!isNativeiOS() || !isAvailable) {
     // HealthKit not available, skip this step
     onComplete();
     return null;
@@ -43,101 +45,126 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <Card className="w-full max-w-md bg-background border-border">
-        <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <Heart className="w-8 h-8 text-primary" />
+      <div className="w-full max-w-md space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
+            <Heart className="h-10 w-10 text-primary" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-semibold text-foreground">
-              Connect Health Data
-            </CardTitle>
-            <CardDescription className="text-muted-foreground mt-2">
-              Automatically sync your health metrics and pre-fill your profile with Apple Health data
-            </CardDescription>
-          </div>
-        </CardHeader>
-
-        <CardContent className="space-y-6">
-          {/* Benefits List */}
-          <div className="space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Activity className="w-4 h-4 text-green-600 dark:text-green-400" />
-              </div>
-              <div>
-                <h4 className="font-medium text-foreground">Auto-fill Profile</h4>
-                <p className="text-sm text-muted-foreground">
-                  Height, weight, and birthday from your Health app
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-              </div>
-              <div>
-                <h4 className="font-medium text-foreground">Sync Weight History</h4>
-                <p className="text-sm text-muted-foreground">
-                  Import your existing weight and body composition data
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Lock className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-              </div>
-              <div>
-                <h4 className="font-medium text-foreground">Privacy Protected</h4>
-                <p className="text-sm text-muted-foreground">
-                  You control what data is shared and can revoke access anytime
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Privacy Note */}
-          <div className="bg-muted/50 rounded-lg p-4">
-            <p className="text-xs text-muted-foreground text-center">
-              LogYourBody only accesses the health data you explicitly allow. 
-              Your data stays secure and private on your device.
+            <h1 className="text-2xl font-bold text-foreground mb-2">
+              Connect Apple Health
+            </h1>
+            <p className="text-muted-foreground text-sm leading-relaxed">
+              Automatically sync your body composition data from Apple Health for a seamless tracking experience.
             </p>
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-3">
-            <Button
-              onClick={handleEnableHealthKit}
-              disabled={isRequesting || loading}
-              className="w-full h-12 bg-primary text-primary-foreground hover:bg-primary/90 font-medium"
-            >
-              {isRequesting || loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
-                  Connecting...
+        {/* Features List */}
+        <div className="space-y-4">
+          <Card className="border-border bg-secondary/30">
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Scale className="h-4 w-4 text-primary" />
                 </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Heart className="w-4 h-4" />
-                  Connect Apple Health
-                  <ChevronRight className="w-4 h-4" />
+                <div>
+                  <h3 className="font-medium text-foreground text-sm">Automatic Weight Sync</h3>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Your weight measurements will automatically appear in LogYourBody
+                  </p>
                 </div>
-              )}
-            </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-            <Button
-              variant="ghost"
-              onClick={onSkip}
-              disabled={isRequesting || loading}
-              className="w-full h-12 text-muted-foreground hover:text-foreground"
-            >
-              Set up manually instead
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          <Card className="border-border bg-secondary/30">
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Activity className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground text-sm">Body Composition Data</h3>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Import body fat percentage and lean body mass from compatible devices
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border bg-secondary/30">
+            <CardContent className="p-4">
+              <div className="flex items-start space-x-3">
+                <div className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <TrendingUp className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-medium text-foreground text-sm">Historical Data</h3>
+                  <p className="text-muted-foreground text-xs mt-1">
+                    Access your existing health data to see your complete fitness journey
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Privacy Notice */}
+        <Card className="border-primary/20 bg-primary/5">
+          <CardContent className="p-4">
+            <div className="flex items-start space-x-3">
+              <Shield className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-medium text-foreground text-sm mb-1">Your Privacy is Protected</h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  LogYourBody only accesses the health data you choose to share. 
+                  Your data stays secure on your device and is never shared without your permission.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Action Buttons */}
+        <div className="space-y-3">
+          <Button
+            onClick={handleEnableHealthKit}
+            disabled={isRequesting || loading}
+            className="w-full h-12 text-base font-medium"
+            size="lg"
+          >
+            {isRequesting || loading ? (
+              <>
+                <div className="h-4 w-4 border-2 border-current border-r-transparent rounded-full animate-spin mr-2" />
+                Requesting Permission...
+              </>
+            ) : (
+              <>
+                Connect Apple Health
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </>
+            )}
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={onSkip}
+            disabled={isRequesting || loading}
+            className="w-full h-12 text-base"
+            size="lg"
+          >
+            Set Up Later
+          </Button>
+        </div>
+
+        {/* Footer Text */}
+        <p className="text-center text-xs text-muted-foreground">
+          You can always enable this later in Settings
+        </p>
+      </div>
     </div>
   );
 }

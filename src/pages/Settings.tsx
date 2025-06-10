@@ -11,6 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HeightWheelPicker, DateWheelPicker } from "@/components/ui/wheel-picker";
 import { ArrowLeft, Crown, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
@@ -49,13 +50,7 @@ const Settings = () => {
   // Form states
   const [editName, setEditName] = useState(user?.name || "");
   const [editBirthday, setEditBirthday] = useState(
-    user?.birthday ? user.birthday.toISOString().split("T")[0] : "",
-  );
-  const [editHeightFeet, setEditHeightFeet] = useState(
-    user?.height ? Math.floor(user.height / 30.48) : 5,
-  );
-  const [editHeightInches, setEditHeightInches] = useState(
-    user?.height ? Math.round((user.height % 30.48) / 2.54) : 9,
+    user?.birthday ? user.birthday : new Date(2000, 0, 1),
   );
   const [editHeightCm, setEditHeightCm] = useState(user?.height || 175);
   const [editEmail, setEditEmail] = useState(user?.email || "");
@@ -66,9 +61,7 @@ const Settings = () => {
   useEffect(() => {
     if (user) {
       setEditName(user.name || "");
-      setEditBirthday(user.birthday ? user.birthday.toISOString().split("T")[0] : "");
-      setEditHeightFeet(user.height ? Math.floor(user.height / 30.48) : 5);
-      setEditHeightInches(user.height ? Math.round((user.height % 30.48) / 2.54) : 9);
+      setEditBirthday(user.birthday ? user.birthday : new Date(2000, 0, 1));
       setEditHeightCm(user.height || 175);
       setEditEmail(user.email || "");
     }
@@ -115,18 +108,14 @@ const Settings = () => {
   };
 
   const handleSaveBirthday = () => {
-    updateUser({ birthday: new Date(editBirthday) });
+    // editBirthday is now a Date object from the wheel picker
+    updateUser({ birthday: editBirthday instanceof Date ? editBirthday : new Date(editBirthday) });
     setShowBirthdayEdit(false);
   };
 
   const handleSaveHeight = () => {
-    let heightInCm;
-    if (settings?.units === "imperial") {
-      heightInCm = (editHeightFeet * 12 + editHeightInches) * 2.54;
-    } else {
-      heightInCm = editHeightCm;
-    }
-    updateUser({ height: Math.round(heightInCm) });
+    // editHeightCm is now the height in cm from the wheel picker
+    updateUser({ height: Math.round(editHeightCm) });
     setShowHeightEdit(false);
   };
 
@@ -151,12 +140,45 @@ const Settings = () => {
     }
   };
 
-  if (loading || !user || !settings) {
+  // Show loading skeleton for better perceived performance
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground">
+        <div className="animate-pulse">
+          {/* Header skeleton */}
+          <div className="h-16 bg-secondary/20 border-b border-border" />
+          
+          {/* Content skeleton */}
+          <div className="p-6 space-y-8">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="space-y-4">
+                <div className="h-4 w-24 bg-secondary/30 rounded" />
+                <div className="space-y-3">
+                  <div className="h-12 bg-secondary/20 rounded" />
+                  <div className="h-12 bg-secondary/20 rounded" />
+                  <div className="h-12 bg-secondary/20 rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Handle error state
+  if (!user || !settings) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading settings...</p>
+          <p className="text-muted-foreground">Failed to load settings. Please try again.</p>
+          <Button 
+            onClick={() => window.location.reload()} 
+            className="mt-4"
+            variant="outline"
+          >
+            Retry
+          </Button>
         </div>
       </div>
     );
@@ -312,22 +334,27 @@ const Settings = () => {
             </h2>
 
             <div className="space-y-4">
-              {/* Units Toggle */}
-              <div className="flex items-center justify-between py-4">
-                <div>
+              {/* Units Toggle - Use Tabs instead of Switch */}
+              <div className="py-4 border-b border-border">
+                <div className="mb-3">
                   <div className="text-base font-medium text-foreground">
                     Units
                   </div>
-                  <div className="text-sm text-muted-foreground">
-                    {settings?.units === "metric"
-                      ? "Metric (kg, cm)"
-                      : "Imperial (lbs, ft/in)"}
-                  </div>
                 </div>
-                <Switch
-                  checked={settings?.units === "metric"}
-                  onCheckedChange={handleUnitsChange}
-                />
+                <Tabs
+                  value={settings?.units || "imperial"}
+                  onValueChange={(value) => updateSettings({ units: value as "imperial" | "metric" })}
+                  className="w-full"
+                >
+                  <TabsList className="grid w-full grid-cols-2 bg-secondary border border-border">
+                    <TabsTrigger value="imperial">
+                      Imperial (lbs, ft/in)
+                    </TabsTrigger>
+                    <TabsTrigger value="metric">
+                      Metric (kg, cm)
+                    </TabsTrigger>
+                  </TabsList>
+                </Tabs>
               </div>
 
               {/* Notifications Toggle */}
@@ -347,17 +374,32 @@ const Settings = () => {
               </div>
 
               {/* Sync from Apple HealthKit */}
-              <div className="flex items-center justify-between py-4">
-                <div>
-                  <div className="text-base font-medium text-foreground">
-                    Sync from Apple HealthKit
+              <div className="py-4 border-b border-border">
+                <div className="flex items-center justify-between mb-3">
+                  <div>
+                    <div className="text-base font-medium text-foreground">
+                      Sync from Apple HealthKit
+                    </div>
+                    <div className="text-sm text-muted-foreground">iOS only</div>
                   </div>
-                  <div className="text-sm text-muted-foreground">iOS only</div>
+                  <Switch
+                    checked={settings?.healthKitSyncEnabled || false}
+                    onCheckedChange={handleHealthKitToggle}
+                  />
                 </div>
-                <Switch
-                  checked={settings?.healthKitSyncEnabled || false}
-                  onCheckedChange={handleHealthKitToggle}
-                />
+                {settings?.healthKitSyncEnabled && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      // TODO: Implement manual sync
+                      console.log('Manual HealthKit sync requested');
+                    }}
+                    className="w-full bg-secondary border-border text-foreground hover:bg-muted"
+                  >
+                    Sync now
+                  </Button>
+                )}
               </div>
 
               {/* Sync from Google Fit */}
@@ -415,22 +457,31 @@ const Settings = () => {
             </div>
 
             {/* Biometric Authentication Section */}
-            <div className="p-6">
+            <div className="border-t border-border pt-6">
+              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3 mb-6">
+                Security
+              </h2>
               <BiometricSetup />
             </div>
 
             {/* Database Status Section */}
-            <div className="p-6 border-t border-border">
+            <div className="border-t border-border pt-6">
+              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3 mb-6">
+                System Status
+              </h2>
               <DatabaseDebug />
             </div>
 
             {/* Version Information Section */}
-            <div className="p-6 border-t border-border">
+            <div className="border-t border-border pt-6">
+              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3 mb-6">
+                Version Information
+              </h2>
               <VersionDisplay showBuildInfo={true} />
             </div>
 
             {/* Logout Section */}
-            <div className="space-y-1 p-6">
+            <div className="border-t border-border pt-6">
               <div
                 className="flex items-center justify-between py-4 cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
                 onClick={handleLogout}
@@ -491,13 +542,11 @@ const Settings = () => {
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="birthday">Birthday</Label>
-                <Input
-                  id="birthday"
-                  type="date"
-                  value={editBirthday}
-                  onChange={(e) => setEditBirthday(e.target.value)}
-                  className="bg-secondary border-border text-foreground"
+                <Label>Birthday</Label>
+                <DateWheelPicker
+                  date={editBirthday}
+                  onDateChange={setEditBirthday}
+                  className="h-60"
                 />
               </div>
               <div className="flex gap-2 pt-4">
@@ -525,60 +574,15 @@ const Settings = () => {
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-4 py-4">
-              {settings?.units === "imperial" ? (
-                <div className="space-y-4">
-                  <Label>Height (feet and inches)</Label>
-                  <div className="flex gap-4">
-                    <div className="flex-1">
-                      <Label htmlFor="feet" className="text-sm">
-                        Feet
-                      </Label>
-                      <Input
-                        id="feet"
-                        type="number"
-                        min="3"
-                        max="8"
-                        value={editHeightFeet}
-                        onChange={(e) =>
-                          setEditHeightFeet(parseInt(e.target.value) || 0)
-                        }
-                        className="bg-secondary border-border text-foreground"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <Label htmlFor="inches" className="text-sm">
-                        Inches
-                      </Label>
-                      <Input
-                        id="inches"
-                        type="number"
-                        min="0"
-                        max="11"
-                        value={editHeightInches}
-                        onChange={(e) =>
-                          setEditHeightInches(parseInt(e.target.value) || 0)
-                        }
-                        className="bg-secondary border-border text-foreground"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Label htmlFor="height-cm">Height (centimeters)</Label>
-                  <Input
-                    id="height-cm"
-                    type="number"
-                    min="100"
-                    max="250"
-                    value={editHeightCm}
-                    onChange={(e) =>
-                      setEditHeightCm(parseInt(e.target.value) || 0)
-                    }
-                    className="bg-secondary border-border text-foreground"
-                  />
-                </div>
-              )}
+              <div className="space-y-2">
+                <Label>Height</Label>
+                <HeightWheelPicker
+                  heightInCm={editHeightCm}
+                  units={settings?.units || "imperial"}
+                  onHeightChange={setEditHeightCm}
+                  className="h-60"
+                />
+              </div>
               <div className="flex gap-2 pt-4">
                 <Button
                   variant="outline"

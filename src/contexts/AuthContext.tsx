@@ -339,8 +339,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       };
     }
 
-    const redirectUrl = `${window.location.origin}/dashboard`;
-    console.log("Apple OAuth redirect URL:", redirectUrl);
+    // Check if running in native iOS app
+    const isNative = window.location.protocol === 'capacitor:';
+    const redirectUrl = isNative 
+      ? 'logyourbody://auth/callback'  // Native app custom scheme
+      : `${window.location.origin}/dashboard`; // Web app
+    
+    console.log("Apple OAuth redirect URL:", redirectUrl, "isNative:", isNative);
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "apple",

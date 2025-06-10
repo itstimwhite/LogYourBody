@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +12,8 @@ import { VercelAnalytics } from "@/components/Analytics";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
+import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 // Lazy load pages for better code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -95,13 +97,33 @@ const AppRoutes = () => (
   </Suspense>
 );
 
-const App = () => (
-  <AppProviders>
-    <BrowserRouter>
-      <SEOHead />
-      <AppRoutes />
-    </BrowserRouter>
-  </AppProviders>
-);
+const App = () => {
+  useEffect(() => {
+    // Hide splash screen - simplified for better performance
+    const hideSplashScreen = async () => {
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await SplashScreen.hide();
+          console.log('Splash screen hidden');
+        } catch (error) {
+          console.warn('Error hiding splash screen:', error);
+        }
+      }
+    };
+
+    // Single timeout for splash screen
+    const timer = setTimeout(hideSplashScreen, 1500);
+    return () => clearTimeout(timer);
+  }, []); // Empty deps - runs once
+
+  return (
+    <AppProviders>
+      <BrowserRouter>
+        <SEOHead />
+        <AppRoutes />
+      </BrowserRouter>
+    </AppProviders>
+  );
+};
 
 export default App;

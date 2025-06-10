@@ -11,6 +11,8 @@ import { VersionDisplay } from "@/components/VersionDisplay";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
+import { useHealthKit } from "@/hooks/use-healthkit";
+import { isNativeiOS } from "@/lib/platform";
 
 // Lazy load heavy 3D component
 const AvatarSilhouette = React.lazy(() => import("@/components/AvatarSilhouette").then(module => ({ default: module.AvatarSilhouette })));
@@ -30,6 +32,9 @@ const Dashboard = () => {
   // Use Supabase hook if configured, otherwise use local hook
   const supabaseHook = useSupabaseBodyMetrics();
   const localHook = useBodyMetrics();
+  
+  // Initialize HealthKit on iOS
+  const healthKit = useHealthKit();
 
   const {
     user,
@@ -51,10 +56,58 @@ const Dashboard = () => {
   const [showPhoto, setShowPhoto] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
+  const [healthKitWeightData, setHealthKitWeightData] = useState<any>(null);
+  const [healthKitDataChecked, setHealthKitDataChecked] = useState(false);
 
   const handleToggleView = () => {
     setShowPhoto(!showPhoto);
   };
+
+  // Check HealthKit data on iOS - non-blocking background operation
+  React.useEffect(() => {
+    if (!healthKitDataChecked) {
+      if (isNativeiOS() && healthKit.isAvailable) {
+        // Run HealthKit check in background without blocking UI
+        const checkHealthKitData = async () => {
+          try {
+            // Request permissions if not already authorized
+            if (!healthKit.isAuthorized) {
+              await healthKit.requestPermissions();
+            }
+            
+            if (healthKit.isAuthorized) {
+              // Get recent weight data
+              const healthData = await healthKit.getHealthData();
+              if (healthData && healthData.weight) {
+                setHealthKitWeightData(healthData);
+                console.log('HealthKit weight data found:', healthData.weight);
+              }
+            }
+          } catch (error) {
+            console.warn('Error checking HealthKit data:', error);
+          } finally {
+            setHealthKitDataChecked(true);
+          }
+        };
+        
+        // Start background check but don't wait for it
+        checkHealthKitData();
+        
+        // Set timeout to mark as checked if it takes too long
+        const timeout = setTimeout(() => {
+          if (!healthKitDataChecked) {
+            console.warn('HealthKit check timed out, proceeding without HealthKit data');
+            setHealthKitDataChecked(true);
+          }
+        }, 3000); // Reduced to 3 seconds
+        
+        return () => clearTimeout(timeout);
+      } else {
+        // Not on iOS or HealthKit not available, mark as checked immediately
+        setHealthKitDataChecked(true);
+      }
+    }
+  }, [healthKit.isAvailable, healthKit.isAuthorized, healthKitDataChecked]);
 
   const handleAddMetric = (data: {
     weight: number;
@@ -73,16 +126,19 @@ const Dashboard = () => {
     });
   };
 
-  // Check if user has any weight data
-  const hasWeightData = metrics.length > 0 && metrics.some(m => m.weight > 0);
+  // Check if user has any weight data (including HealthKit data)
+  const hasAppWeightData = metrics.length > 0 && metrics.some(m => m.weight > 0);
+  const hasHealthKitWeightData = healthKitWeightData && healthKitWeightData.weight > 0;
+  const hasWeightData = hasAppWeightData || hasHealthKitWeightData;
 
   // Show weight prompt if no data and not loading (use useEffect to avoid infinite re-renders)
   React.useEffect(() => {
-    if (!loading && user && settings && !hasWeightData && !showWeightPrompt) {
+    if (!loading && user && settings && healthKitDataChecked && !hasWeightData && !showWeightPrompt) {
       setShowWeightPrompt(true);
     }
-  }, [loading, user, settings, hasWeightData, showWeightPrompt]);
+  }, [loading, user, settings, healthKitDataChecked, hasWeightData, showWeightPrompt]);
 
+  // Don't block on HealthKit - load in background
   if (loading || !user || !settings) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -148,10 +204,10 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex flex-col md:flex-row">
+        {/* Main Content - Keep desktop layout on mobile with smaller fonts */}
+        <div className="flex-1 flex flex-row">
           {/* Left Side - Avatar (2/3) */}
-          <div className="flex-1 md:w-2/3 relative">
+          <div className="flex-1 w-2/3 relative">
             <Suspense fallback={<AvatarLoader />}>
               <AvatarSilhouette
                 gender={user.gender}
@@ -159,13 +215,13 @@ const Dashboard = () => {
                 showPhoto={showPhoto}
                 profileImage={user.profileImage}
                 onToggleView={handleToggleView}
-                className="h-full min-h-[400px] md:min-h-0"
+                className="h-full min-h-[300px] sm:min-h-[400px]"
               />
             </Suspense>
           </div>
 
           {/* Right Side - Metrics (1/3) */}
-          <div className="md:w-1/3 border-t md:border-t-0 md:border-l border-border bg-secondary/30">
+          <div className="w-1/3 border-l border-border bg-secondary/30">
             <MetricsPanel
               metrics={currentMetrics}
               user={user}
