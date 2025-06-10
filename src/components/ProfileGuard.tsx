@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { ProfileSetup } from "./ProfileSetup";
 import { HealthKitSetup } from "./HealthKitSetup";
-import { Capacitor } from "@capacitor/core";
+import { isNativeiOS, logPlatformInfo } from "@/lib/platform";
 
 interface ProfileGuardProps {
   children: React.ReactNode;
@@ -32,6 +32,8 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       return;
     }
 
+    // Log platform info for debugging
+    logPlatformInfo();
     loadProfile();
   }, [user]);
 
@@ -69,12 +71,14 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       }
 
       if (!profileData || isProfileIncomplete(profileData)) {
-        console.log("ProfileGuard: Profile incomplete, checking for HealthKit");
+        console.log("ProfileGuard: Profile incomplete, checking platform for next step");
         
-        // Show HealthKit setup first on iOS if profile is incomplete
-        if (Capacitor.getPlatform() === 'ios' && !healthKitData) {
+        // Show HealthKit setup first ONLY on native iOS if profile is incomplete
+        if (isNativeiOS() && !healthKitData) {
+          console.log("ProfileGuard: Native iOS detected, showing HealthKit setup");
           setShowHealthKitSetup(true);
         } else {
+          console.log("ProfileGuard: Not native iOS or HealthKit already handled, showing profile setup");
           setNeedsSetup(true);
         }
       } else {

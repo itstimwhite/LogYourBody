@@ -80,13 +80,22 @@ export function useHealthKit(): UseHealthKitReturn {
         setLoading(false);
         setIsAvailable(false);
       }
-    }, 3000); // 3 second timeout
+    }, 1000); // 1 second timeout (reduced since we have fast exit)
     
     return () => clearTimeout(timeout);
   }, []);
 
   const checkAvailability = async () => {
+    // Fast exit for non-iOS platforms
+    if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') {
+      console.log('HealthKit: Not on native iOS, skipping availability check');
+      setIsAvailable(false);
+      setLoading(false);
+      return;
+    }
+
     if (!healthKit) {
+      console.log('HealthKit: Plugin not available');
       setIsAvailable(false);
       setLoading(false);
       return;
@@ -99,6 +108,7 @@ export function useHealthKit(): UseHealthKitReturn {
     } catch (err: any) {
       console.error('Error checking HealthKit availability:', err);
       setError(err.message || 'Failed to check HealthKit availability');
+      setIsAvailable(false);
     } finally {
       setLoading(false);
     }

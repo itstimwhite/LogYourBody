@@ -14,6 +14,14 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
   const { isAvailable, requestPermissions, getHealthData, loading } = useHealthKit();
   const [isRequesting, setIsRequesting] = useState(false);
 
+  // Early exit for non-iOS platforms
+  React.useEffect(() => {
+    if (!isNativeiOS() || !isAvailable) {
+      console.log("HealthKitSetup: Not native iOS or HealthKit not available, skipping");
+      onComplete();
+    }
+  }, [isAvailable, onComplete]);
+
   const handleEnableHealthKit = async () => {
     setIsRequesting(true);
     
