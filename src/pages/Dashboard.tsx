@@ -171,12 +171,15 @@ const Dashboard = () => {
     <TrialGuard>
       <div className="min-h-screen bg-background text-foreground flex flex-col">
         {/* Header */}
-        <div className="flex justify-between items-center px-6 py-4 border-b border-border">
+        <div className="flex justify-between items-center px-6 py-4 md:py-4 pt-6 border-b border-border">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-semibold tracking-tight">
               LogYourBody
             </h1>
-            <VersionDisplay />
+            {/* Hide version on mobile, show on desktop */}
+            <div className="hidden md:block">
+              <VersionDisplay />
+            </div>
           </div>
           <div className="flex gap-3">
             <Button
@@ -204,10 +207,36 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Main Content - Keep desktop layout on mobile with smaller fonts */}
-        <div className="flex-1 flex flex-row">
-          {/* Left Side - Avatar (2/3) */}
-          <div className="flex-1 w-2/3 relative">
+        {/* Main Content - Mobile-first design with desktop fallback */}
+        <div className="flex-1 flex flex-col md:flex-row">
+          {/* Avatar/Photo Toggle - Full width on mobile, positioned above avatar */}
+          <div className="md:hidden w-full px-6 py-4 bg-secondary/30 border-b border-border">
+            <div className="flex w-full bg-secondary rounded-lg p-1">
+              <button
+                onClick={() => setShowPhoto(false)}
+                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
+                  !showPhoto
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Avatar
+              </button>
+              <button
+                onClick={() => setShowPhoto(true)}
+                className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
+                  showPhoto
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                Photo
+              </button>
+            </div>
+          </div>
+
+          {/* Avatar Section - Full width on mobile, 2/3 on desktop */}
+          <div className="flex-1 md:w-2/3 relative">
             <Suspense fallback={<AvatarLoader />}>
               <AvatarSilhouette
                 gender={user.gender}
@@ -216,12 +245,13 @@ const Dashboard = () => {
                 profileImage={user.profileImage}
                 onToggleView={handleToggleView}
                 className="h-full min-h-[300px] sm:min-h-[400px]"
+                hideToggleOnMobile={true}
               />
             </Suspense>
           </div>
 
-          {/* Right Side - Metrics (1/3) */}
-          <div className="w-1/3 border-l border-border bg-secondary/30">
+          {/* Metrics Panel - Full width on mobile, 1/3 on desktop */}
+          <div className="w-full md:w-1/3 md:border-l border-border bg-secondary/30">
             <MetricsPanel
               metrics={currentMetrics}
               user={user}
@@ -231,6 +261,7 @@ const Dashboard = () => {
               formattedLeanBodyMass={getFormattedLeanBodyMass(
                 currentMetrics.leanBodyMass,
               )}
+              showPhoto={showPhoto}
             />
           </div>
         </div>

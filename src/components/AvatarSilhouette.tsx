@@ -10,6 +10,7 @@ interface AvatarSilhouetteProps {
   profileImage?: string;
   onToggleView: () => void;
   className?: string;
+  hideToggleOnMobile?: boolean;
 }
 
 export const AvatarSilhouette = React.memo(function AvatarSilhouette({
@@ -19,6 +20,7 @@ export const AvatarSilhouette = React.memo(function AvatarSilhouette({
   profileImage,
   onToggleView,
   className,
+  hideToggleOnMobile = false,
 }: AvatarSilhouetteProps) {
   // Calculate fill opacity based on body fat percentage (0-50% range)
   const fillOpacity = useMemo(() => Math.min(bodyFatPercentage / 25, 1), [bodyFatPercentage]);
@@ -97,8 +99,11 @@ export const AvatarSilhouette = React.memo(function AvatarSilhouette({
 
   return (
     <div className={cn("relative h-full w-full", className)}>
-      {/* Toggle buttons */}
-      <div className="absolute top-6 left-6 z-10 flex gap-2">
+      {/* Toggle buttons - Hidden on mobile if hideToggleOnMobile is true */}
+      <div className={cn(
+        "absolute top-6 left-6 z-10 flex gap-2",
+        hideToggleOnMobile && "hidden md:flex"
+      )}>
         <Button
           variant={!showPhoto ? "default" : "outline"}
           size="sm"

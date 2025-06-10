@@ -39,18 +39,15 @@ export const TimelineSlider = React.memo(function TimelineSlider({
   return (
     <div
       className={cn(
-        "w-full px-6 py-6 bg-background border-t border-border",
+        "w-full px-6 py-4 md:py-6 bg-background border-t border-border/50 shadow-sm",
         className,
       )}
     >
       <div className="space-y-4">
-        {/* Current date display */}
+        {/* Current date display - Centered with smaller font on mobile */}
         <div className="text-center">
-          <div className="text-foreground text-lg font-semibold tracking-tight">
-            {currentDate ? formatDate(currentDate) : "No date"}
-          </div>
-          <div className="text-muted-foreground text-sm font-medium mt-1">
-            Entry {selectedIndex + 1} of {metrics.length}
+          <div className="text-foreground text-base md:text-lg font-semibold tracking-tight">
+            {currentDate ? formatDate(currentDate) : "No date"} / Entry {selectedIndex + 1} of {metrics.length}
           </div>
         </div>
 
@@ -66,8 +63,8 @@ export const TimelineSlider = React.memo(function TimelineSlider({
           />
         </div>
 
-        {/* Date range */}
-        <div className="flex justify-between text-xs text-muted-foreground font-medium px-4">
+        {/* Date range - Smaller, subtler font */}
+        <div className="flex justify-between text-xs text-muted-foreground/70 font-normal px-4">
           <span>{formatDate(metrics[0].date)}</span>
           <span>{formatDate(metrics[metrics.length - 1].date)}</span>
         </div>

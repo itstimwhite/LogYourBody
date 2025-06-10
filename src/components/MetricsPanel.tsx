@@ -10,6 +10,7 @@ interface MetricsPanelProps {
   formattedHeight: string;
   formattedLeanBodyMass: string;
   className?: string;
+  showPhoto?: boolean;
 }
 
 export const MetricsPanel = React.memo(function MetricsPanel({
@@ -20,74 +21,79 @@ export const MetricsPanel = React.memo(function MetricsPanel({
   formattedHeight,
   formattedLeanBodyMass,
   className,
+  showPhoto,
 }: MetricsPanelProps) {
   return (
     <div
       className={cn(
-        "h-full flex flex-col justify-center space-y-4 sm:space-y-6 lg:space-y-8 p-3 sm:p-6 lg:p-8",
+        "h-full w-full flex flex-col justify-center p-4 md:p-6 lg:p-8",
         className,
       )}
     >
-      {/* Main metrics */}
-      <div className="space-y-3 sm:space-y-4 lg:space-y-6">
-        <div>
-          <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground font-inter tracking-tight">
+      {/* Main metrics - 2x2 Grid on mobile, vertical stack on desktop */}
+      <div className="grid grid-cols-2 md:flex md:flex-col gap-6 md:gap-4 lg:gap-6 mb-8">
+        {/* Body Fat */}
+        <div className="text-right md:text-left">
+          <div className="text-white text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold font-inter tracking-tight">
             {metrics.bodyFatPercentage.toFixed(1)}%
           </div>
-          <div className="text-muted-foreground text-xs sm:text-sm font-medium mt-1 tracking-wide uppercase">
+          <div className="text-white/80 text-xs md:text-sm font-medium mt-1 tracking-[0.1em] uppercase">
             Body Fat
           </div>
         </div>
 
-        <div>
-          <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground font-inter tracking-tight">
+        {/* Weight */}
+        <div className="text-right md:text-left">
+          <div className="text-white text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold font-inter tracking-tight">
             {formattedWeight}
           </div>
-          <div className="text-muted-foreground text-xs sm:text-sm font-medium mt-1 tracking-wide uppercase">
+          <div className="text-white/80 text-xs md:text-sm font-medium mt-1 tracking-[0.1em] uppercase">
             Weight
           </div>
         </div>
 
-        <div>
-          <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground font-inter tracking-tight">
+        {/* FFMI */}
+        <div className="text-right md:text-left">
+          <div className="text-white text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold font-inter tracking-tight">
             {metrics.ffmi}
           </div>
-          <div className="text-muted-foreground text-xs sm:text-sm font-medium mt-1 tracking-wide uppercase">
+          <div className="text-white/80 text-xs md:text-sm font-medium mt-1 tracking-[0.1em] uppercase">
             FFMI
           </div>
         </div>
 
-        <div>
-          <div className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-foreground font-inter tracking-tight">
+        {/* Lean Body Mass */}
+        <div className="text-right md:text-left">
+          <div className="text-white text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold font-inter tracking-tight">
             {formattedLeanBodyMass}
           </div>
-          <div className="text-muted-foreground text-xs sm:text-sm font-medium mt-1 tracking-wide uppercase">
+          <div className="text-white/80 text-xs md:text-sm font-medium mt-1 tracking-[0.1em] uppercase">
             Lean Body Mass
           </div>
         </div>
       </div>
 
-      {/* User info - Horizontal Layout */}
-      <div className="border-t border-border pt-3 sm:pt-4 lg:pt-6 mt-auto space-y-2 sm:space-y-3">
-        <div className="text-foreground text-sm sm:text-base lg:text-lg font-semibold">{user.name}</div>
-        <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4 text-xs sm:text-sm">
-          <div>
-            <div className="text-muted-foreground font-medium uppercase tracking-wide">
+      {/* User info - Single row with three equal cells */}
+      <div className="border-t border-border pt-4 md:pt-6 mt-auto">
+        <div className="text-white text-sm md:text-base lg:text-lg font-semibold mb-3">{user.name}</div>
+        <div className="grid grid-cols-3 gap-4 text-xs md:text-sm">
+          <div className="text-center md:text-left">
+            <div className="text-white/80 font-medium uppercase tracking-[0.1em] mb-1">
               Age
             </div>
-            <div className="text-foreground font-medium">{userAge}</div>
+            <div className="text-white font-medium">{userAge}</div>
           </div>
-          <div>
-            <div className="text-muted-foreground font-medium uppercase tracking-wide">
+          <div className="text-center md:text-left">
+            <div className="text-white/80 font-medium uppercase tracking-[0.1em] mb-1">
               Height
             </div>
-            <div className="text-foreground font-medium">{formattedHeight}</div>
+            <div className="text-white font-medium">{formattedHeight}</div>
           </div>
-          <div>
-            <div className="text-muted-foreground font-medium uppercase tracking-wide">
+          <div className="text-center md:text-left">
+            <div className="text-white/80 font-medium uppercase tracking-[0.1em] mb-1">
               Sex
             </div>
-            <div className="text-foreground font-medium capitalize">
+            <div className="text-white font-medium capitalize">
               {user.gender}
             </div>
           </div>
