@@ -91,7 +91,21 @@ const Login = () => {
 
       if (result.error) {
         console.error("Auth error:", result.error);
-        setError(result.error.message);
+        
+        // Handle specific error cases
+        if (result.error.name === "UserExistsError" && !isLogin) {
+          // User tried to sign up with existing email, switch to login mode
+          setError("An account with this email already exists.");
+          setIsLogin(true);
+          setTimeout(() => {
+            setError("Please sign in with your existing account.");
+          }, 2000);
+        } else if (result.error.name === "EmailConfirmationRequired") {
+          // Show confirmation message but don't treat as error
+          setError("Account created! Please check your email and click the confirmation link to complete your registration.");
+        } else {
+          setError(result.error.message);
+        }
       } else {
         console.log("Auth successful, proceeding...");
         // Start trial for new users (signup flow will handle this automatically)
@@ -199,7 +213,11 @@ const Login = () => {
           {/* Auth Form */}
           <div className="w-full max-w-sm mx-auto space-y-4">
             {error && (
-              <div className="text-destructive text-sm text-center p-3 bg-destructive/10 rounded-md">
+              <div className={`text-sm text-center p-3 rounded-md ${
+                error.includes("Account created!") || error.includes("Please sign in with your existing account") 
+                  ? "text-blue-700 bg-blue-50 border border-blue-200" 
+                  : "text-destructive bg-destructive/10"
+              }`}>
                 {error}
               </div>
             )}

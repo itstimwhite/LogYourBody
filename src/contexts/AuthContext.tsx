@@ -286,23 +286,97 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
 
     console.log("Attempting Supabase sign up with email:", email);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
+    
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            name,
+          },
         },
-      },
-    });
-    
-    if (error) {
-      console.error("Supabase sign up error:", error);
-    } else {
+      });
+      
+      if (error) {
+        console.error("Supabase sign up error:", error);
+        
+        // Handle specific error cases with user-friendly messages
+        if (error.message.includes('User already registered')) {
+          return {
+            error: {
+              message: "An account with this email already exists. Please sign in instead or use a different email address.",
+              name: "UserExistsError",
+              status: 409
+            } as any
+          };
+        }
+        
+        if (error.message.includes('Password should be at least')) {
+          return {
+            error: {
+              message: "Password must be at least 6 characters long.",
+              name: "WeakPasswordError", 
+              status: 400
+            } as any
+          };
+        }
+        
+        if (error.message.includes('Invalid email')) {
+          return {
+            error: {
+              message: "Please enter a valid email address.",
+              name: "InvalidEmailError",
+              status: 400
+            } as any
+          };
+        }
+        
+        if (error.message.includes('email rate limit')) {
+          return {
+            error: {
+              message: "Too many sign up attempts. Please wait a few minutes before trying again.",
+              name: "RateLimitError",
+              status: 429
+            } as any
+          };
+        }
+        
+        // Generic error fallback
+        return {
+          error: {
+            message: error.message || "Failed to create account. Please try again.",
+            name: "SignUpError",
+            status: 400
+          } as any
+        };
+      }
+      
+      // Check if user was created but needs email confirmation
+      if (data.user && !data.session) {
+        console.log("Sign up successful, but email confirmation required");
+        return {
+          error: {
+            message: "Account created! Please check your email and click the confirmation link before signing in.",
+            name: "EmailConfirmationRequired",
+            status: 200 // Not really an error, but needs user action
+          } as any
+        };
+      }
+      
       console.log("Supabase sign up successful:", data);
+      return { error: null };
+      
+    } catch (networkError: any) {
+      console.error("Network error during sign up:", networkError);
+      return {
+        error: {
+          message: "Network error. Please check your connection and try again.",
+          name: "NetworkError",
+          status: 0
+        } as any
+      };
     }
-    
-    return { error };
   };
 
   const signInWithGoogle = async () => {
