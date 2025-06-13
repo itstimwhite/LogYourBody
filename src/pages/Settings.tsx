@@ -295,7 +295,8 @@ const Settings = () => {
             </div>
           </div>
 
-          {/* Subscription */}
+          {/* Subscription - TEMPORARILY HIDDEN FOR TESTING */}
+          {false && (
           <div className="space-y-6">
             <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3">
               Subscription
@@ -335,6 +336,7 @@ const Settings = () => {
               </div>
             </div>
           </div>
+          )}
 
           {/* Settings */}
           <div className="space-y-6">

@@ -7,6 +7,12 @@ interface TrialGuardProps {
 }
 
 export function TrialGuard({ children }: TrialGuardProps) {
+  // TEMPORARY: Bypass all subscription checks for iOS testing
+  // TODO: Re-enable subscription logic after testing
+  return <>{children}</>;
+
+  // Original subscription logic (commented out for testing)
+  /*
   const { hasAccess, isTrialExpired, subscriptionInfo, loading } =
     useSupabaseSubscription();
 
@@ -34,4 +40,5 @@ export function TrialGuard({ children }: TrialGuardProps) {
 
   // Show content if user has access
   return <>{children}</>;
+  */
 }
