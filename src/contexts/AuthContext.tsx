@@ -44,6 +44,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   useEffect(() => {
     console.log("AuthContext initialization - isSupabaseConfigured:", isSupabaseConfigured);
     console.log("AuthContext initialization - supabase client:", !!supabase);
+    console.log("AuthContext initialization - current URL:", window.location.href);
     
     if (!isSupabaseConfigured || !supabase) {
       console.warn("Supabase not configured - authentication disabled");

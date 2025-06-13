@@ -6,6 +6,7 @@ import {
   PurchasesOffering 
 } from '@revenuecat/purchases-js';
 import { useAuth } from '@/contexts/AuthContext';
+import { Capacitor } from '@capacitor/core';
 
 interface RevenueCatState {
   isConfigured: boolean;
@@ -35,8 +36,8 @@ export function useRevenueCat(): RevenueCatState & RevenueCatActions {
   useEffect(() => {
     const initializeRevenueCat = async () => {
       try {
-        // Use platform-specific API keys
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        // Use platform-specific API keys - use Capacitor for more reliable platform detection
+        const isIOS = Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios';
         const rcKey = isIOS 
           ? import.meta.env.VITE_REVENUECAT_IOS_KEY 
           : import.meta.env.VITE_REVENUECAT_WEB_KEY;

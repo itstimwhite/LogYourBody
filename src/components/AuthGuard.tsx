@@ -12,7 +12,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log('AuthGuard: state check', { loading, hasUser: !!user, currentPath: window.location.pathname });
     if (!loading && !user) {
+      console.log('AuthGuard: redirecting to home - no user found');
       navigate("/");
     }
   }, [user, loading, navigate]);

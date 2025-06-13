@@ -16,6 +16,7 @@ import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
 import { serviceWorkerManager } from '@/lib/service-worker-manager';
 import { RouteGuard } from '@/components/RouteGuard';
+import { AuthDebugger } from '@/components/AuthDebugger';
 
 
 // Lazy load pages for better code splitting
@@ -148,7 +149,7 @@ const App = () => {
     // Run SW handling immediately
     handleServiceWorkerIssues();
 
-    // Clear any stale auth state on app startup (fresh builds)
+    // Clear any stale auth state on app startup (fresh builds) - ONLY on native platforms
     if (Capacitor.isNativePlatform()) {
       // Clear Capacitor storage to prevent stale sessions
       const clearStaleAuth = async () => {
@@ -193,6 +194,7 @@ const App = () => {
       <BrowserRouter>
         <SEOHead />
         <AppRoutes />
+        <AuthDebugger />
       </BrowserRouter>
     </AppProviders>
   );

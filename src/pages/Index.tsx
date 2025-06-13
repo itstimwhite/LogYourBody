@@ -24,8 +24,9 @@ const Index = () => {
 
   useEffect(() => {
     // If user is authenticated, redirect to dashboard
+    console.log('Index: auth state', { loading, hasUser: !!user, isRedirecting, currentPath: window.location.pathname });
     if (!loading && user && !isRedirecting) {
-      console.log("Authenticated user detected on homepage, redirecting to dashboard");
+      console.log("Index: Authenticated user detected on homepage, redirecting to dashboard");
       setIsRedirecting(true);
       // Add a small delay to prevent redirect loops during OAuth flows
       const timer = setTimeout(() => {

@@ -102,13 +102,18 @@ export function RouteGuard({
     // Add current redirect
     redirectHistory.push({ path: location.pathname, timestamp: now });
 
-    // Check for loops (same path visited 4+ times in 5 seconds) - increased threshold
+    // Check for loops (same path visited 6+ times in 5 seconds) - increased threshold for web
     const pathCounts = redirectHistory.reduce((acc, entry) => {
       acc[entry.path] = (acc[entry.path] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    const hasLoop = Object.values(pathCounts).some(count => count >= 4);
+    const hasLoop = Object.values(pathCounts).some(count => count >= 6);
+    
+    // Add detailed logging for redirect tracking
+    if (Object.values(pathCounts).some(count => count >= 3)) {
+      console.warn('RouteGuard: Potential redirect loop detected', { pathCounts, currentPath: location.pathname });
+    }
     
     if (hasLoop) {
       console.warn('Redirect loop detected, clearing session and redirecting to home');
