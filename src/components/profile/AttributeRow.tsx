@@ -22,15 +22,27 @@ interface AttributeRowProps {
 export const calculateAge = (birthDate: Date | string | null): number => {
   if (!birthDate) return 0;
   
-  const birth = typeof birthDate === 'string' ? new Date(birthDate) : birthDate;
-  const today = new Date();
-  
-  // Calculate age using floor((today - birthDate) / 365.25 days)
-  const diffInMilliseconds = today.getTime() - birth.getTime();
-  const diffInDays = diffInMilliseconds / (1000 * 60 * 60 * 24);
-  const age = Math.floor(diffInDays / 365.25);
-  
-  return age;
+  try {
+    const birth = typeof birthDate === 'string' ? new Date(birthDate) : birthDate;
+    
+    // Check if the date is valid
+    if (!birth || isNaN(birth.getTime())) {
+      console.warn('Invalid birth date provided:', birthDate);
+      return 0;
+    }
+    
+    const today = new Date();
+    
+    // Calculate age using floor((today - birthDate) / 365.25 days)
+    const diffInMilliseconds = today.getTime() - birth.getTime();
+    const diffInDays = diffInMilliseconds / (1000 * 60 * 60 * 24);
+    const age = Math.floor(diffInDays / 365.25);
+    
+    return age;
+  } catch (error) {
+    console.error('Error calculating age:', error, 'birthDate:', birthDate);
+    return 0;
+  }
 };
 
 export const AttributeRow = React.memo<AttributeRowProps>(function AttributeRow({

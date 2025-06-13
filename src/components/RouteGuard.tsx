@@ -2,6 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { toast } from 'sonner';
 import { serviceWorkerManager } from '@/lib/service-worker-manager';
+import { Capacitor } from '@capacitor/core';
+import { SplashScreen } from '@capacitor/splash-screen';
+import { useSplashScreen } from '@/hooks/use-splash-screen';
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -11,7 +14,7 @@ interface RouteGuardProps {
 
 export function RouteGuard({ 
   children, 
-  redirectTimeout = 2000,
+  redirectTimeout = 5000, // Increased to 5 seconds
   fallbackRoute = '/dashboard'
 }: RouteGuardProps) {
   const navigate = useNavigate();
@@ -20,6 +23,7 @@ export function RouteGuard({
   const [showTimeout, setShowTimeout] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const loadingStartTime = useRef(Date.now());
+  const { hideSplashScreen } = useSplashScreen();
 
   useEffect(() => {
     // Reset loading state on route change
@@ -44,16 +48,22 @@ export function RouteGuard({
             return;
           }
 
-          // Show timeout UI if not a SW issue
-          toast.error('Still loading…', {
-            description: 'The page is taking longer than expected to load.',
-            action: {
-              label: 'Go to Dashboard',
-              onClick: () => {
-                navigate(fallbackRoute, { replace: true });
-              },
-            },
+          // Show timeout UI and force navigation
+          console.warn('RouteGuard timeout - forcing navigation and hiding splash');
+          
+          // Force hide splash screen if stuck
+          if (Capacitor.isNativePlatform()) {
+            hideSplashScreen();
+          }
+          
+          toast.error('Loading timeout - redirecting', {
+            description: 'Redirecting to dashboard due to loading timeout.',
           });
+          
+          // Force navigation to dashboard
+          setTimeout(() => {
+            navigate(fallbackRoute, { replace: true });
+          }, 1000);
         });
       }
     }, redirectTimeout);
@@ -92,13 +102,13 @@ export function RouteGuard({
     // Add current redirect
     redirectHistory.push({ path: location.pathname, timestamp: now });
 
-    // Check for loops (same path visited 3+ times in 5 seconds)
+    // Check for loops (same path visited 4+ times in 5 seconds) - increased threshold
     const pathCounts = redirectHistory.reduce((acc, entry) => {
       acc[entry.path] = (acc[entry.path] || 0) + 1;
       return acc;
     }, {} as Record<string, number>);
 
-    const hasLoop = Object.values(pathCounts).some(count => count >= 3);
+    const hasLoop = Object.values(pathCounts).some(count => count >= 4);
     
     if (hasLoop) {
       console.warn('Redirect loop detected, clearing session and redirecting to home');

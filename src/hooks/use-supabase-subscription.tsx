@@ -13,6 +13,15 @@ export function useSupabaseSubscription() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Initialize state variables
+  const [subscriptionInfo, setSubscriptionInfo] = useState<SubscriptionInfo>({
+    status: "trial",
+    isTrialActive: false,
+    daysRemainingInTrial: 0,
+  });
+  
+  const [billingInfo, setBillingInfo] = useState<BillingInfo | null>(null);
 
   // Fetch subscription data with caching
   const fetchSubscriptionData = async () => {
@@ -40,10 +49,65 @@ export function useSupabaseSubscription() {
   const subscriptionData = subscriptionQuery.data;
   const loading = subscriptionQuery.isLoading;
 
-  const loadSubscriptionData = async () => {
+  // Calculate trial status
+  const calculateTrialStatus = useCallback((trialEndDate?: Date) => {
+    if (!trialEndDate) {
+      return { isTrialActive: false, daysRemainingInTrial: 0 };
+    }
+
+    const now = new Date();
+    const isTrialActive = now < trialEndDate;
+    const daysRemaining = Math.max(
+      0,
+      Math.ceil(
+        (trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+      ),
+    );
+
+    return { isTrialActive, daysRemainingInTrial: daysRemaining };
+  }, []);
+
+  // Start trial
+  const startTrial = useCallback(async () => {
     if (!user) return;
 
-    setLoading(true);
+    setIsLoading(true);
+    try {
+      const now = new Date();
+      const trialEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days from now
+
+      const { error } = await supabase.from("subscriptions").upsert({
+        user_id: user.id,
+        status: "trial",
+        trial_start_date: now.toISOString(),
+        trial_end_date: trialEnd.toISOString(),
+      });
+
+      if (error) {
+        console.error("Error starting trial:", error);
+        return;
+      }
+
+      const newSubscriptionInfo: SubscriptionInfo = {
+        status: "trial",
+        trialStartDate: now,
+        trialEndDate: trialEnd,
+        isTrialActive: true,
+        daysRemainingInTrial: 3,
+      };
+
+      setSubscriptionInfo(newSubscriptionInfo);
+    } catch (error) {
+      console.error("Failed to start trial:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [user]);
+
+  const loadSubscriptionData = useCallback(async () => {
+    if (!user) return;
+
+    setIsLoading(true);
     try {
       const { data: subscriptionData } = await supabase
         .from("subscriptions")
@@ -99,27 +163,9 @@ export function useSupabaseSubscription() {
     } catch (error) {
       console.error("Error loading subscription data:", error);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
-  };
-
-  // Calculate trial status
-  const calculateTrialStatus = useCallback((trialEndDate?: Date) => {
-    if (!trialEndDate) {
-      return { isTrialActive: false, daysRemainingInTrial: 0 };
-    }
-
-    const now = new Date();
-    const isTrialActive = now < trialEndDate;
-    const daysRemaining = Math.max(
-      0,
-      Math.ceil(
-        (trialEndDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-      ),
-    );
-
-    return { isTrialActive, daysRemainingInTrial: daysRemaining };
-  }, []);
+  }, [user, calculateTrialStatus, startTrial]);
 
   // Check if user has access to app
   const hasAccess = useMemo(() => {
@@ -134,43 +180,6 @@ export function useSupabaseSubscription() {
       subscriptionInfo.status === "trial" && !subscriptionInfo.isTrialActive
     );
   }, [subscriptionInfo.status, subscriptionInfo.isTrialActive]);
-
-  // Start trial
-  const startTrial = useCallback(async () => {
-    if (!user) return;
-
-    setIsLoading(true);
-    try {
-      const now = new Date();
-      const trialEnd = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000); // 3 days from now
-
-      const { error } = await supabase.from("subscriptions").upsert({
-        user_id: user.id,
-        status: "trial",
-        trial_start_date: now.toISOString(),
-        trial_end_date: trialEnd.toISOString(),
-      });
-
-      if (error) {
-        console.error("Error starting trial:", error);
-        return;
-      }
-
-      const newSubscriptionInfo: SubscriptionInfo = {
-        status: "trial",
-        trialStartDate: now,
-        trialEndDate: trialEnd,
-        isTrialActive: true,
-        daysRemainingInTrial: 3,
-      };
-
-      setSubscriptionInfo(newSubscriptionInfo);
-    } catch (error) {
-      console.error("Failed to start trial:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [user]);
 
   // Purchase subscription
   const purchaseSubscription = useCallback(
@@ -262,6 +271,13 @@ export function useSupabaseSubscription() {
 
     window.open(url, "_blank");
   }, []);
+
+  // Load subscription data on mount
+  useEffect(() => {
+    if (user) {
+      loadSubscriptionData();
+    }
+  }, [user, loadSubscriptionData]);
 
   // Update subscription status periodically
   useEffect(() => {

@@ -62,6 +62,11 @@ export function useSupabaseBodyMetrics() {
       throw new Error(`Failed to fetch profile: ${error.message}`);
     }
 
+    // Convert birthday string to Date object if it exists
+    if (data && data.birthday) {
+      data.birthday = new Date(data.birthday);
+    }
+
     return data;
   };
 
@@ -101,7 +106,13 @@ export function useSupabaseBodyMetrics() {
       throw new Error(`Failed to fetch metrics: ${error.message}`);
     }
 
-    return data || [];
+    // Convert date strings to Date objects
+    const processedData = (data || []).map(item => ({
+      ...item,
+      date: new Date(item.date)
+    }));
+
+    return processedData;
   };
 
   // Use safe queries with caching
@@ -138,10 +149,25 @@ export function useSupabaseBodyMetrics() {
     }
   }, [metrics.length, selectedDateIndex]);
 
-  const sortedMetrics = useMemo(
-    () => [...metrics].sort((a, b) => a.date.getTime() - b.date.getTime()),
-    [metrics],
-  );
+  const sortedMetrics = useMemo(() => {
+    return [...metrics].sort((a, b) => {
+      try {
+        const dateA = a.date instanceof Date ? a.date : new Date(a.date);
+        const dateB = b.date instanceof Date ? b.date : new Date(b.date);
+        
+        // Check if dates are valid
+        if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
+          console.warn('Invalid date in metrics:', { a: a.date, b: b.date });
+          return 0;
+        }
+        
+        return dateA.getTime() - dateB.getTime();
+      } catch (error) {
+        console.error('Error sorting metrics by date:', error);
+        return 0;
+      }
+    });
+  }, [metrics]);
 
   const currentMetrics = useMemo((): DashboardMetrics => {
     const metric = sortedMetrics[selectedDateIndex];

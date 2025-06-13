@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { SMSLogin } from "@/components/SMSLogin";
 import { Smartphone } from "lucide-react";
@@ -12,6 +12,7 @@ import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const {
     user,
     loading: authLoading,
@@ -22,7 +23,8 @@ const Login = () => {
     startTrial,
   } = useAuth();
 
-  const [isLogin, setIsLogin] = useState(true);
+  // Check URL params for signup mode
+  const [isLogin, setIsLogin] = useState(searchParams.get('mode') !== 'signup');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");

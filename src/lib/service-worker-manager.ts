@@ -1,9 +1,11 @@
 import { toast } from 'sonner';
+import { Capacitor } from '@capacitor/core';
 
 interface ServiceWorkerState {
   isStale: boolean;
   hasRedirectLoop: boolean;
   unregistrationInProgress: boolean;
+  isNativePlatform: boolean;
 }
 
 class ServiceWorkerManager {
@@ -11,6 +13,7 @@ class ServiceWorkerManager {
     isStale: false,
     hasRedirectLoop: false,
     unregistrationInProgress: false,
+    isNativePlatform: Capacitor.isNativePlatform(),
   };
 
   private redirectLoopDetector: {
@@ -23,7 +26,40 @@ class ServiceWorkerManager {
     threshold: 3, // Max redirects in 2 seconds
   };
 
+  public async disableOnNative(): Promise<void> {
+    if (!this.state.isNativePlatform) {
+      return;
+    }
+
+    console.log('Native platform detected - disabling all service workers');
+    
+    try {
+      // Unregister all existing service workers immediately
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        const unregistrationPromises = registrations.map(async (registration) => {
+          console.log('Unregistering SW on native platform:', registration.scope);
+          return registration.unregister();
+        });
+        
+        await Promise.all(unregistrationPromises);
+        console.log(`Unregistered ${registrations.length} service workers on native platform`);
+      }
+
+      // Clear all caches to prevent stale data issues
+      await this.clearAllCaches();
+      
+    } catch (error) {
+      console.error('Error disabling service worker on native platform:', error);
+    }
+  }
+
   public async detectStaleServiceWorker(): Promise<boolean> {
+    // Skip SW detection entirely on native platforms
+    if (this.state.isNativePlatform) {
+      return false;
+    }
+
     if (!('serviceWorker' in navigator)) {
       return false;
     }
@@ -150,6 +186,12 @@ class ServiceWorkerManager {
   }
 
   public async checkAndCleanup(): Promise<void> {
+    // On native platforms, always disable service workers
+    if (this.state.isNativePlatform) {
+      await this.disableOnNative();
+      return;
+    }
+
     const isStale = await this.detectStaleServiceWorker();
     
     if (isStale || this.state.hasRedirectLoop) {

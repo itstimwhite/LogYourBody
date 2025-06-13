@@ -23,17 +23,17 @@ export const AvatarDisplay = React.memo<AvatarDisplayProps>(function AvatarDispl
   const spring = getAnimation('spring');
   
   // Calculate fill opacity based on body fat percentage (0-50% range)
-  const fillOpacity = useMemo(() => Math.min(bodyFatPercentage / 25, 1), [bodyFatPercentage]);
+  const fillOpacity = useMemo(() => Math.min((bodyFatPercentage || 0) / 25, 1), [bodyFatPercentage]);
 
   const maleSilhouette = useMemo(() => (
     <svg 
       viewBox="0 0 200 400" 
       className="w-full h-full"
       role="img"
-      aria-label={`Male body silhouette showing ${bodyFatPercentage.toFixed(1)} percent body fat`}
+      aria-label={`Male body silhouette showing ${(bodyFatPercentage || 0).toFixed(1)} percent body fat`}
     >
       <title>Male Body Silhouette</title>
-      <desc>Visual representation of body composition with {bodyFatPercentage.toFixed(1)}% body fat</desc>
+      <desc>Visual representation of body composition with {(bodyFatPercentage || 0).toFixed(1)}% body fat</desc>
       
       {/* Body outline */}
       <path
@@ -76,10 +76,10 @@ export const AvatarDisplay = React.memo<AvatarDisplayProps>(function AvatarDispl
       viewBox="0 0 200 400" 
       className="w-full h-full"
       role="img"
-      aria-label={`Female body silhouette showing ${bodyFatPercentage.toFixed(1)} percent body fat`}
+      aria-label={`Female body silhouette showing ${(bodyFatPercentage || 0).toFixed(1)} percent body fat`}
     >
       <title>Female Body Silhouette</title>
-      <desc>Visual representation of body composition with {bodyFatPercentage.toFixed(1)}% body fat</desc>
+      <desc>Visual representation of body composition with {(bodyFatPercentage || 0).toFixed(1)}% body fat</desc>
       
       {/* Body outline - female shape */}
       <path
@@ -128,9 +128,9 @@ export const AvatarDisplay = React.memo<AvatarDisplayProps>(function AvatarDispl
       >
         <div 
           className={cn(tw.bodyFatOverlay, 'px-3 py-1 rounded-lg bg-black/20 backdrop-blur-sm')}
-          aria-label={`Current body fat percentage: ${bodyFatPercentage.toFixed(1)} percent`}
+          aria-label={`Current body fat percentage: ${(bodyFatPercentage || 0).toFixed(1)} percent`}
         >
-          {bodyFatPercentage.toFixed(1)}% body fat
+          {(bodyFatPercentage || 0).toFixed(1)}% body fat
         </div>
       </motion.div>
 
@@ -174,7 +174,7 @@ export const AvatarDisplay = React.memo<AvatarDisplayProps>(function AvatarDispl
 export const useAvatarAnnouncement = (bodyFatPercentage: number, gender: string, showPhoto: boolean) => {
   React.useEffect(() => {
     const viewType = showPhoto ? 'profile photo' : `${gender} body silhouette`;
-    const announcement = `Displaying ${viewType} with ${bodyFatPercentage.toFixed(1)} percent body fat`;
+    const announcement = `Displaying ${viewType} with ${(bodyFatPercentage || 0).toFixed(1)} percent body fat`;
     
     // Create live region for screen reader announcement
     const liveRegion = document.createElement('div');

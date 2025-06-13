@@ -35,7 +35,7 @@ export const MetricsPanel = React.memo(function MetricsPanel({
         {/* Body Fat */}
         <div className="text-right md:text-left">
           <div className="text-white text-xl md:text-2xl lg:text-4xl xl:text-5xl font-bold font-inter tracking-tight">
-            {metrics.bodyFatPercentage.toFixed(1)}%
+            {(metrics.bodyFatPercentage || 0).toFixed(1)}%
           </div>
           <div className="text-white/80 text-xs md:text-sm font-medium mt-1 tracking-[0.1em] uppercase">
             Body Fat

@@ -73,7 +73,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Add timeout to prevent hanging
         const sessionPromise = supabase.auth.getSession();
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session initialization timeout')), 5000)
+          setTimeout(() => reject(new Error('Session initialization timeout')), 3000)
         );
         
         const { data: { session }, error } = await Promise.race([
@@ -98,11 +98,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(null);
       } finally {
         // Always set loading to false
+        console.log('AuthContext: Setting loading to false');
         setLoading(false);
       }
     };
     
     initializeAuth();
+
+    // Emergency fallback timeout to ensure loading is never stuck
+    const emergencyTimeout = setTimeout(() => {
+      console.warn('AuthContext: Emergency timeout triggered - forcing loading to false');
+      setLoading(false);
+    }, 10000); // 10 seconds
 
     // Listen for auth changes
     const {
@@ -110,6 +117,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } = supabase.auth.onAuthStateChange(async (event, session) => {
       try {
         console.log("Auth state change:", event, session?.user?.email);
+        console.log("Current window location:", window.location.href);
+        console.log("Session details:", session ? "exists" : "null");
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -122,11 +131,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
             console.log("Profile creation and email sync completed");
           } catch (error) {
             console.error("Profile creation failed:", error);
+            // Don't block login if profile creation fails
           }
+        }
+
+        // Handle sign-in errors by clearing state
+        if (event === "SIGNED_OUT" || (event === "TOKEN_REFRESHED" && !session)) {
+          console.log("User signed out or token refresh failed");
+          setSession(null);
+          setUser(null);
+          setLoading(false);
         }
       } catch (error) {
         console.error("Error in auth state change handler:", error);
+        // Ensure loading is always cleared
         setLoading(false);
+        setSession(null);
+        setUser(null);
       }
     });
 
@@ -451,8 +472,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
       };
     }
 
-    const redirectUrl = `${window.location.origin}/dashboard`;
-    console.log("Google OAuth redirect URL:", redirectUrl);
+    // Use production domain for OAuth redirects
+    const isNative = window.location.protocol === 'capacitor:';
+    const redirectUrl = isNative 
+      ? 'https://logyourbody.com/dashboard'  // Native app should redirect to production domain
+      : `${window.location.origin}/dashboard`; // Web app uses current origin
+    console.log("Google OAuth redirect URL:", redirectUrl, "isNative:", isNative);
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -477,7 +502,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Check if running in native iOS app
     const isNative = window.location.protocol === 'capacitor:';
     const redirectUrl = isNative 
-      ? 'logyourbody://auth/callback'  // Native app custom scheme
+      ? 'https://logyourbody.com/dashboard'  // Native app should redirect to production domain
       : `${window.location.origin}/dashboard`; // Web app - redirect to dashboard directly
     
     console.log("Apple OAuth redirect URL:", redirectUrl, "isNative:", isNative);

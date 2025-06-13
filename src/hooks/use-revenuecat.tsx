@@ -72,6 +72,12 @@ export function useRevenueCat(): RevenueCatState & RevenueCatActions {
 
       } catch (error) {
         console.error('Failed to initialize RevenueCat:', error);
+        
+        // Log additional error details for debugging
+        if (error && typeof error === 'object' && 'code' in error) {
+          console.error('RevenueCat error code:', (error as any).code);
+        }
+        
         setState(prev => ({
           ...prev,
           isLoading: false,

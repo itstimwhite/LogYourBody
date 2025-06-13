@@ -90,57 +90,63 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
   </QueryClientProvider>
 );
 
-const AppRoutes = () => (
-  <RouteGuard>
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
-        {publicRoutes.map(({ path, element }) => (
-          <Route key={path} path={path} element={element} />
-        ))}
-        {protectedRoutes.map(({ path, element }) => (
-          <Route 
-            key={path} 
-            path={path} 
-            element={
-              <AuthGuard>
-                <ProfileGuard>
-                  <Suspense fallback={<PageLoader />}>
-                    {element}
-                  </Suspense>
-                </ProfileGuard>
-              </AuthGuard>
-            } 
-          />
-        ))}
-        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-        <Route path="*" element={<NotFound />} />
-        {/* Fallback for invalid URLs - redirect to home */}
-        <Route path="/404" element={<NotFound />} />
-        <Route path="/unknown" element={<NotFound />} />
-      </Routes>
-    </Suspense>
-  </RouteGuard>
-);
+const AppRoutes = () => {
+  console.log("AppRoutes rendering, current path:", window.location.pathname);
+  
+  return (
+    <RouteGuard>
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          {publicRoutes.map(({ path, element }) => (
+            <Route key={path} path={path} element={element} />
+          ))}
+          {protectedRoutes.map(({ path, element }) => (
+            <Route 
+              key={path} 
+              path={path} 
+              element={
+                <AuthGuard>
+                  <ProfileGuard>
+                    <Suspense fallback={<PageLoader />}>
+                      {element}
+                    </Suspense>
+                  </ProfileGuard>
+                </AuthGuard>
+              } 
+            />
+          ))}
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+          {/* Fallback for invalid URLs - redirect to home */}
+          <Route path="/404" element={<NotFound />} />
+          <Route path="/unknown" element={<NotFound />} />
+        </Routes>
+      </Suspense>
+    </RouteGuard>
+  );
+};
 
 const App = () => {
   useEffect(() => {
-    // Check for service worker issues and clean up if needed
+    // Handle service worker based on platform
     const handleServiceWorkerIssues = async () => {
       try {
-        // Track this app load for redirect loop detection
-        serviceWorkerManager.trackRedirect();
-        
-        // Check and cleanup stale service workers
-        await serviceWorkerManager.checkAndCleanup();
+        if (Capacitor.isNativePlatform()) {
+          // On native platforms, completely disable service workers
+          console.log('Native platform detected - disabling service workers');
+          await serviceWorkerManager.disableOnNative();
+        } else {
+          // On web platforms, check and cleanup as usual
+          serviceWorkerManager.trackRedirect();
+          await serviceWorkerManager.checkAndCleanup();
+        }
       } catch (error) {
         console.warn('Error handling service worker issues:', error);
       }
     };
 
-    // Run SW check immediately for web platforms
-    if (!Capacitor.isNativePlatform()) {
-      handleServiceWorkerIssues();
-    }
+    // Run SW handling immediately
+    handleServiceWorkerIssues();
 
     // Clear any stale auth state on app startup (fresh builds)
     if (Capacitor.isNativePlatform()) {
@@ -178,22 +184,39 @@ const App = () => {
       clearStaleAuth();
     }
 
-    // Hide splash screen - simplified for better performance
+    // Setup splash screen hiding with fallback
+    let splashHidden = false;
+    
     const hideSplashScreen = async () => {
-      if (Capacitor.isNativePlatform()) {
-        try {
-          console.log('Hiding native splash screen...');
-          await SplashScreen.hide();
-          console.log('Native splash screen hidden successfully');
-        } catch (error) {
-          console.warn('Error hiding splash screen:', error);
-        }
+      if (!Capacitor.isNativePlatform() || splashHidden) {
+        return;
+      }
+      
+      try {
+        console.log('Hiding native splash screen...');
+        await SplashScreen.hide();
+        splashHidden = true;
+        console.log('Native splash screen hidden successfully');
+      } catch (error) {
+        console.warn('Error hiding splash screen:', error);
       }
     };
 
-    // Longer timeout to ensure auth context has time to initialize
-    const timer = setTimeout(hideSplashScreen, 2500);
-    return () => clearTimeout(timer);
+    // Fallback timeout to ensure splash never stays forever
+    const fallbackTimer = setTimeout(() => {
+      console.log('Fallback timeout triggered - hiding splash screen');
+      hideSplashScreen();
+    }, 8000); // 8 second fallback
+
+    // Hide splash after initial setup completes
+    const initialTimer = setTimeout(() => {
+      hideSplashScreen();
+    }, 3000);
+
+    return () => {
+      clearTimeout(fallbackTimer);
+      clearTimeout(initialTimer);
+    };
   }, []); // Empty deps - runs once
 
   return (

@@ -150,7 +150,7 @@ export const AvatarSilhouette = React.memo(function AvatarSilhouette({
       {/* Body fat percentage indicator */}
       <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
         <div className="text-muted-foreground text-sm text-center font-medium">
-          {bodyFatPercentage.toFixed(1)}% body fat
+          {(bodyFatPercentage || 0).toFixed(1)}% body fat
         </div>
       </div>
     </div>
