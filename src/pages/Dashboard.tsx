@@ -2,8 +2,10 @@ import React, { useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { MetricsPanel } from "@/components/MetricsPanel";
-import { TimelineSlider } from "@/components/TimelineSlider";
+import { ProfilePanel } from "@/components/profile/ProfilePanel";
+import { TimelineSlider } from "@/components/profile/TimelineSlider";
+import { AvatarDisplay } from "@/components/profile/AvatarDisplay";
+import { TabView, createProfileTabs } from "@/components/profile/TabView";
 import { LogEntryModal } from "@/components/LogEntryModal";
 import { WeightLoggingWrapper } from "@/components/weight-logging-v2/WeightLoggingWrapper";
 import { WeightPrompt } from "@/components/WeightPrompt";
@@ -15,7 +17,7 @@ import { useBodyMetrics } from "@/hooks/use-body-metrics";
 import { useHealthKit } from "@/hooks/use-healthkit";
 import { isNativeiOS } from "@/lib/platform";
 
-// Lazy load heavy 3D component
+// Keep the old AvatarSilhouette as lazy-loaded fallback (not used in main flow anymore)
 const AvatarSilhouette = React.lazy(() => import("@/components/AvatarSilhouette").then(module => ({ default: module.AvatarSilhouette })));
 
 // Loading fallback for avatar
@@ -54,15 +56,15 @@ const Dashboard = () => {
 
   const loading = isSupabaseConfigured ? supabaseHook.loading : false;
 
-  const [showPhoto, setShowPhoto] = useState(false);
+  const [activeTabIndex, setActiveTabIndex] = useState(0);
   const [showLogModal, setShowLogModal] = useState(false);
   const [showPremiumWeightLog, setShowPremiumWeightLog] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [healthKitWeightData, setHealthKitWeightData] = useState<any>(null);
   const [healthKitDataChecked, setHealthKitDataChecked] = useState(false);
 
-  const handleToggleView = () => {
-    setShowPhoto(!showPhoto);
+  const handleTabChange = (tabIndex: number) => {
+    setActiveTabIndex(tabIndex);
   };
 
   // Check HealthKit data on iOS - non-blocking background operation
@@ -206,96 +208,75 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Main Content - Mobile-first design with desktop fallback */}
+        {/* Main Content - Refactored with TabView */}
         <div className="flex-1 flex flex-col md:flex-row min-h-0">
-          {/* Mobile Top Bar with Toggle and Action Buttons */}
-          <div className="md:hidden w-full px-4 py-3 bg-secondary/30 border-b border-border">
-            <div className="flex items-center gap-4">
-              {/* Avatar/Photo Toggle */}
-              <div className="flex-1 bg-secondary rounded-lg p-1">
-                <div className="flex">
-                  <button
-                    onClick={() => setShowPhoto(false)}
-                    className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
-                      !showPhoto
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Avatar
-                  </button>
-                  <button
-                    onClick={() => setShowPhoto(true)}
-                    className={`flex-1 py-2 px-4 text-sm font-medium rounded-md transition-all ${
-                      showPhoto
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Photo
-                  </button>
-                </div>
-              </div>
-              
-              {/* Action Buttons */}
-              <div className="flex gap-3">
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={() => {
-                    if (!hasWeightData) {
-                      setShowWeightPrompt(true);
-                    } else {
-                      setShowPremiumWeightLog(true);
-                    }
-                  }}
-                  className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="outline"
-                  onClick={() => navigate("/settings")}
-                  className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
-                >
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </div>
+          {/* Avatar/Photo Section with Tabs - Top half on mobile, 2/3 on desktop */}
+          <div className="flex-1 md:w-2/3 relative min-h-0">
+            <TabView
+              tabs={createProfileTabs(
+                <Suspense fallback={<AvatarLoader />}>
+                  <AvatarDisplay
+                    gender={user.gender}
+                    bodyFatPercentage={currentMetrics.bodyFatPercentage}
+                    showPhoto={false}
+                    className="h-full w-full"
+                  />
+                </Suspense>,
+                <Suspense fallback={<AvatarLoader />}>
+                  <AvatarDisplay
+                    gender={user.gender}
+                    bodyFatPercentage={currentMetrics.bodyFatPercentage}
+                    showPhoto={true}
+                    profileImage={user.profileImage}
+                    className="h-full w-full"
+                  />
+                </Suspense>
+              )}
+              defaultIndex={activeTabIndex}
+              onTabChange={handleTabChange}
+              swipeEnabled={true}
+              className="h-full w-full"
+            />
+
+            {/* Mobile Action Buttons - Floating */}
+            <div className="md:hidden absolute top-safe-top right-4 z-20 flex gap-3">
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => {
+                  if (!hasWeightData) {
+                    setShowWeightPrompt(true);
+                  } else {
+                    setShowPremiumWeightLog(true);
+                  }
+                }}
+                className="bg-background/80 backdrop-blur-sm border-border text-foreground hover:bg-muted h-10 w-10 shadow-lg"
+              >
+                <Plus className="h-4 w-4" />
+              </Button>
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => navigate("/settings")}
+                className="bg-background/80 backdrop-blur-sm border-border text-foreground hover:bg-muted h-10 w-10 shadow-lg"
+              >
+                <Settings className="h-4 w-4" />
+              </Button>
             </div>
           </div>
 
-          {/* Content Area - Flexible layout for mobile/desktop */}
-          <div className="flex-1 flex flex-col md:flex-row min-h-0">
-            {/* Avatar Section - Top half on mobile, 2/3 on desktop */}
-            <div className="flex-1 md:w-2/3 relative min-h-0">
-              <Suspense fallback={<AvatarLoader />}>
-                <AvatarSilhouette
-                  gender={user.gender}
-                  bodyFatPercentage={currentMetrics.bodyFatPercentage}
-                  showPhoto={showPhoto}
-                  profileImage={user.profileImage}
-                  onToggleView={handleToggleView}
-                  className="h-full w-full"
-                  hideToggleOnMobile={true}
-                />
-              </Suspense>
-            </div>
-
-            {/* Metrics Panel - Bottom half on mobile, 1/3 on desktop */}
-            <div className="flex-1 md:flex-none md:w-1/3 md:border-l border-border bg-secondary/30 min-h-0">
-              <MetricsPanel
-                metrics={currentMetrics}
-                user={user}
-                userAge={getUserAge()}
-                formattedWeight={getFormattedWeight(currentMetrics.weight)}
-                formattedHeight={getFormattedHeight(user.height)}
-                formattedLeanBodyMass={getFormattedLeanBodyMass(
-                  currentMetrics.leanBodyMass,
-                )}
-                showPhoto={showPhoto}
-              />
-            </div>
+          {/* Profile Panel - Bottom half on mobile, 1/3 on desktop */}
+          <div className="flex-1 md:flex-none md:w-1/3 md:border-l border-border min-h-0">
+            <ProfilePanel
+              metrics={currentMetrics}
+              user={user}
+              userAge={getUserAge()}
+              formattedWeight={getFormattedWeight(currentMetrics.weight)}
+              formattedHeight={getFormattedHeight(user.height)}
+              formattedLeanBodyMass={getFormattedLeanBodyMass(
+                currentMetrics.leanBodyMass,
+              )}
+            />
           </div>
         </div>
 

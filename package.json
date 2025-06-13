@@ -53,6 +53,7 @@
     "@capacitor/ios": "^7.3.0",
     "@capacitor/splash-screen": "^7.0.1",
     "@capacitor/status-bar": "^7.0.1",
+    "@headlessui/react": "^2.2.4",
     "@hookform/resolvers": "^3.9.0",
     "@perfood/capacitor-healthkit": "^2.0.0-alpha.2",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -115,6 +116,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.15",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
