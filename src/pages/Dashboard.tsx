@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { TimelineSlider } from "@/components/TimelineSlider";
 import { LogEntryModal } from "@/components/LogEntryModal";
+import { WeightLoggingWrapper } from "@/components/weight-logging/WeightLoggingWrapper";
 import { WeightPrompt } from "@/components/WeightPrompt";
 import { TrialGuard } from "@/components/TrialGuard";
 import { VersionDisplay } from "@/components/VersionDisplay";
@@ -55,6 +56,7 @@ const Dashboard = () => {
 
   const [showPhoto, setShowPhoto] = useState(false);
   const [showLogModal, setShowLogModal] = useState(false);
+  const [showPremiumWeightLog, setShowPremiumWeightLog] = useState(false);
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [healthKitWeightData, setHealthKitWeightData] = useState<any>(null);
   const [healthKitDataChecked, setHealthKitDataChecked] = useState(false);
@@ -186,7 +188,7 @@ const Dashboard = () => {
                 if (!hasWeightData) {
                   setShowWeightPrompt(true);
                 } else {
-                  setShowLogModal(true);
+                  setShowPremiumWeightLog(true);
                 }
               }}
               className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
@@ -244,7 +246,7 @@ const Dashboard = () => {
                     if (!hasWeightData) {
                       setShowWeightPrompt(true);
                     } else {
-                      setShowLogModal(true);
+                      setShowPremiumWeightLog(true);
                     }
                   }}
                   className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
@@ -312,6 +314,16 @@ const Dashboard = () => {
           onOpenChange={setShowLogModal}
           onSave={handleAddMetric}
           units={settings.units}
+        />
+
+        {/* Premium Weight Logging Screen */}
+        <WeightLoggingWrapper
+          show={showPremiumWeightLog}
+          onSave={handleAddMetric}
+          onClose={() => setShowPremiumWeightLog(false)}
+          units={settings.units}
+          initialWeight={currentMetrics.weight > 0 ? (settings.units === 'imperial' ? utils.kgToLbs(currentMetrics.weight) : currentMetrics.weight) : undefined}
+          initialBodyFat={currentMetrics.bodyFatPercentage}
         />
       </div>
       </TrialGuard>
