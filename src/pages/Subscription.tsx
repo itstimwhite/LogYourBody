@@ -11,12 +11,19 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useSubscription } from "@/hooks/use-subscription";
 import { Paywall } from "@/components/Paywall";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 
 const Subscription = () => {
   const navigate = useNavigate();
   const { subscriptionInfo, billingInfo, cancelSubscription, isLoading } =
     useSubscription();
   const [showUpgrade, setShowUpgrade] = useState(false);
+
+  // Add swipe navigation to go back to settings
+  useSwipeNavigation({
+    onSwipeRight: () => navigate("/settings"),
+    threshold: 100,
+  });
 
   const formatDate = (date?: Date) => {
     if (!date) return "N/A";

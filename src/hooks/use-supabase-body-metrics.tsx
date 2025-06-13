@@ -1,6 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSafeQuery } from "./use-safe-query";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   BodyMetrics,
   UserProfile,
@@ -43,84 +45,98 @@ function calculateFFMI(leanBodyMass: number, heightCm: number): number {
 
 export function useSupabaseBodyMetrics() {
   const { user } = useAuth();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [metrics, setMetrics] = useState<BodyMetrics[]>([]);
-  const [settings, setSettings] = useState<UserSettings | null>(null);
+  const queryClient = useQueryClient();
   const [selectedDateIndex, setSelectedDateIndex] = useState<number>(0);
-  const [loading, setLoading] = useState(true);
 
-  // Load user data on mount
-  useEffect(() => {
-    if (user) {
-      loadUserData();
+  // Individual query functions for cached data fetching
+  const fetchUserProfile = async (): Promise<UserProfile | null> => {
+    if (!user?.id) return null;
+    
+    const { data, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("id", user.id)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      throw new Error(`Failed to fetch profile: ${error.message}`);
     }
-  }, [user]);
 
-  const loadUserData = async () => {
-    if (!user) return;
-
-    setLoading(true);
-    try {
-      // Load profile
-      const { data: profileData } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", user.id)
-        .single();
-
-      if (profileData) {
-        setUserProfile({
-          id: profileData.id,
-          name: profileData.name,
-          email: profileData.email,
-          gender: profileData.gender,
-          birthday: new Date(profileData.birthday),
-          height: profileData.height,
-          profileImage: profileData.profile_image_url,
-        });
-      }
-
-      // Load settings
-      const { data: settingsData } = await supabase
-        .from("user_settings")
-        .select("*")
-        .eq("user_id", user.id)
-        .single();
-
-      if (settingsData) {
-        setSettings({
-          userId: settingsData.user_id,
-          units: settingsData.units,
-          healthKitSyncEnabled: settingsData.health_kit_sync_enabled,
-          googleFitSyncEnabled: settingsData.google_fit_sync_enabled,
-        });
-      }
-
-      // Load metrics
-      const { data: metricsData } = await supabase
-        .from("body_metrics")
-        .select("*")
-        .eq("user_id", user.id)
-        .order("date", { ascending: true });
-
-      if (metricsData) {
-        const formattedMetrics: BodyMetrics[] = metricsData.map((metric) => ({
-          id: metric.id,
-          userId: metric.user_id,
-          date: new Date(metric.date),
-          weight: metric.weight,
-          bodyFatPercentage: metric.body_fat_percentage,
-          method: metric.method,
-        }));
-        setMetrics(formattedMetrics);
-        setSelectedDateIndex(Math.max(0, formattedMetrics.length - 1));
-      }
-    } catch (error) {
-      console.error("Error loading user data:", error);
-    } finally {
-      setLoading(false);
-    }
+    return data;
   };
+
+  const fetchUserSettings = async (): Promise<UserSettings | null> => {
+    if (!user?.id) return null;
+    
+    const { data, error } = await supabase
+      .from("user_settings")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      // Return default settings if none exist
+      return {
+        user_id: user.id,
+        units: "imperial",
+        notifications_enabled: true,
+        healthkit_sync_enabled: false,
+        googlefit_sync_enabled: false,
+      };
+    }
+
+    return data;
+  };
+
+  const fetchBodyMetrics = async (): Promise<BodyMetrics[]> => {
+    if (!user?.id) return [];
+    
+    const { data, error } = await supabase
+      .from("body_metrics")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("date", { ascending: true });
+
+    if (error) {
+      throw new Error(`Failed to fetch metrics: ${error.message}`);
+    }
+
+    return data || [];
+  };
+
+  // Use safe queries with caching
+  const profileQuery = useSafeQuery({
+    queryKey: ["profile", user?.id],
+    queryFn: fetchUserProfile,
+    enabled: !!user?.id,
+  });
+
+  const settingsQuery = useSafeQuery({
+    queryKey: ["settings", user?.id],
+    queryFn: fetchUserSettings,
+    enabled: !!user?.id,
+  });
+
+  const metricsQuery = useSafeQuery({
+    queryKey: ["metrics", user?.id],
+    queryFn: fetchBodyMetrics,
+    enabled: !!user?.id,
+  });
+
+  // Extract data from queries
+  const userProfile = profileQuery.data || null;
+  const settings = settingsQuery.data || null;
+  const metrics = metricsQuery.data || [];
+  
+  // Combined loading state
+  const loading = profileQuery.isLoading || settingsQuery.isLoading || metricsQuery.isLoading;
+
+  // Set initial selected date index when metrics load
+  useEffect(() => {
+    if (metrics.length > 0 && selectedDateIndex === 0) {
+      setSelectedDateIndex(Math.max(0, metrics.length - 1));
+    }
+  }, [metrics.length, selectedDateIndex]);
 
   const sortedMetrics = useMemo(
     () => [...metrics].sort((a, b) => a.date.getTime() - b.date.getTime()),
@@ -177,17 +193,10 @@ export function useSupabaseBodyMetrics() {
         }
 
         if (data) {
-          const formattedMetric: BodyMetrics = {
-            id: data.id,
-            userId: data.user_id,
-            date: new Date(data.date),
-            weight: data.weight,
-            bodyFatPercentage: data.body_fat_percentage,
-            method: data.method,
-          };
-
-          setMetrics((prev) => [...prev, formattedMetric]);
-          // Select the newest entry
+          // Invalidate metrics query to refetch and update cache
+          queryClient.invalidateQueries({ queryKey: ["metrics", user.id] });
+          
+          // Select the newest entry after data is updated
           setSelectedDateIndex(sortedMetrics.length);
         }
       } catch (error) {
@@ -224,7 +233,8 @@ export function useSupabaseBodyMetrics() {
           return;
         }
 
-        setUserProfile((prev) => (prev ? { ...prev, ...updates } : null));
+        // Invalidate profile query to refetch and update cache
+        queryClient.invalidateQueries({ queryKey: ["profile", user.id] });
       } catch (error) {
         console.error("Error in updateUser:", error);
       }
@@ -256,7 +266,8 @@ export function useSupabaseBodyMetrics() {
           return;
         }
 
-        setSettings((prev) => (prev ? { ...prev, ...updates } : null));
+        // Invalidate settings query to refetch and update cache
+        queryClient.invalidateQueries({ queryKey: ["settings", user.id] });
       } catch (error) {
         console.error("Error in updateSettings:", error);
       }

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "metric-1",
+    "user_id": "test-user-id",
+    "date": "2024-01-01",
+    "weight": 75.5,
+    "body_fat_percentage": 12.5,
+    "method": "scale"
+  },
+  {
+    "id": "metric-2",
+    "user_id": "test-user-id",
+    "date": "2024-01-15",
+    "weight": 74.8,
+    "body_fat_percentage": 11.8,
+    "method": "dexa"
+  },
+  {
+    "id": "metric-3",
+    "user_id": "test-user-id",
+    "date": "2024-02-01",
+    "weight": 74.2,
+    "body_fat_percentage": 11.2,
+    "method": "scale"
+  }
+]

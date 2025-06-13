@@ -14,6 +14,9 @@ import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 import { Capacitor } from '@capacitor/core';
 import { SplashScreen } from '@capacitor/splash-screen';
+import { serviceWorkerManager } from '@/lib/service-worker-manager';
+import { RouteGuard } from '@/components/RouteGuard';
+
 
 // Lazy load pages for better code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -37,7 +40,24 @@ const PageLoader = () => (
   </div>
 );
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: Infinity, // Never refetch automatically
+      gcTime: 24 * 60 * 60 * 1000, // Keep cache for 24 hours
+      retry: (failureCount, error) => {
+        // Don't retry on network errors that suggest offline status
+        if (error instanceof Error && 
+            (error.message.includes('NetworkError') || 
+             error.message.includes('Failed to fetch'))) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+    },
+  },
+});
 
 const publicRoutes = [
   { path: "/", element: <Index /> },
@@ -71,34 +91,57 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
 );
 
 const AppRoutes = () => (
-  <Suspense fallback={<PageLoader />}>
-    <Routes>
-      {publicRoutes.map(({ path, element }) => (
-        <Route key={path} path={path} element={element} />
-      ))}
-      {protectedRoutes.map(({ path, element }) => (
-        <Route 
-          key={path} 
-          path={path} 
-          element={
-            <AuthGuard>
-              <ProfileGuard>
-                <Suspense fallback={<PageLoader />}>
-                  {element}
-                </Suspense>
-              </ProfileGuard>
-            </AuthGuard>
-          } 
-        />
-      ))}
-      {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-      <Route path="*" element={<NotFound />} />
-    </Routes>
-  </Suspense>
+  <RouteGuard>
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        {publicRoutes.map(({ path, element }) => (
+          <Route key={path} path={path} element={element} />
+        ))}
+        {protectedRoutes.map(({ path, element }) => (
+          <Route 
+            key={path} 
+            path={path} 
+            element={
+              <AuthGuard>
+                <ProfileGuard>
+                  <Suspense fallback={<PageLoader />}>
+                    {element}
+                  </Suspense>
+                </ProfileGuard>
+              </AuthGuard>
+            } 
+          />
+        ))}
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+        {/* Fallback for invalid URLs - redirect to home */}
+        <Route path="/404" element={<NotFound />} />
+        <Route path="/unknown" element={<NotFound />} />
+      </Routes>
+    </Suspense>
+  </RouteGuard>
 );
 
 const App = () => {
   useEffect(() => {
+    // Check for service worker issues and clean up if needed
+    const handleServiceWorkerIssues = async () => {
+      try {
+        // Track this app load for redirect loop detection
+        serviceWorkerManager.trackRedirect();
+        
+        // Check and cleanup stale service workers
+        await serviceWorkerManager.checkAndCleanup();
+      } catch (error) {
+        console.warn('Error handling service worker issues:', error);
+      }
+    };
+
+    // Run SW check immediately for web platforms
+    if (!Capacitor.isNativePlatform()) {
+      handleServiceWorkerIssues();
+    }
+
     // Clear any stale auth state on app startup (fresh builds)
     if (Capacitor.isNativePlatform()) {
       // Clear Capacitor storage to prevent stale sessions

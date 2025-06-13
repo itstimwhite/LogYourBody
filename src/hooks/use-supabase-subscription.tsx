@@ -1,6 +1,8 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSafeQuery } from "./use-safe-query";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   SubscriptionInfo,
   SubscriptionStatus,
@@ -9,21 +11,34 @@ import {
 
 export function useSupabaseSubscription() {
   const { user } = useAuth();
-  const [subscriptionInfo, setSubscriptionInfo] = useState<SubscriptionInfo>({
-    status: "trial",
-    isTrialActive: false,
-    daysRemainingInTrial: 0,
-  });
-  const [billingInfo, setBillingInfo] = useState<BillingInfo>({});
+  const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  // Load subscription data on mount
-  useEffect(() => {
-    if (user) {
-      loadSubscriptionData();
+  // Fetch subscription data with caching
+  const fetchSubscriptionData = async () => {
+    if (!user?.id) return null;
+    
+    const { data, error } = await supabase
+      .from("subscriptions")
+      .select("*")
+      .eq("user_id", user.id)
+      .single();
+
+    if (error && error.code !== "PGRST116") {
+      throw new Error(`Failed to fetch subscription: ${error.message}`);
     }
-  }, [user]);
+
+    return data;
+  };
+
+  const subscriptionQuery = useSafeQuery({
+    queryKey: ["subscription", user?.id],
+    queryFn: fetchSubscriptionData,
+    enabled: !!user?.id,
+  });
+
+  const subscriptionData = subscriptionQuery.data;
+  const loading = subscriptionQuery.isLoading;
 
   const loadSubscriptionData = async () => {
     if (!user) return;

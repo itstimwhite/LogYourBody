@@ -4,6 +4,7 @@ import { LandingPage } from "@/components/LandingPage";
 import { useResponsive } from "@/hooks/use-responsive";
 import { useAuth } from "@/contexts/AuthContext";
 import { Capacitor } from '@capacitor/core';
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 
 const Index = () => {
   const { isMobile } = useResponsive();
@@ -11,6 +12,12 @@ const Index = () => {
   const navigate = useNavigate();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [forceRedirect, setForceRedirect] = useState(false);
+
+  // Add swipe navigation to go to login
+  useSwipeNavigation({
+    onSwipeLeft: () => navigate("/login"),
+    threshold: 100,
+  });
 
   // Fallback timeout to prevent hanging
   useEffect(() => {

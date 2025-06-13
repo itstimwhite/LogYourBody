@@ -15,6 +15,7 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
 import { useHealthKit } from "@/hooks/use-healthkit";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { isNativeiOS } from "@/lib/platform";
 
 // Keep the old AvatarSilhouette as lazy-loaded fallback (not used in main flow anymore)
@@ -66,6 +67,12 @@ const Dashboard = () => {
   const handleTabChange = (tabIndex: number) => {
     setActiveTabIndex(tabIndex);
   };
+
+  // Add swipe navigation to go to settings
+  useSwipeNavigation({
+    onSwipeLeft: () => navigate("/settings"),
+    threshold: 100,
+  });
 
   // Check HealthKit data on iOS - non-blocking background operation
   React.useEffect(() => {

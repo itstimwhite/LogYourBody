@@ -8,6 +8,7 @@ import { SMSLogin } from "@/components/SMSLogin";
 import { Smartphone } from "lucide-react";
 import { shouldShowEmailAuth, logPlatformInfo, isNativeiOS } from "@/lib/platform";
 import { useAppleSignIn } from "@/hooks/use-apple-signin";
+import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -28,6 +29,12 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showSMSLogin, setShowSMSLogin] = useState(false);
+
+  // Add swipe navigation to go back to home/index
+  useSwipeNavigation({
+    onSwipeRight: () => navigate("/"),
+    threshold: 100,
+  });
   const showEmailAuth = shouldShowEmailAuth();
   
   // Native Apple Sign In hook for iOS
