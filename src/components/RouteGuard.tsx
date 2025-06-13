@@ -14,7 +14,7 @@ interface RouteGuardProps {
 
 export function RouteGuard({
   children,
-  redirectTimeout = 5000, // Increased to 5 seconds
+  redirectTimeout = 10000, // Increased to 10 seconds
   fallbackRoute = "/", // Changed to home instead of dashboard
 }: RouteGuardProps) {
   const navigate = useNavigate();

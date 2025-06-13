@@ -145,7 +145,7 @@ const Dashboard = () => {
         setHealthKitDataChecked(true);
       }
     }
-  }, [healthKit.isAvailable, healthKit.isAuthorized, healthKitDataChecked]);
+  }, [healthKitDataChecked]); // Removed healthKit dependencies to prevent re-renders
 
   const handleAddMetric = (data: {
     weight: number;

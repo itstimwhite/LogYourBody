@@ -204,9 +204,9 @@ const Settings = () => {
 
   return (
     <AuthGuard>
-      <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
         {/* Header with safe area padding */}
-        <div className="flex items-center gap-4 border-b border-border px-6 pb-4 pt-safe-top">
+        <div className="flex flex-shrink-0 items-center gap-4 border-b border-border px-6 pb-4 pt-safe-top">
           <Button
             size="icon"
             variant="outline"
@@ -218,8 +218,8 @@ const Settings = () => {
           <h1 className="text-lg font-semibold tracking-tight">Settings</h1>
         </div>
 
-        {/* Settings List */}
-        <div className="flex-1 space-y-8 p-6">
+        {/* Settings List - Scrollable */}
+        <div className="flex-1 overflow-y-auto space-y-8 p-6 pb-safe-bottom">
           {/* Personal Information */}
           <div className="space-y-6">
             <div className="space-y-6">
