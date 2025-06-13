@@ -47,11 +47,11 @@
       ]
     }
   ],
-  "env": {
-    "VITE_SUPABASE_URL": "@vite_supabase_url",
-    "VITE_SUPABASE_ANON_KEY": "@vite_supabase_anon_key", 
-    "VITE_REVENUECAT_PUBLIC_KEY": "@vite_revenuecat_public_key",
-    "VITE_REVENUECAT_IOS_KEY": "@vite_revenuecat_ios_key",
-    "VITE_REVENUECAT_WEB_KEY": "@vite_revenuecat_web_key"
+  "build": {
+    "env": {
+      "VITE_SUPABASE_URL": "https://przjeunffnkjzxpykvjn.supabase.co",
+      "VITE_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByempldW5mZm5ranp4cHlrdmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTI1NDYsImV4cCI6MjA2NDk4ODU0Nn0.jZyohfzoydZKaSH_q0Tu4VqEbyFDdf-8i0kSm-YzB8w",
+      "VITE_REVENUECAT_PUBLIC_KEY": "appl_dJsnXzyTgEAsntJQjOxeOvOnoXP"
+    }
   }
 }
