@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { MetricsPanel } from "@/components/MetricsPanel";
 import { TimelineSlider } from "@/components/TimelineSlider";
 import { LogEntryModal } from "@/components/LogEntryModal";
-import { WeightLoggingWrapper } from "@/components/weight-logging/WeightLoggingWrapper";
+import { WeightLoggingWrapper } from "@/components/weight-logging-v2/WeightLoggingWrapper";
 import { WeightPrompt } from "@/components/WeightPrompt";
 import { TrialGuard } from "@/components/TrialGuard";
 import { VersionDisplay } from "@/components/VersionDisplay";
