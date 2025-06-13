@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { toast } from 'sonner';
-import { serviceWorkerManager } from '@/lib/service-worker-manager';
-import { Capacitor } from '@capacitor/core';
-import { SplashScreen } from '@capacitor/splash-screen';
-import { useSplashScreen } from '@/hooks/use-splash-screen';
+import React, { useEffect, useState, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import { toast } from "sonner";
+import { serviceWorkerManager } from "@/lib/service-worker-manager";
+import { Capacitor } from "@capacitor/core";
+import { SplashScreen } from "@capacitor/splash-screen";
+import { useSplashScreen } from "@/hooks/use-splash-screen";
 
 interface RouteGuardProps {
   children: React.ReactNode;
@@ -12,10 +12,10 @@ interface RouteGuardProps {
   fallbackRoute?: string;
 }
 
-export function RouteGuard({ 
-  children, 
+export function RouteGuard({
+  children,
   redirectTimeout = 5000, // Increased to 5 seconds
-  fallbackRoute = '/dashboard'
+  fallbackRoute = "/dashboard",
 }: RouteGuardProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,32 +34,34 @@ export function RouteGuard({
     // Set up timeout for loading states
     timeoutRef.current = setTimeout(() => {
       const loadingDuration = Date.now() - loadingStartTime.current;
-      
+
       if (loadingDuration > redirectTimeout) {
         setShowTimeout(true);
-        
+
         // Check if this might be a service worker issue
         serviceWorkerManager.detectStaleServiceWorker().then((isStale) => {
           if (isStale) {
-            toast.error('Loading issue detected', {
-              description: 'Cleaning up app cache and refreshing...',
+            toast.error("Loading issue detected", {
+              description: "Cleaning up app cache and refreshing...",
             });
             serviceWorkerManager.checkAndCleanup();
             return;
           }
 
           // Show timeout UI and force navigation
-          console.warn('RouteGuard timeout - forcing navigation and hiding splash');
-          
+          console.warn(
+            "RouteGuard timeout - forcing navigation and hiding splash",
+          );
+
           // Force hide splash screen if stuck
           if (Capacitor.isNativePlatform()) {
             hideSplashScreen();
           }
-          
-          toast.error('Loading timeout - redirecting', {
-            description: 'Redirecting to dashboard due to loading timeout.',
+
+          toast.error("Loading timeout - redirecting", {
+            description: "Redirecting to dashboard due to loading timeout.",
           });
-          
+
           // Force navigation to dashboard
           setTimeout(() => {
             navigate(fallbackRoute, { replace: true });
@@ -83,17 +85,32 @@ export function RouteGuard({
 
   // Detect potential redirect loops
   useEffect(() => {
-    const redirectLoopKey = 'route_redirects';
+    // Skip redirect loop detection during OAuth flows
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasOAuthParams =
+      urlParams.has("access_token") ||
+      urlParams.has("refresh_token") ||
+      urlParams.has("code") ||
+      urlParams.has("state");
+
+    if (hasOAuthParams) {
+      console.log("RouteGuard: Skipping redirect loop detection - OAuth flow detected");
+      return;
+    }
+
+    const redirectLoopKey = "route_redirects";
     const now = Date.now();
     const stored = sessionStorage.getItem(redirectLoopKey);
-    
+
     let redirectHistory: { path: string; timestamp: number }[] = [];
-    
+
     if (stored) {
       try {
         redirectHistory = JSON.parse(stored);
-        // Clean old entries (older than 5 seconds)
-        redirectHistory = redirectHistory.filter(entry => now - entry.timestamp < 5000);
+        // Clean old entries (older than 10 seconds for more tolerance)
+        redirectHistory = redirectHistory.filter(
+          (entry) => now - entry.timestamp < 10000,
+        );
       } catch {
         redirectHistory = [];
       }
@@ -102,24 +119,33 @@ export function RouteGuard({
     // Add current redirect
     redirectHistory.push({ path: location.pathname, timestamp: now });
 
-    // Check for loops (same path visited 6+ times in 5 seconds) - increased threshold for web
-    const pathCounts = redirectHistory.reduce((acc, entry) => {
-      acc[entry.path] = (acc[entry.path] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    // Check for loops (same path visited 8+ times in 10 seconds) - more tolerant threshold
+    const pathCounts = redirectHistory.reduce(
+      (acc, entry) => {
+        acc[entry.path] = (acc[entry.path] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>,
+    );
 
-    const hasLoop = Object.values(pathCounts).some(count => count >= 6);
-    
+    const hasLoop = Object.values(pathCounts).some((count) => count >= 8);
+
     // Add detailed logging for redirect tracking
-    if (Object.values(pathCounts).some(count => count >= 3)) {
-      console.warn('RouteGuard: Potential redirect loop detected', { pathCounts, currentPath: location.pathname });
+    if (Object.values(pathCounts).some((count) => count >= 4)) {
+      console.warn("RouteGuard: Potential redirect loop detected", {
+        pathCounts,
+        currentPath: location.pathname,
+        hasOAuthParams,
+      });
     }
-    
+
     if (hasLoop) {
-      console.warn('Redirect loop detected, clearing session and redirecting to home');
+      console.warn(
+        "Redirect loop detected, clearing session and redirecting to home",
+      );
       sessionStorage.clear();
       serviceWorkerManager.trackRedirect();
-      navigate('/', { replace: true });
+      navigate("/", { replace: true });
       return;
     }
 
@@ -131,9 +157,9 @@ export function RouteGuard({
     <>
       {children}
       {showTimeout && (
-        <div className="fixed bottom-4 right-4 z-50 bg-yellow-50 border border-yellow-200 rounded-lg p-4 shadow-lg">
+        <div className="fixed bottom-4 right-4 z-50 rounded-lg border border-yellow-200 bg-yellow-50 p-4 shadow-lg">
           <div className="flex items-center gap-2">
-            <div className="animate-spin h-4 w-4 border-2 border-yellow-500 border-t-transparent rounded-full"></div>
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-yellow-500 border-t-transparent"></div>
             <span className="text-sm text-yellow-800">Still loading...</span>
           </div>
         </div>
