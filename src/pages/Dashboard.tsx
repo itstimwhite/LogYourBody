@@ -13,6 +13,22 @@ import { TrialGuard } from "@/components/TrialGuard";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import { EmailConfirmationBanner } from "@/components/EmailConfirmationBanner";
 import { isSupabaseConfigured } from "@/lib/supabase";
+
+// Helper function to calculate age from birthday
+function getAgeFromBirthday(birthday?: string): number {
+  if (!birthday) return 30; // Default age
+  
+  const birthDate = new Date(birthday);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const monthDiff = today.getMonth() - birthDate.getMonth();
+  
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  
+  return Math.max(18, Math.min(65, age)); // Clamp to reasonable range
+}
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
 import { useHealthKit } from "@/hooks/use-healthkit";
@@ -233,6 +249,9 @@ const Dashboard = () => {
                     bodyFatPercentage={currentMetrics.bodyFatPercentage}
                     showPhoto={false}
                     className="h-full w-full"
+                    weight={currentMetrics.weight}
+                    height={user.height}
+                    age={getAgeFromBirthday(user.birthday)}
                   />
                 </Suspense>,
                 <Suspense fallback={<AvatarLoader />}>
@@ -242,6 +261,9 @@ const Dashboard = () => {
                     showPhoto={true}
                     profileImage={user.profileImage}
                     className="h-full w-full"
+                    weight={currentMetrics.weight}
+                    height={user.height}
+                    age={getAgeFromBirthday(user.birthday)}
                   />
                 </Suspense>
               )}

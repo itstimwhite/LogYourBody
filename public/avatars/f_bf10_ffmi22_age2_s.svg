@@ -1,0 +1,17 @@
+
+      <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#0d0d0d"/>
+        <line x1="244.99272727272728" y1="112.25" x2="225.84145454545455" y2="200" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="225.84145454545455" y1="200" x2="240.3" y2="287.75" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="240.3" y1="287.75" x2="159.7" y2="287.75" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="159.7" y1="287.75" x2="174.15854545454545" y2="200" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="174.15854545454545" y1="200" x2="165.00727272727272" y2="112.25" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="165.00727272727272" y1="112.25" x2="244.99272727272728" y2="112.25" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="165.00727272727272" y1="112.25" x2="244.99272727272728" y2="112.25" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+        <line x1="174.15854545454545" y1="200" x2="225.84145454545455" y2="200" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+        <line x1="159.7" y1="287.75" x2="240.3" y2="287.75" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+        <line x1="200" y1="112.25" x2="200" y2="287.75" stroke="#ffffff" stroke-width="1" fill="none" opacity="0.7"/>
+        <line x1="170" y1="150" x2="230" y2="150" stroke="#ffffff" stroke-width="1" fill="none" opacity="0.5818181818181819"/>
+        <line x1="175" y1="220" x2="225" y2="220" stroke="#ffffff" stroke-width="1" fill="none" opacity="0.5818181818181819"/>
+      </svg>
+    

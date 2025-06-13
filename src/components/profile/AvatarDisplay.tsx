@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { tw, getAnimation } from '@/styles/design-tokens';
 import { LazyImage } from '@/components/ui/lazy-image';
+import { getAvatarUrlFromMetrics, getFallbackAvatarUrl, type UserMetrics } from '@/utils/avatar-utils';
 
 interface AvatarDisplayProps {
   gender: 'male' | 'female';
@@ -10,6 +11,10 @@ interface AvatarDisplayProps {
   showPhoto: boolean;
   profileImage?: string;
   className?: string;
+  // New props for enhanced avatar system
+  weight?: number;
+  height?: number;
+  age?: number;
 }
 
 export const AvatarDisplay = React.memo<AvatarDisplayProps>(function AvatarDisplay({
@@ -18,104 +23,48 @@ export const AvatarDisplay = React.memo<AvatarDisplayProps>(function AvatarDispl
   showPhoto,
   profileImage,
   className,
+  weight = 70,
+  height = 170,
+  age = 30,
 }) {
   const fadeIn = getAnimation('fadeIn');
   const spring = getAnimation('spring');
+  const [avatarError, setAvatarError] = useState(false);
   
-  // Calculate fill opacity based on body fat percentage (0-50% range)
-  const fillOpacity = useMemo(() => Math.min((bodyFatPercentage || 0) / 25, 1), [bodyFatPercentage]);
+  // Generate avatar URL from user metrics
+  const avatarUrl = useMemo(() => {
+    const metrics: UserMetrics = {
+      weight,
+      height,
+      bodyFat: bodyFatPercentage,
+      age,
+      gender
+    };
+    
+    return getAvatarUrlFromMetrics(metrics);
+  }, [weight, height, bodyFatPercentage, age, gender]);
+  
+  // Fallback avatar URL if main avatar fails to load
+  const fallbackUrl = useMemo(() => {
+    const fallbackParams = {
+      bodyFat: Math.round((bodyFatPercentage || 20) / 5) * 5, // Round to nearest 5
+      ffmi: 18, // Average FFMI
+      ageRangeIdx: 1, // 26-35 age range
+      sex: gender === 'female' ? 'f' as const : 'm' as const,
+      stature: 'm' as const // Medium stature
+    };
+    
+    return getFallbackAvatarUrl(fallbackParams);
+  }, [bodyFatPercentage, gender]);
 
-  const maleSilhouette = useMemo(() => (
-    <svg 
-      viewBox="0 0 200 400" 
-      className="w-full h-full"
-      role="img"
-      aria-label={`Male body silhouette showing ${(bodyFatPercentage || 0).toFixed(1)} percent body fat`}
-    >
-      <title>Male Body Silhouette</title>
-      <desc>Visual representation of body composition with {(bodyFatPercentage || 0).toFixed(1)}% body fat</desc>
-      
-      {/* Body outline */}
-      <path
-        d="M100 40 C85 40 75 50 75 65 L75 85 C70 90 65 100 65 115 L60 140 L55 180 L55 220 L50 260 L50 300 L45 340 L45 380 L65 380 L70 340 L75 300 L80 260 L85 220 L90 180 L95 140 L100 115 L105 140 L110 180 L115 220 L120 260 L125 300 L130 340 L135 380 L155 380 L150 340 L145 300 L150 260 L145 220 L145 180 L140 140 L135 115 C135 100 130 90 125 85 L125 65 C125 50 115 40 100 40 Z"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-        className="opacity-90"
-      />
-      
-      {/* Fill based on body fat */}
-      <path
-        d="M100 40 C85 40 75 50 75 65 L75 85 C70 90 65 100 65 115 L60 140 L55 180 L55 220 L50 260 L50 300 L45 340 L45 380 L65 380 L70 340 L75 300 L80 260 L85 220 L90 180 L95 140 L100 115 L105 140 L110 180 L115 220 L120 260 L125 300 L130 340 L135 380 L155 380 L150 340 L145 300 L150 260 L145 220 L145 180 L140 140 L135 115 C135 100 130 90 125 85 L125 65 C125 50 115 40 100 40 Z"
-        fill="white"
-        opacity={fillOpacity * 0.3}
-      />
-      
-      {/* Head */}
-      <circle
-        cx="100"
-        cy="25"
-        r="20"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-        className="opacity-90"
-      />
-      <circle
-        cx="100"
-        cy="25"
-        r="20"
-        fill="white"
-        opacity={fillOpacity * 0.3}
-      />
-    </svg>
-  ), [fillOpacity, bodyFatPercentage]);
-
-  const femaleSilhouette = useMemo(() => (
-    <svg 
-      viewBox="0 0 200 400" 
-      className="w-full h-full"
-      role="img"
-      aria-label={`Female body silhouette showing ${(bodyFatPercentage || 0).toFixed(1)} percent body fat`}
-    >
-      <title>Female Body Silhouette</title>
-      <desc>Visual representation of body composition with {(bodyFatPercentage || 0).toFixed(1)}% body fat</desc>
-      
-      {/* Body outline - female shape */}
-      <path
-        d="M100 40 C85 40 75 50 75 65 L75 85 C70 90 65 100 65 115 L60 140 L55 160 C50 165 45 170 45 180 L50 200 L55 220 L50 240 L50 260 L50 300 L45 340 L45 380 L65 380 L70 340 L75 300 L80 260 L85 240 L90 220 L95 200 L100 180 L105 200 L110 220 L115 240 L120 260 L125 300 L130 340 L135 380 L155 380 L150 340 L145 300 L150 260 L150 240 L145 220 L150 200 L155 180 C155 170 150 165 145 160 L140 140 L135 115 C135 100 130 90 125 85 L125 65 C125 50 115 40 100 40 Z"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-        className="opacity-90"
-      />
-      
-      {/* Fill based on body fat */}
-      <path
-        d="M100 40 C85 40 75 50 75 65 L75 85 C70 90 65 100 65 115 L60 140 L55 160 C50 165 45 170 45 180 L50 200 L55 220 L50 240 L50 260 L50 300 L45 340 L45 380 L65 380 L70 340 L75 300 L80 260 L85 240 L90 220 L95 200 L100 180 L105 200 L110 220 L115 240 L120 260 L125 300 L130 340 L135 380 L155 380 L150 340 L145 300 L150 260 L150 240 L145 220 L150 200 L155 180 C155 170 150 165 145 160 L140 140 L135 115 C135 100 130 90 125 85 L125 65 C125 50 115 40 100 40 Z"
-        fill="white"
-        opacity={fillOpacity * 0.3}
-      />
-      
-      {/* Head */}
-      <circle
-        cx="100"
-        cy="25"
-        r="20"
-        fill="none"
-        stroke="white"
-        strokeWidth="2"
-        className="opacity-90"
-      />
-      <circle
-        cx="100"
-        cy="25"
-        r="20"
-        fill="white"
-        opacity={fillOpacity * 0.3}
-      />
-    </svg>
-  ), [fillOpacity, bodyFatPercentage]);
+  // Handle avatar loading errors
+  const handleAvatarError = () => {
+    setAvatarError(true);
+  };
+  
+  const handleAvatarLoad = () => {
+    setAvatarError(false);
+  };
 
   return (
     <div className={cn(tw.avatarContainer, 'overflow-hidden', className)}>
@@ -159,9 +108,18 @@ export const AvatarDisplay = React.memo<AvatarDisplayProps>(function AvatarDispl
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
               transition={spring}
-              className="w-32 h-80 md:w-40 md:h-96"
+              className="w-48 h-80 md:w-56 md:h-96 flex items-center justify-center"
             >
-              {gender === 'male' ? maleSilhouette : femaleSilhouette}
+              <LazyImage
+                src={avatarError ? fallbackUrl : avatarUrl}
+                alt={`${gender} body composition wireframe showing ${(bodyFatPercentage || 0).toFixed(1)}% body fat`}
+                className="w-full h-full object-contain"
+                onError={handleAvatarError}
+                onLoad={handleAvatarLoad}
+                style={{
+                  filter: 'drop-shadow(0 0 8px rgba(255, 255, 255, 0.1))'
+                }}
+              />
             </motion.div>
           )}
         </AnimatePresence>

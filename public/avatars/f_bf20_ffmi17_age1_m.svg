@@ -1,0 +1,16 @@
+
+      <svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#0d0d0d"/>
+        <line x1="246.08181818181816" y1="101.25" x2="228.68363636363637" y2="200" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="228.68363636363637" y1="200" x2="242.9" y2="298.75" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="242.9" y1="298.75" x2="157.1" y2="298.75" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="157.1" y1="298.75" x2="171.31636363636363" y2="200" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="171.31636363636363" y1="200" x2="158.91818181818184" y2="101.25" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="158.91818181818184" y1="101.25" x2="246.08181818181816" y2="101.25" stroke="#ffffff" stroke-width="2" fill="none"/>
+        <line x1="158.91818181818184" y1="101.25" x2="246.08181818181816" y2="101.25" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+        <line x1="171.31636363636363" y1="200" x2="228.68363636363637" y2="200" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+        <line x1="157.1" y1="298.75" x2="242.9" y2="298.75" stroke="#ffffff" stroke-width="1.5" fill="none"/>
+        <line x1="200" y1="101.25" x2="200" y2="298.75" stroke="#ffffff" stroke-width="1" fill="none" opacity="0.7"/>
+        
+      </svg>
+    
