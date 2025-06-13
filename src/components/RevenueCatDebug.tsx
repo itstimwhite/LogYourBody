@@ -219,7 +219,15 @@ export function RevenueCatDebug() {
         <div className="pt-4 border-t">
           <h4 className="text-sm font-semibold mb-2">Environment</h4>
           <div className="text-xs text-muted-foreground space-y-1">
-            <div>Public Key: {import.meta.env.VITE_REVENUECAT_PUBLIC_KEY ? '✓ Configured' : '✗ Missing'}</div>
+            <div>
+              Public Key: {(() => {
+                const key = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY;
+                if (!key) return '✗ Missing';
+                if (key.startsWith('sk_')) return '✗ Secret key (should be public)';
+                if (key === 'your_revenuecat_public_key') return '✗ Not configured';
+                return '✓ Configured';
+              })()}
+            </div>
             <div>Platform: {navigator.platform}</div>
             <div>User Agent: {navigator.userAgent.substring(0, 50)}...</div>
           </div>

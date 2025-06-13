@@ -35,27 +35,26 @@ export function useRevenueCat(): RevenueCatState & RevenueCatActions {
   useEffect(() => {
     const initializeRevenueCat = async () => {
       try {
-        const apiKey = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY;
+        const rcKey = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY;
         
-        if (!apiKey || apiKey === 'pk_your_public_key_here' || apiKey.startsWith('strp_') || apiKey.startsWith('sk_')) {
-          console.warn('RevenueCat: Invalid or missing API key. Please add a valid RevenueCat public key to your .env file');
-          console.warn('RevenueCat: Expected format: pk_xxx or appl_xxx (public key), but got:', apiKey ? apiKey.substring(0, 10) + '...' : 'none');
-          if (apiKey && apiKey.startsWith('sk_')) {
-            console.warn('RevenueCat: You are using a SECRET key (sk_). Please use the PUBLIC key instead for security reasons.');
-          }
-          setState(prev => ({
-            ...prev,
-            isLoading: false,
-            error: 'RevenueCat API key not configured',
-          }));
-          return;
+        if (!rcKey) {
+          throw new Error("RevenueCat public key not set");
+        }
+        
+        // Validate key format - must be public key, not secret
+        if (rcKey.startsWith('sk_')) {
+          throw new Error("RevenueCat secret key detected. Please use the public key (starts with 'public_' or 'appl_')");
+        }
+        
+        if (rcKey === 'your_revenuecat_public_key' || rcKey === 'pk_your_public_key_here') {
+          throw new Error("RevenueCat public key not configured properly");
         }
 
-        console.log('Initializing RevenueCat with API key:', apiKey.substring(0, 10) + '...');
+        console.log('Initializing RevenueCat with public key:', rcKey.substring(0, 10) + '...');
 
-        // Configure RevenueCat
+        // Configure RevenueCat with validated public key
         await Purchases.configure({
-          apiKey,
+          apiKey: rcKey,
           // Set user ID if authenticated
           appUserID: user?.id || undefined,
         });
