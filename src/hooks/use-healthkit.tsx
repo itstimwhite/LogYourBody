@@ -1,27 +1,49 @@
 import { useState, useEffect } from 'react';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
-// HealthKit plugin interface
+// HealthKit plugin interface (matching @perfood/capacitor-healthkit)
 interface HealthKitPlugin {
-  isAvailable(): Promise<{ available: boolean }>;
-  requestPermissions(options: {
-    read: string[];
-    write: string[];
-  }): Promise<{ granted: boolean }>;
-  queryHKitSampleType(options: {
-    sampleName: string;
+  isAvailable(): Promise<void>;
+  requestAuthorization(options: {
+    all?: string[];
+    read?: string[];
+    write?: string[];
+  }): Promise<void>;
+  getAuthorizationStatus(options: {
+    sampleType: string;
+  }): Promise<{ status: 'notDetermined' | 'sharingDenied' | 'sharingAuthorized' }>;
+  getBodyMassEntries(options: {
     startDate: string;
-    endDate: string;
+    endDate?: string;
     limit?: number;
-  }): Promise<{ resultData: HealthKitSample[] }>;
-  multipleQueryHKitSampleType(options: {
-    sampleNames: string[];
+  }): Promise<{
+    data: Array<{
+      date: string;
+      value: number;
+      unit: string;
+      uuid: string;
+      sourceName: string;
+      sourceBundleId: string;
+    }>;
+  }>;
+  getStatisticsCollection(options: {
     startDate: string;
-    endDate: string;
-    limit?: number;
-  }): Promise<{ resultData: HealthKitSample[] }>;
+    endDate?: string;
+    anchorDate: string;
+    interval: {
+      unit: 'second' | 'minute' | 'hour' | 'day' | 'month' | 'year';
+      value: number;
+    };
+    quantityTypeSampleName: string;
+  }): Promise<{
+    data: Array<{
+      startDate: string;
+      endDate: string;
+      value: number;
+    }>;
+  }>;
 }
 
 interface HealthKitSample {
@@ -61,17 +83,27 @@ interface UseHealthKitReturn {
   syncToDatabase: () => Promise<HealthKitSyncResult>;
 }
 
-// Get HealthKit plugin
+// Register the HealthKit plugin with the correct name
+const CapacitorHealthkit = registerPlugin<HealthKitPlugin>('CapacitorHealthkit');
+
+// Get HealthKit plugin with better error handling
 const getHealthKit = (): HealthKitPlugin | null => {
+  // Quick exit for non-iOS platforms
   if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') {
     return null;
   }
   
   try {
-    const { HealthKit } = Capacitor.Plugins as any;
-    return HealthKit;
+    // Return the registered plugin
+    if (CapacitorHealthkit) {
+      console.log('HealthKit: Plugin loaded successfully');
+      return CapacitorHealthkit;
+    }
+    
+    console.log('HealthKit: Plugin not available');
+    return null;
   } catch (error) {
-    console.warn('HealthKit plugin not available:', error);
+    console.warn('HealthKit: Error accessing plugin:', error);
     return null;
   }
 };
@@ -81,23 +113,40 @@ export function useHealthKit(): UseHealthKitReturn {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [initialized, setInitialized] = useState(false);
   const { user } = useAuth();
 
   const healthKit = getHealthKit();
 
   useEffect(() => {
-    checkAvailability();
+    // Only initialize if we're on native iOS to prevent unnecessary plugin access
+    if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') {
+      console.log('HealthKit: Not on native iOS, skipping initialization');
+      setLoading(false);
+      setIsAvailable(false);
+      setInitialized(true);
+      return;
+    }
+
+    // Delay HealthKit check to ensure Capacitor is fully initialized
+    const initTimer = setTimeout(() => {
+      checkAvailability();
+    }, 1000); // Give Capacitor more time to load plugins
     
     // Safety timeout to prevent hanging on HealthKit initialization
-    const timeout = setTimeout(() => {
-      if (loading) {
+    const timeoutTimer = setTimeout(() => {
+      if (loading && !initialized) {
         console.warn('HealthKit initialization timed out');
         setLoading(false);
         setIsAvailable(false);
+        setInitialized(true);
       }
-    }, 1000); // 1 second timeout (reduced since we have fast exit)
+    }, 3000); // 3 second timeout for safety
     
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(initTimer);
+      clearTimeout(timeoutTimer);
+    };
   }, []);
 
   const checkAvailability = async () => {
@@ -106,6 +155,7 @@ export function useHealthKit(): UseHealthKitReturn {
       console.log('HealthKit: Not on native iOS, skipping availability check');
       setIsAvailable(false);
       setLoading(false);
+      setInitialized(true);
       return;
     }
 
@@ -113,19 +163,37 @@ export function useHealthKit(): UseHealthKitReturn {
       console.log('HealthKit: Plugin not available');
       setIsAvailable(false);
       setLoading(false);
+      setInitialized(true);
       return;
     }
 
     try {
-      const result = await healthKit.isAvailable();
-      setIsAvailable(result.available);
-      console.log('HealthKit availability:', result.available);
+      console.log('HealthKit: Checking availability...');
+      // The isAvailable() method doesn't return a value, it just throws if not available
+      await healthKit.isAvailable();
+      // If we get here without throwing, HealthKit is available
+      setIsAvailable(true);
+      console.log('HealthKit is available');
+      
+      // Check if we already have authorization for body mass
+      try {
+        const authStatus = await healthKit.getAuthorizationStatus({
+          sampleType: 'HKQuantityTypeIdentifierBodyMass'
+        });
+        const authorized = authStatus.status === 'sharingAuthorized';
+        setIsAuthorized(authorized);
+        console.log('HealthKit authorization status:', authStatus.status, 'authorized:', authorized);
+      } catch (authErr) {
+        console.log('Could not check authorization status:', authErr);
+        setIsAuthorized(false);
+      }
     } catch (err: any) {
-      console.error('Error checking HealthKit availability:', err);
-      setError(err.message || 'Failed to check HealthKit availability');
+      // If it throws, HealthKit is not available
+      console.log('HealthKit is not available:', err);
       setIsAvailable(false);
     } finally {
       setLoading(false);
+      setInitialized(true);
     }
   };
 
@@ -139,7 +207,8 @@ export function useHealthKit(): UseHealthKitReturn {
     setError(null);
 
     try {
-      const result = await healthKit.requestPermissions({
+      // Request authorization - this doesn't return a granted status
+      await healthKit.requestAuthorization({
         read: [
           'HKQuantityTypeIdentifierHeight',
           'HKQuantityTypeIdentifierBodyMass',
@@ -155,9 +224,15 @@ export function useHealthKit(): UseHealthKitReturn {
         ],
       });
 
-      setIsAuthorized(result.granted);
-      console.log('HealthKit permissions granted:', result.granted);
-      return result.granted;
+      // Check authorization status for a sample type to see if we got permission
+      const authStatus = await healthKit.getAuthorizationStatus({
+        sampleType: 'HKQuantityTypeIdentifierBodyMass'
+      });
+
+      const isAuthorized = authStatus.status === 'sharingAuthorized';
+      setIsAuthorized(isAuthorized);
+      console.log('HealthKit authorization status:', authStatus.status);
+      return isAuthorized;
     } catch (err: any) {
       console.error('Error requesting HealthKit permissions:', err);
       setError(err.message || 'Failed to request HealthKit permissions');
@@ -177,79 +252,26 @@ export function useHealthKit(): UseHealthKitReturn {
       const startDate = new Date();
       startDate.setFullYear(startDate.getFullYear() - 1); // Get last year of data
 
-      // Query multiple sample types
-      const result = await healthKit.multipleQueryHKitSampleType({
-        sampleNames: [
-          'HKQuantityTypeIdentifierHeight',
-          'HKQuantityTypeIdentifierBodyMass',
-          'HKQuantityTypeIdentifierBodyFatPercentage',
-          'HKQuantityTypeIdentifierStepCount',
-          'HKCharacteristicTypeIdentifierDateOfBirth',
-          'HKCharacteristicTypeIdentifierBiologicalSex',
-        ],
-        startDate: startDate.toISOString(),
-        endDate: endDate.toISOString(),
-        limit: 100, // Get more recent entries
-      });
-
       const healthData: HealthData = {};
 
-      if (result.resultData) {
-        // Group samples by type and get the most recent for each
-        const samplesByType: { [key: string]: HealthKitSample[] } = {};
-        result.resultData.forEach(sample => {
-          if (!samplesByType[sample.sampleType]) {
-            samplesByType[sample.sampleType] = [];
-          }
-          samplesByType[sample.sampleType].push(sample);
+      // Get body mass data
+      try {
+        const weightResult = await healthKit.getBodyMassEntries({
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          limit: 1, // Just get the most recent
         });
 
-        // Get most recent values for each type
-        Object.entries(samplesByType).forEach(([sampleType, samples]) => {
-          // Sort by date descending to get most recent
-          const sortedSamples = samples.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-          const mostRecent = sortedSamples[0];
-
-          switch (sampleType) {
-            case 'HKQuantityTypeIdentifierHeight':
-              // Convert from meters to centimeters for easier handling
-              healthData.height = mostRecent.value * 100;
-              break;
-            case 'HKQuantityTypeIdentifierBodyMass':
-              healthData.weight = mostRecent.value;
-              break;
-            case 'HKQuantityTypeIdentifierBodyFatPercentage':
-              healthData.bodyFatPercentage = mostRecent.value;
-              break;
-            case 'HKQuantityTypeIdentifierStepCount':
-              // For step count, we might want today's total
-              const today = new Date();
-              const todaysSamples = samples.filter(sample => {
-                const sampleDate = new Date(sample.date);
-                return sampleDate.toDateString() === today.toDateString();
-              });
-              healthData.stepCount = todaysSamples.reduce((total, sample) => total + sample.value, 0);
-              break;
-            case 'HKCharacteristicTypeIdentifierDateOfBirth':
-              healthData.dateOfBirth = new Date(mostRecent.date);
-              break;
-            case 'HKCharacteristicTypeIdentifierBiologicalSex':
-              // Map HealthKit biological sex values
-              switch (mostRecent.value) {
-                case 1:
-                  healthData.biologicalSex = 'female';
-                  break;
-                case 2:
-                  healthData.biologicalSex = 'male';
-                  break;
-                default:
-                  healthData.biologicalSex = 'other';
-              }
-              break;
-          }
-        });
+        if (weightResult.data.length > 0) {
+          healthData.weight = weightResult.data[0].value;
+        }
+      } catch (err) {
+        console.log('Could not get weight data:', err);
       }
 
+      // For this simplified plugin, we can only get body mass data
+      // Other data types would require different API calls or might not be supported
+      
       console.log('Retrieved HealthKit data:', healthData);
       return healthData;
     } catch (err: any) {
@@ -265,14 +287,19 @@ export function useHealthKit(): UseHealthKitReturn {
     }
 
     try {
-      const result = await healthKit.queryHKitSampleType({
-        sampleName: 'HKQuantityTypeIdentifierBodyMass',
+      const result = await healthKit.getBodyMassEntries({
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString(),
         limit: 1000, // Get up to 1000 weight entries
       });
 
-      return result.resultData || [];
+      // Convert the data format to match our interface
+      return result.data.map(entry => ({
+        value: entry.value,
+        date: entry.date,
+        sampleType: 'HKQuantityTypeIdentifierBodyMass',
+        unit: entry.unit
+      }));
     } catch (err: any) {
       console.error('Error getting weight history:', err);
       setError(err.message || 'Failed to get weight history');
@@ -288,12 +315,18 @@ export function useHealthKit(): UseHealthKitReturn {
   };
 
   const syncToDatabase = async (): Promise<HealthKitSyncResult> => {
+    console.log('syncToDatabase called - healthKit:', !!healthKit, 'isAvailable:', isAvailable, 'isAuthorized:', isAuthorized);
+    
     if (!healthKit || !isAvailable || !isAuthorized) {
-      return { success: false, error: 'HealthKit not available or not authorized' };
+      const errorMsg = `HealthKit not ready - plugin: ${!!healthKit}, available: ${isAvailable}, authorized: ${isAuthorized}`;
+      console.error(errorMsg);
+      return { success: false, error: errorMsg };
     }
 
     if (!user || !isSupabaseConfigured || !supabase) {
-      return { success: false, error: 'User not authenticated or database not configured' };
+      const errorMsg = `Database not ready - user: ${!!user}, supabase: ${!!supabase}, configured: ${isSupabaseConfigured}`;
+      console.error(errorMsg);
+      return { success: false, error: errorMsg };
     }
 
     try {
@@ -314,15 +347,19 @@ export function useHealthKit(): UseHealthKitReturn {
 
       // 1. Sync weight data
       try {
-        const weightData = await healthKit.queryHKitSampleType({
-          sampleName: 'HKQuantityTypeIdentifierBodyMass',
+        console.log('Requesting body mass entries from:', startDate.toISOString(), 'to:', endDate.toISOString());
+        const weightData = await healthKit.getBodyMassEntries({
           startDate: startDate.toISOString(),
           endDate: endDate.toISOString(),
           limit: 100,
         });
 
-        if (weightData.resultData && weightData.resultData.length > 0) {
-          for (const sample of weightData.resultData) {
+        console.log('HealthKit body mass response:', weightData);
+        console.log('Number of weight entries found:', weightData.data?.length || 0);
+
+        if (weightData.data && weightData.data.length > 0) {
+          console.log('Processing', weightData.data.length, 'weight entries...');
+          for (const sample of weightData.data) {
             const sampleDate = new Date(sample.date).toISOString().split('T')[0];
             
             // Check if we already have data for this date
@@ -350,138 +387,15 @@ export function useHealthKit(): UseHealthKitReturn {
               }
             }
           }
+        } else {
+          console.log('No weight data found in HealthKit or empty response');
         }
       } catch (error) {
         console.warn('Error syncing weight data:', error);
       }
 
-      // 2. Sync body fat data
-      try {
-        const bodyFatData = await healthKit.queryHKitSampleType({
-          sampleName: 'HKQuantityTypeIdentifierBodyFatPercentage',
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-          limit: 100,
-        });
-
-        if (bodyFatData.resultData && bodyFatData.resultData.length > 0) {
-          for (const sample of bodyFatData.resultData) {
-            const sampleDate = new Date(sample.date).toISOString().split('T')[0];
-            
-            // Update existing entry or create new one
-            const { data: existing } = await supabase
-              .from('body_metrics')
-              .select('id, weight')
-              .eq('user_id', user.id)
-              .eq('date', sampleDate)
-              .single();
-
-            if (existing) {
-              // Update existing entry with body fat data
-              const { error } = await supabase
-                .from('body_metrics')
-                .update({
-                  body_fat_percentage: sample.value * 100, // Convert from decimal to percentage
-                  method: 'dexa', // Assume more accurate measurement if body fat is available
-                })
-                .eq('id', existing.id);
-
-              if (!error) {
-                result.bodyFatEntries = (result.bodyFatEntries || 0) + 1;
-              }
-            } else {
-              // Create new entry with body fat (need weight too, use a default)
-              const { error } = await supabase
-                .from('body_metrics')
-                .insert({
-                  user_id: user.id,
-                  date: sampleDate,
-                  weight: 70.0, // Default weight if no weight data
-                  body_fat_percentage: sample.value * 100,
-                  method: 'dexa',
-                });
-
-              if (!error) {
-                result.bodyFatEntries = (result.bodyFatEntries || 0) + 1;
-              }
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('Error syncing body fat data:', error);
-      }
-
-      // 3. Update profile with latest height and other characteristics
-      try {
-        const profileData = await getHealthData();
-        if (profileData) {
-          const updates: any = {};
-          
-          if (profileData.height) {
-            updates.height = Math.round(profileData.height);
-          }
-          
-          if (profileData.biologicalSex && profileData.biologicalSex !== 'other') {
-            updates.gender = profileData.biologicalSex;
-          }
-          
-          if (profileData.dateOfBirth) {
-            updates.birthday = profileData.dateOfBirth;
-          }
-
-          if (Object.keys(updates).length > 0) {
-            const { error } = await supabase
-              .from('profiles')
-              .update(updates)
-              .eq('id', user.id);
-
-            if (!error) {
-              result.profileUpdated = true;
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('Error updating profile:', error);
-      }
-
-      // 4. Sync step count to daily_metrics table
-      try {
-        const stepData = await healthKit.queryHKitSampleType({
-          sampleName: 'HKQuantityTypeIdentifierStepCount',
-          startDate: startDate.toISOString(),
-          endDate: endDate.toISOString(),
-          limit: 100,
-        });
-
-        if (stepData.resultData && stepData.resultData.length > 0) {
-          // Group step data by date and sum steps for each day
-          const stepsByDate: { [date: string]: number } = {};
-          
-          stepData.resultData.forEach(sample => {
-            const sampleDate = new Date(sample.date).toISOString().split('T')[0];
-            stepsByDate[sampleDate] = (stepsByDate[sampleDate] || 0) + sample.value;
-          });
-
-          for (const [sampleDate, totalSteps] of Object.entries(stepsByDate)) {
-            // Upsert daily metrics
-            const { error } = await supabase
-              .from('daily_metrics')
-              .upsert({
-                user_id: user.id,
-                date: sampleDate,
-                step_count: Math.round(totalSteps),
-              }, {
-                onConflict: 'user_id,date'
-              });
-
-            if (!error) {
-              result.stepEntries = (result.stepEntries || 0) + 1;
-            }
-          }
-        }
-      } catch (error) {
-        console.warn('Error syncing step count data:', error);
-      }
+      // Note: This plugin only supports body mass data, so we can't sync body fat or steps
+      // If you need those features, you'll need a more comprehensive HealthKit plugin
 
       result.success = true;
       console.log('HealthKit sync completed:', result);

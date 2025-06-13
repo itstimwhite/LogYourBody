@@ -66,12 +66,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
       });
     });
 
-    // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
+    // Get initial session with better error handling
+    console.log('Getting initial session...');
+    const initializeAuth = async () => {
+      try {
+        // Add timeout to prevent hanging
+        const sessionPromise = supabase.auth.getSession();
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Session initialization timeout')), 5000)
+        );
+        
+        const { data: { session }, error } = await Promise.race([
+          sessionPromise,
+          timeoutPromise
+        ]) as any;
+        
+        if (error) {
+          console.error('Error getting initial session:', error);
+          // Clear any stale session data
+          await supabase.auth.signOut();
+        } else {
+          console.log('Initial session retrieved:', !!session, session?.user?.email);
+        }
+        
+        setSession(session || null);
+        setUser(session?.user ?? null);
+      } catch (err) {
+        console.error('Failed to get initial session:', err);
+        // Clear state on error
+        setSession(null);
+        setUser(null);
+      } finally {
+        // Always set loading to false
+        setLoading(false);
+      }
+    };
+    
+    initializeAuth();
 
     // Listen for auth changes
     const {
@@ -85,13 +116,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
         if (event === "SIGNED_IN" && session?.user) {
           console.log("User signed in, creating profile...");
-          // Create or update user profile
           try {
             await createUserProfile(session.user);
-            console.log("Profile creation completed");
-            
-            // Skip email subscriptions sync for now to prevent hanging
-            // await syncEmailSubscriptions(session.user);
+            await syncEmailSubscriptions(session.user);
+            console.log("Profile creation and email sync completed");
           } catch (error) {
             console.error("Profile creation failed:", error);
           }
@@ -162,11 +190,27 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
       if (!existingProfile) {
         console.log("Creating new profile...");
+        
+        // Extract name from Apple Sign In metadata or fallback to other sources
+        let userName = "User";
+        if (user.user_metadata?.name) {
+          userName = user.user_metadata.name;
+        } else if (user.user_metadata?.given_name || user.user_metadata?.family_name) {
+          // Construct name from Apple Sign In given/family names
+          const firstName = user.user_metadata.given_name || '';
+          const lastName = user.user_metadata.family_name || '';
+          userName = `${firstName} ${lastName}`.trim() || "User";
+        } else if (user.email) {
+          userName = user.email.split("@")[0];
+        }
+        
+        console.log("Creating profile with name:", userName);
+        
         // Create minimal profile that will trigger ProfileSetup
         const { error: profileError } = await supabase.from("profiles").insert({
           id: user.id,
           email: user.email || "",
-          name: user.user_metadata?.name || user.email?.split("@")[0] || "User",
+          name: userName,
           // Don't set gender, birthday, height - let ProfileGuard show ProfileSetup
         });
 

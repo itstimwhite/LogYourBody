@@ -37,7 +37,12 @@ export function useRevenueCat(): RevenueCatState & RevenueCatActions {
       try {
         const apiKey = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY;
         
-        if (!apiKey) {
+        if (!apiKey || apiKey === 'pk_your_public_key_here' || apiKey.startsWith('strp_') || apiKey.startsWith('sk_')) {
+          console.warn('RevenueCat: Invalid or missing API key. Please add a valid RevenueCat public key to your .env file');
+          console.warn('RevenueCat: Expected format: pk_xxx or appl_xxx (public key), but got:', apiKey ? apiKey.substring(0, 10) + '...' : 'none');
+          if (apiKey && apiKey.startsWith('sk_')) {
+            console.warn('RevenueCat: You are using a SECRET key (sk_). Please use the PUBLIC key instead for security reasons.');
+          }
           setState(prev => ({
             ...prev,
             isLoading: false,
@@ -45,6 +50,8 @@ export function useRevenueCat(): RevenueCatState & RevenueCatActions {
           }));
           return;
         }
+
+        console.log('Initializing RevenueCat with API key:', apiKey.substring(0, 10) + '...');
 
         // Configure RevenueCat
         await Purchases.configure({

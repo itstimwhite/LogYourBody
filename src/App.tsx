@@ -99,20 +99,57 @@ const AppRoutes = () => (
 
 const App = () => {
   useEffect(() => {
+    // Clear any stale auth state on app startup (fresh builds)
+    if (Capacitor.isNativePlatform()) {
+      // Clear Capacitor storage to prevent stale sessions
+      const clearStaleAuth = async () => {
+        try {
+          // Check if this is a fresh launch by looking for a launch flag
+          const launchKey = 'app_launched_' + new Date().toISOString().split('T')[0];
+          const hasLaunched = localStorage.getItem(launchKey);
+          
+          if (!hasLaunched) {
+            console.log('Fresh app launch detected, clearing potential stale auth...');
+            // Clear all auth-related storage
+            const authKeys = ['supabase.auth.token', 'sb-auth-token'];
+            authKeys.forEach(key => {
+              localStorage.removeItem(key);
+              sessionStorage.removeItem(key);
+            });
+            
+            // Set launch flag
+            localStorage.setItem(launchKey, 'true');
+            
+            // Clean up old launch flags (keep only today's)
+            Object.keys(localStorage).forEach(key => {
+              if (key.startsWith('app_launched_') && key !== launchKey) {
+                localStorage.removeItem(key);
+              }
+            });
+          }
+        } catch (error) {
+          console.warn('Error clearing stale auth:', error);
+        }
+      };
+      
+      clearStaleAuth();
+    }
+
     // Hide splash screen - simplified for better performance
     const hideSplashScreen = async () => {
       if (Capacitor.isNativePlatform()) {
         try {
+          console.log('Hiding native splash screen...');
           await SplashScreen.hide();
-          console.log('Splash screen hidden');
+          console.log('Native splash screen hidden successfully');
         } catch (error) {
           console.warn('Error hiding splash screen:', error);
         }
       }
     };
 
-    // Single timeout for splash screen
-    const timer = setTimeout(hideSplashScreen, 1500);
+    // Longer timeout to ensure auth context has time to initialize
+    const timer = setTimeout(hideSplashScreen, 2500);
     return () => clearTimeout(timer);
   }, []); // Empty deps - runs once
 

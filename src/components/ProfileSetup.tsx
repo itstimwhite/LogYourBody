@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar, User, Ruler, ChevronRight, ChevronLeft, Check } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +18,7 @@ interface ProfileSetupProps {
 
 interface FormData {
   name: string;
+  email: string;
   gender: string;
   birthMonth: string;
   birthDay: string;
@@ -42,6 +42,7 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
     
     return {
       name: user?.user_metadata?.name || user?.email?.split("@")[0] || "",
+      email: user?.email || "",
       gender: healthKitData?.biologicalSex || "",
       birthMonth: (defaultBirthDate.getMonth() + 1).toString().padStart(2, '0'),
       birthDay: defaultBirthDate.getDate().toString().padStart(2, '0'),
@@ -183,11 +184,10 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
   if (steps.length === 0) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-6">
-        <Card className="w-full max-w-md">
-          <CardContent className="flex items-center justify-center py-8">
-            <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full" />
-          </CardContent>
-        </Card>
+        <div className="text-center">
+          <div className="animate-spin h-12 w-12 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-muted-foreground">Setting up your profile...</p>
+        </div>
       </div>
     );
   }
@@ -206,7 +206,7 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               placeholder="Enter your full name"
-              className="text-center text-lg h-12"
+              className="text-center text-xl h-14 border-2 rounded-2xl bg-secondary/20"
               autoFocus
             />
           </div>
@@ -237,7 +237,7 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
                 type="button"
                 variant={formData.gender === 'male' ? 'default' : 'outline'}
                 onClick={() => setFormData({ ...formData, gender: 'male' })}
-                className="h-16 text-lg"
+                className="h-16 text-lg rounded-2xl border-2"
               >
                 Male
               </Button>
@@ -245,7 +245,7 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
                 type="button"
                 variant={formData.gender === 'female' ? 'default' : 'outline'}
                 onClick={() => setFormData({ ...formData, gender: 'female' })}
-                className="h-16 text-lg"
+                className="h-16 text-lg rounded-2xl border-2"
               >
                 Female
               </Button>
@@ -328,7 +328,7 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
                 type="button"
                 variant={formData.units === 'imperial' ? 'default' : 'outline'}
                 onClick={() => setFormData({ ...formData, units: 'imperial' })}
-                className="h-20 flex flex-col gap-1"
+                className="h-20 flex flex-col gap-1 rounded-2xl border-2"
               >
                 <span className="font-semibold">Imperial</span>
                 <span className="text-sm opacity-80">lbs, ft/in</span>
@@ -337,7 +337,7 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
                 type="button"
                 variant={formData.units === 'metric' ? 'default' : 'outline'}
                 onClick={() => setFormData({ ...formData, units: 'metric' })}
-                className="h-20 flex flex-col gap-1"
+                className="h-20 flex flex-col gap-1 rounded-2xl border-2"
               >
                 <span className="font-semibold">Metric</span>
                 <span className="text-sm opacity-80">kg, cm</span>
@@ -396,7 +396,7 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
                   value={formData.heightCm}
                   onChange={(e) => setFormData({ ...formData, heightCm: e.target.value })}
                   placeholder="Height in cm"
-                  className="text-center text-lg h-12"
+                  className="text-center text-xl h-14 border-2 rounded-2xl bg-secondary/20"
                   min="90"
                   max="250"
                   autoFocus
@@ -438,95 +438,104 @@ export function ProfileSetup({ onComplete, healthKitData }: ProfileSetupProps) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <Card className="w-full max-w-md bg-background border-border">
-        <CardHeader className="text-center space-y-4">
+    <div className="min-h-screen bg-background flex flex-col p-6 safe-area-inset">
+      <div className="flex-1 flex flex-col justify-center">
+        <div className="w-full bg-background">
+        <div className="text-center space-y-6 mb-8">
           {/* Progress Indicator */}
-          <div className="flex justify-center space-x-2">
+          <div className="flex justify-center space-x-3">
             {steps.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full transition-colors ${
-                  index <= currentStep ? 'bg-primary' : 'bg-muted'
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index < currentStep 
+                    ? 'bg-primary scale-110' 
+                    : index === currentStep 
+                      ? 'bg-primary' 
+                      : 'bg-muted/40'
                 }`}
               />
             ))}
           </div>
 
           {/* Step Icon */}
-          <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-            <currentStepData.icon className="w-8 h-8 text-primary" />
+          <div className="mx-auto w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center">
+            <currentStepData.icon className="w-10 h-10 text-primary" />
           </div>
 
           {/* Step Title */}
           <div>
-            <CardTitle className="text-2xl font-semibold text-foreground">
+            <h1 className="text-3xl font-bold text-foreground">
               {currentStepData.title}
-            </CardTitle>
-            <CardDescription className="text-muted-foreground mt-2">
+            </h1>
+            <p className="text-muted-foreground mt-3 text-lg">
               {currentStepData.description}
-            </CardDescription>
+            </p>
           </div>
-        </CardHeader>
+        </div>
 
-        <CardContent className="space-y-6">
+        <div className="space-y-8 mb-8">
           {error && (
-            <div className="text-destructive text-sm text-center p-3 bg-destructive/10 rounded-md">
+            <div className="text-destructive text-sm text-center p-4 bg-destructive/10 rounded-2xl">
               {error}
             </div>
           )}
 
           {renderStepContent()}
+        </div>
+        
+        </div>
+      </div>
 
-          {/* Navigation Buttons */}
-          <div className="flex gap-3">
-            {currentStep > 0 && (
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleBack}
-                className="flex-1 h-12"
-                disabled={loading}
-              >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Back
-              </Button>
-            )}
-
-            <Button
-              onClick={handleNext}
-              disabled={!canProceed() || loading}
-              className="flex-1 h-12 bg-primary text-primary-foreground hover:bg-primary/90"
-            >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-spin h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
-                  Saving...
-                </div>
-              ) : isLastStep ? (
-                <div className="flex items-center gap-2">
-                  <Check className="w-4 h-4" />
-                  Complete
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  Continue
-                  <ChevronRight className="w-4 h-4" />
-                </div>
-              )}
-            </Button>
+      {/* Fixed Navigation at Bottom */}
+      <div className="space-y-4 pb-safe">
+        {/* HealthKit Data Notice */}
+        {healthKitData && (
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              Some info pre-filled from Apple Health
+            </p>
           </div>
-
-          {/* HealthKit Data Notice */}
-          {healthKitData && (
-            <div className="text-center">
-              <p className="text-xs text-muted-foreground">
-                Some info pre-filled from Apple Health
-              </p>
-            </div>
+        )}
+        
+        <div className="flex gap-4">
+          {currentStep > 0 && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleBack}
+              className="flex-1 h-14 border-2 rounded-2xl"
+              disabled={loading}
+            >
+              <ChevronLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
           )}
-        </CardContent>
-      </Card>
+
+          <Button
+            onClick={handleNext}
+            disabled={!canProceed() || loading}
+            className="flex-1 h-14 bg-primary text-primary-foreground hover:bg-primary/90 rounded-2xl"
+          >
+            {loading ? (
+              <div className="flex items-center gap-2">
+                <div className="animate-spin h-4 w-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
+                Saving...
+              </div>
+            ) : isLastStep ? (
+              <div className="flex items-center gap-2">
+                <Check className="w-4 h-4" />
+                Complete
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                Continue
+                <ChevronRight className="w-4 h-4" />
+              </div>
+            )}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

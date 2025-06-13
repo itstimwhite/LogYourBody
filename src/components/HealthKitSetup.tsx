@@ -14,13 +14,20 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
   const { isAvailable, requestPermissions, getHealthData, loading } = useHealthKit();
   const [isRequesting, setIsRequesting] = useState(false);
 
-  // Early exit for non-iOS platforms
+  // Early exit for non-iOS platforms or when loading completes and HealthKit isn't available
   React.useEffect(() => {
-    if (!isNativeiOS() || !isAvailable) {
-      console.log("HealthKitSetup: Not native iOS or HealthKit not available, skipping");
+    if (!isNativeiOS()) {
+      console.log("HealthKitSetup: Not native iOS, skipping");
+      onComplete();
+      return;
+    }
+
+    // Wait for loading to complete, then check availability
+    if (!loading && !isAvailable) {
+      console.log("HealthKitSetup: HealthKit not available after loading, skipping");
       onComplete();
     }
-  }, [isAvailable, onComplete]);
+  }, [isAvailable, loading, onComplete]);
 
   const handleEnableHealthKit = async () => {
     setIsRequesting(true);
@@ -52,8 +59,8 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="w-full max-w-md space-y-8">
+    <div className="min-h-screen bg-background flex flex-col justify-between p-6 safe-area-inset">
+      <div className="flex-1 flex flex-col justify-center space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
           <div className="w-20 h-20 mx-auto bg-primary/10 rounded-full flex items-center justify-center">
@@ -136,40 +143,44 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
           </CardContent>
         </Card>
 
-        {/* Action Buttons */}
-        <div className="space-y-3">
-          <Button
-            onClick={handleEnableHealthKit}
-            disabled={isRequesting || loading}
-            className="w-full h-12 text-base font-medium"
-            size="lg"
-          >
-            {isRequesting || loading ? (
-              <>
-                <div className="h-4 w-4 border-2 border-current border-r-transparent rounded-full animate-spin mr-2" />
-                Requesting Permission...
-              </>
-            ) : (
-              <>
-                Connect Apple Health
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </>
-            )}
-          </Button>
+      </div>
+      
+      {/* Fixed Action Buttons at Bottom */}
+      <div className="space-y-4 pb-safe">
+        <Button
+          onClick={handleEnableHealthKit}
+          disabled={isRequesting || loading}
+          className="w-full h-14 text-base font-medium rounded-2xl"
+          size="lg"
+        >
+          {isRequesting || loading ? (
+            <>
+              <div className="h-4 w-4 border-2 border-current border-r-transparent rounded-full animate-spin mr-2" />
+              Requesting Permission...
+            </>
+          ) : (
+            <>
+              Connect Apple Health
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </>
+          )}
+        </Button>
 
-          <Button
-            variant="outline"
-            onClick={onSkip}
-            disabled={isRequesting || loading}
-            className="w-full h-12 text-base"
-            size="lg"
-          >
-            Set Up Later
-          </Button>
-        </div>
+        <Button
+          variant="outline"
+          onClick={onSkip}
+          disabled={isRequesting || loading}
+          className="w-full h-14 text-base border-2 rounded-2xl"
+          size="lg"
+        >
+          Set Up Later
+        </Button>
 
-        {/* Footer Text */}
-        <p className="text-center text-xs text-muted-foreground">
+      </div>
+      
+      {/* Fixed Action Buttons at Bottom */}
+      <div className="space-y-4 pb-safe">
+        <p className="text-center text-sm text-muted-foreground">
           You can always enable this later in Settings
         </p>
       </div>

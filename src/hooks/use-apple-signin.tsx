@@ -47,16 +47,7 @@ export function useAppleSignIn() {
     try {
       console.log('Starting native Apple Sign In...');
       
-      // Check availability first
-      const isAvailable = await checkAppleSignInAvailability();
-      if (!isAvailable) {
-        return {
-          success: false,
-          error: 'Apple Sign In is not available. Please ensure "Sign In with Apple" capability is enabled in Xcode.'
-        };
-      }
-      
-      // Request Apple Sign In
+      // Request Apple Sign In directly without availability check
       const response = await SignInWithApple.authorize({
         requestedScopes: ['email', 'fullName']
       });
@@ -67,14 +58,32 @@ export function useAppleSignIn() {
         throw new Error('No identity token received from Apple');
       }
 
-      // Sign in to Supabase with the Apple ID token
+      // Extract user name from Apple response
+      const fullName = response.response.fullName;
+      let displayName = '';
+      
+      if (fullName) {
+        // Combine first and last name if available
+        const firstName = fullName.givenName || '';
+        const lastName = fullName.familyName || '';
+        displayName = `${firstName} ${lastName}`.trim();
+        console.log('Extracted name from Apple Sign In:', displayName);
+      }
+
+      // Sign in to Supabase with the Apple ID token and user metadata
       console.log('Signing in to Supabase with Apple ID token...');
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
         token: response.response.identityToken,
         nonce: response.response.nonce,
         options: {
-          skipBrowserRedirect: true
+          skipBrowserRedirect: true,
+          // Pass the user's name as metadata
+          data: displayName ? { 
+            name: displayName,
+            given_name: fullName?.givenName,
+            family_name: fullName?.familyName
+          } : undefined
         }
       });
 

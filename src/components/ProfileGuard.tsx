@@ -38,10 +38,10 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     
     // Fallback timeout to ensure we never hang indefinitely
     const fallbackTimeout = setTimeout(() => {
-      console.warn("ProfileGuard: Fallback timeout triggered, showing profile setup");
-      setNeedsSetup(true);
+      console.warn("ProfileGuard: Fallback timeout triggered, allowing access without profile check");
       setLoading(false);
-    }, 10000); // 10 second fallback
+      // Don't force profile setup on timeout - just allow access
+    }, 15000); // 15 second fallback
     
     return () => clearTimeout(fallbackTimeout);
   }, [user]); // Remove loading from dependencies to avoid infinite loop
@@ -59,7 +59,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     try {
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Profile query timeout')), 10000);
+        setTimeout(() => reject(new Error('Profile query timeout')), 8000);
       });
 
       const queryPromise = supabase
@@ -101,10 +101,10 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       }
     } catch (error) {
       console.error("ProfileGuard: Profile loading error:", error);
-      // On timeout or error, show profile setup rather than blocking the user
-      console.log("ProfileGuard: Showing profile setup due to error");
-      setNeedsSetup(true);
+      // On timeout or error, allow access rather than blocking the user
+      console.log("ProfileGuard: Allowing access due to error - user can complete profile later");
       setLoading(false);
+      // Don't force profile setup on error - let user continue and they can complete profile from dashboard
     } finally {
       setLoading(false);
     }
@@ -113,13 +113,23 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
   const isProfileIncomplete = (profile: any): boolean => {
     if (!profile) return true;
     
-    // Check for default/placeholder values that indicate incomplete setup
-    const hasDefaultGender = !profile.gender;
-    const hasDefaultBirthday = !profile.birthday || profile.birthday === new Date().toISOString().split("T")[0];
-    const hasDefaultHeight = !profile.height || profile.height === 180; // Default height from AuthContext
-    const hasEmptyName = !profile.name || profile.name === "User";
+    // Be more lenient - only require essential fields for basic functionality
+    // Only show onboarding for completely empty/new profiles
+    const hasNoName = !profile.name || profile.name === "User" || profile.name.trim() === "";
+    const hasNoGender = !profile.gender;
+    const hasNoHeight = !profile.height || profile.height === 180; // Default height from AuthContext
+    const hasNoBirthday = !profile.birthday;
 
-    return hasDefaultGender || hasDefaultBirthday || hasDefaultHeight || hasEmptyName;
+    // Only consider profile incomplete if ALL essential fields are missing/default
+    // This prevents re-showing onboarding for users who have already set up their profile
+    const essentialFieldsMissing = hasNoName && hasNoGender && hasNoHeight && hasNoBirthday;
+    
+    console.log('ProfileGuard: Profile completeness check:', {
+      hasNoName, hasNoGender, hasNoHeight, hasNoBirthday, essentialFieldsMissing,
+      profile: { name: profile.name, gender: profile.gender, height: profile.height, birthday: profile.birthday }
+    });
+
+    return essentialFieldsMissing;
   };
 
   const handleHealthKitComplete = (data?: any) => {
