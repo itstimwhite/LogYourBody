@@ -43,7 +43,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       );
       setLoading(false);
       // Don't force profile setup on timeout - just allow access
-    }, 15000); // 15 second fallback
+    }, 5000); // 5 second fallback - reduced from 15
 
     return () => clearTimeout(fallbackTimeout);
   }, [user]); // Remove loading from dependencies to avoid infinite loop
@@ -61,7 +61,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     try {
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Profile query timeout")), 8000);
+        setTimeout(() => reject(new Error("Profile query timeout")), 3000);
       });
 
       const queryPromise = supabase
@@ -186,6 +186,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
           <p className="text-muted-foreground">Loading profile...</p>
+          <p className="mt-2 text-xs text-muted-foreground">Please wait...</p>
         </div>
       </div>
     );

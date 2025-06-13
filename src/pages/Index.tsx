@@ -57,11 +57,8 @@ const Index = () => {
       }
 
       setIsRedirecting(true);
-      // Add a small delay to prevent redirect loops during OAuth flows
-      const timer = setTimeout(() => {
-        navigate("/dashboard", { replace: true });
-      }, 100);
-      return () => clearTimeout(timer);
+      // Navigate immediately without delay
+      navigate("/dashboard", { replace: true });
     }
   }, [user, loading, navigate, isRedirecting]);
 
@@ -76,23 +73,28 @@ const Index = () => {
     }
   }, [loading, user, navigate, isRedirecting]);
 
-  // Show loading while checking authentication or redirecting
-  if (loading || isRedirecting) {
+  // Show loading while checking authentication
+  if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-          <p className="text-muted-foreground">
-            {isRedirecting ? "Redirecting..." : "Loading..."}
-          </p>
+          <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
     );
   }
 
-  // If user is authenticated, don't render anything (will redirect)
+  // If user is authenticated, show loading while redirecting
   if (user) {
-    return null;
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+          <p className="text-muted-foreground">Redirecting to dashboard...</p>
+        </div>
+      </div>
+    );
   }
 
   // For native platforms, don't render content (will redirect to splash)

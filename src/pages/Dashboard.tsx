@@ -56,6 +56,7 @@ const AvatarLoader = () => (
 );
 
 const Dashboard = () => {
+  console.log("Dashboard: Component rendering");
   const navigate = useNavigate();
   // Use Supabase hook if configured, otherwise use local hook
   const supabaseHook = useSupabaseBodyMetrics();
