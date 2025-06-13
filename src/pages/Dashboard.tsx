@@ -11,6 +11,7 @@ import { WeightLoggingWrapper } from "@/components/weight-logging-v2/WeightLoggi
 import { WeightPrompt } from "@/components/WeightPrompt";
 import { TrialGuard } from "@/components/TrialGuard";
 import { VersionDisplay } from "@/components/VersionDisplay";
+import { EmailConfirmationBanner } from "@/components/EmailConfirmationBanner";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
@@ -181,6 +182,11 @@ const Dashboard = () => {
   return (
     <TrialGuard>
       <div className="h-screen md:min-h-screen bg-background text-foreground flex flex-col overflow-hidden md:overflow-auto">
+        {/* Email confirmation banner */}
+        <div className="px-4 pt-4 md:px-6">
+          <EmailConfirmationBanner />
+        </div>
+        
         {/* Header - Desktop only */}
         <div className="hidden md:flex justify-between items-center px-6 py-4 border-b border-border">
           <div className="flex items-center gap-3">

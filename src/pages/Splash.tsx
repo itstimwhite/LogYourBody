@@ -1,27 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Splash = () => {
   const navigate = useNavigate();
-  const [stage, setStage] = useState(1);
+  const [stage, setStage] = useState<'intro' | 'main'>('intro');
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // Stage 1: Show headline immediately
+    // Show intro stage immediately
     const timer1 = setTimeout(() => {
       setShowContent(true);
-    }, 100);
+    }, 300);
 
-    // Stage 1 to Stage 2 transition
+    // Transition to main stage
     const timer2 = setTimeout(() => {
-      setStage(2);
+      setStage('main');
     }, 2500);
 
-    // Auto-navigate to login after 4 seconds total
+    // Auto-navigate after 8 seconds if no interaction
     const timer3 = setTimeout(() => {
       navigate("/login");
-    }, 6000);
+    }, 8000);
 
     return () => {
       clearTimeout(timer1);
@@ -40,91 +41,163 @@ const Splash = () => {
 
   return (
     <div className="bg-black w-full h-screen relative overflow-hidden">
-      {/* Background Image */}
+      {/* Background with gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
+      
+      {/* Subtle grid pattern overlay */}
       <div 
-        className="absolute inset-0 w-full h-full object-cover"
+        className="absolute inset-0 opacity-5"
         style={{
-          backgroundImage: `url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80')`,
-          backgroundSize: "cover",
-          backgroundPosition: "center"
+          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)`,
+          backgroundSize: '50px 50px'
         }}
       />
-      
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/40" />
 
-      {/* Stage 1: Hero Headline */}
-      {stage === 1 && (
-        <div className="flex items-center justify-center h-full px-4 pt-safe pb-safe">
-          <div className="text-center mt-[20vh]">
-            <h1 
-              className={`text-white font-black text-4xl sm:text-5xl md:text-6xl leading-tight text-center uppercase tracking-wide transition-opacity duration-1000 ease-out ${
-                showContent ? 'opacity-100' : 'opacity-0'
-              }`}
+      {/* Main content container */}
+      <div className="relative z-10 flex flex-col h-full">
+        
+        <AnimatePresence mode="wait">
+          {/* Stage 1: Brand Introduction */}
+          {stage === 'intro' && (
+            <motion.div
+              key="intro"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: showContent ? 1 : 0 }}
+              exit={{ opacity: 0, y: -50 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="flex-1 flex items-center justify-center px-6"
             >
-              TRACK YOUR BODY WITH PRECISION
-            </h1>
-          </div>
-        </div>
-      )}
+              <div className="text-center max-w-2xl">
+                <motion.h1 
+                  className="text-white font-black text-5xl sm:text-6xl md:text-7xl leading-[0.85] tracking-[-0.02em] mb-6"
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3, duration: 0.8 }}
+                >
+                  TRACK YOUR BODY
+                  <br />
+                  <span className="text-white/70">WITH PRECISION</span>
+                </motion.h1>
+                
+                <motion.div
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.8, duration: 0.6 }}
+                  className="w-24 h-1 bg-white mx-auto"
+                />
+              </div>
+            </motion.div>
+          )}
 
-      {/* Stage 2: Number & Tagline */}
-      {stage === 2 && (
-        <div 
-          className="flex flex-col items-center justify-center h-full px-4 pt-safe pb-safe transition-all duration-1000 ease-out opacity-0 translate-y-8"
-          style={{
-            animation: 'fadeInUp 1s ease-out forwards'
-          }}
-        >
-          {/* Counter */}
-          <div className="text-white font-black text-7xl sm:text-8xl md:text-9xl mb-2 tabular-nums">
-            8
-          </div>
-
-          {/* Micro-headline */}
-          <div className="text-white/75 text-sm uppercase tracking-[0.3em] font-medium mb-1">
-            UNLOCK YOUR POTENTIAL
-          </div>
-
-          {/* Main Tagline */}
-          <h2 className="text-white font-bold text-3xl sm:text-4xl md:text-5xl text-center leading-tight mb-8">
-            Sleep fitness begins tonight
-          </h2>
-
-          {/* Buttons Row */}
-          <div className="flex w-full max-w-md mx-auto space-x-4">
-            {/* Sign Up Button */}
-            <Button
-              onClick={handleSignUp}
-              className="flex-1 h-14 rounded-full bg-white/20 border border-white/50 backdrop-blur-sm hover:bg-white/30 hover:border-white/70 flex items-center justify-center text-white font-semibold text-lg tracking-wide transition-all duration-300"
+          {/* Stage 2: Call to Action */}
+          {stage === 'main' && (
+            <motion.div
+              key="main"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="flex-1 flex flex-col justify-center px-6"
             >
-              Sign Up
-            </Button>
+              {/* Main content area */}
+              <div className="flex-1 flex flex-col justify-center items-center text-center max-w-lg mx-auto">
+                
+                {/* Large number display */}
+                <motion.div
+                  initial={{ scale: 0.5, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.8, type: "spring", bounce: 0.3 }}
+                  className="mb-6"
+                >
+                  <div className="text-white font-black text-8xl sm:text-9xl leading-none tracking-tighter">
+                    8
+                  </div>
+                  <div className="text-white/60 text-sm uppercase tracking-[0.3em] font-medium mt-2">
+                    UNLOCK YOUR POTENTIAL
+                  </div>
+                </motion.div>
 
-            {/* Log In Button */}
-            <Button
-              onClick={handleLogin}
-              className="flex-1 h-14 rounded-full bg-white shadow-lg hover:bg-gray-100 flex items-center justify-center text-black font-semibold text-lg tracking-wide transition-all duration-300"
-            >
-              Log In
-            </Button>
-          </div>
-        </div>
-      )}
+                {/* Tagline */}
+                <motion.h2
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.5, duration: 0.6 }}
+                  className="text-white font-bold text-3xl sm:text-4xl leading-tight mb-8 tracking-[-0.01em]"
+                >
+                  Sleep fitness begins tonight
+                </motion.h2>
 
-      {/* CSS Keyframes */}
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-      `}</style>
+                {/* Feature highlights */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.7, duration: 0.6 }}
+                  className="flex flex-wrap justify-center gap-6 mb-12 text-white/70 text-sm"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-white/50 rounded-full" />
+                    <span>Precision tracking</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-white/50 rounded-full" />
+                    <span>Smart insights</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-white/50 rounded-full" />
+                    <span>Effortless monitoring</span>
+                  </div>
+                </motion.div>
+              </div>
+
+              {/* Action buttons - fixed at bottom */}
+              <motion.div
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.9, duration: 0.8 }}
+                className="pb-8 px-4"
+              >
+                <div className="flex flex-col gap-4 max-w-sm mx-auto">
+                  {/* Primary CTA - Sign Up */}
+                  <Button
+                    onClick={handleSignUp}
+                    className="h-14 rounded-full bg-white text-black hover:bg-white/90 font-semibold text-lg tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                  >
+                    Get Started
+                  </Button>
+
+                  {/* Secondary CTA - Login */}
+                  <Button
+                    onClick={handleLogin}
+                    variant="outline"
+                    className="h-14 rounded-full bg-transparent border-white/30 text-white hover:bg-white/10 hover:border-white/50 font-medium text-lg tracking-wide transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    Sign In
+                  </Button>
+                </div>
+
+                {/* Progress indicator */}
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: 1.2, duration: 0.5 }}
+                  className="flex justify-center mt-8"
+                >
+                  <div className="w-20 h-1 bg-white/20 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: "100%" }}
+                      transition={{ delay: 1.5, duration: 6, ease: "linear" }}
+                      className="h-full bg-white/60 rounded-full"
+                    />
+                  </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Ambient light effect */}
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-white/5 rounded-full blur-3xl pointer-events-none" />
     </div>
   );
 };

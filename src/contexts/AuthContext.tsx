@@ -109,7 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const emergencyTimeout = setTimeout(() => {
       console.warn('AuthContext: Emergency timeout triggered - forcing loading to false');
       setLoading(false);
-    }, 10000); // 10 seconds
+    }, 5000); // Reduced to 5 seconds
 
     // Listen for auth changes
     const {
@@ -292,11 +292,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       console.log("Starting Supabase auth request...");
       
-      // Try the auth request without timeout first
-      const { data, error } = await supabase.auth.signInWithPassword({
+      // Add timeout to prevent hanging
+      const authPromise = supabase.auth.signInWithPassword({
         email,
         password,
       });
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Authentication timeout')), 10000)
+      );
+      
+      const { data, error } = await Promise.race([authPromise, timeoutPromise]) as any;
       
       console.log("Auth request completed:", { data: !!data, error: !!error });
       
@@ -330,6 +336,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
       return { error };
     } catch (networkError: any) {
       console.error("Network or other error during sign in:", networkError);
+      
+      // Check for authentication timeout
+      if (networkError.message === 'Authentication timeout') {
+        return {
+          error: {
+            message: "Sign in is taking too long. Please check your connection and try again.",
+            name: "TimeoutError",
+            status: 408
+          } as any
+        };
+      }
       
       // Check if it's a network-related error
       if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
@@ -437,13 +454,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Check if user was created but needs email confirmation
       if (data.user && !data.session) {
         console.log("Sign up successful, but email confirmation required");
-        return {
-          error: {
-            message: "Account created! Please check your email and click the confirmation link before signing in.",
-            name: "EmailConfirmationRequired",
-            status: 200 // Not really an error, but needs user action
-          } as any
-        };
+        
+        // For web users, automatically sign them in and let them use the app
+        // They'll see a banner to confirm their email later
+        console.log("Web signup - attempting auto-signin for unconfirmed user");
+        
+        try {
+          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+          
+          if (signInError) {
+            console.warn("Auto-signin failed for unconfirmed user:", signInError);
+            return {
+              error: {
+                message: "Account created! Please check your email and click the confirmation link before signing in.",
+                name: "EmailConfirmationRequired",
+                status: 200
+              } as any
+            };
+          }
+          
+          console.log("Auto-signin successful for unconfirmed user");
+          // Set a flag to show email confirmation banner
+          localStorage.setItem('pending_email_confirmation', 'true');
+          return { error: null };
+          
+        } catch (autoSignInError) {
+          console.error("Auto-signin error:", autoSignInError);
+          return {
+            error: {
+              message: "Account created! Please check your email and click the confirmation link before signing in.",
+              name: "EmailConfirmationRequired", 
+              status: 200
+            } as any
+          };
+        }
       }
       
       console.log("Supabase sign up successful:", data);

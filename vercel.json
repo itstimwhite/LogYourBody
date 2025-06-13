@@ -46,5 +46,10 @@
         }
       ]
     }
-  ]
+  ],
+  "env": {
+    "VITE_SUPABASE_URL": "@vite_supabase_url",
+    "VITE_SUPABASE_ANON_KEY": "@vite_supabase_anon_key", 
+    "VITE_REVENUECAT_PUBLIC_KEY": "@vite_revenuecat_public_key"
+  }
 }
