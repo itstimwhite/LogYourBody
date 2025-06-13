@@ -9,6 +9,7 @@
 ## Step 2: Connect Stripe Integration
 
 ### In RevenueCat Dashboard:
+
 1. Go to **Project Settings** → **Integrations**
 2. Click **Connect** next to Stripe
 3. Enter your Stripe API keys:
@@ -19,6 +20,7 @@
 ## Step 3: Import Products with Stripe Price IDs
 
 ### Monthly Product:
+
 1. Go to **Products** tab
 2. Click **Add Product**
 3. Fill in the details:
@@ -30,6 +32,7 @@
 4. Click **Save**
 
 ### Annual Product:
+
 1. Click **Add Product** again
 2. Fill in the details:
    - **Product ID**: `logyourbody_annual`
@@ -61,6 +64,7 @@
    - **Make Current**: ✅ (checked)
 
 ### Add Packages:
+
 1. Click **Add Package**
 2. **Monthly Package**:
    - **Package ID**: `monthly`
@@ -95,16 +99,19 @@
 ## Step 8: Test Configuration
 
 ### Verify Stripe Connection:
+
 1. In RevenueCat Dashboard, go to **Project Settings** → **Integrations**
 2. Ensure Stripe shows as "Connected" with a green status
 
 ### Test Product Sync:
+
 1. Go to **Products** tab
 2. Verify both products show:
    - ✅ `logyourbody_monthly` with Stripe price `price_1RY9Y2RCO021kiwC8ltF2cFA`
    - ✅ `logyourbody_annual` with Stripe price `price_1RY9YJRCO021kiwCBzaxnVEU`
 
 ### Test Offering:
+
 1. Go to **Offerings** tab
 2. Verify "default" offering contains both packages
 3. Ensure it's marked as "Current"
@@ -133,11 +140,13 @@
 ## Troubleshooting
 
 ### Common Issues:
+
 - **Products not syncing**: Check Stripe API keys are correct
 - **Payment fails**: Verify webhook configuration
 - **No offerings returned**: Ensure offering is marked as "Current"
 
 ### Debug Steps:
+
 1. Check RevenueCat logs in **Customer** tab
 2. Verify Stripe webhook deliveries
 3. Test with Stripe test cards in sandbox mode
@@ -147,10 +156,10 @@
 Your RevenueCat should now be configured with:
 
 - ✅ **Stripe Integration**: Connected with API keys
-- ✅ **Products**: 
+- ✅ **Products**:
   - Monthly ($9.99) → `price_1RY9Y2RCO021kiwC8ltF2cFA`
   - Annual ($69.99) → `price_1RY9YJRCO021kiwCBzaxnVEU`
-- ✅ **Entitlements**: `pro_features` 
+- ✅ **Entitlements**: `pro_features`
 - ✅ **Offering**: `default` with monthly and annual packages
 - ✅ **App**: Web platform configured
 - ✅ **API Keys**: Public key ready for your app

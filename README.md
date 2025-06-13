@@ -7,6 +7,7 @@ A modern body composition tracking application built with React and TypeScript. 
 ## 🚀 Features
 
 ### Core Functionality
+
 - **Body Composition Tracking**: Log weight, body fat percentage, muscle mass, and more
 - **Visual Progress Charts**: Interactive charts powered by Recharts
 - **Timeline View**: Navigate through your fitness journey with an intuitive timeline
@@ -14,12 +15,14 @@ A modern body composition tracking application built with React and TypeScript. 
 - **Responsive Design**: Optimized for desktop, tablet, and mobile devices
 
 ### Premium Features (Subscription)
+
 - **Advanced Analytics**: Detailed insights and trends analysis
 - **Unlimited Data Storage**: Store years of fitness data
 - **Premium Charts**: Advanced visualization options
 - **Priority Support**: Direct access to customer support
 
 ### Technical Features
+
 - **PWA Support**: Install as a native app on any device
 - **Offline Capability**: Continue tracking even without internet
 - **Real-time Sync**: Automatic data synchronization across devices
@@ -29,6 +32,7 @@ A modern body composition tracking application built with React and TypeScript. 
 ## 🛠️ Tech Stack
 
 ### Frontend
+
 - **React 18** - Modern React with hooks and concurrent features
 - **TypeScript** - Type-safe development
 - **Vite** - Fast build tool and development server
@@ -38,12 +42,14 @@ A modern body composition tracking application built with React and TypeScript. 
 - **React Router** - Client-side routing
 
 ### Backend & Services
+
 - **Supabase** - Backend-as-a-Service (Database, Auth, Storage)
 - **RevenueCat** - Subscription management and payments
 - **Stripe** - Payment processing
 - **PostgreSQL** - Relational database
 
 ### Development Tools
+
 - **Vitest** - Unit testing framework
 - **ESLint** - Code linting
 - **Prettier** - Code formatting
@@ -53,6 +59,7 @@ A modern body composition tracking application built with React and TypeScript. 
 ## 📦 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ and npm
 - Git
 - Supabase account
@@ -62,31 +69,35 @@ A modern body composition tracking application built with React and TypeScript. 
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/itstimwhite/LogYourBody.git
    cd LogYourBody
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Setup**
+
    ```bash
    cp .env.example .env
    ```
-   
+
    Fill in your environment variables:
+
    ```env
    # Supabase Configuration
    VITE_SUPABASE_URL=your_supabase_project_url
    VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   
+
    # RevenueCat Configuration
    VITE_REVENUECAT_PUBLIC_KEY=your_revenuecat_public_key
-   
+
    # Stripe Product IDs (for RevenueCat configuration)
    STRIPE_MONTHLY_PRICE_ID=price_1RY9Y2RCO021kiwC8ltF2cFA
    STRIPE_ANNUAL_PRICE_ID=price_1RY9YJRCO021kiwCBzaxnVEU
@@ -95,15 +106,17 @@ A modern body composition tracking application built with React and TypeScript. 
    ```
 
 4. **Database Setup**
+
    ```bash
    # Start Supabase locally
    npm run supabase:start
-   
+
    # Run migrations
    npm run supabase:migrate
    ```
 
 5. **Start Development Server**
+
    ```bash
    npm run dev
    ```
@@ -122,6 +135,7 @@ A modern body composition tracking application built with React and TypeScript. 
 - `npm run lint` - Lint code with ESLint
 
 ### Database Scripts
+
 - `npm run supabase:start` - Start local Supabase instance
 - `npm run supabase:stop` - Stop local Supabase instance
 - `npm run supabase:reset` - Reset local database
@@ -129,6 +143,7 @@ A modern body composition tracking application built with React and TypeScript. 
 - `npm run supabase:migrate` - Push database migrations
 
 ### Subscription Scripts
+
 - `npm run revenuecat:validate` - Validate RevenueCat configuration
 - `npm run revenuecat:test` - Test RevenueCat integration
 
@@ -157,11 +172,13 @@ supabase/              # Database migrations and configuration
 LogYourBody uses Supabase Auth for user management:
 
 1. **Create Supabase Project**
+
    - Go to [supabase.com](https://supabase.com)
    - Create a new project
    - Get your project URL and anon key
 
 2. **Configure Authentication**
+
    - Enable email/password authentication
    - Configure OAuth providers (optional)
    - Set up email templates
@@ -177,10 +194,12 @@ See [SUPABASE_SETUP.md](./SUPABASE_SETUP.md) for detailed instructions.
 LogYourBody uses RevenueCat + Stripe for subscription management:
 
 1. **Stripe Configuration**
+
    - Create products and prices in Stripe
    - Get API keys from Stripe Dashboard
 
 2. **RevenueCat Setup**
+
    - Connect Stripe to RevenueCat
    - Configure products and offerings
    - Get RevenueCat public API key
@@ -194,11 +213,13 @@ See [REVENUECAT_SETUP.md](./REVENUECAT_SETUP.md) and [REVENUECAT_IMPORT_GUIDE.md
 ## 🧪 Testing
 
 ### Unit Tests
+
 ```bash
 npm test
 ```
 
 ### E2E Testing
+
 ```bash
 # Test authentication flow
 npm run test:auth
@@ -211,7 +232,9 @@ npm run test:offline
 ```
 
 ### Accessibility Testing
+
 The app includes comprehensive accessibility features:
+
 - WCAG AA compliance
 - Screen reader support
 - Keyboard navigation
@@ -221,17 +244,20 @@ The app includes comprehensive accessibility features:
 ## 🚀 Deployment
 
 ### Vercel (Recommended)
+
 1. Connect your GitHub repository to Vercel
 2. Set environment variables in Vercel dashboard
 3. Deploy automatically on push to main
 
 ### Netlify
+
 1. Connect repository to Netlify
 2. Set build command: `npm run build`
 3. Set publish directory: `dist`
 4. Configure environment variables
 
 ### Manual Deployment
+
 ```bash
 npm run build
 # Upload dist/ folder to your hosting provider
@@ -242,6 +268,7 @@ npm run build
 We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 
 ### Development Workflow
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
@@ -251,6 +278,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 7. Open a Pull Request
 
 ### Code Style
+
 - Use TypeScript for all new code
 - Follow the existing code style
 - Use meaningful variable and function names
@@ -260,6 +288,7 @@ We welcome contributions! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for gu
 ## 📊 Analytics & Monitoring
 
 LogYourBody includes built-in analytics to track:
+
 - User engagement metrics
 - Feature usage statistics
 - Performance metrics
@@ -279,6 +308,7 @@ Privacy-focused analytics ensure user data protection while providing valuable i
 ## 📱 Progressive Web App (PWA)
 
 LogYourBody is a full PWA with:
+
 - Offline functionality
 - App-like experience
 - Push notifications (optional)
@@ -299,6 +329,7 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## 👨‍💻 Author
 
 **Tim White**
+
 - GitHub: [@itstimwhite](https://github.com/itstimwhite)
 - Website: [timwhite.dev](https://timwhite.dev)
 - Email: tim@timwhite.dev
@@ -314,18 +345,21 @@ This project is licensed under the MIT License - see the [LICENSE](./LICENSE) fi
 ## 📈 Roadmap
 
 ### Near Term (Q1 2024)
+
 - [ ] Mobile app (React Native)
 - [ ] Advanced analytics dashboard
 - [ ] Social features and sharing
 - [ ] Integration with fitness trackers
 
 ### Medium Term (Q2-Q3 2024)
+
 - [ ] AI-powered insights and recommendations
 - [ ] Nutrition tracking integration
 - [ ] Workout planning features
 - [ ] API for third-party integrations
 
 ### Long Term (Q4 2024+)
+
 - [ ] Community features and challenges
 - [ ] Coaching marketplace
 - [ ] Enterprise features for gyms/trainers

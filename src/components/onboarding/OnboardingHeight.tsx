@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Capacitor } from '@capacitor/core';
-import { Ruler, ArrowRight, ChevronLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { onboardingClasses } from '@/styles/onboarding-tokens';
+import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Capacitor } from "@capacitor/core";
+import { Ruler, ArrowRight, ChevronLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { onboardingClasses } from "@/styles/onboarding-tokens";
 
 interface OnboardingHeightProps {
   onComplete: (height: number) => void; // height in cm
@@ -12,7 +12,7 @@ interface OnboardingHeightProps {
   currentStep: number;
   totalSteps: number;
   initialValue?: number;
-  units: 'imperial' | 'metric';
+  units: "imperial" | "metric";
 }
 
 export function OnboardingHeight({
@@ -24,17 +24,17 @@ export function OnboardingHeight({
   units,
 }: OnboardingHeightProps) {
   const isNative = Capacitor.isNativePlatform();
-  
+
   // Initialize values based on units and initial value
   const initialHeightCm = initialValue || 170;
   const initialFeet = Math.floor(initialHeightCm / 30.48);
   const initialInches = Math.round((initialHeightCm / 2.54) % 12);
-  
+
   const [feet, setFeet] = useState(initialFeet);
   const [inches, setInches] = useState(initialInches);
   const [cm, setCm] = useState(initialHeightCm);
-  const [error, setError] = useState('');
-  
+  const [error, setError] = useState("");
+
   const feetRef = useRef<HTMLInputElement>(null);
   const inchesRef = useRef<HTMLInputElement>(null);
   const cmRef = useRef<HTMLInputElement>(null);
@@ -42,7 +42,7 @@ export function OnboardingHeight({
   useEffect(() => {
     // Auto-focus appropriate input
     const timer = setTimeout(() => {
-      if (units === 'imperial') {
+      if (units === "imperial") {
         feetRef.current?.focus();
       } else {
         cmRef.current?.focus();
@@ -56,38 +56,36 @@ export function OnboardingHeight({
 
   const validateHeight = (): boolean => {
     let heightInCm: number;
-    
-    if (units === 'imperial') {
+
+    if (units === "imperial") {
       heightInCm = (feet * 12 + inches) * 2.54;
     } else {
       heightInCm = cm;
     }
-    
+
     if (heightInCm < 90 || heightInCm > 250) {
-      setError('Please enter a valid height');
+      setError("Please enter a valid height");
       return false;
     }
-    
-    setError('');
+
+    setError("");
     return true;
   };
 
   const handleContinue = async () => {
     if (!validateHeight()) {
       if (isNative) {
-        await Haptics.notification({ type: 'error' });
+        await Haptics.notification({ type: "error" });
       }
       return;
     }
-    
+
     if (isNative) {
-      await Haptics.notification({ type: 'success' });
+      await Haptics.notification({ type: "success" });
     }
-    
-    const heightInCm = units === 'imperial' 
-      ? (feet * 12 + inches) * 2.54 
-      : cm;
-    
+
+    const heightInCm = units === "imperial" ? (feet * 12 + inches) * 2.54 : cm;
+
     onComplete(Math.round(heightInCm));
   };
 
@@ -117,7 +115,7 @@ export function OnboardingHeight({
 
   // Preview conversion
   const getConversion = () => {
-    if (units === 'imperial') {
+    if (units === "imperial") {
       const totalInches = feet * 12 + inches;
       const heightCm = Math.round(totalInches * 2.54);
       return `${heightCm} cm`;
@@ -130,7 +128,7 @@ export function OnboardingHeight({
   };
 
   return (
-    <motion.div 
+    <motion.div
       className={onboardingClasses.container}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -139,7 +137,7 @@ export function OnboardingHeight({
     >
       <div className={onboardingClasses.safeArea}>
         {/* Progress Indicator */}
-        <motion.div 
+        <motion.div
           className={onboardingClasses.progress.container}
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -150,11 +148,11 @@ export function OnboardingHeight({
               key={index}
               className={cn(
                 onboardingClasses.progress.dot,
-                index < currentStep 
-                  ? 'w-2.5 h-2.5 bg-primary' 
+                index < currentStep
+                  ? "h-2.5 w-2.5 bg-primary"
                   : index === currentStep - 1
-                    ? 'w-3 h-3 bg-primary'
-                    : 'w-2 h-2 bg-muted'
+                    ? "h-3 w-3 bg-primary"
+                    : "h-2 w-2 bg-muted",
               )}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -168,18 +166,18 @@ export function OnboardingHeight({
 
         {/* Content */}
         <div className={onboardingClasses.content.wrapper}>
-          <motion.div 
+          <motion.div
             className={onboardingClasses.content.header}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
           >
-            <motion.div 
-              className="mx-auto w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6"
+            <motion.div
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Ruler className="w-10 h-10 text-primary" />
+              <Ruler className="h-10 w-10 text-primary" />
             </motion.div>
 
             <h1 className={onboardingClasses.typography.heading}>
@@ -190,51 +188,51 @@ export function OnboardingHeight({
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="space-y-6"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.3 }}
           >
-            {units === 'imperial' ? (
+            {units === "imperial" ? (
               <div className="flex gap-4">
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  <label className="mb-2 block text-sm font-medium text-muted-foreground">
                     Feet
                   </label>
                   <input
                     ref={feetRef}
                     type="number"
-                    value={feet || ''}
+                    value={feet || ""}
                     onChange={(e) => handleFeetChange(e.target.value)}
                     placeholder="0"
                     min="0"
                     max="8"
                     className={cn(
                       onboardingClasses.input.field,
-                      'text-center',
-                      error && 'border-destructive'
+                      "text-center",
+                      error && "border-destructive",
                     )}
                     aria-label="Height in feet"
                   />
                 </div>
-                
+
                 <div className="flex-1">
-                  <label className="block text-sm font-medium text-muted-foreground mb-2">
+                  <label className="mb-2 block text-sm font-medium text-muted-foreground">
                     Inches
                   </label>
                   <input
                     ref={inchesRef}
                     type="number"
-                    value={inches || ''}
+                    value={inches || ""}
                     onChange={(e) => handleInchesChange(e.target.value)}
                     placeholder="0"
                     min="0"
                     max="11"
                     className={cn(
                       onboardingClasses.input.field,
-                      'text-center',
-                      error && 'border-destructive'
+                      "text-center",
+                      error && "border-destructive",
                     )}
                     aria-label="Height in inches"
                   />
@@ -242,21 +240,21 @@ export function OnboardingHeight({
               </div>
             ) : (
               <div>
-                <label className="block text-sm font-medium text-muted-foreground mb-2 text-center">
+                <label className="mb-2 block text-center text-sm font-medium text-muted-foreground">
                   Height in centimeters
                 </label>
                 <input
                   ref={cmRef}
                   type="number"
-                  value={cm || ''}
+                  value={cm || ""}
                   onChange={(e) => handleCmChange(e.target.value)}
                   placeholder="170"
                   min="90"
                   max="250"
                   className={cn(
                     onboardingClasses.input.field,
-                    'text-center',
-                    error && 'border-destructive'
+                    "text-center",
+                    error && "border-destructive",
                   )}
                   aria-label="Height in centimeters"
                 />
@@ -264,8 +262,8 @@ export function OnboardingHeight({
             )}
 
             {/* Conversion preview */}
-            <motion.div 
-              className="text-center p-4 bg-secondary/20 rounded-2xl"
+            <motion.div
+              className="rounded-2xl bg-secondary/20 p-4 text-center"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4, duration: 0.3 }}
@@ -290,7 +288,7 @@ export function OnboardingHeight({
         </div>
 
         {/* Bottom Actions */}
-        <motion.div 
+        <motion.div
           className="space-y-4 pb-4"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -303,27 +301,27 @@ export function OnboardingHeight({
               className={cn(
                 onboardingClasses.button.base,
                 onboardingClasses.button.secondary,
-                'flex-1'
+                "flex-1",
               )}
               whileTap={{ scale: 0.98 }}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="h-5 w-5" />
               Back
             </motion.button>
-            
+
             <motion.button
               type="button"
               onClick={handleContinue}
-              disabled={units === 'imperial' ? (!feet && !inches) : !cm}
+              disabled={units === "imperial" ? !feet && !inches : !cm}
               className={cn(
                 onboardingClasses.button.base,
                 onboardingClasses.button.primary,
-                'flex-1'
+                "flex-1",
               )}
               whileTap={{ scale: 0.98 }}
             >
               Complete
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="h-5 w-5" />
             </motion.button>
           </div>
         </motion.div>

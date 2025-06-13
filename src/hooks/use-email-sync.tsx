@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
+import { useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
 
 /**
  * Hook to sync email subscriptions when a user registers
@@ -19,25 +19,25 @@ export function useEmailSync() {
     try {
       // Update existing email subscriptions with the new user_id
       const { error } = await supabase
-        .from('email_subscriptions')
-        .update({ 
+        .from("email_subscriptions")
+        .update({
           user_id: userId,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('email', email.toLowerCase())
-        .is('user_id', null);
+        .eq("email", email.toLowerCase())
+        .is("user_id", null);
 
       if (error) {
-        console.error('Error syncing email subscriptions:', error);
+        console.error("Error syncing email subscriptions:", error);
       } else {
-        console.log('Email subscriptions synced successfully');
+        console.log("Email subscriptions synced successfully");
       }
     } catch (err) {
-      console.error('Failed to sync email subscriptions:', err);
+      console.error("Failed to sync email subscriptions:", err);
     }
   };
 
   return {
-    syncUserEmailSubscriptions
+    syncUserEmailSubscriptions,
   };
 }

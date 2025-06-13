@@ -3,8 +3,8 @@
  */
 
 export interface AvatarParams {
-  bodyFat: number;      // 5-50% (increments of 5)
-  sex: 'm' | 'f';
+  bodyFat: number; // 5-50% (increments of 5)
+  sex: "m" | "f";
 }
 
 export interface UserMetrics {
@@ -12,7 +12,7 @@ export interface UserMetrics {
   height?: number;
   bodyFat?: number;
   age?: number;
-  gender?: 'male' | 'female';
+  gender?: "male" | "female";
 }
 
 /**
@@ -26,14 +26,11 @@ export function roundBodyFat(bodyFat: number): number {
  * Convert user metrics to avatar parameters
  */
 export function userMetricsToAvatarParams(metrics: UserMetrics): AvatarParams {
-  const {
-    bodyFat = 20,
-    gender = 'male'
-  } = metrics;
+  const { bodyFat = 20, gender = "male" } = metrics;
 
   return {
     bodyFat: roundBodyFat(bodyFat),
-    sex: gender === 'female' ? 'f' : 'm'
+    sex: gender === "female" ? "f" : "m",
   };
 }
 
@@ -62,9 +59,12 @@ export function getAvatarUrlFromMetrics(metrics: UserMetrics): string {
 /**
  * Get multiple avatar variations for preview (different body fat levels)
  */
-export function getAvatarVariations(baseMetrics: UserMetrics, bodyFatRange: number[] = [10, 15, 20, 25, 30]): string[] {
-  return bodyFatRange.map(bodyFat => 
-    getAvatarUrlFromMetrics({ ...baseMetrics, bodyFat })
+export function getAvatarVariations(
+  baseMetrics: UserMetrics,
+  bodyFatRange: number[] = [10, 15, 20, 25, 30],
+): string[] {
+  return bodyFatRange.map((bodyFat) =>
+    getAvatarUrlFromMetrics({ ...baseMetrics, bodyFat }),
   );
 }
 
@@ -72,20 +72,22 @@ export function getAvatarVariations(baseMetrics: UserMetrics, bodyFatRange: numb
  * Get body fat category label
  */
 export function getBodyFatLabel(bodyFat: number): string {
-  if (bodyFat <= 10) return 'Very Low';
-  if (bodyFat <= 15) return 'Low';
-  if (bodyFat <= 25) return 'Normal';
-  if (bodyFat <= 35) return 'High';
-  return 'Very High';
+  if (bodyFat <= 10) return "Very Low";
+  if (bodyFat <= 15) return "Low";
+  if (bodyFat <= 25) return "Normal";
+  if (bodyFat <= 35) return "High";
+  return "Very High";
 }
 
 /**
  * Validate avatar parameters
  */
 export function validateAvatarParams(params: AvatarParams): boolean {
-  const bodyFatValid = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50].includes(params.bodyFat);
-  const sexValid = ['m', 'f'].includes(params.sex);
-  
+  const bodyFatValid = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50].includes(
+    params.bodyFat,
+  );
+  const sexValid = ["m", "f"].includes(params.sex);
+
   return bodyFatValid && sexValid;
 }
 
@@ -96,8 +98,8 @@ export function getFallbackAvatarUrl(params: AvatarParams): string {
   // Use closest valid parameters as fallback
   const fallbackParams: AvatarParams = {
     bodyFat: 20, // Default body fat
-    sex: params.sex
+    sex: params.sex,
   };
-  
+
   return getAvatarUrl(fallbackParams);
 }

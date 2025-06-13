@@ -15,7 +15,7 @@ interface RouteGuardProps {
 export function RouteGuard({
   children,
   redirectTimeout = 5000, // Increased to 5 seconds
-  fallbackRoute = "/dashboard",
+  fallbackRoute = "/", // Changed to home instead of dashboard
 }: RouteGuardProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,10 +59,10 @@ export function RouteGuard({
           }
 
           toast.error("Loading timeout - redirecting", {
-            description: "Redirecting to dashboard due to loading timeout.",
+            description: "Redirecting to home due to loading timeout.",
           });
 
-          // Force navigation to dashboard
+          // Force navigation to fallback route (home)
           setTimeout(() => {
             navigate(fallbackRoute, { replace: true });
           }, 1000);
@@ -119,7 +119,7 @@ export function RouteGuard({
     // Add current redirect
     redirectHistory.push({ path: location.pathname, timestamp: now });
 
-    // Check for loops (same path visited 8+ times in 10 seconds) - more tolerant threshold
+    // Check for loops (same path visited 12+ times in 10 seconds) - very tolerant threshold
     const pathCounts = redirectHistory.reduce(
       (acc, entry) => {
         acc[entry.path] = (acc[entry.path] || 0) + 1;
@@ -128,10 +128,10 @@ export function RouteGuard({
       {} as Record<string, number>,
     );
 
-    const hasLoop = Object.values(pathCounts).some((count) => count >= 8);
+    const hasLoop = Object.values(pathCounts).some((count) => count >= 12);
 
     // Add detailed logging for redirect tracking
-    if (Object.values(pathCounts).some((count) => count >= 4)) {
+    if (Object.values(pathCounts).some((count) => count >= 6)) {
       console.warn("RouteGuard: Potential redirect loop detected", {
         pathCounts,
         currentPath: location.pathname,

@@ -35,14 +35,16 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     // Log platform info for debugging
     logPlatformInfo();
     loadProfile();
-    
+
     // Fallback timeout to ensure we never hang indefinitely
     const fallbackTimeout = setTimeout(() => {
-      console.warn("ProfileGuard: Fallback timeout triggered, allowing access without profile check");
+      console.warn(
+        "ProfileGuard: Fallback timeout triggered, allowing access without profile check",
+      );
       setLoading(false);
       // Don't force profile setup on timeout - just allow access
     }, 15000); // 15 second fallback
-    
+
     return () => clearTimeout(fallbackTimeout);
   }, [user]); // Remove loading from dependencies to avoid infinite loop
 
@@ -59,7 +61,7 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     try {
       // Add timeout to prevent hanging
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Profile query timeout')), 8000);
+        setTimeout(() => reject(new Error("Profile query timeout")), 8000);
       });
 
       const queryPromise = supabase
@@ -68,9 +70,15 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
         .eq("id", user.id)
         .single();
 
-      const { data: profileData, error } = await Promise.race([queryPromise, timeoutPromise]) as any;
+      const { data: profileData, error } = (await Promise.race([
+        queryPromise,
+        timeoutPromise,
+      ])) as any;
 
-      console.log("ProfileGuard: Profile query result:", { profileData, error });
+      console.log("ProfileGuard: Profile query result:", {
+        profileData,
+        error,
+      });
 
       if (error && error.code !== "PGRST116") {
         console.error("ProfileGuard: Error loading profile:", error);
@@ -80,18 +88,27 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
       }
 
       if (!profileData || isProfileIncomplete(profileData)) {
-        console.log("ProfileGuard: Profile incomplete, checking platform for next step");
+        console.log(
+          "ProfileGuard: Profile incomplete, checking platform for next step",
+        );
         console.log("ProfileGuard: Profile data:", profileData);
-        console.log("ProfileGuard: isProfileIncomplete result:", isProfileIncomplete(profileData));
+        console.log(
+          "ProfileGuard: isProfileIncomplete result:",
+          isProfileIncomplete(profileData),
+        );
         console.log("ProfileGuard: isNativeiOS result:", isNativeiOS());
         console.log("ProfileGuard: healthKitData:", healthKitData);
-        
+
         // Show HealthKit setup first ONLY on native iOS if profile is incomplete
         if (isNativeiOS() && !healthKitData) {
-          console.log("ProfileGuard: Native iOS detected, showing HealthKit setup");
+          console.log(
+            "ProfileGuard: Native iOS detected, showing HealthKit setup",
+          );
           setShowHealthKitSetup(true);
         } else {
-          console.log("ProfileGuard: Not native iOS or HealthKit already handled, showing profile setup");
+          console.log(
+            "ProfileGuard: Not native iOS or HealthKit already handled, showing profile setup",
+          );
           setNeedsSetup(true);
         }
       } else {
@@ -102,7 +119,9 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     } catch (error) {
       console.error("ProfileGuard: Profile loading error:", error);
       // On timeout or error, allow access rather than blocking the user
-      console.log("ProfileGuard: Allowing access due to error - user can complete profile later");
+      console.log(
+        "ProfileGuard: Allowing access due to error - user can complete profile later",
+      );
       setLoading(false);
       // Don't force profile setup on error - let user continue and they can complete profile from dashboard
     } finally {
@@ -112,21 +131,32 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
 
   const isProfileIncomplete = (profile: any): boolean => {
     if (!profile) return true;
-    
+
     // Be more lenient - only require essential fields for basic functionality
     // Only show onboarding for completely empty/new profiles
-    const hasNoName = !profile.name || profile.name === "User" || profile.name.trim() === "";
+    const hasNoName =
+      !profile.name || profile.name === "User" || profile.name.trim() === "";
     const hasNoGender = !profile.gender;
     const hasNoHeight = !profile.height || profile.height === 180; // Default height from AuthContext
     const hasNoBirthday = !profile.birthday;
 
     // Only consider profile incomplete if ALL essential fields are missing/default
     // This prevents re-showing onboarding for users who have already set up their profile
-    const essentialFieldsMissing = hasNoName && hasNoGender && hasNoHeight && hasNoBirthday;
-    
-    console.log('ProfileGuard: Profile completeness check:', {
-      hasNoName, hasNoGender, hasNoHeight, hasNoBirthday, essentialFieldsMissing,
-      profile: { name: profile.name, gender: profile.gender, height: profile.height, birthday: profile.birthday }
+    const essentialFieldsMissing =
+      hasNoName && hasNoGender && hasNoHeight && hasNoBirthday;
+
+    console.log("ProfileGuard: Profile completeness check:", {
+      hasNoName,
+      hasNoGender,
+      hasNoHeight,
+      hasNoBirthday,
+      essentialFieldsMissing,
+      profile: {
+        name: profile.name,
+        gender: profile.gender,
+        height: profile.height,
+        birthday: profile.birthday,
+      },
     });
 
     return essentialFieldsMissing;
@@ -152,9 +182,9 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
           <p className="text-muted-foreground">Loading profile...</p>
         </div>
       </div>

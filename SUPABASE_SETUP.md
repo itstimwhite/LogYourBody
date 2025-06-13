@@ -28,20 +28,23 @@ VITE_SUPABASE_ANON_KEY=your_anon_key_here
 ## 4. Run Database Migration
 
 ### Option A: Using Supabase Dashboard (Recommended for production)
+
 1. Go to your Supabase Dashboard
 2. Navigate to SQL Editor
 3. Copy and paste the contents of `supabase-migration.sql`
 4. Click "Run" to execute the migration
 
 ### Option B: Using Supabase CLI (Local Development)
+
 1. Install Docker Desktop (required for local development)
 2. Run `npm run supabase:start` to start local Supabase
 3. Run `npm run supabase:migrate` to apply migrations
 4. Access local Studio at http://localhost:54323
 
 ### Available CLI Commands:
+
 - `npm run supabase:start` - Start local Supabase instance
-- `npm run supabase:stop` - Stop local Supabase instance  
+- `npm run supabase:stop` - Stop local Supabase instance
 - `npm run supabase:reset` - Reset local database
 - `npm run supabase:studio` - Open Supabase Studio
 - `npm run supabase:migrate` - Push migrations to remote

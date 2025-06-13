@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Loader2, Download, CheckCircle, AlertCircle } from 'lucide-react';
-import { useHealthKit } from '@/hooks/use-healthkit';
-import { toast } from '@/hooks/use-toast';
-import { isNativeiOS } from '@/lib/platform';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Loader2, Download, CheckCircle, AlertCircle } from "lucide-react";
+import { useHealthKit } from "@/hooks/use-healthkit";
+import { toast } from "@/hooks/use-toast";
+import { isNativeiOS } from "@/lib/platform";
 
 export function HealthKitSyncButton() {
   const { isAvailable, isAuthorized, syncToDatabase, loading } = useHealthKit();
@@ -13,25 +13,25 @@ export function HealthKitSyncButton() {
   const handleSync = async () => {
     if (!isNativeiOS()) {
       toast({
-        title: 'Not Available',
-        description: 'HealthKit sync is only available on iOS devices',
-        variant: 'destructive',
+        title: "Not Available",
+        description: "HealthKit sync is only available on iOS devices",
+        variant: "destructive",
       });
       return;
     }
 
     if (!isAvailable || !isAuthorized) {
       toast({
-        title: 'HealthKit Not Available',
-        description: 'Please enable HealthKit permissions in settings',
-        variant: 'destructive',
+        title: "HealthKit Not Available",
+        description: "Please enable HealthKit permissions in settings",
+        variant: "destructive",
       });
       return;
     }
 
     setSyncing(true);
     try {
-      console.log('Starting HealthKit sync...');
+      console.log("Starting HealthKit sync...");
       const result = await syncToDatabase();
       setLastSyncResult(result);
 
@@ -47,28 +47,30 @@ export function HealthKitSyncButton() {
           messages.push(`${result.stepEntries} days of step data`);
         }
         if (result.profileUpdated) {
-          messages.push('profile updated');
+          messages.push("profile updated");
         }
 
         toast({
-          title: 'HealthKit Sync Complete',
-          description: messages.length > 0 
-            ? `Synced: ${messages.join(', ')}`
-            : 'All data up to date',
+          title: "HealthKit Sync Complete",
+          description:
+            messages.length > 0
+              ? `Synced: ${messages.join(", ")}`
+              : "All data up to date",
         });
       } else {
         toast({
-          title: 'Sync Failed',
-          description: result.error || 'Unknown error occurred',
-          variant: 'destructive',
+          title: "Sync Failed",
+          description: result.error || "Unknown error occurred",
+          variant: "destructive",
         });
       }
     } catch (error) {
-      console.error('Sync error:', error);
+      console.error("Sync error:", error);
       toast({
-        title: 'Sync Failed',
-        description: error instanceof Error ? error.message : 'Unknown error occurred',
-        variant: 'destructive',
+        title: "Sync Failed",
+        description:
+          error instanceof Error ? error.message : "Unknown error occurred",
+        variant: "destructive",
       });
     } finally {
       setSyncing(false);
@@ -77,21 +79,21 @@ export function HealthKitSyncButton() {
 
   const getButtonIcon = () => {
     if (syncing || loading) {
-      return <Loader2 className="h-4 w-4 animate-spin mr-2" />;
+      return <Loader2 className="mr-2 h-4 w-4 animate-spin" />;
     }
     if (lastSyncResult?.success) {
-      return <CheckCircle className="h-4 w-4 mr-2 text-green-500" />;
+      return <CheckCircle className="mr-2 h-4 w-4 text-green-500" />;
     }
     if (lastSyncResult?.success === false) {
-      return <AlertCircle className="h-4 w-4 mr-2 text-red-500" />;
+      return <AlertCircle className="mr-2 h-4 w-4 text-red-500" />;
     }
-    return <Download className="h-4 w-4 mr-2" />;
+    return <Download className="mr-2 h-4 w-4" />;
   };
 
   const getButtonText = () => {
-    if (syncing) return 'Syncing...';
-    if (loading) return 'Loading...';
-    return 'Sync now';
+    if (syncing) return "Syncing...";
+    if (loading) return "Loading...";
+    return "Sync now";
   };
 
   return (
@@ -100,7 +102,7 @@ export function HealthKitSyncButton() {
       size="sm"
       onClick={handleSync}
       disabled={syncing || loading || !isAvailable || !isAuthorized}
-      className="w-full bg-secondary border-border text-foreground hover:bg-muted"
+      className="w-full border-border bg-secondary text-foreground hover:bg-muted"
     >
       {getButtonIcon()}
       {getButtonText()}

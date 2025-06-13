@@ -13,20 +13,20 @@ export function useSupabaseSubscription() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Initialize state variables
   const [subscriptionInfo, setSubscriptionInfo] = useState<SubscriptionInfo>({
     status: "trial",
     isTrialActive: false,
     daysRemainingInTrial: 0,
   });
-  
+
   const [billingInfo, setBillingInfo] = useState<BillingInfo | null>(null);
 
   // Fetch subscription data with caching
   const fetchSubscriptionData = async () => {
     if (!user?.id) return null;
-    
+
     const { data, error } = await supabase
       .from("subscriptions")
       .select("*")

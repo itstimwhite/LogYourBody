@@ -1,10 +1,13 @@
 # Pull Request
 
 ## Description
+
 <!-- Provide a brief description of the changes in this PR -->
 
 ## Type of Change
+
 <!-- Mark the relevant option with an "x" -->
+
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
@@ -15,18 +18,24 @@
 - [ ] CI/CD improvements
 
 ## Related Issues
+
 <!-- Link to any related issues using "Fixes #issue_number" or "Related to #issue_number" -->
+
 - Fixes #
 - Related to #
 
 ## Changes Made
+
 <!-- List the key changes made in this PR -->
-- 
-- 
-- 
+
+-
+-
+-
 
 ## Testing
+
 <!-- Describe the tests you ran to verify your changes -->
+
 - [ ] Unit tests pass (`npm test`)
 - [ ] Type checking passes (`npm run typecheck`)
 - [ ] Manual testing completed
@@ -35,19 +44,25 @@
 - [ ] Cross-browser testing completed (if UI changes)
 
 ### Test Cases
+
 <!-- Describe specific test cases you've verified -->
-1. 
-2. 
-3. 
+
+1.
+2.
+3.
 
 ## Screenshots (if applicable)
+
 <!-- Add screenshots to help explain your changes -->
+
 | Before | After |
-|--------|-------|
+| ------ | ----- |
 |        |       |
 
 ## Checklist
+
 <!-- Mark completed items with an "x" -->
+
 - [ ] My code follows the project's style guidelines
 - [ ] I have performed a self-review of my own code
 - [ ] I have commented my code, particularly in hard-to-understand areas
@@ -58,7 +73,9 @@
 - [ ] Any dependent changes have been merged and published
 
 ## Accessibility
+
 <!-- For UI changes, confirm accessibility compliance -->
+
 - [ ] Keyboard navigation works correctly
 - [ ] Screen reader compatibility verified
 - [ ] Color contrast meets WCAG AA standards
@@ -66,34 +83,43 @@
 - [ ] Semantic HTML is used appropriately
 
 ## Performance Impact
+
 <!-- Describe any performance implications -->
+
 - [ ] No performance impact
 - [ ] Performance improved
 - [ ] Performance impact acceptable (explain below)
 - [ ] Performance testing completed
 
 Performance notes:
+
 <!-- Add any performance-related notes here -->
 
 ## Documentation
+
 <!-- Confirm documentation is updated -->
+
 - [ ] README.md updated (if needed)
 - [ ] Component documentation updated (if needed)
 - [ ] Setup guides updated (if needed)
 - [ ] API documentation updated (if needed)
 
 ## Additional Notes
+
 <!-- Add any additional notes, considerations, or questions for reviewers -->
 
 ## Breaking Changes
+
 <!-- If this is a breaking change, describe what breaks and how to migrate -->
 
 ## Deployment Notes
+
 <!-- Any special deployment considerations -->
 
 ---
 
 **Reviewer Guidelines:**
+
 - Check code quality and adherence to project standards
 - Verify all tests pass and coverage is maintained
 - Test the changes locally if significant

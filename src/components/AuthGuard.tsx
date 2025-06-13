@@ -25,12 +25,18 @@ export function AuthGuard({ children }: AuthGuardProps) {
       hasOAuthParams,
     });
 
-    // Don't redirect if we're in the middle of an OAuth flow
+    // Don't redirect immediately - give auth time to load
     if (!loading && !user && !hasOAuthParams) {
-      console.log(
-        "AuthGuard: redirecting to home - no user found and not OAuth flow",
-      );
-      navigate("/");
+      // Add a small delay before redirecting to prevent rapid redirects
+      const redirectTimer = setTimeout(() => {
+        if (!user) {
+          console.log(
+            "AuthGuard: redirecting to home - no user found and not OAuth flow",
+          );
+          navigate("/");
+        }
+      }, 500); // 500ms delay to allow auth to settle
+      return () => clearTimeout(redirectTimer);
     } else if (!loading && !user && hasOAuthParams) {
       console.log(
         "AuthGuard: OAuth params detected, waiting for auth to complete...",
@@ -43,7 +49,7 @@ export function AuthGuard({ children }: AuthGuardProps) {
           );
           navigate("/");
         }
-      }, 8000); // 8 second grace period for OAuth processing
+      }, 10000); // 10 second grace period for OAuth processing
       return () => clearTimeout(timer);
     }
   }, [user, loading, navigate]);

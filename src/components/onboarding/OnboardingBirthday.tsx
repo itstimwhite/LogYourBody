@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Capacitor } from '@capacitor/core';
-import { Calendar, ArrowRight, ChevronLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { onboardingClasses } from '@/styles/onboarding-tokens';
+import React, { useState, useRef, useEffect } from "react";
+import { motion } from "framer-motion";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Capacitor } from "@capacitor/core";
+import { Calendar, ArrowRight, ChevronLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { onboardingClasses } from "@/styles/onboarding-tokens";
 
 interface OnboardingBirthdayProps {
   onComplete: (birthday: string) => void;
@@ -25,12 +25,14 @@ export function OnboardingBirthday({
   const currentYear = new Date().getFullYear();
   const minYear = currentYear - 100;
   const maxYear = currentYear - 13; // Minimum age 13
-  
-  const initialDate = initialValue ? new Date(initialValue) : new Date(currentYear - 25, 0, 1);
+
+  const initialDate = initialValue
+    ? new Date(initialValue)
+    : new Date(currentYear - 25, 0, 1);
   const [month, setMonth] = useState(initialDate.getMonth() + 1);
   const [day, setDay] = useState(initialDate.getDate());
   const [year, setYear] = useState(initialDate.getFullYear());
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Date input refs for focus management
   const monthRef = useRef<HTMLInputElement>(null);
@@ -55,40 +57,44 @@ export function OnboardingBirthday({
   const validateDate = (): boolean => {
     const daysInMonth = getDaysInMonth(month, year);
     if (day > daysInMonth) {
-      setError(`${new Date(0, month - 1).toLocaleString('en', { month: 'long' })} only has ${daysInMonth} days`);
+      setError(
+        `${new Date(0, month - 1).toLocaleString("en", { month: "long" })} only has ${daysInMonth} days`,
+      );
       return false;
     }
-    
+
     const birthDate = new Date(year, month - 1, day);
-    const age = (new Date().getTime() - birthDate.getTime()) / (1000 * 60 * 60 * 24 * 365.25);
-    
+    const age =
+      (new Date().getTime() - birthDate.getTime()) /
+      (1000 * 60 * 60 * 24 * 365.25);
+
     if (age < 13) {
-      setError('You must be at least 13 years old');
+      setError("You must be at least 13 years old");
       return false;
     }
-    
+
     if (age > 100) {
-      setError('Please enter a valid birth year');
+      setError("Please enter a valid birth year");
       return false;
     }
-    
-    setError('');
+
+    setError("");
     return true;
   };
 
   const handleContinue = async () => {
     if (!validateDate()) {
       if (isNative) {
-        await Haptics.notification({ type: 'error' });
+        await Haptics.notification({ type: "error" });
       }
       return;
     }
-    
+
     if (isNative) {
-      await Haptics.notification({ type: 'success' });
+      await Haptics.notification({ type: "success" });
     }
-    
-    const birthday = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+
+    const birthday = `${year}-${month.toString().padStart(2, "0")}-${day.toString().padStart(2, "0")}`;
     onComplete(birthday);
   };
 
@@ -120,7 +126,7 @@ export function OnboardingBirthday({
   };
 
   return (
-    <motion.div 
+    <motion.div
       className={onboardingClasses.container}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -129,7 +135,7 @@ export function OnboardingBirthday({
     >
       <div className={onboardingClasses.safeArea}>
         {/* Progress Indicator */}
-        <motion.div 
+        <motion.div
           className={onboardingClasses.progress.container}
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -140,11 +146,11 @@ export function OnboardingBirthday({
               key={index}
               className={cn(
                 onboardingClasses.progress.dot,
-                index < currentStep 
-                  ? 'w-2.5 h-2.5 bg-primary' 
+                index < currentStep
+                  ? "h-2.5 w-2.5 bg-primary"
                   : index === currentStep - 1
-                    ? 'w-3 h-3 bg-primary'
-                    : 'w-2 h-2 bg-muted'
+                    ? "h-3 w-3 bg-primary"
+                    : "h-2 w-2 bg-muted",
               )}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -158,18 +164,18 @@ export function OnboardingBirthday({
 
         {/* Content */}
         <div className={onboardingClasses.content.wrapper}>
-          <motion.div 
+          <motion.div
             className={onboardingClasses.content.header}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
           >
-            <motion.div 
-              className="mx-auto w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6"
+            <motion.div
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <Calendar className="w-10 h-10 text-primary" />
+              <Calendar className="h-10 w-10 text-primary" />
             </motion.div>
 
             <h1 className={onboardingClasses.typography.heading}>
@@ -180,7 +186,7 @@ export function OnboardingBirthday({
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="space-y-6"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -188,63 +194,63 @@ export function OnboardingBirthday({
           >
             <div className="flex gap-4">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-muted-foreground mb-2">
+                <label className="mb-2 block text-sm font-medium text-muted-foreground">
                   Month
                 </label>
                 <input
                   ref={monthRef}
                   type="number"
-                  value={month || ''}
+                  value={month || ""}
                   onChange={(e) => handleMonthChange(e.target.value)}
                   placeholder="MM"
                   min="1"
                   max="12"
                   className={cn(
                     onboardingClasses.input.field,
-                    'text-center',
-                    error && 'border-destructive'
+                    "text-center",
+                    error && "border-destructive",
                   )}
                   aria-label="Birth month"
                 />
               </div>
-              
+
               <div className="flex-1">
-                <label className="block text-sm font-medium text-muted-foreground mb-2">
+                <label className="mb-2 block text-sm font-medium text-muted-foreground">
                   Day
                 </label>
                 <input
                   ref={dayRef}
                   type="number"
-                  value={day || ''}
+                  value={day || ""}
                   onChange={(e) => handleDayChange(e.target.value)}
                   placeholder="DD"
                   min="1"
                   max="31"
                   className={cn(
                     onboardingClasses.input.field,
-                    'text-center',
-                    error && 'border-destructive'
+                    "text-center",
+                    error && "border-destructive",
                   )}
                   aria-label="Birth day"
                 />
               </div>
-              
+
               <div className="flex-1">
-                <label className="block text-sm font-medium text-muted-foreground mb-2">
+                <label className="mb-2 block text-sm font-medium text-muted-foreground">
                   Year
                 </label>
                 <input
                   ref={yearRef}
                   type="number"
-                  value={year || ''}
+                  value={year || ""}
                   onChange={(e) => handleYearChange(e.target.value)}
                   placeholder="YYYY"
                   min={minYear}
                   max={maxYear}
                   className={cn(
                     onboardingClasses.input.field,
-                    'text-center',
-                    error && 'border-destructive'
+                    "text-center",
+                    error && "border-destructive",
                   )}
                   aria-label="Birth year"
                 />
@@ -266,7 +272,7 @@ export function OnboardingBirthday({
         </div>
 
         {/* Bottom Actions */}
-        <motion.div 
+        <motion.div
           className="space-y-4 pb-4"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -279,14 +285,14 @@ export function OnboardingBirthday({
               className={cn(
                 onboardingClasses.button.base,
                 onboardingClasses.button.secondary,
-                'flex-1'
+                "flex-1",
               )}
               whileTap={{ scale: 0.98 }}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="h-5 w-5" />
               Back
             </motion.button>
-            
+
             <motion.button
               type="button"
               onClick={handleContinue}
@@ -294,12 +300,12 @@ export function OnboardingBirthday({
               className={cn(
                 onboardingClasses.button.base,
                 onboardingClasses.button.primary,
-                'flex-1'
+                "flex-1",
               )}
               whileTap={{ scale: 0.98 }}
             >
               Continue
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="h-5 w-5" />
             </motion.button>
           </div>
         </motion.div>

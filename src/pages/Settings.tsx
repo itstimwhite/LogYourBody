@@ -11,7 +11,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HeightWheelPicker, DateWheelPicker } from "@/components/ui/wheel-picker";
+import {
+  HeightWheelPicker,
+  DateWheelPicker,
+} from "@/components/ui/wheel-picker";
 import { ArrowLeft, Crown, Edit } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useBodyMetrics } from "@/hooks/use-body-metrics";
@@ -21,6 +24,7 @@ import { VersionDisplay } from "@/components/VersionDisplay";
 import { DatabaseDebug } from "@/components/DatabaseDebug";
 import { RevenueCatDebug } from "@/components/RevenueCatDebug";
 import { HealthKitSyncButton } from "@/components/HealthKitSyncButton";
+import { HealthKitDebug } from "@/components/HealthKitDebug";
 import { AuthGuard } from "@/components/AuthGuard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
@@ -112,7 +116,10 @@ const Settings = () => {
 
   const handleSaveBirthday = () => {
     // editBirthday is now a Date object from the wheel picker
-    updateUser({ birthday: editBirthday instanceof Date ? editBirthday : new Date(editBirthday) });
+    updateUser({
+      birthday:
+        editBirthday instanceof Date ? editBirthday : new Date(editBirthday),
+    });
     setShowBirthdayEdit(false);
   };
 
@@ -155,17 +162,17 @@ const Settings = () => {
       <div className="min-h-screen bg-background text-foreground">
         <div className="animate-pulse">
           {/* Header skeleton */}
-          <div className="h-16 bg-secondary/20 border-b border-border" />
-          
+          <div className="h-16 border-b border-border bg-secondary/20" />
+
           {/* Content skeleton */}
-          <div className="p-6 space-y-8">
-            {[1, 2, 3].map(i => (
+          <div className="space-y-8 p-6">
+            {[1, 2, 3].map((i) => (
               <div key={i} className="space-y-4">
-                <div className="h-4 w-24 bg-secondary/30 rounded" />
+                <div className="h-4 w-24 rounded bg-secondary/30" />
                 <div className="space-y-3">
-                  <div className="h-12 bg-secondary/20 rounded" />
-                  <div className="h-12 bg-secondary/20 rounded" />
-                  <div className="h-12 bg-secondary/20 rounded" />
+                  <div className="h-12 rounded bg-secondary/20" />
+                  <div className="h-12 rounded bg-secondary/20" />
+                  <div className="h-12 rounded bg-secondary/20" />
                 </div>
               </div>
             ))}
@@ -178,11 +185,13 @@ const Settings = () => {
   // Handle error state
   if (!user || !settings) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <p className="text-muted-foreground">Failed to load settings. Please try again.</p>
-          <Button 
-            onClick={() => window.location.reload()} 
+          <p className="text-muted-foreground">
+            Failed to load settings. Please try again.
+          </p>
+          <Button
+            onClick={() => window.location.reload()}
             className="mt-4"
             variant="outline"
           >
@@ -195,42 +204,44 @@ const Settings = () => {
 
   return (
     <AuthGuard>
-      <div className="h-screen md:min-h-screen bg-background text-foreground flex flex-col overflow-hidden md:overflow-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4 px-6 py-4 border-b border-border">
+      <div className="flex min-h-screen flex-col bg-background text-foreground">
+        {/* Header with safe area padding */}
+        <div className="flex items-center gap-4 border-b border-border px-6 pb-4 pt-safe-top">
           <Button
             size="icon"
             variant="outline"
             onClick={() => navigate("/dashboard")}
-            className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
+            className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-semibold tracking-tight">Profile</h1>
+          <h1 className="text-lg font-semibold tracking-tight">Settings</h1>
         </div>
 
         {/* Settings List */}
-        <div className="flex-1 p-6 space-y-8 overflow-y-auto md:overflow-visible">
+        <div className="flex-1 space-y-8 p-6">
           {/* Personal Information */}
           <div className="space-y-6">
             <div className="space-y-6">
               {/* User Name */}
               <div
-                className="flex items-center justify-between py-3 border-b border-border cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-border px-2 py-3 hover:bg-secondary/20"
                 onClick={() => setShowNameEdit(true)}
               >
                 <div className="text-base font-medium text-foreground">
                   Name
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-muted-foreground">{user?.name || "Not set"}</div>
+                  <div className="text-muted-foreground">
+                    {user?.name || "Not set"}
+                  </div>
                   <Edit className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
 
               {/* Birthday */}
               <div
-                className="flex items-center justify-between py-3 border-b border-border cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-border px-2 py-3 hover:bg-secondary/20"
                 onClick={() => setShowBirthdayEdit(true)}
               >
                 <div className="text-base font-medium text-foreground">
@@ -238,19 +249,21 @@ const Settings = () => {
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="text-muted-foreground">
-                    {user?.birthday ? user.birthday.toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    }) : "Not set"}
+                    {user?.birthday
+                      ? user.birthday.toLocaleDateString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                        })
+                      : "Not set"}
                   </div>
                   <Edit className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
 
               {/* Biological Sex - Inline */}
-              <div className="py-3 border-b border-border">
-                <div className="flex items-center justify-between mb-3">
+              <div className="border-b border-border py-3">
+                <div className="mb-3 flex items-center justify-between">
                   <div className="text-base font-medium text-foreground">
                     Biological sex
                   </div>
@@ -260,16 +273,16 @@ const Settings = () => {
                   onValueChange={handleGenderChange}
                   className="w-full"
                 >
-                  <TabsList className="grid w-full grid-cols-2 bg-secondary border border-border">
+                  <TabsList className="grid w-full grid-cols-2 border border-border bg-secondary">
                     <TabsTrigger
                       value="male"
-                      className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-muted-foreground/20"
+                      className="text-foreground data-[state=inactive]:border-muted-foreground/20 data-[state=active]:bg-primary data-[state=inactive]:bg-transparent data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
                     >
                       Male
                     </TabsTrigger>
                     <TabsTrigger
                       value="female"
-                      className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-muted-foreground/20"
+                      className="text-foreground data-[state=inactive]:border-muted-foreground/20 data-[state=active]:bg-primary data-[state=inactive]:bg-transparent data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
                     >
                       Female
                     </TabsTrigger>
@@ -279,7 +292,7 @@ const Settings = () => {
 
               {/* Height */}
               <div
-                className="flex items-center justify-between py-3 border-b border-border cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-border px-2 py-3 hover:bg-secondary/20"
                 onClick={() => setShowHeightEdit(true)}
               >
                 <div className="text-base font-medium text-foreground">
@@ -297,56 +310,56 @@ const Settings = () => {
 
           {/* Subscription - TEMPORARILY HIDDEN FOR TESTING */}
           {false && (
-          <div className="space-y-6">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3">
-              Subscription
-            </h2>
+            <div className="space-y-6">
+              <h2 className="border-b border-border pb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                Subscription
+              </h2>
 
-            <div className="space-y-4">
-              <div className="flex items-center justify-between py-4">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
-                    <Crown className="h-5 w-5 text-primary" />
-                  </div>
-                  <div>
-                    <div className="text-base font-medium text-foreground flex items-center gap-2">
-                      Premium
-                      {subscriptionInfo.status === "trial" && (
-                        <Badge variant="outline" className="text-xs">
-                          {subscriptionInfo.daysRemainingInTrial}d left
-                        </Badge>
-                      )}
-                      {subscriptionInfo.status === "active" && (
-                        <Badge className="text-xs bg-green-500">Active</Badge>
-                      )}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between py-4">
+                  <div className="flex items-center gap-4">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                      <Crown className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      {subscriptionInfo.status === "trial"
-                        ? "Free trial"
-                        : subscriptionInfo.status === "active"
-                          ? "Premium subscription"
-                          : "Manage your subscription"}
+                    <div>
+                      <div className="flex items-center gap-2 text-base font-medium text-foreground">
+                        Premium
+                        {subscriptionInfo.status === "trial" && (
+                          <Badge variant="outline" className="text-xs">
+                            {subscriptionInfo.daysRemainingInTrial}d left
+                          </Badge>
+                        )}
+                        {subscriptionInfo.status === "active" && (
+                          <Badge className="bg-green-500 text-xs">Active</Badge>
+                        )}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {subscriptionInfo.status === "trial"
+                          ? "Free trial"
+                          : subscriptionInfo.status === "active"
+                            ? "Premium subscription"
+                            : "Manage your subscription"}
+                      </div>
                     </div>
                   </div>
+                  <ArrowLeft
+                    className="h-4 w-4 rotate-180 cursor-pointer text-muted-foreground"
+                    onClick={() => navigate("/subscription")}
+                  />
                 </div>
-                <ArrowLeft
-                  className="h-4 w-4 text-muted-foreground rotate-180 cursor-pointer"
-                  onClick={() => navigate("/subscription")}
-                />
               </div>
             </div>
-          </div>
           )}
 
           {/* Settings */}
           <div className="space-y-6">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3">
+            <h2 className="border-b border-border pb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
               Settings
             </h2>
 
             <div className="space-y-4">
               {/* Units Toggle - Use Tabs instead of Switch */}
-              <div className="py-4 border-b border-border">
+              <div className="border-b border-border py-4">
                 <div className="mb-3">
                   <div className="text-base font-medium text-foreground">
                     Units
@@ -354,19 +367,21 @@ const Settings = () => {
                 </div>
                 <Tabs
                   value={settings?.units || "imperial"}
-                  onValueChange={(value) => updateSettings({ units: value as "imperial" | "metric" })}
+                  onValueChange={(value) =>
+                    updateSettings({ units: value as "imperial" | "metric" })
+                  }
                   className="w-full"
                 >
-                  <TabsList className="grid w-full grid-cols-2 bg-secondary border border-border">
+                  <TabsList className="grid w-full grid-cols-2 border border-border bg-secondary">
                     <TabsTrigger
                       value="imperial"
-                      className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-muted-foreground/20"
+                      className="text-foreground data-[state=inactive]:border-muted-foreground/20 data-[state=active]:bg-primary data-[state=inactive]:bg-transparent data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
                     >
                       Imperial (lbs, ft/in)
                     </TabsTrigger>
                     <TabsTrigger
                       value="metric"
-                      className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-muted-foreground/20"
+                      className="text-foreground data-[state=inactive]:border-muted-foreground/20 data-[state=active]:bg-primary data-[state=inactive]:bg-transparent data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
                     >
                       Metric (kg, cm)
                     </TabsTrigger>
@@ -391,22 +406,22 @@ const Settings = () => {
               </div>
 
               {/* Sync from Apple HealthKit */}
-              <div className="py-4 border-b border-border">
-                <div className="flex items-center justify-between mb-3">
+              <div className="border-b border-border py-4">
+                <div className="mb-3 flex items-center justify-between">
                   <div>
                     <div className="text-base font-medium text-foreground">
                       Sync from Apple HealthKit
                     </div>
-                    <div className="text-sm text-muted-foreground">iOS only</div>
+                    <div className="text-sm text-muted-foreground">
+                      iOS only
+                    </div>
                   </div>
                   <Switch
                     checked={settings?.healthKitSyncEnabled || false}
                     onCheckedChange={handleHealthKitToggle}
                   />
                 </div>
-                {settings?.healthKitSyncEnabled && (
-                  <HealthKitSyncButton />
-                )}
+                {settings?.healthKitSyncEnabled && <HealthKitSyncButton />}
               </div>
 
               {/* Sync from Google Fit */}
@@ -429,28 +444,30 @@ const Settings = () => {
 
           {/* Account */}
           <div className="space-y-6">
-            <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3">
+            <h2 className="border-b border-border pb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
               Account
             </h2>
 
             <div className="space-y-4">
               {/* Email */}
               <div
-                className="flex items-center justify-between py-4 cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded px-2 py-4 hover:bg-secondary/20"
                 onClick={() => setShowEmailEdit(true)}
               >
                 <div className="text-base font-medium text-foreground">
                   Email
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-muted-foreground">{user?.email || "Not set"}</div>
+                  <div className="text-muted-foreground">
+                    {user?.email || "Not set"}
+                  </div>
                   <Edit className="h-4 w-4 text-muted-foreground" />
                 </div>
               </div>
 
               {/* Password */}
               <div
-                className="flex items-center justify-between py-4 cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded px-2 py-4 hover:bg-secondary/20"
                 onClick={() => setShowPasswordEdit(true)}
               >
                 <div className="text-base font-medium text-foreground">
@@ -465,7 +482,7 @@ const Settings = () => {
 
             {/* Biometric Authentication Section */}
             <div className="border-t border-border pt-6">
-              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3 mb-6">
+              <h2 className="mb-6 border-b border-border pb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
                 Security
               </h2>
               <BiometricSetup />
@@ -473,15 +490,23 @@ const Settings = () => {
 
             {/* Database Status Section */}
             <div className="border-t border-border pt-6">
-              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3 mb-6">
+              <h2 className="mb-6 border-b border-border pb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
                 System Status
               </h2>
               <DatabaseDebug />
             </div>
 
+            {/* HealthKit Debug Section */}
+            <div className="border-t border-border pt-6">
+              <h2 className="mb-6 border-b border-border pb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
+                HealthKit Integration
+              </h2>
+              <HealthKitDebug />
+            </div>
+
             {/* RevenueCat Debug Section */}
             <div className="border-t border-border pt-6">
-              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3 mb-6">
+              <h2 className="mb-6 border-b border-border pb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
                 RevenueCat Integration
               </h2>
               <RevenueCatDebug />
@@ -489,7 +514,7 @@ const Settings = () => {
 
             {/* Version Information Section */}
             <div className="border-t border-border pt-6">
-              <h2 className="text-sm font-medium text-muted-foreground uppercase tracking-wide border-b border-border pb-3 mb-6">
+              <h2 className="mb-6 border-b border-border pb-3 text-sm font-medium uppercase tracking-wide text-muted-foreground">
                 Version Information
               </h2>
               <VersionDisplay showBuildInfo={true} />
@@ -498,7 +523,7 @@ const Settings = () => {
             {/* Logout Section */}
             <div className="border-t border-border pt-6">
               <div
-                className="flex items-center justify-between py-4 cursor-pointer hover:bg-secondary/20 rounded px-2 -mx-2"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded px-2 py-4 hover:bg-secondary/20"
                 onClick={handleLogout}
               >
                 <div className="flex items-center gap-3">
@@ -507,7 +532,7 @@ const Settings = () => {
                     Logout
                   </div>
                 </div>
-                <ArrowLeft className="h-4 w-4 text-muted-foreground rotate-180" />
+                <ArrowLeft className="h-4 w-4 rotate-180 text-muted-foreground" />
               </div>
             </div>
           </div>
@@ -515,7 +540,7 @@ const Settings = () => {
 
         {/* Name Edit Modal */}
         <Dialog open={showNameEdit} onOpenChange={setShowNameEdit}>
-          <DialogContent className="bg-background border-border text-foreground max-w-md">
+          <DialogContent className="max-w-md border-border bg-background text-foreground">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold">
                 Edit Name
@@ -528,7 +553,7 @@ const Settings = () => {
                   id="name"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  className="bg-secondary border-border text-foreground"
+                  className="border-border bg-secondary text-foreground"
                 />
               </div>
               <div className="flex gap-2 pt-4">
@@ -549,7 +574,7 @@ const Settings = () => {
 
         {/* Birthday Edit Modal */}
         <Dialog open={showBirthdayEdit} onOpenChange={setShowBirthdayEdit}>
-          <DialogContent className="bg-background border-border text-foreground max-w-md">
+          <DialogContent className="max-w-md border-border bg-background text-foreground">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold">
                 Edit Birthday
@@ -582,7 +607,7 @@ const Settings = () => {
 
         {/* Height Edit Modal */}
         <Dialog open={showHeightEdit} onOpenChange={setShowHeightEdit}>
-          <DialogContent className="bg-background border-border text-foreground max-w-md">
+          <DialogContent className="max-w-md border-border bg-background text-foreground">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold">
                 Edit Height
@@ -616,7 +641,7 @@ const Settings = () => {
 
         {/* Email Edit Modal */}
         <Dialog open={showEmailEdit} onOpenChange={setShowEmailEdit}>
-          <DialogContent className="bg-background border-border text-foreground max-w-md">
+          <DialogContent className="max-w-md border-border bg-background text-foreground">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold">
                 Edit Email
@@ -630,7 +655,7 @@ const Settings = () => {
                   type="email"
                   value={editEmail}
                   onChange={(e) => setEditEmail(e.target.value)}
-                  className="bg-secondary border-border text-foreground"
+                  className="border-border bg-secondary text-foreground"
                 />
               </div>
               <div className="flex gap-2 pt-4">
@@ -651,7 +676,7 @@ const Settings = () => {
 
         {/* Password Edit Modal */}
         <Dialog open={showPasswordEdit} onOpenChange={setShowPasswordEdit}>
-          <DialogContent className="bg-background border-border text-foreground max-w-md">
+          <DialogContent className="max-w-md border-border bg-background text-foreground">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold">
                 Change Password
@@ -665,7 +690,7 @@ const Settings = () => {
                   type="password"
                   value={editPassword}
                   onChange={(e) => setEditPassword(e.target.value)}
-                  className="bg-secondary border-border text-foreground"
+                  className="border-border bg-secondary text-foreground"
                   placeholder="Enter new password"
                 />
               </div>

@@ -1,40 +1,51 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Info, RefreshCw } from 'lucide-react';
+import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Info, RefreshCw } from "lucide-react";
 
 interface VersionDisplayProps {
   className?: string;
   showBuildInfo?: boolean;
 }
 
-export const VersionDisplay = React.memo(function VersionDisplay({ className = '', showBuildInfo = false }: VersionDisplayProps) {
+export const VersionDisplay = React.memo(function VersionDisplay({
+  className = "",
+  showBuildInfo = false,
+}: VersionDisplayProps) {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [lastChecked, setLastChecked] = useState<Date | null>(null);
   const [buildTime] = useState(new Date().toISOString());
-  
-  const versionInfo = useMemo(() => ({
-    version: import.meta.env.PACKAGE_VERSION || '1.0.0',
-    buildHash: import.meta.env.VITE_BUILD_HASH || 'dev',
-    environment: import.meta.env.MODE || 'development'
-  }), []);
+
+  const versionInfo = useMemo(
+    () => ({
+      version: import.meta.env.PACKAGE_VERSION || "1.0.0",
+      buildHash: import.meta.env.VITE_BUILD_HASH || "dev",
+      environment: import.meta.env.MODE || "development",
+    }),
+    [],
+  );
 
   const handleOnline = useCallback(() => setIsOnline(true), []);
   const handleOffline = useCallback(() => setIsOnline(false), []);
 
   useEffect(() => {
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, [handleOnline, handleOffline]);
 
   const checkForUpdates = async () => {
-    if ('serviceWorker' in navigator) {
+    if ("serviceWorker" in navigator) {
       try {
         const registration = await navigator.serviceWorker.getRegistration();
         if (registration) {
@@ -42,13 +53,13 @@ export const VersionDisplay = React.memo(function VersionDisplay({ className = '
           setLastChecked(new Date());
         }
       } catch (error) {
-        console.error('Error checking for updates:', error);
+        console.error("Error checking for updates:", error);
       }
     }
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   };
 
   if (!showBuildInfo) {
@@ -56,8 +67,8 @@ export const VersionDisplay = React.memo(function VersionDisplay({ className = '
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Badge 
-              variant="outline" 
+            <Badge
+              variant="outline"
               className={`text-xs opacity-50 ${className}`}
             >
               v{versionInfo.version}
@@ -69,8 +80,10 @@ export const VersionDisplay = React.memo(function VersionDisplay({ className = '
               <div>Environment: {versionInfo.environment}</div>
               <div>Build: {versionInfo.buildHash}</div>
               <div className="flex items-center gap-1">
-                <span className={`w-2 h-2 rounded-full ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
-                {isOnline ? 'Online' : 'Offline'}
+                <span
+                  className={`h-2 w-2 rounded-full ${isOnline ? "bg-green-500" : "bg-red-500"}`}
+                />
+                {isOnline ? "Online" : "Offline"}
               </div>
             </div>
           </TooltipContent>
@@ -89,11 +102,11 @@ export const VersionDisplay = React.memo(function VersionDisplay({ className = '
           onClick={checkForUpdates}
           className="h-6 px-2 text-xs"
         >
-          <RefreshCw className="h-3 w-3 mr-1" />
+          <RefreshCw className="mr-1 h-3 w-3" />
           Check Updates
         </Button>
       </div>
-      
+
       <div className="grid grid-cols-2 gap-2">
         <div>
           <span className="font-medium">Version:</span>
@@ -101,27 +114,29 @@ export const VersionDisplay = React.memo(function VersionDisplay({ className = '
             v{versionInfo.version}
           </Badge>
         </div>
-        
+
         <div className="flex items-center">
           <span className="font-medium">Status:</span>
-          <div className="flex items-center ml-2">
-            <span className={`w-2 h-2 rounded-full mr-1 ${isOnline ? 'bg-green-500' : 'bg-red-500'}`} />
-            <span className="text-xs">
-              {isOnline ? 'Online' : 'Offline'}
-            </span>
+          <div className="ml-2 flex items-center">
+            <span
+              className={`mr-1 h-2 w-2 rounded-full ${isOnline ? "bg-green-500" : "bg-red-500"}`}
+            />
+            <span className="text-xs">{isOnline ? "Online" : "Offline"}</span>
           </div>
         </div>
-        
+
         <div>
           <span className="font-medium">Environment:</span>
-          <Badge 
-            variant={versionInfo.environment === 'production' ? 'default' : 'secondary'} 
+          <Badge
+            variant={
+              versionInfo.environment === "production" ? "default" : "secondary"
+            }
             className="ml-2 text-xs"
           >
             {versionInfo.environment}
           </Badge>
         </div>
-        
+
         <div>
           <span className="font-medium">Build:</span>
           <span className="ml-2 font-mono text-xs">
@@ -129,7 +144,7 @@ export const VersionDisplay = React.memo(function VersionDisplay({ className = '
           </span>
         </div>
       </div>
-      
+
       {lastChecked && (
         <div className="text-xs text-muted-foreground">
           Last checked: {formatTime(lastChecked)}

@@ -1,10 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Capacitor } from '@capacitor/core';
-import { ArrowRight, User } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { onboardingClasses, onboardingTokens } from '@/styles/onboarding-tokens';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Capacitor } from "@capacitor/core";
+import { ArrowRight, User } from "lucide-react";
+import { cn } from "@/lib/utils";
+import {
+  onboardingClasses,
+  onboardingTokens,
+} from "@/styles/onboarding-tokens";
 
 interface OnboardingNameProps {
   onComplete: (name: string) => void;
@@ -19,10 +22,10 @@ export function OnboardingName({
   onBack,
   currentStep = 1,
   totalSteps = 5,
-  initialValue = '',
+  initialValue = "",
 }: OnboardingNameProps) {
   const [name, setName] = useState(initialValue);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [touched, setTouched] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const isNative = Capacitor.isNativePlatform();
@@ -42,35 +45,37 @@ export function OnboardingName({
   const validateName = (value: string): boolean => {
     const trimmed = value.trim();
     if (trimmed.length < 2) {
-      setError('Please enter at least 2 characters');
+      setError("Please enter at least 2 characters");
       return false;
     }
-    
+
     // Check for at least first and last name
     const parts = trimmed.split(/\s+/);
     if (parts.length < 2) {
-      setError('Please enter your full name (first and last)');
+      setError("Please enter your full name (first and last)");
       return false;
     }
-    
+
     // Basic validation for each part
-    const validParts = parts.every(part => /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF'-]+$/.test(part));
+    const validParts = parts.every((part) =>
+      /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF'-]+$/.test(part),
+    );
     if (!validParts) {
-      setError('Please use only letters, hyphens, and apostrophes');
+      setError("Please use only letters, hyphens, and apostrophes");
       return false;
     }
-    
-    setError('');
+
+    setError("");
     return true;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
-    
+
     // Clear error on valid input
     if (touched && value.trim().length >= 2) {
-      setError('');
+      setError("");
     }
   };
 
@@ -84,23 +89,23 @@ export function OnboardingName({
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
     setTouched(true);
-    
+
     if (!validateName(name)) {
       if (isNative) {
-        await Haptics.notification({ type: 'error' });
+        await Haptics.notification({ type: "error" });
       }
       return;
     }
-    
+
     if (isNative) {
-      await Haptics.notification({ type: 'success' });
+      await Haptics.notification({ type: "success" });
     }
-    
+
     onComplete(name.trim());
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSubmit();
     }
   };
@@ -108,7 +113,7 @@ export function OnboardingName({
   const isValid = name.trim().length >= 2 && !error;
 
   return (
-    <motion.div 
+    <motion.div
       className={onboardingClasses.container}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -117,7 +122,7 @@ export function OnboardingName({
     >
       <div className={onboardingClasses.safeArea}>
         {/* Progress Indicator */}
-        <motion.div 
+        <motion.div
           className={onboardingClasses.progress.container}
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -128,11 +133,11 @@ export function OnboardingName({
               key={index}
               className={cn(
                 onboardingClasses.progress.dot,
-                index < currentStep 
-                  ? 'w-2.5 h-2.5 bg-primary' 
+                index < currentStep
+                  ? "h-2.5 w-2.5 bg-primary"
                   : index === currentStep - 1
-                    ? 'w-3 h-3 bg-primary'
-                    : 'w-2 h-2 bg-muted'
+                    ? "h-3 w-3 bg-primary"
+                    : "h-2 w-2 bg-muted",
               )}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -146,19 +151,19 @@ export function OnboardingName({
 
         {/* Content */}
         <div className={onboardingClasses.content.wrapper}>
-          <motion.div 
+          <motion.div
             className={onboardingClasses.content.header}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
           >
             {/* Optional Avatar/Icon */}
-            <motion.div 
-              className="mx-auto w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6"
+            <motion.div
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <User className="w-10 h-10 text-primary" />
+              <User className="h-10 w-10 text-primary" />
             </motion.div>
 
             <h1 className={onboardingClasses.typography.heading}>
@@ -169,7 +174,7 @@ export function OnboardingName({
             </p>
           </motion.div>
 
-          <motion.form 
+          <motion.form
             className={onboardingClasses.content.form}
             onSubmit={handleSubmit}
             initial={{ y: 20, opacity: 0 }}
@@ -191,13 +196,13 @@ export function OnboardingName({
                 spellCheck={false}
                 className={cn(
                   onboardingClasses.input.field,
-                  touched && error && onboardingClasses.input.error
+                  touched && error && onboardingClasses.input.error,
                 )}
                 aria-label="Full name"
                 aria-invalid={touched && !!error}
-                aria-describedby={error ? 'name-error' : undefined}
+                aria-describedby={error ? "name-error" : undefined}
               />
-              
+
               <AnimatePresence mode="wait">
                 {touched && error && (
                   <motion.p
@@ -218,7 +223,7 @@ export function OnboardingName({
         </div>
 
         {/* Bottom Actions */}
-        <motion.div 
+        <motion.div
           className="space-y-4 pb-4"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -232,14 +237,14 @@ export function OnboardingName({
                 className={cn(
                   onboardingClasses.button.base,
                   onboardingClasses.button.secondary,
-                  'flex-1'
+                  "flex-1",
                 )}
                 whileTap={{ scale: 0.98 }}
               >
                 Back
               </motion.button>
             )}
-            
+
             <motion.button
               type="button"
               onClick={handleSubmit}
@@ -247,12 +252,12 @@ export function OnboardingName({
               className={cn(
                 onboardingClasses.button.base,
                 onboardingClasses.button.primary,
-                onBack ? 'flex-1' : 'w-full'
+                onBack ? "flex-1" : "w-full",
               )}
               whileTap={isValid ? { scale: 0.98 } : {}}
             >
               Continue
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="h-5 w-5" />
             </motion.button>
           </div>
         </motion.div>

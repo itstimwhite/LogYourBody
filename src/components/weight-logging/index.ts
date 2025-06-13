@@ -1,2 +1,2 @@
-export { WeightLoggingScreen } from './WeightLoggingScreen';
-export { WeightLoggingWrapper } from './WeightLoggingWrapper';
+export { WeightLoggingScreen } from "./WeightLoggingScreen";
+export { WeightLoggingWrapper } from "./WeightLoggingWrapper";

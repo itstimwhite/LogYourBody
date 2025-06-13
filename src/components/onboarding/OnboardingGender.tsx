@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Capacitor } from '@capacitor/core';
-import { User, ArrowRight, ChevronLeft } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { onboardingClasses } from '@/styles/onboarding-tokens';
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Capacitor } from "@capacitor/core";
+import { User, ArrowRight, ChevronLeft } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { onboardingClasses } from "@/styles/onboarding-tokens";
 
 interface OnboardingGenderProps {
-  onComplete: (gender: 'male' | 'female') => void;
+  onComplete: (gender: "male" | "female") => void;
   onBack: () => void;
   currentStep: number;
   totalSteps: number;
-  initialValue?: 'male' | 'female';
+  initialValue?: "male" | "female";
 }
 
 export function OnboardingGender({
@@ -21,10 +21,12 @@ export function OnboardingGender({
   totalSteps,
   initialValue,
 }: OnboardingGenderProps) {
-  const [gender, setGender] = useState<'male' | 'female' | undefined>(initialValue);
+  const [gender, setGender] = useState<"male" | "female" | undefined>(
+    initialValue,
+  );
   const isNative = Capacitor.isNativePlatform();
 
-  const handleSelect = async (value: 'male' | 'female') => {
+  const handleSelect = async (value: "male" | "female") => {
     setGender(value);
     if (isNative) {
       await Haptics.impact({ style: ImpactStyle.Light });
@@ -33,16 +35,16 @@ export function OnboardingGender({
 
   const handleContinue = async () => {
     if (!gender) return;
-    
+
     if (isNative) {
-      await Haptics.notification({ type: 'success' });
+      await Haptics.notification({ type: "success" });
     }
-    
+
     onComplete(gender);
   };
 
   return (
-    <motion.div 
+    <motion.div
       className={onboardingClasses.container}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -51,7 +53,7 @@ export function OnboardingGender({
     >
       <div className={onboardingClasses.safeArea}>
         {/* Progress Indicator */}
-        <motion.div 
+        <motion.div
           className={onboardingClasses.progress.container}
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -62,11 +64,11 @@ export function OnboardingGender({
               key={index}
               className={cn(
                 onboardingClasses.progress.dot,
-                index < currentStep 
-                  ? 'w-2.5 h-2.5 bg-primary' 
+                index < currentStep
+                  ? "h-2.5 w-2.5 bg-primary"
                   : index === currentStep - 1
-                    ? 'w-3 h-3 bg-primary'
-                    : 'w-2 h-2 bg-muted'
+                    ? "h-3 w-3 bg-primary"
+                    : "h-2 w-2 bg-muted",
               )}
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
@@ -80,18 +82,18 @@ export function OnboardingGender({
 
         {/* Content */}
         <div className={onboardingClasses.content.wrapper}>
-          <motion.div 
+          <motion.div
             className={onboardingClasses.content.header}
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.3 }}
           >
-            <motion.div 
-              className="mx-auto w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-6"
+            <motion.div
+              className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              <User className="w-10 h-10 text-primary" />
+              <User className="h-10 w-10 text-primary" />
             </motion.div>
 
             <h1 className={onboardingClasses.typography.heading}>
@@ -102,7 +104,7 @@ export function OnboardingGender({
             </p>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             className="grid grid-cols-2 gap-4"
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
@@ -110,50 +112,66 @@ export function OnboardingGender({
           >
             <motion.button
               type="button"
-              onClick={() => handleSelect('male')}
+              onClick={() => handleSelect("male")}
               className={cn(
-                'h-24 rounded-2xl border-2 transition-all duration-200',
-                'flex flex-col items-center justify-center gap-2',
-                'text-lg font-medium',
-                gender === 'male'
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-secondary/20 text-foreground border-transparent hover:border-border'
+                "h-24 rounded-2xl border-2 transition-all duration-200",
+                "flex flex-col items-center justify-center gap-2",
+                "text-lg font-medium",
+                gender === "male"
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-transparent bg-secondary/20 text-foreground hover:border-border",
               )}
               whileTap={{ scale: 0.95 }}
             >
-              <div className={cn(
-                'w-12 h-12 rounded-full flex items-center justify-center',
-                gender === 'male' ? 'bg-primary-foreground/20' : 'bg-primary/10'
-              )}>
-                <User className={cn(
-                  'w-6 h-6',
-                  gender === 'male' ? 'text-primary-foreground' : 'text-primary'
-                )} />
+              <div
+                className={cn(
+                  "flex h-12 w-12 items-center justify-center rounded-full",
+                  gender === "male"
+                    ? "bg-primary-foreground/20"
+                    : "bg-primary/10",
+                )}
+              >
+                <User
+                  className={cn(
+                    "h-6 w-6",
+                    gender === "male"
+                      ? "text-primary-foreground"
+                      : "text-primary",
+                  )}
+                />
               </div>
               Male
             </motion.button>
 
             <motion.button
               type="button"
-              onClick={() => handleSelect('female')}
+              onClick={() => handleSelect("female")}
               className={cn(
-                'h-24 rounded-2xl border-2 transition-all duration-200',
-                'flex flex-col items-center justify-center gap-2',
-                'text-lg font-medium',
-                gender === 'female'
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-secondary/20 text-foreground border-transparent hover:border-border'
+                "h-24 rounded-2xl border-2 transition-all duration-200",
+                "flex flex-col items-center justify-center gap-2",
+                "text-lg font-medium",
+                gender === "female"
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-transparent bg-secondary/20 text-foreground hover:border-border",
               )}
               whileTap={{ scale: 0.95 }}
             >
-              <div className={cn(
-                'w-12 h-12 rounded-full flex items-center justify-center',
-                gender === 'female' ? 'bg-primary-foreground/20' : 'bg-primary/10'
-              )}>
-                <User className={cn(
-                  'w-6 h-6',
-                  gender === 'female' ? 'text-primary-foreground' : 'text-primary'
-                )} />
+              <div
+                className={cn(
+                  "flex h-12 w-12 items-center justify-center rounded-full",
+                  gender === "female"
+                    ? "bg-primary-foreground/20"
+                    : "bg-primary/10",
+                )}
+              >
+                <User
+                  className={cn(
+                    "h-6 w-6",
+                    gender === "female"
+                      ? "text-primary-foreground"
+                      : "text-primary",
+                  )}
+                />
               </div>
               Female
             </motion.button>
@@ -161,7 +179,7 @@ export function OnboardingGender({
         </div>
 
         {/* Bottom Actions */}
-        <motion.div 
+        <motion.div
           className="space-y-4 pb-4"
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -174,14 +192,14 @@ export function OnboardingGender({
               className={cn(
                 onboardingClasses.button.base,
                 onboardingClasses.button.secondary,
-                'flex-1'
+                "flex-1",
               )}
               whileTap={{ scale: 0.98 }}
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="h-5 w-5" />
               Back
             </motion.button>
-            
+
             <motion.button
               type="button"
               onClick={handleContinue}
@@ -189,12 +207,12 @@ export function OnboardingGender({
               className={cn(
                 onboardingClasses.button.base,
                 onboardingClasses.button.primary,
-                'flex-1'
+                "flex-1",
               )}
               whileTap={gender ? { scale: 0.98 } : {}}
             >
               Continue
-              <ArrowRight className="w-5 h-5" />
+              <ArrowRight className="h-5 w-5" />
             </motion.button>
           </div>
         </motion.div>

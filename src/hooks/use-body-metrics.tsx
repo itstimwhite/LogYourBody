@@ -83,12 +83,25 @@ function calculateLeanBodyMass(
   weight: number,
   bodyFatPercentage: number,
 ): number {
+  // Validate inputs
+  if (!weight || weight <= 0 || isNaN(weight)) return 0;
+  if (!bodyFatPercentage || bodyFatPercentage < 0 || bodyFatPercentage > 100 || isNaN(bodyFatPercentage)) return weight;
+  
   return weight * (1 - bodyFatPercentage / 100);
 }
 
 function calculateFFMI(leanBodyMass: number, heightCm: number): number {
+  // Validate inputs to prevent NaN
+  if (!leanBodyMass || leanBodyMass <= 0 || isNaN(leanBodyMass)) return 0;
+  if (!heightCm || heightCm <= 0 || isNaN(heightCm)) return 0;
+  
   const heightM = heightCm / 100;
-  return leanBodyMass / (heightM * heightM);
+  const ffmi = leanBodyMass / (heightM * heightM);
+  
+  // Validate result
+  if (isNaN(ffmi) || !isFinite(ffmi)) return 0;
+  
+  return ffmi;
 }
 
 export function useBodyMetrics() {
@@ -158,10 +171,13 @@ export function useBodyMetrics() {
 
   const getFormattedWeight = useCallback(
     (weightKg: number) => {
+      if (!weightKg || weightKg <= 0 || isNaN(weightKg)) return settings.units === "metric" ? "0 kg" : "0 lbs";
+      
       if (settings.units === "metric") {
         return `${Math.round(weightKg * 10) / 10} kg`;
       } else {
-        return `${Math.round(kgToLbs(weightKg))} lbs`;
+        const lbs = kgToLbs(weightKg);
+        return `${Math.round(lbs * 10) / 10} lbs`;
       }
     },
     [settings.units],
@@ -180,10 +196,13 @@ export function useBodyMetrics() {
 
   const getFormattedLeanBodyMass = useCallback(
     (lbmKg: number) => {
+      if (!lbmKg || lbmKg <= 0 || isNaN(lbmKg)) return settings.units === "metric" ? "0 kg" : "0 lbs";
+      
       if (settings.units === "metric") {
         return `${Math.round(lbmKg * 10) / 10} kg`;
       } else {
-        return `${Math.round(kgToLbs(lbmKg))} lbs`;
+        const lbs = kgToLbs(lbmKg);
+        return `${Math.round(lbs * 10) / 10} lbs`;
       }
     },
     [settings.units],

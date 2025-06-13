@@ -38,7 +38,7 @@ const Subscription = () => {
     switch (subscriptionInfo.status) {
       case "trial":
         return (
-          <Badge variant="outline" className="text-primary border-primary">
+          <Badge variant="outline" className="border-primary text-primary">
             Trial Active
           </Badge>
         );
@@ -61,12 +61,12 @@ const Subscription = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="flex items-center gap-4 px-6 py-4 border-b border-border">
+      <div className="flex items-center gap-4 border-b border-border px-6 py-4">
         <Button
           size="icon"
           variant="outline"
           onClick={() => navigate("/settings")}
-          className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
+          className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -77,7 +77,7 @@ const Subscription = () => {
       </div>
 
       {/* Content */}
-      <div className="p-6 space-y-8">
+      <div className="space-y-8 p-6">
         {/* Current Status */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -85,11 +85,11 @@ const Subscription = () => {
             {getStatusBadge()}
           </div>
 
-          <div className="bg-secondary/30 rounded-lg p-6 space-y-4">
+          <div className="space-y-4 rounded-lg bg-secondary/30 p-6">
             {subscriptionInfo.status === "trial" ? (
               <>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
                     <Crown className="h-6 w-6 text-primary" />
                   </div>
                   <div>
@@ -121,7 +121,7 @@ const Subscription = () => {
             ) : subscriptionInfo.status === "active" ? (
               <>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/10">
                     <Crown className="h-6 w-6 text-green-500" />
                   </div>
                   <div>
@@ -145,7 +145,7 @@ const Subscription = () => {
             ) : (
               <>
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
                     <AlertCircle className="h-6 w-6 text-destructive" />
                   </div>
                   <div>
@@ -174,13 +174,13 @@ const Subscription = () => {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Billing Information</h2>
 
-            <div className="bg-secondary/30 rounded-lg p-6 space-y-4">
+            <div className="space-y-4 rounded-lg bg-secondary/30 p-6">
               {billingInfo.nextBillingDate && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">
                     Next billing date
                   </span>
-                  <span className="text-foreground font-medium">
+                  <span className="font-medium text-foreground">
                     {formatDate(billingInfo.nextBillingDate)}
                   </span>
                 </div>
@@ -189,7 +189,7 @@ const Subscription = () => {
               {billingInfo.amount && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Amount</span>
-                  <span className="text-foreground font-medium">
+                  <span className="font-medium text-foreground">
                     ${billingInfo.amount} {billingInfo.currency}
                   </span>
                 </div>
@@ -200,7 +200,7 @@ const Subscription = () => {
                   <span className="text-muted-foreground">Payment method</span>
                   <div className="flex items-center gap-2">
                     <CreditCard className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-foreground font-medium">
+                    <span className="font-medium text-foreground">
                       {billingInfo.paymentMethod}
                     </span>
                   </div>
@@ -225,7 +225,7 @@ const Subscription = () => {
                 Manage in App Store
               </Button>
 
-              <p className="text-xs text-muted-foreground text-center">
+              <p className="text-center text-xs text-muted-foreground">
                 To cancel or modify your subscription, use your device's App
                 Store or Google Play settings.
               </p>
@@ -238,7 +238,7 @@ const Subscription = () => {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Premium Features</h2>
 
-            <div className="bg-secondary/30 rounded-lg p-6 space-y-3">
+            <div className="space-y-3 rounded-lg bg-secondary/30 p-6">
               {[
                 "Unlimited body measurements",
                 "Advanced analytics & trends",
@@ -248,7 +248,7 @@ const Subscription = () => {
                 "Priority support",
               ].map((feature, index) => (
                 <div key={index} className="flex items-center gap-3">
-                  <Crown className="h-4 w-4 text-primary flex-shrink-0" />
+                  <Crown className="h-4 w-4 flex-shrink-0 text-primary" />
                   <span className="text-sm text-muted-foreground">
                     {feature}
                   </span>

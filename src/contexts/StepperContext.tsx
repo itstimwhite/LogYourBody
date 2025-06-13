@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Capacitor } from '@capacitor/core';
+import React, { createContext, useContext, useState, useCallback } from "react";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Capacitor } from "@capacitor/core";
 
 interface StepperContextType {
   currentStep: number;
@@ -25,12 +25,12 @@ interface StepperProviderProps {
   onComplete?: () => void;
 }
 
-export function StepperProvider({ 
-  children, 
-  totalSteps, 
+export function StepperProvider({
+  children,
+  totalSteps,
   initialStep = 0,
   onStepChange,
-  onComplete
+  onComplete,
 }: StepperProviderProps) {
   const [currentStep, setCurrentStep] = useState(initialStep);
   const [canGoNext, setCanGoNext] = useState(false);
@@ -70,17 +70,20 @@ export function StepperProvider({
     onStepChange?.(prevStep);
   }, [currentStep, isFirstStep, onStepChange, isNative]);
 
-  const goToStep = useCallback(async (step: number) => {
-    if (step < 0 || step >= totalSteps || step === currentStep) return;
+  const goToStep = useCallback(
+    async (step: number) => {
+      if (step < 0 || step >= totalSteps || step === currentStep) return;
 
-    if (isNative) {
-      await Haptics.impact({ style: ImpactStyle.Light });
-    }
+      if (isNative) {
+        await Haptics.impact({ style: ImpactStyle.Light });
+      }
 
-    setCurrentStep(step);
-    setCanGoNext(true); // Assume target step can be navigated from
-    onStepChange?.(step);
-  }, [currentStep, totalSteps, onStepChange, isNative]);
+      setCurrentStep(step);
+      setCanGoNext(true); // Assume target step can be navigated from
+      onStepChange?.(step);
+    },
+    [currentStep, totalSteps, onStepChange, isNative],
+  );
 
   const value: StepperContextType = {
     currentStep,
@@ -96,16 +99,14 @@ export function StepperProvider({
   };
 
   return (
-    <StepperContext.Provider value={value}>
-      {children}
-    </StepperContext.Provider>
+    <StepperContext.Provider value={value}>{children}</StepperContext.Provider>
   );
 }
 
 export function useStepper() {
   const context = useContext(StepperContext);
   if (!context) {
-    throw new Error('useStepper must be used within a StepperProvider');
+    throw new Error("useStepper must be used within a StepperProvider");
   }
   return context;
 }

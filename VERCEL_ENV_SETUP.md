@@ -36,6 +36,7 @@ vercel env add VITE_REVENUECAT_PUBLIC_KEY preview
 ```
 
 When prompted, enter your RevenueCat public key:
+
 - iOS keys start with `appl_`
 - Web/Stripe keys start with `strp_` or `public_`
 
@@ -46,8 +47,8 @@ You can also set these via the Vercel dashboard:
 1. Go to your project settings in Vercel
 2. Navigate to "Environment Variables"
 3. Add the following variables:
-   - `VITE_REVENUECAT_IOS_KEY` with your iOS key (appl_...)
-   - `VITE_REVENUECAT_WEB_KEY` with your Web/Stripe key (strp_...)
+   - `VITE_REVENUECAT_IOS_KEY` with your iOS key (appl\_...)
+   - `VITE_REVENUECAT_WEB_KEY` with your Web/Stripe key (strp\_...)
    - `VITE_REVENUECAT_PUBLIC_KEY` (legacy, can be removed later)
 4. Select the appropriate environments (Production, Preview, Development)
 

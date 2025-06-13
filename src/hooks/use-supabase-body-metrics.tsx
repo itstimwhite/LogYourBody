@@ -35,12 +35,25 @@ function calculateLeanBodyMass(
   weight: number,
   bodyFatPercentage: number,
 ): number {
+  // Validate inputs
+  if (!weight || weight <= 0 || isNaN(weight)) return 0;
+  if (!bodyFatPercentage || bodyFatPercentage < 0 || bodyFatPercentage > 100 || isNaN(bodyFatPercentage)) return weight;
+  
   return weight * (1 - bodyFatPercentage / 100);
 }
 
 function calculateFFMI(leanBodyMass: number, heightCm: number): number {
+  // Validate inputs to prevent NaN
+  if (!leanBodyMass || leanBodyMass <= 0 || isNaN(leanBodyMass)) return 0;
+  if (!heightCm || heightCm <= 0 || isNaN(heightCm)) return 0;
+  
   const heightM = heightCm / 100;
-  return leanBodyMass / (heightM * heightM);
+  const ffmi = leanBodyMass / (heightM * heightM);
+  
+  // Validate result
+  if (isNaN(ffmi) || !isFinite(ffmi)) return 0;
+  
+  return ffmi;
 }
 
 export function useSupabaseBodyMetrics() {
@@ -51,7 +64,7 @@ export function useSupabaseBodyMetrics() {
   // Individual query functions for cached data fetching
   const fetchUserProfile = async (): Promise<UserProfile | null> => {
     if (!user?.id) return null;
-    
+
     const { data, error } = await supabase
       .from("profiles")
       .select("*")
@@ -72,7 +85,7 @@ export function useSupabaseBodyMetrics() {
 
   const fetchUserSettings = async (): Promise<UserSettings | null> => {
     if (!user?.id) return null;
-    
+
     const { data, error } = await supabase
       .from("user_settings")
       .select("*")
@@ -82,11 +95,10 @@ export function useSupabaseBodyMetrics() {
     if (error && error.code !== "PGRST116") {
       // Return default settings if none exist
       return {
-        user_id: user.id,
+        userId: user.id,
         units: "imperial",
-        notifications_enabled: true,
-        healthkit_sync_enabled: false,
-        googlefit_sync_enabled: false,
+        healthKitSyncEnabled: false,
+        googleFitSyncEnabled: false,
       };
     }
 
@@ -95,7 +107,7 @@ export function useSupabaseBodyMetrics() {
 
   const fetchBodyMetrics = async (): Promise<BodyMetrics[]> => {
     if (!user?.id) return [];
-    
+
     const { data, error } = await supabase
       .from("body_metrics")
       .select("*")
@@ -107,9 +119,9 @@ export function useSupabaseBodyMetrics() {
     }
 
     // Convert date strings to Date objects
-    const processedData = (data || []).map(item => ({
+    const processedData = (data || []).map((item) => ({
       ...item,
-      date: new Date(item.date)
+      date: new Date(item.date),
     }));
 
     return processedData;
@@ -138,9 +150,10 @@ export function useSupabaseBodyMetrics() {
   const userProfile = profileQuery.data || null;
   const settings = settingsQuery.data || null;
   const metrics = metricsQuery.data || [];
-  
+
   // Combined loading state
-  const loading = profileQuery.isLoading || settingsQuery.isLoading || metricsQuery.isLoading;
+  const loading =
+    profileQuery.isLoading || settingsQuery.isLoading || metricsQuery.isLoading;
 
   // Set initial selected date index when metrics load
   useEffect(() => {
@@ -154,16 +167,16 @@ export function useSupabaseBodyMetrics() {
       try {
         const dateA = a.date instanceof Date ? a.date : new Date(a.date);
         const dateB = b.date instanceof Date ? b.date : new Date(b.date);
-        
+
         // Check if dates are valid
         if (isNaN(dateA.getTime()) || isNaN(dateB.getTime())) {
-          console.warn('Invalid date in metrics:', { a: a.date, b: b.date });
+          console.warn("Invalid date in metrics:", { a: a.date, b: b.date });
           return 0;
         }
-        
+
         return dateA.getTime() - dateB.getTime();
       } catch (error) {
-        console.error('Error sorting metrics by date:', error);
+        console.error("Error sorting metrics by date:", error);
         return 0;
       }
     });
@@ -221,7 +234,7 @@ export function useSupabaseBodyMetrics() {
         if (data) {
           // Invalidate metrics query to refetch and update cache
           queryClient.invalidateQueries({ queryKey: ["metrics", user.id] });
-          
+
           // Select the newest entry after data is updated
           setSelectedDateIndex(sortedMetrics.length);
         }
@@ -303,12 +316,14 @@ export function useSupabaseBodyMetrics() {
 
   const getFormattedWeight = useCallback(
     (weightKg: number) => {
-      if (!settings) return `${weightKg} kg`;
+      if (!settings) return "0 kg";
+      if (!weightKg || weightKg <= 0 || isNaN(weightKg)) return settings.units === "metric" ? "0 kg" : "0 lbs";
 
       if (settings.units === "metric") {
         return `${Math.round(weightKg * 10) / 10} kg`;
       } else {
-        return `${Math.round(kgToLbs(weightKg))} lbs`;
+        const lbs = kgToLbs(weightKg);
+        return `${Math.round(lbs * 10) / 10} lbs`;
       }
     },
     [settings],
@@ -329,12 +344,14 @@ export function useSupabaseBodyMetrics() {
 
   const getFormattedLeanBodyMass = useCallback(
     (lbmKg: number) => {
-      if (!settings) return `${lbmKg} kg`;
+      if (!settings) return "0 kg";
+      if (!lbmKg || lbmKg <= 0 || isNaN(lbmKg)) return settings.units === "metric" ? "0 kg" : "0 lbs";
 
       if (settings.units === "metric") {
         return `${Math.round(lbmKg * 10) / 10} kg`;
       } else {
-        return `${Math.round(kgToLbs(lbmKg))} lbs`;
+        const lbs = kgToLbs(lbmKg);
+        return `${Math.round(lbs * 10) / 10} lbs`;
       }
     },
     [settings],

@@ -1,6 +1,6 @@
 import React, { useState, Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { Plus, Settings } from "lucide-react";
+import { Plus, Settings, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ProfilePanel } from "@/components/profile/ProfilePanel";
 import { TimelineSlider } from "@/components/profile/TimelineSlider";
@@ -17,16 +17,19 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 // Helper function to calculate age from birthday
 function getAgeFromBirthday(birthday?: string): number {
   if (!birthday) return 30; // Default age
-  
+
   const birthDate = new Date(birthday);
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
   const monthDiff = today.getMonth() - birthDate.getMonth();
-  
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+
+  if (
+    monthDiff < 0 ||
+    (monthDiff === 0 && today.getDate() < birthDate.getDate())
+  ) {
     age--;
   }
-  
+
   return Math.max(18, Math.min(65, age)); // Clamp to reasonable range
 }
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
@@ -36,13 +39,17 @@ import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { isNativeiOS } from "@/lib/platform";
 
 // Keep the old AvatarSilhouette as lazy-loaded fallback (not used in main flow anymore)
-const AvatarSilhouette = React.lazy(() => import("@/components/AvatarSilhouette").then(module => ({ default: module.AvatarSilhouette })));
+const AvatarSilhouette = React.lazy(() =>
+  import("@/components/AvatarSilhouette").then((module) => ({
+    default: module.AvatarSilhouette,
+  })),
+);
 
 // Loading fallback for avatar
 const AvatarLoader = () => (
-  <div className="h-full min-h-[400px] md:min-h-0 flex items-center justify-center bg-muted/30">
+  <div className="flex h-full min-h-[400px] items-center justify-center bg-muted/30 md:min-h-0">
     <div className="text-center">
-      <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+      <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
       <p className="text-sm text-muted-foreground">Loading 3D avatar...</p>
     </div>
   </div>
@@ -53,7 +60,7 @@ const Dashboard = () => {
   // Use Supabase hook if configured, otherwise use local hook
   const supabaseHook = useSupabaseBodyMetrics();
   const localHook = useBodyMetrics();
-  
+
   // Initialize HealthKit on iOS
   const healthKit = useHealthKit();
 
@@ -102,33 +109,35 @@ const Dashboard = () => {
             if (!healthKit.isAuthorized) {
               await healthKit.requestPermissions();
             }
-            
+
             if (healthKit.isAuthorized) {
               // Get recent weight data
               const healthData = await healthKit.getHealthData();
               if (healthData && healthData.weight) {
                 setHealthKitWeightData(healthData);
-                console.log('HealthKit weight data found:', healthData.weight);
+                console.log("HealthKit weight data found:", healthData.weight);
               }
             }
           } catch (error) {
-            console.warn('Error checking HealthKit data:', error);
+            console.warn("Error checking HealthKit data:", error);
           } finally {
             setHealthKitDataChecked(true);
           }
         };
-        
+
         // Start background check but don't wait for it
         checkHealthKitData();
-        
+
         // Set timeout to mark as checked if it takes too long
         const timeout = setTimeout(() => {
           if (!healthKitDataChecked) {
-            console.warn('HealthKit check timed out, proceeding without HealthKit data');
+            console.warn(
+              "HealthKit check timed out, proceeding without HealthKit data",
+            );
             setHealthKitDataChecked(true);
           }
         }, 3000); // Reduced to 3 seconds
-        
+
         return () => clearTimeout(timeout);
       } else {
         // Not on iOS or HealthKit not available, mark as checked immediately
@@ -155,23 +164,39 @@ const Dashboard = () => {
   };
 
   // Check if user has any weight data (including HealthKit data)
-  const hasAppWeightData = metrics.length > 0 && metrics.some(m => m.weight > 0);
-  const hasHealthKitWeightData = healthKitWeightData && healthKitWeightData.weight > 0;
+  const hasAppWeightData =
+    metrics.length > 0 && metrics.some((m) => m.weight > 0);
+  const hasHealthKitWeightData =
+    healthKitWeightData && healthKitWeightData.weight > 0;
   const hasWeightData = hasAppWeightData || hasHealthKitWeightData;
 
   // Show weight prompt if no data and not loading (use useEffect to avoid infinite re-renders)
   React.useEffect(() => {
-    if (!loading && user && settings && healthKitDataChecked && !hasWeightData && !showWeightPrompt) {
+    if (
+      !loading &&
+      user &&
+      settings &&
+      healthKitDataChecked &&
+      !hasWeightData &&
+      !showWeightPrompt
+    ) {
       setShowWeightPrompt(true);
     }
-  }, [loading, user, settings, healthKitDataChecked, hasWeightData, showWeightPrompt]);
+  }, [
+    loading,
+    user,
+    settings,
+    healthKitDataChecked,
+    hasWeightData,
+    showWeightPrompt,
+  ]);
 
   // Don't block on HealthKit - load in background
   if (loading || !user || !settings) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
           <p className="text-muted-foreground">Loading your data...</p>
         </div>
       </div>
@@ -182,7 +207,7 @@ const Dashboard = () => {
   if (showWeightPrompt && !hasWeightData) {
     return (
       <TrialGuard>
-        <div className="min-h-screen bg-background flex items-center justify-center p-6">
+        <div className="flex min-h-screen items-center justify-center bg-background p-6">
           <WeightPrompt
             onComplete={(data) => {
               handleAddMetric(data);
@@ -197,14 +222,14 @@ const Dashboard = () => {
 
   return (
     <TrialGuard>
-      <div className="h-screen md:min-h-screen bg-background text-foreground flex flex-col overflow-hidden md:overflow-auto">
+      <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground md:min-h-screen md:overflow-auto">
         {/* Email confirmation banner */}
         <div className="px-4 pt-4 md:px-6">
           <EmailConfirmationBanner />
         </div>
-        
+
         {/* Header - Desktop only */}
-        <div className="hidden md:flex justify-between items-center px-6 py-4 border-b border-border">
+        <div className="hidden items-center justify-between border-b border-border px-6 py-4 md:flex">
           <div className="flex items-center gap-3">
             <h1 className="text-xl font-semibold tracking-tight">
               LogYourBody
@@ -212,6 +237,18 @@ const Dashboard = () => {
             <VersionDisplay />
           </div>
           <div className="flex gap-3">
+            {/* Development: HealthKit Test Button - only on iOS */}
+            {isNativeiOS() && (
+              <Button
+                size="icon"
+                variant="outline"
+                onClick={() => navigate("/healthkit-test")}
+                className="border-border bg-secondary text-foreground hover:bg-muted"
+                title="HealthKit Testing (Development)"
+              >
+                <Heart className="h-4 w-4" />
+              </Button>
+            )}
             <Button
               size="icon"
               variant="outline"
@@ -222,7 +259,7 @@ const Dashboard = () => {
                   setShowPremiumWeightLog(true);
                 }
               }}
-              className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
+              className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -230,7 +267,7 @@ const Dashboard = () => {
               size="icon"
               variant="outline"
               onClick={() => navigate("/settings")}
-              className="bg-secondary border-border text-foreground hover:bg-muted h-10 w-10"
+              className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
             >
               <Settings className="h-4 w-4" />
             </Button>
@@ -238,9 +275,9 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content - Refactored with TabView */}
-        <div className="flex-1 flex flex-col md:flex-row min-h-0">
+        <div className="flex min-h-0 flex-1 flex-col md:flex-row">
           {/* Avatar/Photo Section with Tabs - Top half on mobile, 2/3 on desktop */}
-          <div className="flex-1 md:w-2/3 relative min-h-0">
+          <div className="relative min-h-0 flex-1 md:w-2/3">
             <TabView
               tabs={createProfileTabs(
                 <Suspense fallback={<AvatarLoader />}>
@@ -265,7 +302,7 @@ const Dashboard = () => {
                     height={user.height}
                     age={getAgeFromBirthday(user.birthday)}
                   />
-                </Suspense>
+                </Suspense>,
               )}
               defaultIndex={activeTabIndex}
               onTabChange={handleTabChange}
@@ -274,7 +311,7 @@ const Dashboard = () => {
             />
 
             {/* Mobile Action Buttons - Floating */}
-            <div className="md:hidden absolute top-safe-top right-4 z-20 flex gap-3">
+            <div className="top-safe-top absolute right-4 z-20 flex gap-3 md:hidden">
               <Button
                 size="icon"
                 variant="outline"
@@ -285,7 +322,7 @@ const Dashboard = () => {
                     setShowPremiumWeightLog(true);
                   }
                 }}
-                className="bg-background/80 backdrop-blur-sm border-border text-foreground hover:bg-muted h-10 w-10 shadow-lg"
+                className="h-10 w-10 border-border bg-background/80 text-foreground shadow-lg backdrop-blur-sm hover:bg-muted"
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -293,7 +330,7 @@ const Dashboard = () => {
                 size="icon"
                 variant="outline"
                 onClick={() => navigate("/settings")}
-                className="bg-background/80 backdrop-blur-sm border-border text-foreground hover:bg-muted h-10 w-10 shadow-lg"
+                className="h-10 w-10 border-border bg-background/80 text-foreground shadow-lg backdrop-blur-sm hover:bg-muted"
               >
                 <Settings className="h-4 w-4" />
               </Button>
@@ -301,7 +338,7 @@ const Dashboard = () => {
           </div>
 
           {/* Profile Panel - Bottom half on mobile, 1/3 on desktop */}
-          <div className="flex-1 md:flex-none md:w-1/3 md:border-l border-border min-h-0">
+          <div className="min-h-0 flex-1 border-border md:w-1/3 md:flex-none md:border-l">
             <ProfilePanel
               metrics={currentMetrics}
               user={user}
@@ -338,11 +375,17 @@ const Dashboard = () => {
           onSave={handleAddMetric}
           onClose={() => setShowPremiumWeightLog(false)}
           units={settings.units}
-          initialWeight={currentMetrics.weight > 0 ? (settings.units === 'imperial' ? utils.kgToLbs(currentMetrics.weight) : currentMetrics.weight) : undefined}
+          initialWeight={
+            currentMetrics.weight > 0
+              ? settings.units === "imperial"
+                ? utils.kgToLbs(currentMetrics.weight)
+                : currentMetrics.weight
+              : undefined
+          }
           initialBodyFat={currentMetrics.bodyFatPercentage}
         />
       </div>
-      </TrialGuard>
+    </TrialGuard>
   );
 };
 

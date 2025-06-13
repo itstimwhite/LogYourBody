@@ -18,6 +18,7 @@ The LogYourBody team takes security seriously. If you believe you have found a s
 Instead, please report them via email to **security@logyourbody.com** or directly to **tim@timwhite.dev**.
 
 Please include the following information in your report:
+
 - Type of issue (e.g. buffer overflow, SQL injection, cross-site scripting, etc.)
 - Full paths of source file(s) related to the manifestation of the issue
 - The location of the affected source code (tag/branch/commit or direct URL)
@@ -44,6 +45,7 @@ When we receive a security bug report, we will:
 4. Release new versions as soon as possible
 
 We ask that you:
+
 - Give us reasonable time to investigate and mitigate an issue you report before making any information public
 - Make a good faith effort to avoid privacy violations, destruction of data, and interruption or degradation of our service
 
@@ -94,6 +96,7 @@ These services undergo regular security audits and maintain high security standa
 At this time, we do not have a formal bug bounty program. However, we greatly appreciate security researchers who help make LogYourBody safer for everyone.
 
 If you discover a security vulnerability, we will:
+
 - Acknowledge your contribution in our security hall of fame (if desired)
 - Provide updates on the status of your report
 - Give you credit in our release notes (if desired)

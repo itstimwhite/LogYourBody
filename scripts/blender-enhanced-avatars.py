@@ -185,7 +185,8 @@ def apply_body_fat_morphing(torso, body_fat, gender):
     bpy.context.view_layer.objects.active = torso
     bpy.ops.object.mode_set(mode='EDIT')
     
-    mesh = bmesh.from_mesh(torso.data)
+    mesh = bmesh.new()
+    mesh.from_mesh(torso.data)
     
     for vert in mesh.verts:
         x, y, z = vert.co

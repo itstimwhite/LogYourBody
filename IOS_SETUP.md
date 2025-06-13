@@ -27,6 +27,7 @@ ios/
 ## Development Workflow
 
 ### 1. Build and Copy Web Assets
+
 ```bash
 # Build the web app and copy to iOS
 npm run ios:build
@@ -37,6 +38,7 @@ npx cap copy ios
 ```
 
 ### 2. Open in Xcode
+
 ```bash
 # Opens the iOS project in Xcode
 npm run ios:open
@@ -46,11 +48,13 @@ npx cap open ios
 ```
 
 ### 3. Run in Simulator
+
 1. Open the project in Xcode using `App.xcworkspace` (not .xcodeproj)
 2. Select a simulator device (iPhone 15, iPad, etc.)
 3. Click the "Run" button or press Cmd+R
 
 ### 4. Run on Physical Device
+
 1. Connect your iOS device via USB
 2. Select your device in Xcode
 3. Ensure you have a valid Apple Developer account
@@ -59,12 +63,15 @@ npx cap open ios
 ## Configuration
 
 ### App Configuration
+
 The app is configured in `capacitor.config.ts`:
+
 - **App ID**: `com.logyourbody.app`
 - **App Name**: `LogYourBody`
 - **Scheme**: `LogYourBody`
 
 ### iOS-Specific Settings
+
 - **Background Color**: Black (`#000000`)
 - **Status Bar**: Dark style
 - **Splash Screen**: 2-second duration with LogYourBody branding
@@ -85,13 +92,16 @@ npm run ios:run
 ## Native Features
 
 The app includes these Capacitor plugins:
+
 - **StatusBar**: Control status bar appearance
 - **SplashScreen**: Native splash screen management
 - **HealthKit**: Read/write health data (height, weight, body composition)
 - **Core**: Basic device and platform APIs
 
 ### HealthKit Integration
+
 The app automatically prompts users to connect Apple Health on iOS:
+
 - **Auto-fill Profile**: Height, weight, and birthday from Health app
 - **Weight History Sync**: Import existing weight data from Health app
 - **Bi-directional Sync**: Write body composition data back to Health app
@@ -100,11 +110,13 @@ The app automatically prompts users to connect Apple Health on iOS:
 ## Development vs Production
 
 ### Development Mode
+
 - Connects to `http://localhost:8080` when dev server is running
 - Allows live reload during development
 - Use `npm run dev` + `npm run ios:open`
 
 ### Production Mode
+
 - Uses built assets from `dist/` folder
 - Optimized and bundled code
 - Use `npm run ios:build` before opening Xcode
@@ -114,14 +126,17 @@ The app automatically prompts users to connect Apple Health on iOS:
 ### Common Issues
 
 1. **"xcode-select: error: tool 'xcodebuild' requires Xcode"**
+
    - Install Xcode from Mac App Store
    - Run: `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`
 
 2. **Pod install failures**
+
    - Run: `cd ios/App && pod install --repo-update`
    - Ensure you have the latest CocoaPods: `sudo gem install cocoapods`
 
 3. **Web assets not updating**
+
    - Run: `npm run build && npx cap copy ios`
    - Clean build in Xcode: Product → Clean Build Folder
 

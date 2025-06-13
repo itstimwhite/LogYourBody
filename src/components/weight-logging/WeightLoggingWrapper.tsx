@@ -1,6 +1,6 @@
-import React from 'react';
-import { WeightLoggingScreen } from './WeightLoggingScreen';
-import { MeasurementMethod } from '@/types/bodymetrics';
+import React from "react";
+import { WeightLoggingScreen } from "./WeightLoggingScreen";
+import { MeasurementMethod } from "@/types/bodymetrics";
 
 interface WeightLoggingWrapperProps {
   show: boolean;
@@ -11,7 +11,7 @@ interface WeightLoggingWrapperProps {
     date: Date;
   }) => void;
   onClose: () => void;
-  units: 'imperial' | 'metric';
+  units: "imperial" | "metric";
   initialWeight?: number;
   initialBodyFat?: number;
 }

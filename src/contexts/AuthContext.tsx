@@ -42,10 +42,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("AuthContext initialization - isSupabaseConfigured:", isSupabaseConfigured);
+    console.log(
+      "AuthContext initialization - isSupabaseConfigured:",
+      isSupabaseConfigured,
+    );
     console.log("AuthContext initialization - supabase client:", !!supabase);
-    console.log("AuthContext initialization - current URL:", window.location.href);
-    
+    console.log(
+      "AuthContext initialization - current URL:",
+      window.location.href,
+    );
+
     if (!isSupabaseConfigured || !supabase) {
       console.warn("Supabase not configured - authentication disabled");
       setLoading(false);
@@ -55,60 +61,73 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Check database status on initialization with timeout
     Promise.race([
       checkDatabaseStatus(),
-      new Promise((_, reject) => setTimeout(() => reject(new Error('Database check timeout')), 5000))
-    ]).then(logDatabaseStatus).catch(err => {
-      console.warn('Database status check failed or timed out:', err);
-      logDatabaseStatus({
-        connected: false,
-        profilesTableExists: false,
-        userSettingsTableExists: false,
-        emailSubscriptionsTableExists: false,
-        error: 'Timeout or connection failed'
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Database check timeout")), 5000),
+      ),
+    ])
+      .then(logDatabaseStatus)
+      .catch((err) => {
+        console.warn("Database status check failed or timed out:", err);
+        logDatabaseStatus({
+          connected: false,
+          profilesTableExists: false,
+          userSettingsTableExists: false,
+          emailSubscriptionsTableExists: false,
+          error: "Timeout or connection failed",
+        });
       });
-    });
 
     // Get initial session with better error handling
-    console.log('Getting initial session...');
+    console.log("Getting initial session...");
     const initializeAuth = async () => {
       try {
         // Add timeout to prevent hanging
         const sessionPromise = supabase.auth.getSession();
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Session initialization timeout')), 3000)
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(
+            () => reject(new Error("Session initialization timeout")),
+            3000,
+          ),
         );
-        
-        const { data: { session }, error } = await Promise.race([
-          sessionPromise,
-          timeoutPromise
-        ]) as any;
-        
+
+        const {
+          data: { session },
+          error,
+        } = (await Promise.race([sessionPromise, timeoutPromise])) as any;
+
         if (error) {
-          console.error('Error getting initial session:', error);
+          console.error("Error getting initial session:", error);
           // Clear any stale session data
           await supabase.auth.signOut();
         } else {
-          console.log('Initial session retrieved:', !!session, session?.user?.email);
+          console.log(
+            "Initial session retrieved:",
+            !!session,
+            session?.user?.email,
+          );
         }
-        
+
         setSession(session || null);
         setUser(session?.user ?? null);
       } catch (err) {
-        console.error('Failed to get initial session:', err);
+        console.error("Failed to get initial session:", err);
         // Clear state on error
         setSession(null);
         setUser(null);
       } finally {
         // Always set loading to false
-        console.log('AuthContext: Setting loading to false');
+        console.log("AuthContext: Setting loading to false");
         setLoading(false);
       }
     };
-    
+
     initializeAuth();
 
     // Emergency fallback timeout to ensure loading is never stuck
     const emergencyTimeout = setTimeout(() => {
-      console.warn('AuthContext: Emergency timeout triggered - forcing loading to false');
+      console.warn(
+        "AuthContext: Emergency timeout triggered - forcing loading to false",
+      );
       setLoading(false);
     }, 3000); // 3 seconds to match splash timing
 
@@ -137,7 +156,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         }
 
         // Handle sign-in errors by clearing state
-        if (event === "SIGNED_OUT" || (event === "TOKEN_REFRESHED" && !session)) {
+        if (
+          event === "SIGNED_OUT" ||
+          (event === "TOKEN_REFRESHED" && !session)
+        ) {
           console.log("User signed out or token refresh failed");
           setSession(null);
           setUser(null);
@@ -166,19 +188,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     try {
       console.log("Syncing email subscriptions for:", user.email);
-      
+
       const { error } = await supabase
-        .from('email_subscriptions')
-        .update({ 
+        .from("email_subscriptions")
+        .update({
           user_id: user.id,
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
         })
-        .eq('email', user.email.toLowerCase())
-        .is('user_id', null);
+        .eq("email", user.email.toLowerCase())
+        .is("user_id", null);
 
       if (error) {
         // Don't log table missing errors as errors - they're expected
-        if (error.message.includes('relation "public.email_subscriptions" does not exist')) {
+        if (
+          error.message.includes(
+            'relation "public.email_subscriptions" does not exist',
+          )
+        ) {
           console.log("Email subscriptions table not found - skipping sync");
         } else {
           console.error("Error syncing email subscriptions:", error);
@@ -187,7 +213,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.log("Email subscriptions synced successfully");
       }
     } catch (err) {
-      console.warn("Failed to sync email subscriptions (table may not exist):", err);
+      console.warn(
+        "Failed to sync email subscriptions (table may not exist):",
+        err,
+      );
     }
   };
 
@@ -208,29 +237,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
         .eq("id", user.id)
         .single();
 
-      if (selectError && selectError.code !== 'PGRST116') {
+      if (selectError && selectError.code !== "PGRST116") {
         console.error("Error checking profile:", selectError);
         return;
       }
 
       if (!existingProfile) {
         console.log("Creating new profile...");
-        
+
         // Extract name from Apple Sign In metadata or fallback to other sources
         let userName = "User";
         if (user.user_metadata?.name) {
           userName = user.user_metadata.name;
-        } else if (user.user_metadata?.given_name || user.user_metadata?.family_name) {
+        } else if (
+          user.user_metadata?.given_name ||
+          user.user_metadata?.family_name
+        ) {
           // Construct name from Apple Sign In given/family names
-          const firstName = user.user_metadata.given_name || '';
-          const lastName = user.user_metadata.family_name || '';
+          const firstName = user.user_metadata.given_name || "";
+          const lastName = user.user_metadata.family_name || "";
           userName = `${firstName} ${lastName}`.trim() || "User";
         } else if (user.email) {
           userName = user.email.split("@")[0];
         }
-        
+
         console.log("Creating profile with name:", userName);
-        
+
         // Create minimal profile that will trigger ProfileSetup
         const { error: profileError } = await supabase.from("profiles").insert({
           id: user.id,
@@ -242,8 +274,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (profileError) {
           console.error("Error creating profile:", profileError);
           // Check if it's a missing table error (migrations not applied)
-          if (profileError.message.includes('relation "profiles" does not exist')) {
-            console.error("MIGRATION ERROR: profiles table does not exist. Please run database migrations.");
+          if (
+            profileError.message.includes('relation "profiles" does not exist')
+          ) {
+            console.error(
+              "MIGRATION ERROR: profiles table does not exist. Please run database migrations.",
+            );
           }
         } else {
           console.log("Profile created successfully");
@@ -271,104 +307,115 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signInWithEmail = async (email: string, password: string) => {
     if (!isSupabaseConfigured || !supabase) {
-      return { 
-        error: { 
+      return {
+        error: {
           message: "Authentication service not available",
           name: "AuthError",
-          status: 500 
-        } as any 
+          status: 500,
+        } as any,
       };
     }
 
     console.log("Attempting Supabase sign in with email:", email);
-    
+
     // Check network connectivity first
     if (!navigator.onLine) {
       return {
         error: {
-          message: "No internet connection. Please check your network and try again.",
+          message:
+            "No internet connection. Please check your network and try again.",
           name: "NetworkError",
-          status: 0
-        } as any
+          status: 0,
+        } as any,
       };
     }
-    
+
     try {
       console.log("Starting Supabase auth request...");
-      
+
       // Add timeout to prevent hanging
       const authPromise = supabase.auth.signInWithPassword({
         email,
         password,
       });
-      
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Authentication timeout')), 10000)
+
+      const timeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("Authentication timeout")), 10000),
       );
-      
-      const { data, error } = await Promise.race([authPromise, timeoutPromise]) as any;
-      
+
+      const { data, error } = (await Promise.race([
+        authPromise,
+        timeoutPromise,
+      ])) as any;
+
       console.log("Auth request completed:", { data: !!data, error: !!error });
-      
+
       if (error) {
         console.error("Supabase sign in error:", error);
-        
+
         // Provide more specific error messages
-        if (error.message.includes('Invalid login credentials')) {
+        if (error.message.includes("Invalid login credentials")) {
           return {
             error: {
-              message: "Invalid email or password. Please check your credentials and try again.",
+              message:
+                "Invalid email or password. Please check your credentials and try again.",
               name: "InvalidCredentials",
-              status: 401
-            } as any
+              status: 401,
+            } as any,
           };
         }
-        
-        if (error.message.includes('Email not confirmed')) {
+
+        if (error.message.includes("Email not confirmed")) {
           return {
             error: {
-              message: "Please check your email and click the confirmation link before signing in.",
+              message:
+                "Please check your email and click the confirmation link before signing in.",
               name: "EmailNotConfirmed",
-              status: 401
-            } as any
+              status: 401,
+            } as any,
           };
         }
       } else {
         console.log("Supabase sign in successful:", data);
       }
-      
+
       return { error };
     } catch (networkError: any) {
       console.error("Network or other error during sign in:", networkError);
-      
+
       // Check for authentication timeout
-      if (networkError.message === 'Authentication timeout') {
+      if (networkError.message === "Authentication timeout") {
         return {
           error: {
-            message: "Sign in is taking too long. Please check your connection and try again.",
+            message:
+              "Sign in is taking too long. Please check your connection and try again.",
             name: "TimeoutError",
-            status: 408
-          } as any
+            status: 408,
+          } as any,
         };
       }
-      
+
       // Check if it's a network-related error
-      if (networkError.name === 'TypeError' && networkError.message.includes('fetch')) {
+      if (
+        networkError.name === "TypeError" &&
+        networkError.message.includes("fetch")
+      ) {
         return {
           error: {
-            message: "Network error. Please check your connection and try again.",
+            message:
+              "Network error. Please check your connection and try again.",
             name: "NetworkError",
-            status: 0
-          } as any
+            status: 0,
+          } as any,
         };
       }
-      
+
       return {
         error: {
           message: "An unexpected error occurred. Please try again.",
           name: "UnknownError",
-          status: 500
-        } as any
+          status: 500,
+        } as any,
       };
     }
   };
@@ -379,17 +426,17 @@ export function AuthProvider({ children }: AuthProviderProps) {
     name: string,
   ) => {
     if (!isSupabaseConfigured || !supabase) {
-      return { 
-        error: { 
+      return {
+        error: {
           message: "Authentication service not available",
           name: "AuthError",
-          status: 500 
-        } as any 
+          status: 500,
+        } as any,
       };
     }
 
     console.log("Attempting Supabase sign up with email:", email);
-    
+
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -400,149 +447,163 @@ export function AuthProvider({ children }: AuthProviderProps) {
           },
         },
       });
-      
+
       if (error) {
         console.error("Supabase sign up error:", error);
-        
+
         // Handle specific error cases with user-friendly messages
-        if (error.message.includes('User already registered')) {
+        if (error.message.includes("User already registered")) {
           return {
             error: {
-              message: "An account with this email already exists. Please sign in instead or use a different email address.",
+              message:
+                "An account with this email already exists. Please sign in instead or use a different email address.",
               name: "UserExistsError",
-              status: 409
-            } as any
+              status: 409,
+            } as any,
           };
         }
-        
-        if (error.message.includes('Password should be at least')) {
+
+        if (error.message.includes("Password should be at least")) {
           return {
             error: {
               message: "Password must be at least 6 characters long.",
-              name: "WeakPasswordError", 
-              status: 400
-            } as any
+              name: "WeakPasswordError",
+              status: 400,
+            } as any,
           };
         }
-        
-        if (error.message.includes('Invalid email')) {
+
+        if (error.message.includes("Invalid email")) {
           return {
             error: {
               message: "Please enter a valid email address.",
               name: "InvalidEmailError",
-              status: 400
-            } as any
+              status: 400,
+            } as any,
           };
         }
-        
-        if (error.message.includes('email rate limit')) {
+
+        if (error.message.includes("email rate limit")) {
           return {
             error: {
-              message: "Too many sign up attempts. Please wait a few minutes before trying again.",
+              message:
+                "Too many sign up attempts. Please wait a few minutes before trying again.",
               name: "RateLimitError",
-              status: 429
-            } as any
+              status: 429,
+            } as any,
           };
         }
-        
+
         // Generic error fallback
         return {
           error: {
-            message: error.message || "Failed to create account. Please try again.",
+            message:
+              error.message || "Failed to create account. Please try again.",
             name: "SignUpError",
-            status: 400
-          } as any
+            status: 400,
+          } as any,
         };
       }
-      
+
       // Check if user was created but needs email confirmation
       if (data.user && !data.session) {
         console.log("Sign up successful, but email confirmation required");
-        
+
         // For web users, automatically sign them in and let them use the app
         // They'll see a banner to confirm their email later
         console.log("Web signup - attempting auto-signin for unconfirmed user");
-        
+
         try {
-          const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
-            email,
-            password,
-          });
-          
+          const { data: signInData, error: signInError } =
+            await supabase.auth.signInWithPassword({
+              email,
+              password,
+            });
+
           if (signInError) {
-            console.warn("Auto-signin failed for unconfirmed user:", signInError);
+            console.warn(
+              "Auto-signin failed for unconfirmed user:",
+              signInError,
+            );
             return {
               error: {
-                message: "Account created! Please check your email and click the confirmation link before signing in.",
+                message:
+                  "Account created! Please check your email and click the confirmation link before signing in.",
                 name: "EmailConfirmationRequired",
-                status: 200
-              } as any
+                status: 200,
+              } as any,
             };
           }
-          
+
           console.log("Auto-signin successful for unconfirmed user");
           // Set a flag to show email confirmation banner
-          localStorage.setItem('pending_email_confirmation', 'true');
+          localStorage.setItem("pending_email_confirmation", "true");
           return { error: null };
-          
         } catch (autoSignInError) {
           console.error("Auto-signin error:", autoSignInError);
           return {
             error: {
-              message: "Account created! Please check your email and click the confirmation link before signing in.",
-              name: "EmailConfirmationRequired", 
-              status: 200
-            } as any
+              message:
+                "Account created! Please check your email and click the confirmation link before signing in.",
+              name: "EmailConfirmationRequired",
+              status: 200,
+            } as any,
           };
         }
       }
-      
+
       console.log("Supabase sign up successful:", data);
       return { error: null };
-      
     } catch (networkError: any) {
       console.error("Network error during sign up:", networkError);
       return {
         error: {
           message: "Network error. Please check your connection and try again.",
           name: "NetworkError",
-          status: 0
-        } as any
+          status: 0,
+        } as any,
       };
     }
   };
 
   const signInWithGoogle = async () => {
     if (!isSupabaseConfigured || !supabase) {
-      return { 
-        error: { 
+      return {
+        error: {
           message: "Authentication service not available",
           name: "AuthError",
-          status: 500 
-        } as any 
+          status: 500,
+        } as any,
       };
     }
 
     // Check platform and set appropriate redirect URL
-    const isNative = window.location.protocol === 'capacitor:';
+    const isNative = window.location.protocol === "capacitor:";
     let redirectUrl;
-    
+
     if (isNative) {
       // Native app should redirect to production domain
-      redirectUrl = 'https://logyourbody.com/dashboard';
+      redirectUrl = "https://logyourbody.com/dashboard";
     } else {
       // Web app: check if running on localhost vs production
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const isLocalhost =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1";
       if (isLocalhost) {
         // Local development - redirect to local dashboard
         redirectUrl = `${window.location.origin}/dashboard`;
       } else {
         // Production web - use absolute production URL to avoid redirect issues
-        redirectUrl = 'https://logyourbody.com/dashboard';
+        redirectUrl = "https://logyourbody.com/dashboard";
       }
     }
-    
-    console.log("Google OAuth redirect URL:", redirectUrl, "isNative:", isNative);
+
+    console.log(
+      "Google OAuth redirect URL:",
+      redirectUrl,
+      "isNative:",
+      isNative,
+    );
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -555,35 +616,42 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signInWithApple = async () => {
     if (!isSupabaseConfigured || !supabase) {
-      return { 
-        error: { 
+      return {
+        error: {
           message: "Authentication service not available",
           name: "AuthError",
-          status: 500 
-        } as any 
+          status: 500,
+        } as any,
       };
     }
 
     // Check platform and set appropriate redirect URL
-    const isNative = window.location.protocol === 'capacitor:';
+    const isNative = window.location.protocol === "capacitor:";
     let redirectUrl;
-    
+
     if (isNative) {
       // Native app should redirect to production domain
-      redirectUrl = 'https://logyourbody.com/dashboard';
+      redirectUrl = "https://logyourbody.com/dashboard";
     } else {
       // Web app: check if running on localhost vs production
-      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const isLocalhost =
+        window.location.hostname === "localhost" ||
+        window.location.hostname === "127.0.0.1";
       if (isLocalhost) {
         // Local development - redirect to local dashboard
         redirectUrl = `${window.location.origin}/dashboard`;
       } else {
         // Production web - use absolute production URL to avoid redirect issues
-        redirectUrl = 'https://logyourbody.com/dashboard';
+        redirectUrl = "https://logyourbody.com/dashboard";
       }
     }
-    
-    console.log("Apple OAuth redirect URL:", redirectUrl, "isNative:", isNative);
+
+    console.log(
+      "Apple OAuth redirect URL:",
+      redirectUrl,
+      "isNative:",
+      isNative,
+    );
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "apple",
@@ -596,12 +664,12 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signOut = async () => {
     if (!isSupabaseConfigured || !supabase) {
-      return { 
-        error: { 
+      return {
+        error: {
           message: "Authentication service not available",
           name: "AuthError",
-          status: 500 
-        } as any 
+          status: 500,
+        } as any,
       };
     }
 

@@ -14,7 +14,9 @@ interface BeforeInstallPromptEvent extends Event {
 
 // Detect iOS Safari
 const isIOS = () => {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream
+  );
 };
 
 // Detect Android
@@ -24,17 +26,20 @@ const isAndroid = () => {
 
 // Detect if app is running in standalone mode
 const isStandalone = () => {
-  return window.matchMedia("(display-mode: standalone)").matches || 
-         (window.navigator as any).standalone === true;
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (window.navigator as any).standalone === true
+  );
 };
 
 // Detect if browser supports PWA install
 const supportsPWAInstall = () => {
-  return 'serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window;
+  return "serviceWorker" in navigator && "BeforeInstallPromptEvent" in window;
 };
 
 export function PWAInstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [deferredPrompt, setDeferredPrompt] =
+    useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
   const [showIOSInstructions, setShowIOSInstructions] = useState(false);
   const [installPromptDismissed, setInstallPromptDismissed] = useState(false);
@@ -46,7 +51,7 @@ export function PWAInstallPrompt() {
     }
 
     // Check if dismissed in this session
-    const dismissed = sessionStorage.getItem('pwa-install-dismissed');
+    const dismissed = sessionStorage.getItem("pwa-install-dismissed");
     if (dismissed) {
       setInstallPromptDismissed(true);
       return;
@@ -60,7 +65,7 @@ export function PWAInstallPrompt() {
     const handler = (e: Event) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
-      
+
       // Stash the event so it can be triggered later
       setDeferredPrompt(e as BeforeInstallPromptEvent);
       setShowInstallPrompt(true);
@@ -68,7 +73,7 @@ export function PWAInstallPrompt() {
 
     window.addEventListener("beforeinstallprompt", handler);
 
-    // For iOS Safari or Android browsers that don't support beforeinstallprompt, 
+    // For iOS Safari or Android browsers that don't support beforeinstallprompt,
     // show instructions after a delay if no beforeinstallprompt fired
     if ((isIOS() || isAndroid()) && !isStandalone()) {
       const timer = setTimeout(() => {
@@ -94,7 +99,7 @@ export function PWAInstallPrompt() {
 
     // Wait for the user to respond to the prompt
     const { outcome } = await deferredPrompt.userChoice;
-    
+
     if (outcome === "accepted") {
       console.log("User accepted the install prompt");
     } else {
@@ -111,23 +116,23 @@ export function PWAInstallPrompt() {
     setShowIOSInstructions(false);
     setDeferredPrompt(null);
     setInstallPromptDismissed(true);
-    sessionStorage.setItem('pwa-install-dismissed', 'true');
+    sessionStorage.setItem("pwa-install-dismissed", "true");
   };
 
   const handleIOSDismiss = () => {
     setShowIOSInstructions(false);
     setInstallPromptDismissed(true);
-    sessionStorage.setItem('pwa-install-dismissed', 'true');
+    sessionStorage.setItem("pwa-install-dismissed", "true");
   };
 
   // Show iOS instructions
   if (showIOSInstructions && !installPromptDismissed) {
     return (
-      <div className="fixed bottom-4 left-4 right-4 bg-background border border-border rounded-lg p-4 shadow-lg z-50 md:left-auto md:right-4 md:w-80">
-        <div className="flex items-center justify-between mb-3">
+      <div className="fixed bottom-4 left-4 right-4 z-50 rounded-lg border border-border bg-background p-4 shadow-lg md:left-auto md:right-4 md:w-80">
+        <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Download className="h-5 w-5 text-primary" />
-            <h3 className="font-semibold text-sm">Install LogYourBody</h3>
+            <h3 className="text-sm font-semibold">Install LogYourBody</h3>
           </div>
           <Button
             size="icon"
@@ -138,12 +143,12 @@ export function PWAInstallPrompt() {
             <X className="h-4 w-4" />
           </Button>
         </div>
-        
-        <p className="text-sm text-muted-foreground mb-3">
+
+        <p className="mb-3 text-sm text-muted-foreground">
           Install LogYourBody on your device for a better experience:
         </p>
-        
-        <div className="space-y-2 mb-3">
+
+        <div className="mb-3 space-y-2">
           {isIOS() ? (
             <>
               <div className="flex items-center gap-2 text-sm">
@@ -168,11 +173,11 @@ export function PWAInstallPrompt() {
             </>
           )}
         </div>
-        
+
         <Button
           variant="outline"
           onClick={handleIOSDismiss}
-          className="w-full h-9 text-sm"
+          className="h-9 w-full text-sm"
         >
           Got it
         </Button>
@@ -185,11 +190,11 @@ export function PWAInstallPrompt() {
   }
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 bg-background border border-border rounded-lg p-4 shadow-lg z-50 md:left-auto md:right-4 md:w-80">
-      <div className="flex items-center justify-between mb-3">
+    <div className="fixed bottom-4 left-4 right-4 z-50 rounded-lg border border-border bg-background p-4 shadow-lg md:left-auto md:right-4 md:w-80">
+      <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Download className="h-5 w-5 text-primary" />
-          <h3 className="font-semibold text-sm">Install LogYourBody</h3>
+          <h3 className="text-sm font-semibold">Install LogYourBody</h3>
         </div>
         <Button
           size="icon"
@@ -200,22 +205,23 @@ export function PWAInstallPrompt() {
           <X className="h-4 w-4" />
         </Button>
       </div>
-      
-      <p className="text-sm text-muted-foreground mb-3">
-        Install LogYourBody on your device for a better experience with offline access and quick launching.
+
+      <p className="mb-3 text-sm text-muted-foreground">
+        Install LogYourBody on your device for a better experience with offline
+        access and quick launching.
       </p>
-      
+
       <div className="flex gap-2">
         <Button
           onClick={handleInstall}
-          className="flex-1 h-9 text-sm bg-primary text-primary-foreground hover:bg-primary/90"
+          className="h-9 flex-1 bg-primary text-sm text-primary-foreground hover:bg-primary/90"
         >
           Install App
         </Button>
         <Button
           variant="outline"
           onClick={handleDismiss}
-          className="px-3 h-9 text-sm"
+          className="h-9 px-3 text-sm"
         >
           Not now
         </Button>

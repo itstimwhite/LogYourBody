@@ -1,7 +1,11 @@
-import React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { WeightLoggingFlowV2 } from './WeightLoggingFlowV2';
-import { type WeightData, type BodyFatData, type MethodData } from '@/schemas/weight-logging';
+import React from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { WeightLoggingFlowV2 } from "./WeightLoggingFlowV2";
+import {
+  type WeightData,
+  type BodyFatData,
+  type MethodData,
+} from "@/schemas/weight-logging";
 
 interface WeightLoggingWrapperProps {
   show: boolean;
@@ -12,7 +16,7 @@ interface WeightLoggingWrapperProps {
     method: any;
     date: Date;
   }) => void;
-  units: 'metric' | 'imperial';
+  units: "metric" | "imperial";
   initialWeight?: number;
   initialBodyFat?: number;
 }
@@ -23,7 +27,7 @@ export function WeightLoggingWrapper({
   onSave,
   units,
   initialWeight,
-  initialBodyFat
+  initialBodyFat,
 }: WeightLoggingWrapperProps) {
   const handleComplete = (data: {
     weight: WeightData;
@@ -46,14 +50,18 @@ export function WeightLoggingWrapper({
 
   // Prepare initial data for the flow
   const initialData = {
-    weight: initialWeight ? {
-      value: initialWeight,
-      unit: units === 'imperial' ? 'lbs' as const : 'kg' as const
-    } : undefined,
-    bodyFat: initialBodyFat ? {
-      value: initialBodyFat
-    } : undefined,
-    method: undefined
+    weight: initialWeight
+      ? {
+          value: initialWeight,
+          unit: units === "imperial" ? ("lbs" as const) : ("kg" as const),
+        }
+      : undefined,
+    bodyFat: initialBodyFat
+      ? {
+          value: initialBodyFat,
+        }
+      : undefined,
+    method: undefined,
   };
 
   return (

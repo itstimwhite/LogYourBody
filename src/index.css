@@ -59,7 +59,9 @@
 
   /* Ensure mobile viewport fills entire screen */
   @media screen and (max-width: 768px) {
-    html, body, #root {
+    html,
+    body,
+    #root {
       height: 100vh;
       height: 100dvh; /* Dynamic viewport height for mobile browsers */
       overflow: hidden;
@@ -155,7 +157,7 @@
     .text-gray-300 {
       @apply text-white;
     }
-    
+
     .bg-black\/50 {
       @apply bg-black/80;
     }

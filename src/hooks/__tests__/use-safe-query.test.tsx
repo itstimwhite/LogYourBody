@@ -1,10 +1,10 @@
-import { renderHook, waitFor } from '@testing-library/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useSafeQuery } from '../use-safe-query';
-import { toast } from 'sonner';
+import { renderHook, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useSafeQuery } from "../use-safe-query";
+import { toast } from "sonner";
 
 // Mock sonner toast
-jest.mock('sonner', () => ({
+jest.mock("sonner", () => ({
   toast: {
     error: jest.fn(),
   },
@@ -28,7 +28,7 @@ const createWrapper = () => {
   );
 };
 
-describe('useSafeQuery', () => {
+describe("useSafeQuery", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers();
@@ -38,17 +38,17 @@ describe('useSafeQuery', () => {
     jest.useRealTimers();
   });
 
-  it('should successfully execute query and return data', async () => {
-    const mockData = { id: 1, name: 'Test' };
+  it("should successfully execute query and return data", async () => {
+    const mockData = { id: 1, name: "Test" };
     const mockQueryFn = jest.fn().mockResolvedValue(mockData);
 
     const { result } = renderHook(
       () =>
         useSafeQuery({
-          queryKey: ['test'],
+          queryKey: ["test"],
           queryFn: mockQueryFn,
         }),
-      { wrapper: createWrapper() }
+      { wrapper: createWrapper() },
     );
 
     await waitFor(() => {
@@ -60,19 +60,19 @@ describe('useSafeQuery', () => {
     expect(mockQueryFn).toHaveBeenCalledTimes(1);
   });
 
-  it('should handle query timeout and show toast notification', async () => {
+  it("should handle query timeout and show toast notification", async () => {
     const mockQueryFn = jest.fn().mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 5000)) // 5 second delay
+      () => new Promise((resolve) => setTimeout(resolve, 5000)), // 5 second delay
     );
 
     const { result } = renderHook(
       () =>
         useSafeQuery({
-          queryKey: ['test'],
+          queryKey: ["test"],
           queryFn: mockQueryFn,
           timeout: 1000, // 1 second timeout
         }),
-      { wrapper: createWrapper() }
+      { wrapper: createWrapper() },
     );
 
     // Fast-forward past timeout
@@ -82,26 +82,27 @@ describe('useSafeQuery', () => {
       expect(result.current.isTimedOut).toBe(true);
     });
 
-    expect(mockToast).toHaveBeenCalledWith('Still loading…', {
-      description: 'The request is taking longer than expected. Please check your connection.',
+    expect(mockToast).toHaveBeenCalledWith("Still loading…", {
+      description:
+        "The request is taking longer than expected. Please check your connection.",
       action: expect.objectContaining({
-        label: 'Retry',
+        label: "Retry",
         onClick: expect.any(Function),
       }),
     });
   });
 
-  it('should handle query errors gracefully', async () => {
-    const mockError = new Error('Network error');
+  it("should handle query errors gracefully", async () => {
+    const mockError = new Error("Network error");
     const mockQueryFn = jest.fn().mockRejectedValue(mockError);
 
     const { result } = renderHook(
       () =>
         useSafeQuery({
-          queryKey: ['test'],
+          queryKey: ["test"],
           queryFn: mockQueryFn,
         }),
-      { wrapper: createWrapper() }
+      { wrapper: createWrapper() },
     );
 
     await waitFor(() => {
@@ -112,18 +113,20 @@ describe('useSafeQuery', () => {
     expect(result.current.isTimedOut).toBe(false);
   });
 
-  it('should cancel request on unmount', async () => {
-    const mockQueryFn = jest.fn().mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 2000))
-    );
+  it("should cancel request on unmount", async () => {
+    const mockQueryFn = jest
+      .fn()
+      .mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 2000)),
+      );
 
     const { unmount } = renderHook(
       () =>
         useSafeQuery({
-          queryKey: ['test'],
+          queryKey: ["test"],
           queryFn: mockQueryFn,
         }),
-      { wrapper: createWrapper() }
+      { wrapper: createWrapper() },
     );
 
     // Unmount before query completes
@@ -136,20 +139,20 @@ describe('useSafeQuery', () => {
     expect(mockToast).not.toHaveBeenCalled();
   });
 
-  it('should provide retry functionality', async () => {
-    const mockData = { id: 1, name: 'Test' };
+  it("should provide retry functionality", async () => {
+    const mockData = { id: 1, name: "Test" };
     const mockQueryFn = jest
       .fn()
-      .mockRejectedValueOnce(new Error('First attempt failed'))
+      .mockRejectedValueOnce(new Error("First attempt failed"))
       .mockResolvedValue(mockData);
 
     const { result } = renderHook(
       () =>
         useSafeQuery({
-          queryKey: ['test'],
+          queryKey: ["test"],
           queryFn: mockQueryFn,
         }),
-      { wrapper: createWrapper() }
+      { wrapper: createWrapper() },
     );
 
     await waitFor(() => {
@@ -168,20 +171,22 @@ describe('useSafeQuery', () => {
     expect(mockQueryFn).toHaveBeenCalledTimes(2);
   });
 
-  it('should not show timeout toast when disabled', async () => {
-    const mockQueryFn = jest.fn().mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 5000))
-    );
+  it("should not show timeout toast when disabled", async () => {
+    const mockQueryFn = jest
+      .fn()
+      .mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 5000)),
+      );
 
     renderHook(
       () =>
         useSafeQuery({
-          queryKey: ['test'],
+          queryKey: ["test"],
           queryFn: mockQueryFn,
           timeout: 1000,
           showTimeoutToast: false,
         }),
-      { wrapper: createWrapper() }
+      { wrapper: createWrapper() },
     );
 
     jest.advanceTimersByTime(1100);
@@ -191,21 +196,23 @@ describe('useSafeQuery', () => {
     });
   });
 
-  it('should call custom onTimeout callback', async () => {
+  it("should call custom onTimeout callback", async () => {
     const mockOnTimeout = jest.fn();
-    const mockQueryFn = jest.fn().mockImplementation(
-      () => new Promise((resolve) => setTimeout(resolve, 5000))
-    );
+    const mockQueryFn = jest
+      .fn()
+      .mockImplementation(
+        () => new Promise((resolve) => setTimeout(resolve, 5000)),
+      );
 
     renderHook(
       () =>
         useSafeQuery({
-          queryKey: ['test'],
+          queryKey: ["test"],
           queryFn: mockQueryFn,
           timeout: 1000,
           onTimeout: mockOnTimeout,
         }),
-      { wrapper: createWrapper() }
+      { wrapper: createWrapper() },
     );
 
     jest.advanceTimersByTime(1100);
@@ -215,17 +222,17 @@ describe('useSafeQuery', () => {
     });
   });
 
-  it('should use default caching configuration', async () => {
-    const mockData = { id: 1, name: 'Test' };
+  it("should use default caching configuration", async () => {
+    const mockData = { id: 1, name: "Test" };
     const mockQueryFn = jest.fn().mockResolvedValue(mockData);
 
     const { result } = renderHook(
       () =>
         useSafeQuery({
-          queryKey: ['test'],
+          queryKey: ["test"],
           queryFn: mockQueryFn,
         }),
-      { wrapper: createWrapper() }
+      { wrapper: createWrapper() },
     );
 
     await waitFor(() => {

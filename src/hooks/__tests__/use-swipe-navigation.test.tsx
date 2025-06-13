@@ -1,14 +1,14 @@
-import { renderHook } from '@testing-library/react';
-import { useSwipeNavigation } from '../use-swipe-navigation';
+import { renderHook } from "@testing-library/react";
+import { useSwipeNavigation } from "../use-swipe-navigation";
 
 // Mock DOM methods
-Object.defineProperty(window, 'innerWidth', {
+Object.defineProperty(window, "innerWidth", {
   writable: true,
   configurable: true,
   value: 375,
 });
 
-describe('useSwipeNavigation', () => {
+describe("useSwipeNavigation", () => {
   let mockOnSwipeLeft: jest.Mock;
   let mockOnSwipeRight: jest.Mock;
 
@@ -20,22 +20,22 @@ describe('useSwipeNavigation', () => {
 
   afterEach(() => {
     // Clean up event listeners
-    document.removeEventListener('touchstart', jest.fn());
-    document.removeEventListener('touchmove', jest.fn());
-    document.removeEventListener('touchend', jest.fn());
+    document.removeEventListener("touchstart", jest.fn());
+    document.removeEventListener("touchmove", jest.fn());
+    document.removeEventListener("touchend", jest.fn());
   });
 
-  it('should trigger onSwipeLeft for left swipe gesture', () => {
+  it("should trigger onSwipeLeft for left swipe gesture", () => {
     renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
-      })
+      }),
     );
 
     // Simulate left swipe (start right, move left)
-    const touchStartEvent = new TouchEvent('touchstart', {
+    const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
           screenX: 300,
@@ -44,7 +44,7 @@ describe('useSwipeNavigation', () => {
       ],
     });
 
-    const touchEndEvent = new TouchEvent('touchend', {
+    const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
           screenX: 100, // 200px left movement
@@ -60,17 +60,17 @@ describe('useSwipeNavigation', () => {
     expect(mockOnSwipeRight).not.toHaveBeenCalled();
   });
 
-  it('should trigger onSwipeRight for right swipe gesture', () => {
+  it("should trigger onSwipeRight for right swipe gesture", () => {
     renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
-      })
+      }),
     );
 
     // Simulate right swipe (start left, move right)
-    const touchStartEvent = new TouchEvent('touchstart', {
+    const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
           screenX: 50,
@@ -79,7 +79,7 @@ describe('useSwipeNavigation', () => {
       ],
     });
 
-    const touchEndEvent = new TouchEvent('touchend', {
+    const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
           screenX: 200, // 150px right movement
@@ -95,17 +95,17 @@ describe('useSwipeNavigation', () => {
     expect(mockOnSwipeLeft).not.toHaveBeenCalled();
   });
 
-  it('should not trigger swipe if movement is below threshold', () => {
+  it("should not trigger swipe if movement is below threshold", () => {
     renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
-      })
+      }),
     );
 
     // Simulate small movement (below threshold)
-    const touchStartEvent = new TouchEvent('touchstart', {
+    const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
           screenX: 200,
@@ -114,7 +114,7 @@ describe('useSwipeNavigation', () => {
       ],
     });
 
-    const touchEndEvent = new TouchEvent('touchend', {
+    const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
           screenX: 150, // Only 50px movement (below 100px threshold)
@@ -130,17 +130,17 @@ describe('useSwipeNavigation', () => {
     expect(mockOnSwipeRight).not.toHaveBeenCalled();
   });
 
-  it('should not trigger swipe if vertical movement is dominant', () => {
+  it("should not trigger swipe if vertical movement is dominant", () => {
     renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
-      })
+      }),
     );
 
     // Simulate move event with dominant vertical movement
-    const touchStartEvent = new TouchEvent('touchstart', {
+    const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
           screenX: 200,
@@ -149,7 +149,7 @@ describe('useSwipeNavigation', () => {
       ],
     });
 
-    const touchMoveEvent = new TouchEvent('touchmove', {
+    const touchMoveEvent = new TouchEvent("touchmove", {
       changedTouches: [
         {
           screenX: 150, // 50px horizontal
@@ -158,7 +158,7 @@ describe('useSwipeNavigation', () => {
       ],
     });
 
-    const touchEndEvent = new TouchEvent('touchend', {
+    const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
           screenX: 100, // Total 100px horizontal
@@ -175,18 +175,18 @@ describe('useSwipeNavigation', () => {
     expect(mockOnSwipeRight).not.toHaveBeenCalled();
   });
 
-  it('should not trigger swipe when disabled', () => {
+  it("should not trigger swipe when disabled", () => {
     renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
         disabled: true,
-      })
+      }),
     );
 
     // Simulate valid left swipe
-    const touchStartEvent = new TouchEvent('touchstart', {
+    const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
           screenX: 300,
@@ -195,7 +195,7 @@ describe('useSwipeNavigation', () => {
       ],
     });
 
-    const touchEndEvent = new TouchEvent('touchend', {
+    const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
           screenX: 100,
@@ -211,10 +211,10 @@ describe('useSwipeNavigation', () => {
     expect(mockOnSwipeRight).not.toHaveBeenCalled();
   });
 
-  it('should allow edge swipes even on conflicting elements', () => {
+  it("should allow edge swipes even on conflicting elements", () => {
     // Mock a conflicting element
-    const mockElement = document.createElement('div');
-    mockElement.setAttribute('data-slider', 'true');
+    const mockElement = document.createElement("div");
+    mockElement.setAttribute("data-slider", "true");
     document.body.appendChild(mockElement);
 
     renderHook(() =>
@@ -223,11 +223,11 @@ describe('useSwipeNavigation', () => {
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
         edgeThreshold: 50,
-      })
+      }),
     );
 
     // Simulate edge swipe (within 50px of edge)
-    const touchStartEvent = new TouchEvent('touchstart', {
+    const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
           screenX: 20, // Within edge threshold
@@ -237,7 +237,7 @@ describe('useSwipeNavigation', () => {
       target: mockElement,
     });
 
-    const touchEndEvent = new TouchEvent('touchend', {
+    const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
           screenX: 200,
@@ -256,20 +256,20 @@ describe('useSwipeNavigation', () => {
     document.body.removeChild(mockElement);
   });
 
-  it('should respect minimum velocity for fast swipes', () => {
+  it("should respect minimum velocity for fast swipes", () => {
     renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 200, // High threshold
         minVelocity: 0.5, // 0.5 px/ms
-      })
+      }),
     );
 
     // Simulate fast swipe with small distance but high velocity
     const startTime = Date.now();
-    
-    const touchStartEvent = new TouchEvent('touchstart', {
+
+    const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
           screenX: 200,
@@ -279,11 +279,12 @@ describe('useSwipeNavigation', () => {
     });
 
     // Mock fast swipe (100px in 100ms = 1 px/ms velocity)
-    jest.spyOn(Date, 'now')
+    jest
+      .spyOn(Date, "now")
       .mockReturnValueOnce(startTime)
       .mockReturnValueOnce(startTime + 100);
 
-    const touchEndEvent = new TouchEvent('touchend', {
+    const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
           screenX: 100, // 100px movement (below threshold but fast)
@@ -301,11 +302,11 @@ describe('useSwipeNavigation', () => {
     jest.restoreAllMocks();
   });
 
-  it('should handle conflicting element selectors correctly', () => {
+  it("should handle conflicting element selectors correctly", () => {
     // Create conflicting elements
-    const sliderElement = document.createElement('input');
-    sliderElement.type = 'range';
-    sliderElement.className = 'range-slider';
+    const sliderElement = document.createElement("input");
+    sliderElement.type = "range";
+    sliderElement.className = "range-slider";
     document.body.appendChild(sliderElement);
 
     renderHook(() =>
@@ -313,12 +314,12 @@ describe('useSwipeNavigation', () => {
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
-        conflictSelectors: ['input[type="range"]', '.range-slider'],
-      })
+        conflictSelectors: ['input[type="range"]', ".range-slider"],
+      }),
     );
 
     // Simulate swipe on conflicting element (not from edge)
-    const touchStartEvent = new TouchEvent('touchstart', {
+    const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
           screenX: 200, // Not from edge
@@ -328,7 +329,7 @@ describe('useSwipeNavigation', () => {
       target: sliderElement,
     });
 
-    const touchEndEvent = new TouchEvent('touchend', {
+    const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
           screenX: 50,

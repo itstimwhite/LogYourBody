@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useWebAuthn } from '@/hooks/use-webauthn';
-import { Fingerprint, Smartphone, Shield, Trash2, Plus } from 'lucide-react';
+import React, { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { useWebAuthn } from "@/hooks/use-webauthn";
+import { Fingerprint, Smartphone, Shield, Trash2, Plus } from "lucide-react";
 
 interface BiometricSetupProps {
   onComplete?: () => void;
@@ -27,7 +26,7 @@ export function BiometricSetup({ onComplete }: BiometricSetupProps) {
     setRegistering(true);
     const success = await registerBiometric();
     setRegistering(false);
-    
+
     if (success && onComplete) {
       onComplete();
     }
@@ -39,11 +38,11 @@ export function BiometricSetup({ onComplete }: BiometricSetupProps) {
 
   const getDeviceIcon = (deviceType: string) => {
     switch (deviceType) {
-      case 'iOS':
+      case "iOS":
         return <Smartphone className="h-4 w-4" />;
-      case 'Android':
+      case "Android":
         return <Smartphone className="h-4 w-4" />;
-      case 'macOS':
+      case "macOS":
         return <Fingerprint className="h-4 w-4" />;
       default:
         return <Shield className="h-4 w-4" />;
@@ -52,166 +51,146 @@ export function BiometricSetup({ onComplete }: BiometricSetupProps) {
 
   const getDeviceLabel = (deviceType: string) => {
     switch (deviceType) {
-      case 'iOS':
-        return 'Face ID / Touch ID';
-      case 'Android':
-        return 'Fingerprint / Face Unlock';
-      case 'macOS':
-        return 'Touch ID';
-      case 'Windows':
-        return 'Windows Hello';
+      case "iOS":
+        return "Face ID / Touch ID";
+      case "Android":
+        return "Fingerprint / Face Unlock";
+      case "macOS":
+        return "Touch ID";
+      case "Windows":
+        return "Windows Hello";
       default:
-        return 'Biometric';
+        return "Biometric";
     }
   };
 
   if (!isSupported) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Biometric Authentication
-          </CardTitle>
-          <CardDescription>
-            Your device doesn't support biometric authentication.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div className="space-y-4">
+        <div className="text-sm text-muted-foreground">
+          Your device doesn't support biometric authentication.
+        </div>
+      </div>
     );
   }
 
   if (!isAvailable) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Shield className="h-5 w-5" />
-            Biometric Authentication
-          </CardTitle>
-          <CardDescription>
-            Biometric authentication is not available on this device. Make sure you have Touch ID, Face ID, or fingerprint authentication enabled in your device settings.
-          </CardDescription>
-        </CardHeader>
-      </Card>
+      <div className="space-y-4">
+        <div className="text-sm text-muted-foreground">
+          Biometric authentication is not available on this device. Make sure
+          you have Touch ID, Face ID, or fingerprint authentication enabled in
+          your device settings.
+        </div>
+      </div>
     );
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Shield className="h-5 w-5" />
-          Biometric Authentication
-        </CardTitle>
-        <CardDescription>
-          Secure your account with biometric authentication for quick and safe access.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {error && (
-          <div className="text-sm text-destructive bg-destructive/10 p-3 rounded-md">
-            {error}
-          </div>
-        )}
+    <div className="space-y-4">
+      {error && (
+        <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+          {error}
+        </div>
+      )}
 
-        {!isRegistered ? (
-          <div className="space-y-4">
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Fingerprint className="h-4 w-4" />
-              <span>No biometric credentials registered</span>
-            </div>
-            <Button
-              onClick={handleRegister}
-              disabled={registering || loading}
-              className="w-full"
-            >
-              {registering ? (
-                <>
-                  <div className="h-4 w-4 border-2 border-current border-r-transparent rounded-full animate-spin mr-2" />
-                  Setting up biometric authentication...
-                </>
-              ) : (
-                <>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Set up biometric authentication
-                </>
-              )}
-            </Button>
+      {!isRegistered ? (
+        <div className="space-y-4">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Fingerprint className="h-4 w-4" />
+            <span>No biometric credentials registered</span>
           </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Registered devices</span>
-              <Badge variant="secondary" className="text-xs">
-                {credentials.length} device{credentials.length !== 1 ? 's' : ''}
-              </Badge>
-            </div>
+          <Button
+            onClick={handleRegister}
+            disabled={registering || loading}
+            className="w-full"
+          >
+            {registering ? (
+              <>
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                Setting up biometric authentication...
+              </>
+            ) : (
+              <>
+                <Plus className="mr-2 h-4 w-4" />
+                Set up biometric authentication
+              </>
+            )}
+          </Button>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium">Registered devices</span>
+            <Badge variant="secondary" className="text-xs">
+              {credentials.length} device{credentials.length !== 1 ? "s" : ""}
+            </Badge>
+          </div>
 
-            <div className="space-y-2">
-              {credentials.map((credential) => (
-                <div
-                  key={credential.id}
-                  className="flex items-center justify-between p-3 bg-secondary rounded-md"
-                >
-                  <div className="flex items-center space-x-3">
-                    {getDeviceIcon(credential.deviceType)}
-                    <div>
-                      <div className="text-sm font-medium">
-                        {getDeviceLabel(credential.deviceType)}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Added {new Date(credential.createdAt).toLocaleDateString()}
-                      </div>
+          <div className="space-y-2">
+            {credentials.map((credential) => (
+              <div
+                key={credential.id}
+                className="flex items-center justify-between rounded-md bg-secondary p-3"
+              >
+                <div className="flex items-center space-x-3">
+                  {getDeviceIcon(credential.deviceType)}
+                  <div>
+                    <div className="text-sm font-medium">
+                      {getDeviceLabel(credential.deviceType)}
+                    </div>
+                    <div className="text-xs text-muted-foreground">
+                      Added{" "}
+                      {new Date(credential.createdAt).toLocaleDateString()}
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleRemove(credential.id)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
                 </div>
-              ))}
-            </div>
-
-            <Button
-              onClick={handleRegister}
-              disabled={registering || loading}
-              variant="outline"
-              className="w-full"
-            >
-              {registering ? (
-                <>
-                  <div className="h-4 w-4 border-2 border-current border-r-transparent rounded-full animate-spin mr-2" />
-                  Adding device...
-                </>
-              ) : (
-                <>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Add another device
-                </>
-              )}
-            </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleRemove(credential.id)}
+                  className="text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
+            ))}
           </div>
-        )}
 
-        <div className="text-xs text-muted-foreground bg-muted p-3 rounded-md">
-          <div className="flex items-start space-x-2">
-            <Shield className="h-3 w-3 mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="font-medium mb-1">How it works:</p>
-              <ul className="space-y-1">
-                <li>• Your biometric data never leaves your device</li>
-                <li>• Only a secure credential is stored with LogYourBody</li>
-                <li>• You can remove access anytime from your settings</li>
-              </ul>
-            </div>
+          <Button
+            onClick={handleRegister}
+            disabled={registering || loading}
+            variant="outline"
+            className="w-full"
+          >
+            {registering ? (
+              <>
+                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                Adding device...
+              </>
+            ) : (
+              <>
+                <Plus className="mr-2 h-4 w-4" />
+                Add another device
+              </>
+            )}
+          </Button>
+        </div>
+      )}
+
+      <div className="rounded-md bg-muted p-3 text-xs text-muted-foreground">
+        <div className="flex items-start space-x-2">
+          <Shield className="mt-0.5 h-3 w-3 flex-shrink-0" />
+          <div>
+            <p className="mb-1 font-medium">How it works:</p>
+            <ul className="space-y-1">
+              <li>• Your biometric data never leaves your device</li>
+              <li>• Only a secure credential is stored with LogYourBody</li>
+              <li>• You can remove access anytime from your settings</li>
+            </ul>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

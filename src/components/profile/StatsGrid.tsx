@@ -1,8 +1,8 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { tw, getAnimation } from '@/styles/design-tokens';
-import { DashboardMetrics } from '@/types/bodymetrics';
+import React from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { tw, getAnimation } from "@/styles/design-tokens";
+import { DashboardMetrics } from "@/types/bodymetrics";
 
 interface StatItem {
   value: string;
@@ -24,35 +24,35 @@ export const StatsGrid = React.memo<StatsGridProps>(function StatsGrid({
   formattedLeanBodyMass,
   className,
 }) {
-  const fadeIn = getAnimation('fadeIn');
+  const fadeIn = getAnimation("fadeIn");
 
   const stats: StatItem[] = [
     {
       value: (metrics.bodyFatPercentage || 0).toFixed(1),
-      unit: '%',
-      label: 'Body Fat',
+      unit: "%",
+      label: "Body Fat",
       accessibilityLabel: `Body fat percentage: ${(metrics.bodyFatPercentage || 0).toFixed(1)} percent`,
     },
     {
       value: formattedWeight,
-      label: 'Weight',
+      label: "Weight",
       accessibilityLabel: `Weight: ${formattedWeight}`,
     },
     {
-      value: metrics.ffmi.toString(),
-      label: 'FFMI',
-      accessibilityLabel: `Fat Free Mass Index: ${metrics.ffmi}`,
+      value: isNaN(metrics.ffmi) || !isFinite(metrics.ffmi) ? "--" : metrics.ffmi.toFixed(1),
+      label: "FFMI",
+      accessibilityLabel: `Fat Free Mass Index: ${isNaN(metrics.ffmi) || !isFinite(metrics.ffmi) ? "not available" : metrics.ffmi.toFixed(1)}`,
     },
     {
       value: formattedLeanBodyMass,
-      label: 'Lean Body Mass',
+      label: "Lean Body Mass",
       accessibilityLabel: `Lean body mass: ${formattedLeanBodyMass}`,
     },
   ];
 
   return (
     <motion.div
-      className={cn(tw.statsGrid, 'mb-6 md:mb-8', className)}
+      className={cn(tw.statsGrid, "mb-6 md:mb-8", className)}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={fadeIn}
@@ -60,33 +60,27 @@ export const StatsGrid = React.memo<StatsGridProps>(function StatsGrid({
       {stats.map((stat, index) => (
         <motion.div
           key={stat.label}
-          className="text-center md:text-left min-w-0 flex-shrink-0"
+          className="min-w-0 flex-shrink-0 text-center md:text-left"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ 
+          transition={{
             ...fadeIn,
             delay: index * 0.05,
           }}
         >
           {/* Value with unit */}
-          <div 
-            className="flex items-baseline justify-center md:justify-start gap-1"
+          <div
+            className="flex items-baseline justify-center gap-1 md:justify-start"
             aria-label={stat.accessibilityLabel}
           >
-            <span className={cn(tw.profileValue, 'font-inter tracking-tight')}>
+            <span className={cn(tw.profileValue, "font-inter tracking-tight")}>
               {stat.value}
             </span>
-            {stat.unit && (
-              <span className={tw.profileUnit}>
-                {stat.unit}
-              </span>
-            )}
+            {stat.unit && <span className={tw.profileUnit}>{stat.unit}</span>}
           </div>
-          
+
           {/* Label */}
-          <div className={cn(tw.profileLabel, 'mt-1')}>
-            {stat.label}
-          </div>
+          <div className={cn(tw.profileLabel, "mt-1")}>{stat.label}</div>
         </motion.div>
       ))}
     </motion.div>
@@ -94,27 +88,30 @@ export const StatsGrid = React.memo<StatsGridProps>(function StatsGrid({
 });
 
 // Helper hook for accessibility announcements
-export const useStatsAnnouncement = (metrics: DashboardMetrics, formattedWeight: string) => {
+export const useStatsAnnouncement = (
+  metrics: DashboardMetrics,
+  formattedWeight: string,
+) => {
   React.useEffect(() => {
     // Announce stats update for screen readers
     const announcement = `Stats updated: Body fat ${(metrics.bodyFatPercentage || 0).toFixed(1)} percent, Weight ${formattedWeight}, FFMI ${metrics.ffmi}`;
-    
+
     // Create a live region for announcements
-    const liveRegion = document.createElement('div');
-    liveRegion.setAttribute('aria-live', 'polite');
-    liveRegion.setAttribute('aria-atomic', 'true');
-    liveRegion.style.position = 'absolute';
-    liveRegion.style.left = '-10000px';
-    liveRegion.style.width = '1px';
-    liveRegion.style.height = '1px';
-    liveRegion.style.overflow = 'hidden';
-    
+    const liveRegion = document.createElement("div");
+    liveRegion.setAttribute("aria-live", "polite");
+    liveRegion.setAttribute("aria-atomic", "true");
+    liveRegion.style.position = "absolute";
+    liveRegion.style.left = "-10000px";
+    liveRegion.style.width = "1px";
+    liveRegion.style.height = "1px";
+    liveRegion.style.overflow = "hidden";
+
     document.body.appendChild(liveRegion);
-    
+
     // Slight delay to ensure the element is ready
     setTimeout(() => {
       liveRegion.textContent = announcement;
-      
+
       // Clean up after announcement
       setTimeout(() => {
         document.body.removeChild(liveRegion);

@@ -1,12 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
-import { Capacitor } from '@capacitor/core';
-import { Percent } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { useStepper } from '@/contexts/StepperContext';
-import { bodyFatSchema, type BodyFatData, bodyFatUtils } from '@/schemas/weight-logging';
-import { weightAnalytics } from '@/utils/weight-analytics';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Haptics, ImpactStyle } from "@capacitor/haptics";
+import { Capacitor } from "@capacitor/core";
+import { Percent } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useStepper } from "@/contexts/StepperContext";
+import {
+  bodyFatSchema,
+  type BodyFatData,
+  bodyFatUtils,
+} from "@/schemas/weight-logging";
+import { weightAnalytics } from "@/utils/weight-analytics";
 
 interface BodyFatStepProps {
   value: BodyFatData;
@@ -20,7 +24,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
   const [tooltipVisible, setTooltipVisible] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
   const sliderRef = useRef<HTMLInputElement>(null);
-  
+
   const isNative = Capacitor.isNativePlatform();
 
   useEffect(() => {
@@ -30,7 +34,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
   // Validate and update parent whenever value changes
   useEffect(() => {
     const bodyFatData: BodyFatData = { value: currentValue };
-    
+
     try {
       bodyFatSchema.parse(bodyFatData);
       onChange(bodyFatData);
@@ -44,7 +48,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
     const snappedValue = bodyFatUtils.snapToHalf(newValue);
     setCurrentValue(snappedValue);
     setHasInteracted(true);
-    
+
     if (isNative) {
       await Haptics.impact({ style: ImpactStyle.Light });
     }
@@ -58,11 +62,11 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
   const handleSliderEnd = () => {
     setIsDragging(false);
     setTooltipVisible(false);
-    
+
     // Track analytics
     if (hasInteracted) {
       weightAnalytics.trackBodyFatInput({
-        method: 'slider_drag',
+        method: "slider_drag",
         final_value: currentValue,
         snapped_to_increment: true,
       });
@@ -76,10 +80,10 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
 
     setCurrentValue(targetValue);
     setHasInteracted(true);
-    
+
     // Track analytics
     weightAnalytics.trackBodyFatInput({
-      method: 'tap_labels',
+      method: "tap_labels",
       final_value: targetValue,
       snapped_to_increment: true,
     });
@@ -92,10 +96,10 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
 
     setCurrentValue(preset.value);
     setHasInteracted(true);
-    
+
     // Track analytics
     weightAnalytics.trackBodyFatInput({
-      method: 'preset_chip',
+      method: "preset_chip",
       final_value: preset.value,
       snapped_to_increment: true,
     });
@@ -103,30 +107,30 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
 
   const presets = bodyFatUtils.getPresets();
   const category = bodyFatUtils.getCategoryForValue(currentValue);
-  
+
   // Calculate slider position for custom styling
   const sliderPosition = ((currentValue - 3) / (50 - 3)) * 100;
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-8"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.25, type: 'spring', damping: 20 }}
+      transition={{ duration: 0.25, type: "spring", damping: 20 }}
     >
       {/* Header */}
-      <div className="text-center space-y-4">
-        <motion.div 
-          className="mx-auto w-20 h-20 bg-primary/10 rounded-3xl flex items-center justify-center"
+      <div className="space-y-4 text-center">
+        <motion.div
+          className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Percent className="w-10 h-10 text-primary" />
+          <Percent className="h-10 w-10 text-primary" />
         </motion.div>
 
         <div>
-          <h1 className="text-3xl font-bold text-foreground mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-foreground">
             Body fat percentage?
           </h1>
           <p className="text-lg text-muted-foreground">
@@ -136,8 +140,8 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
       </div>
 
       {/* Current Value Display */}
-      <motion.div 
-        className="text-center space-y-2"
+      <motion.div
+        className="space-y-2 text-center"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.25 }}
@@ -145,13 +149,11 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
         <div className="text-5xl font-bold text-foreground">
           {currentValue.toFixed(1)}%
         </div>
-        <div className="text-muted-foreground text-lg">
-          {category}
-        </div>
+        <div className="text-lg text-muted-foreground">{category}</div>
       </motion.div>
 
       {/* Custom Slider */}
-      <motion.div 
+      <motion.div
         className="space-y-6 px-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -162,7 +164,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
           <AnimatePresence>
             {tooltipVisible && (
               <motion.div
-                className="absolute -top-12 bg-foreground text-background px-3 py-1 rounded-lg text-sm font-medium pointer-events-none z-10"
+                className="pointer-events-none absolute -top-12 z-10 rounded-lg bg-foreground px-3 py-1 text-sm font-medium text-background"
                 style={{ left: `calc(${sliderPosition}% - 20px)` }}
                 initial={{ opacity: 0, y: 10, scale: 0.8 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -170,7 +172,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
                 transition={{ duration: 0.2 }}
               >
                 {currentValue.toFixed(1)}%
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground" />
+                <div className="absolute left-1/2 top-full h-0 w-0 -translate-x-1/2 transform border-l-4 border-r-4 border-t-4 border-transparent border-t-foreground" />
               </motion.div>
             )}
           </AnimatePresence>
@@ -189,13 +191,13 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
               onMouseUp={handleSliderEnd}
               onTouchStart={handleSliderStart}
               onTouchEnd={handleSliderEnd}
-              className="w-full h-4 bg-transparent cursor-pointer slider-enhanced"
+              className="slider-enhanced h-4 w-full cursor-pointer bg-transparent"
               style={{
                 background: `linear-gradient(to right, 
                   hsl(var(--primary)) 0%, 
                   hsl(var(--primary)) ${sliderPosition}%, 
                   hsl(var(--secondary)) ${sliderPosition}%, 
-                  hsl(var(--secondary)) 100%)`
+                  hsl(var(--secondary)) 100%)`,
               }}
               aria-label="Body fat percentage"
               aria-valuemin={3}
@@ -205,7 +207,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
             />
 
             {/* Tappable Labels */}
-            <div className="absolute inset-0 flex justify-between items-center pointer-events-none">
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-between">
               {[3, 8, 15, 22, 30, 50].map((labelValue) => {
                 const position = ((labelValue - 3) / (50 - 3)) * 100;
                 return (
@@ -213,13 +215,16 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
                     key={labelValue}
                     onClick={() => handleLabelTap(labelValue)}
                     className={cn(
-                      'pointer-events-auto w-8 h-8 rounded-full flex items-center justify-center text-xs font-medium transition-all duration-200',
-                      'hover:scale-110 active:scale-95',
+                      "pointer-events-auto flex h-8 w-8 items-center justify-center rounded-full text-xs font-medium transition-all duration-200",
+                      "hover:scale-110 active:scale-95",
                       Math.abs(currentValue - labelValue) < 1
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground'
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-secondary/50 text-muted-foreground hover:bg-secondary hover:text-foreground",
                     )}
-                    style={{ position: 'absolute', left: `calc(${position}% - 16px)` }}
+                    style={{
+                      position: "absolute",
+                      left: `calc(${position}% - 16px)`,
+                    }}
                     aria-label={`Set body fat to ${labelValue} percent`}
                   >
                     {labelValue}
@@ -230,7 +235,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
           </div>
 
           {/* Range Labels */}
-          <div className="flex justify-between text-xs text-muted-foreground mt-3">
+          <div className="mt-3 flex justify-between text-xs text-muted-foreground">
             <span>Essential (3%)</span>
             <span>Athletic</span>
             <span>Fitness</span>
@@ -241,13 +246,13 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
       </motion.div>
 
       {/* Preset Chips */}
-      <motion.div 
+      <motion.div
         className="space-y-3"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.25 }}
       >
-        <p className="text-center text-sm text-muted-foreground font-medium">
+        <p className="text-center text-sm font-medium text-muted-foreground">
           Quick presets
         </p>
         <div className="grid grid-cols-2 gap-3">
@@ -256,14 +261,14 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
               key={preset.value}
               onClick={() => handlePresetSelect(preset)}
               className={cn(
-                'p-4 rounded-2xl border-2 transition-all duration-200 text-center',
+                "rounded-2xl border-2 p-4 text-center transition-all duration-200",
                 Math.abs(currentValue - preset.value) < 0.5
-                  ? 'bg-primary text-primary-foreground border-primary'
-                  : 'bg-secondary/20 text-foreground border-transparent hover:border-border'
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-transparent bg-secondary/20 text-foreground hover:border-border",
               )}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="font-semibold text-lg">{preset.value}%</div>
+              <div className="text-lg font-semibold">{preset.value}%</div>
               <div className="text-sm opacity-80">{preset.label}</div>
               <div className="text-xs opacity-60">{preset.description}</div>
             </motion.button>
@@ -333,8 +338,8 @@ const sliderStyles = `
 `;
 
 // Inject styles into document head
-if (typeof document !== 'undefined') {
-  const style = document.createElement('style');
+if (typeof document !== "undefined") {
+  const style = document.createElement("style");
   style.textContent = sliderStyles;
   document.head.appendChild(style);
 }

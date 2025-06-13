@@ -6,7 +6,9 @@ import path from "path";
 import { readFileSync } from "fs";
 
 // Read package.json for version info
-const packageJson = JSON.parse(readFileSync(path.resolve(__dirname, "package.json"), "utf8"));
+const packageJson = JSON.parse(
+  readFileSync(path.resolve(__dirname, "package.json"), "utf8"),
+);
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -15,97 +17,94 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   define: {
-    'import.meta.env.PACKAGE_VERSION': JSON.stringify(packageJson.version),
-    'import.meta.env.VITE_BUILD_HASH': JSON.stringify(
-      process.env.VERCEL_GIT_COMMIT_SHA || 
-      process.env.GITHUB_SHA || 
-      Date.now().toString()
+    "import.meta.env.PACKAGE_VERSION": JSON.stringify(packageJson.version),
+    "import.meta.env.VITE_BUILD_HASH": JSON.stringify(
+      process.env.VERCEL_GIT_COMMIT_SHA ||
+        process.env.GITHUB_SHA ||
+        Date.now().toString(),
     ),
   },
   build: {
-    target: 'esnext',
+    target: "esnext",
     rollupOptions: {
       output: {
         manualChunks: {
           // React ecosystem
-          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          "react-vendor": ["react", "react-dom", "react-router-dom"],
           // UI components library (only packages that exist)
-          'ui-vendor': [
-            '@radix-ui/react-dialog',
-            '@radix-ui/react-dropdown-menu',
-            '@radix-ui/react-select',
-            '@radix-ui/react-tabs',
-            '@radix-ui/react-toast',
-            '@radix-ui/react-tooltip',
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-avatar',
-            '@radix-ui/react-checkbox',
-            '@radix-ui/react-collapsible',
-            '@radix-ui/react-context-menu',
-            '@radix-ui/react-hover-card',
-            '@radix-ui/react-label',
-            '@radix-ui/react-menubar',
-            '@radix-ui/react-navigation-menu',
-            '@radix-ui/react-popover',
-            '@radix-ui/react-progress',
-            '@radix-ui/react-radio-group',
-            '@radix-ui/react-scroll-area',
-            '@radix-ui/react-separator',
-            '@radix-ui/react-slider',
-            '@radix-ui/react-switch',
-            '@radix-ui/react-slot',
-            '@radix-ui/react-toggle',
-            '@radix-ui/react-toggle-group'
+          "ui-vendor": [
+            "@radix-ui/react-dialog",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-select",
+            "@radix-ui/react-tabs",
+            "@radix-ui/react-toast",
+            "@radix-ui/react-tooltip",
+            "@radix-ui/react-accordion",
+            "@radix-ui/react-alert-dialog",
+            "@radix-ui/react-avatar",
+            "@radix-ui/react-checkbox",
+            "@radix-ui/react-collapsible",
+            "@radix-ui/react-context-menu",
+            "@radix-ui/react-hover-card",
+            "@radix-ui/react-label",
+            "@radix-ui/react-menubar",
+            "@radix-ui/react-navigation-menu",
+            "@radix-ui/react-popover",
+            "@radix-ui/react-progress",
+            "@radix-ui/react-radio-group",
+            "@radix-ui/react-scroll-area",
+            "@radix-ui/react-separator",
+            "@radix-ui/react-slider",
+            "@radix-ui/react-switch",
+            "@radix-ui/react-slot",
+            "@radix-ui/react-toggle",
+            "@radix-ui/react-toggle-group",
           ],
           // Data/API related
-          'data-vendor': [
-            '@supabase/supabase-js',
-            '@tanstack/react-query',
-            '@revenuecat/purchases-js'
+          "data-vendor": [
+            "@supabase/supabase-js",
+            "@tanstack/react-query",
+            "@revenuecat/purchases-js",
           ],
           // Icons and UI utilities
-          'utils-vendor': [
-            'lucide-react',
-            'clsx',
-            'tailwind-merge',
-            'class-variance-authority',
-            'cmdk',
-            'sonner',
-            'vaul'
+          "utils-vendor": [
+            "lucide-react",
+            "clsx",
+            "tailwind-merge",
+            "class-variance-authority",
+            "cmdk",
+            "sonner",
+            "vaul",
           ],
           // Charts and 3D (heavy libraries)
-          'charts-vendor': [
-            'recharts',
-            '@react-three/fiber',
-            'three'
-          ],
+          "charts-vendor": ["recharts", "@react-three/fiber", "three"],
           // Analytics and monitoring
-          'analytics-vendor': [
-            '@vercel/analytics',
-            '@vercel/speed-insights'
-          ]
-        }
-      }
+          "analytics-vendor": ["@vercel/analytics", "@vercel/speed-insights"],
+        },
+      },
     },
     chunkSizeWarningLimit: 1000,
     // Enable source maps for production debugging
-    sourcemap: mode === 'development',
+    sourcemap: mode === "development",
     // Minification optimizations
-    minify: 'esbuild',
+    minify: "esbuild",
     // Asset optimization
     assetsInlineLimit: 4096,
   },
   plugins: [
     react(),
-    
+
     // Bundle analyzer (only in analyze mode)
-    ...(mode === 'analyze' ? [visualizer({
-      filename: 'dist/stats.html',
-      open: true,
-      gzipSize: true,
-      brotliSize: true,
-    })] : []),
+    ...(mode === "analyze"
+      ? [
+          visualizer({
+            filename: "dist/stats.html",
+            open: true,
+            gzipSize: true,
+            brotliSize: true,
+          }),
+        ]
+      : []),
     VitePWA({
       registerType: "prompt",
       workbox: {
@@ -173,7 +172,7 @@ export default defineConfig(({ mode }) => ({
           "**/dev-dist/**/*",
           "**/*.map",
           "**/sw.js",
-          "**/workbox-*.js"
+          "**/workbox-*.js",
         ],
       },
       devOptions: {
@@ -183,7 +182,8 @@ export default defineConfig(({ mode }) => ({
       manifest: {
         name: "LogYourBody - Body Composition Tracker",
         short_name: "LogYourBody",
-        description: "Track your body composition with precision. Monitor body fat percentage, weight, FFMI, and lean body mass.",
+        description:
+          "Track your body composition with precision. Monitor body fat percentage, weight, FFMI, and lean body mass.",
         theme_color: "#0073ff",
         background_color: "#000000",
         display: "standalone",
@@ -224,7 +224,7 @@ export default defineConfig(({ mode }) => ({
   },
   test: {
     globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test-setup.ts'],
+    environment: "jsdom",
+    setupFiles: ["./src/test-setup.ts"],
   },
 }));

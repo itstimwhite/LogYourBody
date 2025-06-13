@@ -1,0 +1,23 @@
+{
+  "total": 3600,
+  "expectedTotal": 3600,
+  "filenames": [
+    "m_bf5_ffmi14_age0_s.png",
+    "m_bf5_ffmi14_age0_m.png",
+    "m_bf5_ffmi14_age0_t.png",
+    "m_bf5_ffmi14_age1_s.png",
+    "m_bf5_ffmi14_age1_m.png",
+    "m_bf5_ffmi14_age1_t.png",
+    "m_bf5_ffmi14_age2_s.png",
+    "m_bf5_ffmi14_age2_m.png",
+    "m_bf5_ffmi14_age2_t.png",
+    "m_bf5_ffmi14_age3_s.png"
+  ],
+  "parameters": {
+    "bodyFat": [5, 10, 15, 20, 25, 30, 35, 40, 45, 50],
+    "ffmi": [14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
+    "ageRangeIndices": [0, 1, 2, 3, 4],
+    "sexes": ["m", "f"],
+    "statures": ["s", "m", "t"]
+  }
+}

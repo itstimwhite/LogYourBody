@@ -1,18 +1,25 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Download, RefreshCw, X } from 'lucide-react';
-import { usePWAUpdate } from '@/hooks/use-pwa-update';
+import React from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Download, RefreshCw, X } from "lucide-react";
+import { usePWAUpdate } from "@/hooks/use-pwa-update";
 
 interface PWAUpdatePromptProps {
   onUpdateAccepted?: () => void;
 }
 
 export function PWAUpdatePrompt({ onUpdateAccepted }: PWAUpdatePromptProps) {
-  const { updateAvailable, isUpdating, applyUpdate, dismissUpdate } = usePWAUpdate();
-  const currentVersion = import.meta.env.PACKAGE_VERSION || '1.0.0';
-  const newVersion = new Date().toISOString().split('T')[0].replace(/-/g, '.');
+  const { updateAvailable, isUpdating, applyUpdate, dismissUpdate } =
+    usePWAUpdate();
+  const currentVersion = import.meta.env.PACKAGE_VERSION || "1.0.0";
+  const newVersion = new Date().toISOString().split("T")[0].replace(/-/g, ".");
 
   const handleUpdate = async () => {
     if (onUpdateAccepted) {
@@ -31,7 +38,7 @@ export function PWAUpdatePrompt({ onUpdateAccepted }: PWAUpdatePromptProps) {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-4 md:w-96">
-      <Card className="shadow-lg border-primary/20 bg-card/95 backdrop-blur-sm">
+      <Card className="border-primary/20 bg-card/95 shadow-lg backdrop-blur-sm">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -60,7 +67,7 @@ export function PWAUpdatePrompt({ onUpdateAccepted }: PWAUpdatePromptProps) {
             <span className="text-muted-foreground">New:</span>
             <Badge variant="default">{newVersion}</Badge>
           </div>
-          
+
           <div className="flex gap-2 pt-2">
             <Button
               onClick={handleUpdate}
@@ -70,21 +77,17 @@ export function PWAUpdatePrompt({ onUpdateAccepted }: PWAUpdatePromptProps) {
             >
               {isUpdating ? (
                 <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
                   Updating...
                 </>
               ) : (
                 <>
-                  <Download className="h-4 w-4 mr-2" />
+                  <Download className="mr-2 h-4 w-4" />
                   Update Now
                 </>
               )}
             </Button>
-            <Button
-              variant="outline"
-              onClick={handleDismiss}
-              size="sm"
-            >
+            <Button variant="outline" onClick={handleDismiss} size="sm">
               Later
             </Button>
           </div>

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import React, { useState, useRef, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface WheelPickerProps {
   items: string[] | number[];
@@ -37,11 +37,11 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
 
   const handleScroll = () => {
     if (!containerRef.current || isDragging) return;
-    
+
     const scrollTop = containerRef.current.scrollTop;
     const newIndex = Math.round(scrollTop / itemHeight);
     const clampedIndex = Math.max(0, Math.min(items.length - 1, newIndex));
-    
+
     if (clampedIndex !== selectedIndex) {
       onSelectionChange(clampedIndex);
     }
@@ -55,7 +55,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || !containerRef.current) return;
-    
+
     const deltaY = e.clientY - startY;
     const newScrollTop = startScrollTop - deltaY;
     containerRef.current.scrollTop = newScrollTop;
@@ -74,7 +74,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !containerRef.current) return;
-    
+
     const deltaY = e.touches[0].clientY - startY;
     const newScrollTop = startScrollTop - deltaY;
     containerRef.current.scrollTop = newScrollTop;
@@ -87,34 +87,34 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
 
   const snapToNearestItem = () => {
     if (!containerRef.current) return;
-    
+
     const scrollTop = containerRef.current.scrollTop;
     const nearestIndex = Math.round(scrollTop / itemHeight);
     const clampedIndex = Math.max(0, Math.min(items.length - 1, nearestIndex));
-    
+
     containerRef.current.scrollTo({
       top: clampedIndex * itemHeight,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
-    
+
     onSelectionChange(clampedIndex);
   };
 
   return (
     <div className={cn("relative select-none", className)}>
       {/* Selection highlight */}
-      <div 
-        className="absolute left-0 right-0 bg-primary/10 border-y border-primary/20 pointer-events-none z-10"
+      <div
+        className="pointer-events-none absolute left-0 right-0 z-10 border-y border-primary/20 bg-primary/10"
         style={{
           top: centerOffset,
           height: itemHeight,
         }}
       />
-      
+
       {/* Scrollable container */}
       <div
         ref={containerRef}
-        className="overflow-hidden scrollbar-hide"
+        className="scrollbar-hide overflow-hidden"
         style={{ height: containerHeight }}
         onScroll={handleScroll}
         onMouseDown={handleMouseDown}
@@ -126,17 +126,24 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
         onTouchEnd={handleTouchEnd}
       >
         {/* Padding items at start */}
-        {Array(Math.floor(visibleItems / 2)).fill(null).map((_, index) => (
-          <div key={`padding-start-${index}`} style={{ height: itemHeight }} />
-        ))}
-        
+        {Array(Math.floor(visibleItems / 2))
+          .fill(null)
+          .map((_, index) => (
+            <div
+              key={`padding-start-${index}`}
+              style={{ height: itemHeight }}
+            />
+          ))}
+
         {/* Actual items */}
         {items.map((item, index) => (
           <div
             key={index}
             className={cn(
-              "flex items-center justify-center text-center transition-opacity duration-200 cursor-pointer",
-              index === selectedIndex ? "text-foreground font-medium" : "text-muted-foreground"
+              "flex cursor-pointer items-center justify-center text-center transition-opacity duration-200",
+              index === selectedIndex
+                ? "font-medium text-foreground"
+                : "text-muted-foreground",
             )}
             style={{ height: itemHeight }}
             onClick={() => onSelectionChange(index)}
@@ -144,11 +151,13 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
             {item}
           </div>
         ))}
-        
+
         {/* Padding items at end */}
-        {Array(Math.floor(visibleItems / 2)).fill(null).map((_, index) => (
-          <div key={`padding-end-${index}`} style={{ height: itemHeight }} />
-        ))}
+        {Array(Math.floor(visibleItems / 2))
+          .fill(null)
+          .map((_, index) => (
+            <div key={`padding-end-${index}`} style={{ height: itemHeight }} />
+          ))}
       </div>
     </div>
   );
@@ -156,7 +165,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
 
 interface HeightWheelPickerProps {
   heightInCm: number;
-  units: 'imperial' | 'metric';
+  units: "imperial" | "metric";
   onHeightChange: (heightInCm: number) => void;
   className?: string;
 }
@@ -167,7 +176,7 @@ export const HeightWheelPicker: React.FC<HeightWheelPickerProps> = ({
   onHeightChange,
   className,
 }) => {
-  if (units === 'imperial') {
+  if (units === "imperial") {
     const totalInches = Math.round(heightInCm / 2.54);
     const feet = Math.floor(totalInches / 12);
     const inches = totalInches % 12;
@@ -190,21 +199,21 @@ export const HeightWheelPicker: React.FC<HeightWheelPickerProps> = ({
     return (
       <div className={cn("flex gap-4", className)}>
         <div className="flex-1">
-          <div className="text-sm font-medium text-center mb-2">Feet</div>
+          <div className="mb-2 text-center text-sm font-medium">Feet</div>
           <WheelPicker
-            items={feetOptions.map(f => `${f} ft`)}
+            items={feetOptions.map((f) => `${f} ft`)}
             selectedIndex={feet - 3}
             onSelectionChange={handleFeetChange}
-            className="bg-secondary rounded-lg"
+            className="rounded-lg bg-secondary"
           />
         </div>
         <div className="flex-1">
-          <div className="text-sm font-medium text-center mb-2">Inches</div>
+          <div className="mb-2 text-center text-sm font-medium">Inches</div>
           <WheelPicker
-            items={inchesOptions.map(i => `${i} in`)}
+            items={inchesOptions.map((i) => `${i} in`)}
             selectedIndex={inches}
             onSelectionChange={handleInchesChange}
-            className="bg-secondary rounded-lg"
+            className="rounded-lg bg-secondary"
           />
         </div>
       </div>
@@ -219,12 +228,12 @@ export const HeightWheelPicker: React.FC<HeightWheelPickerProps> = ({
 
     return (
       <div className={className}>
-        <div className="text-sm font-medium text-center mb-2">Centimeters</div>
+        <div className="mb-2 text-center text-sm font-medium">Centimeters</div>
         <WheelPicker
-          items={cmOptions.map(cm => `${cm} cm`)}
+          items={cmOptions.map((cm) => `${cm} cm`)}
           selectedIndex={selectedIndex}
           onSelectionChange={handleCmChange}
-          className="bg-secondary rounded-lg"
+          className="rounded-lg bg-secondary"
         />
       </div>
     );
@@ -244,27 +253,44 @@ export const DateWheelPicker: React.FC<DateWheelPickerProps> = ({
 }) => {
   const currentYear = new Date().getFullYear();
   const months = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
-  
+
   // Generate years from 1920 to current year
-  const years = Array.from({ length: currentYear - 1919 }, (_, i) => currentYear - i);
-  
+  const years = Array.from(
+    { length: currentYear - 1919 },
+    (_, i) => currentYear - i,
+  );
+
   // Generate days based on selected month/year
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
   };
-  
+
   const selectedMonth = date.getMonth();
   const selectedYear = date.getFullYear();
   const selectedDay = date.getDate();
-  
+
   const daysInMonth = getDaysInMonth(selectedMonth, selectedYear);
   const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
 
   const handleMonthChange = (monthIndex: number) => {
-    const newDate = new Date(selectedYear, monthIndex, Math.min(selectedDay, getDaysInMonth(monthIndex, selectedYear)));
+    const newDate = new Date(
+      selectedYear,
+      monthIndex,
+      Math.min(selectedDay, getDaysInMonth(monthIndex, selectedYear)),
+    );
     onDateChange(newDate);
   };
 
@@ -275,37 +301,41 @@ export const DateWheelPicker: React.FC<DateWheelPickerProps> = ({
 
   const handleYearChange = (yearIndex: number) => {
     const newYear = years[yearIndex];
-    const newDate = new Date(newYear, selectedMonth, Math.min(selectedDay, getDaysInMonth(selectedMonth, newYear)));
+    const newDate = new Date(
+      newYear,
+      selectedMonth,
+      Math.min(selectedDay, getDaysInMonth(selectedMonth, newYear)),
+    );
     onDateChange(newDate);
   };
 
   return (
     <div className={cn("flex gap-2", className)}>
       <div className="flex-1">
-        <div className="text-sm font-medium text-center mb-2">Month</div>
+        <div className="mb-2 text-center text-sm font-medium">Month</div>
         <WheelPicker
           items={months}
           selectedIndex={selectedMonth}
           onSelectionChange={handleMonthChange}
-          className="bg-secondary rounded-lg"
+          className="rounded-lg bg-secondary"
         />
       </div>
       <div className="w-16">
-        <div className="text-sm font-medium text-center mb-2">Day</div>
+        <div className="mb-2 text-center text-sm font-medium">Day</div>
         <WheelPicker
           items={days}
           selectedIndex={selectedDay - 1}
           onSelectionChange={handleDayChange}
-          className="bg-secondary rounded-lg"
+          className="rounded-lg bg-secondary"
         />
       </div>
       <div className="w-20">
-        <div className="text-sm font-medium text-center mb-2">Year</div>
+        <div className="mb-2 text-center text-sm font-medium">Year</div>
         <WheelPicker
           items={years}
           selectedIndex={years.indexOf(selectedYear)}
           onSelectionChange={handleYearChange}
-          className="bg-secondary rounded-lg"
+          className="rounded-lg bg-secondary"
         />
       </div>
     </div>

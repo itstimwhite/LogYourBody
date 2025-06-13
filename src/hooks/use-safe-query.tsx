@@ -1,8 +1,12 @@
-import { useQuery, useQueryClient, UseQueryOptions } from '@tanstack/react-query';
-import { useEffect, useRef, useState } from 'react';
-import { toast } from 'sonner';
+import {
+  useQuery,
+  useQueryClient,
+  UseQueryOptions,
+} from "@tanstack/react-query";
+import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
-interface UseSafeQueryOptions<T> extends Omit<UseQueryOptions<T>, 'queryFn'> {
+interface UseSafeQueryOptions<T> extends Omit<UseQueryOptions<T>, "queryFn"> {
   queryFn: () => Promise<T>;
   timeout?: number;
   retryOnTimeout?: boolean;
@@ -42,31 +46,34 @@ export function useSafeQuery<T>({
 
     const timeoutPromise = new Promise<never>((_, reject) => {
       const timeoutId = setTimeout(() => {
-        setState(prev => ({ ...prev, isTimedOut: true }));
+        setState((prev) => ({ ...prev, isTimedOut: true }));
         if (onTimeout) onTimeout();
         if (showTimeoutToast) {
-          toast.error('Still loading…', {
-            description: 'The request is taking longer than expected. Please check your connection.',
+          toast.error("Still loading…", {
+            description:
+              "The request is taking longer than expected. Please check your connection.",
             action: {
-              label: 'Retry',
+              label: "Retry",
               onClick: () => {
-                setState(prev => ({ 
-                  ...prev, 
-                  isTimedOut: false, 
-                  retryCount: prev.retryCount + 1 
+                setState((prev) => ({
+                  ...prev,
+                  isTimedOut: false,
+                  retryCount: prev.retryCount + 1,
                 }));
-                queryClient.invalidateQueries({ queryKey: queryOptions.queryKey });
+                queryClient.invalidateQueries({
+                  queryKey: queryOptions.queryKey,
+                });
               },
             },
           });
         }
-        reject(new Error('Query timeout'));
+        reject(new Error("Query timeout"));
       }, timeout);
 
       // Clear timeout if request completes or is aborted
-      signal.addEventListener('abort', () => {
+      signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
-        reject(new Error('Query aborted'));
+        reject(new Error("Query aborted"));
       });
     });
 
@@ -75,10 +82,10 @@ export function useSafeQuery<T>({
     try {
       // Race between data fetch and timeout
       const result = await Promise.race([dataPromise, timeoutPromise]);
-      setState(prev => ({ ...prev, isTimedOut: false }));
+      setState((prev) => ({ ...prev, isTimedOut: false }));
       return result;
     } catch (error) {
-      if (error instanceof Error && error.message === 'Query timeout') {
+      if (error instanceof Error && error.message === "Query timeout") {
         if (retryOnTimeout) {
           // Don't throw on timeout if retry is enabled - let React Query handle retries
           throw error;
@@ -95,15 +102,15 @@ export function useSafeQuery<T>({
     gcTime: queryOptions.gcTime ?? 24 * 60 * 60 * 1000, // 24 hours
     retry: (failureCount, error) => {
       // Don't retry on abort
-      if (error instanceof Error && error.message === 'Query aborted') {
+      if (error instanceof Error && error.message === "Query aborted") {
         return false;
       }
-      
+
       // Custom retry logic for timeouts
-      if (error instanceof Error && error.message === 'Query timeout') {
+      if (error instanceof Error && error.message === "Query timeout") {
         return retryOnTimeout && failureCount < 3;
       }
-      
+
       // Default retry behavior for other errors
       return queryOptions.retry !== false && failureCount < 3;
     },
@@ -124,10 +131,10 @@ export function useSafeQuery<T>({
     isTimedOut: state.isTimedOut,
     retryCount: state.retryCount,
     retryQuery: () => {
-      setState(prev => ({ 
-        ...prev, 
-        isTimedOut: false, 
-        retryCount: prev.retryCount + 1 
+      setState((prev) => ({
+        ...prev,
+        isTimedOut: false,
+        retryCount: prev.retryCount + 1,
       }));
       queryClient.invalidateQueries({ queryKey: queryOptions.queryKey });
     },

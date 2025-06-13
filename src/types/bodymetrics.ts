@@ -19,7 +19,12 @@ export interface BodyMetrics {
   ffmi?: number; // calculated
 }
 
-export type MeasurementMethod = "dexa" | "scale" | "calipers" | "visual" | "healthkit";
+export type MeasurementMethod =
+  | "dexa"
+  | "scale"
+  | "calipers"
+  | "visual"
+  | "healthkit";
 
 export interface UserSettings {
   userId: string;

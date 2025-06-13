@@ -20,7 +20,7 @@
     },
     {
       "identifier": "logyourbody_annual",
-      "type": "auto_renewable_subscription", 
+      "type": "auto_renewable_subscription",
       "subscription_group": "logyourbody_subscriptions",
       "display_name": "LogYourBody Pro Annual",
       "price": 69.99,
@@ -48,7 +48,7 @@
           "display_name": "Monthly Plan"
         },
         {
-          "identifier": "annual", 
+          "identifier": "annual",
           "product": "logyourbody_annual",
           "display_name": "Annual Plan"
         }

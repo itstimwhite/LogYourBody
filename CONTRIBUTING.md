@@ -112,7 +112,7 @@ interface ButtonProps {
 
 export function Button({ children, variant = 'primary', ...props }: ButtonProps) {
   return (
-    <button 
+    <button
       className={cn('btn', `btn-${variant}`)}
       {...props}
     >
@@ -170,10 +170,10 @@ export function Button({ children, variant = 'primary', ...props }: ButtonProps)
 
 ```typescript
 // Example test
-describe('formatBodyWeight', () => {
-  it('should format weight with proper units', () => {
-    expect(formatBodyWeight(70.5, 'kg')).toBe('70.5 kg');
-    expect(formatBodyWeight(155.2, 'lbs')).toBe('155.2 lbs');
+describe("formatBodyWeight", () => {
+  it("should format weight with proper units", () => {
+    expect(formatBodyWeight(70.5, "kg")).toBe("70.5 kg");
+    expect(formatBodyWeight(155.2, "lbs")).toBe("155.2 lbs");
   });
 });
 ```
@@ -228,17 +228,20 @@ export function calculateBMI(weight: number, height: number): number {
 ### Before Submitting
 
 1. **Ensure all tests pass**
+
    ```bash
    npm test
    npm run typecheck
    ```
 
 2. **Check code formatting**
+
    ```bash
    npm run format.fix
    ```
 
 3. **Verify accessibility** (for UI changes)
+
    - Test keyboard navigation
    - Check color contrast
    - Verify screen reader compatibility
@@ -275,6 +278,7 @@ export function calculateBMI(weight: number, height: number): number {
 ### Color Scheme
 
 Use the existing Tailwind color palette:
+
 - Primary: Blue tones for main actions
 - Secondary: Gray tones for secondary actions
 - Success: Green for positive feedback
@@ -292,10 +296,12 @@ Use the existing Tailwind color palette:
 ### Common Issues
 
 1. **Environment variables not loaded**
+
    - Ensure `.env` file exists
    - Restart development server after changes
 
 2. **Supabase connection issues**
+
    - Check Supabase is running: `npm run supabase:start`
    - Verify environment variables are correct
 
@@ -365,6 +371,7 @@ Use the existing Tailwind color palette:
 ### Versioning
 
 We follow [Semantic Versioning](https://semver.org/):
+
 - **MAJOR**: Breaking changes
 - **MINOR**: New features (backwards compatible)
 - **PATCH**: Bug fixes (backwards compatible)
@@ -397,6 +404,7 @@ We follow [Semantic Versioning](https://semver.org/):
 ## 🙏 Recognition
 
 Contributors who make significant contributions will be:
+
 - Added to the contributors list in README.md
 - Mentioned in release notes
 - Given credit in relevant documentation

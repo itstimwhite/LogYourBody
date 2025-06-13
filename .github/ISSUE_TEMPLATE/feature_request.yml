@@ -82,7 +82,7 @@ body:
       label: Additional Context
       description: |
         Add any other context, screenshots, or examples about the feature request here.
-        
+
         Tip: You can attach images by clicking this area to highlight it and then dragging files in.
 
   - type: checkboxes

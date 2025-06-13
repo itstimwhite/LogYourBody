@@ -1,15 +1,15 @@
-import React from 'react';
-import { Switch as HeadlessSwitch } from '@headlessui/react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
-import { tw, settingsTokens } from '@/styles/settings-design';
+import React from "react";
+import { Switch as HeadlessSwitch } from "@headlessui/react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
+import { tw, settingsTokens } from "@/styles/settings-design";
 
 interface SwitchProps {
   enabled: boolean;
   onChange: (enabled: boolean) => void;
   disabled?: boolean;
   className?: string;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
   accessibilityLabel?: string;
   loading?: boolean;
 }
@@ -19,25 +19,25 @@ export const Switch = React.memo<SwitchProps>(function Switch({
   onChange,
   disabled = false,
   className,
-  size = 'md',
+  size = "md",
   accessibilityLabel,
   loading = false,
 }) {
   const sizes = {
     sm: {
-      switch: 'h-6 w-11',
-      thumb: 'h-4 w-4',
-      translate: enabled ? 'translate-x-6' : 'translate-x-1',
+      switch: "h-6 w-11",
+      thumb: "h-4 w-4",
+      translate: enabled ? "translate-x-6" : "translate-x-1",
     },
     md: {
-      switch: 'h-7 w-12',
-      thumb: 'h-5 w-5',
-      translate: enabled ? 'translate-x-6' : 'translate-x-1',
+      switch: "h-7 w-12",
+      thumb: "h-5 w-5",
+      translate: enabled ? "translate-x-6" : "translate-x-1",
     },
     lg: {
-      switch: 'h-8 w-14',
-      thumb: 'h-6 w-6',
-      translate: enabled ? 'translate-x-7' : 'translate-x-1',
+      switch: "h-8 w-14",
+      thumb: "h-6 w-6",
+      translate: enabled ? "translate-x-7" : "translate-x-1",
     },
   };
 
@@ -46,11 +46,11 @@ export const Switch = React.memo<SwitchProps>(function Switch({
   const handleChange = (newEnabled: boolean) => {
     if (!disabled && !loading) {
       // Haptic feedback
-      if (typeof window !== 'undefined' && (window as any).Capacitor) {
+      if (typeof window !== "undefined" && (window as any).Capacitor) {
         const { Haptics, ImpactStyle } = (window as any).Capacitor.Plugins;
         Haptics?.impact({ style: ImpactStyle.Light });
       }
-      
+
       onChange(newEnabled);
     }
   };
@@ -61,12 +61,12 @@ export const Switch = React.memo<SwitchProps>(function Switch({
       onChange={handleChange}
       disabled={disabled || loading}
       className={cn(
-        'relative inline-flex items-center rounded-full transition-all duration-200',
-        'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background',
-        'disabled:opacity-50 disabled:cursor-not-allowed',
+        "relative inline-flex items-center rounded-full transition-all duration-200",
+        "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
+        "disabled:cursor-not-allowed disabled:opacity-50",
         sizeConfig.switch,
-        enabled ? 'bg-primary' : 'bg-secondary/40 border border-border',
-        className
+        enabled ? "bg-primary" : "border border-border bg-secondary/40",
+        className,
       )}
       aria-label={accessibilityLabel}
     >
@@ -83,10 +83,10 @@ export const Switch = React.memo<SwitchProps>(function Switch({
       {/* Thumb */}
       <motion.div
         className={cn(
-          'relative flex items-center justify-center rounded-full bg-white shadow-sm transition-all duration-200',
+          "relative flex items-center justify-center rounded-full bg-white shadow-sm transition-all duration-200",
           sizeConfig.thumb,
           sizeConfig.translate,
-          loading && 'animate-pulse'
+          loading && "animate-pulse",
         )}
         layout
         transition={settingsTokens.animation.fast}
@@ -144,13 +144,13 @@ export const Switch = React.memo<SwitchProps>(function Switch({
 export const NotificationSwitch = React.memo<{
   enabled: boolean;
   onChange: (enabled: boolean) => void;
-  type: 'push' | 'email' | 'sms';
+  type: "push" | "email" | "sms";
   disabled?: boolean;
 }>(function NotificationSwitch({ enabled, onChange, type, disabled }) {
   const labels = {
-    push: 'Push notifications',
-    email: 'Email notifications', 
-    sms: 'SMS notifications',
+    push: "Push notifications",
+    email: "Email notifications",
+    sms: "SMS notifications",
   };
 
   return (
@@ -166,13 +166,13 @@ export const NotificationSwitch = React.memo<{
 export const PrivacySwitch = React.memo<{
   enabled: boolean;
   onChange: (enabled: boolean) => void;
-  type: 'analytics' | 'crashReports' | 'dataSharing';
+  type: "analytics" | "crashReports" | "dataSharing";
   disabled?: boolean;
 }>(function PrivacySwitch({ enabled, onChange, type, disabled }) {
   const labels = {
-    analytics: 'Analytics and usage data',
-    crashReports: 'Automatic crash reports',
-    dataSharing: 'Data sharing with partners',
+    analytics: "Analytics and usage data",
+    crashReports: "Automatic crash reports",
+    dataSharing: "Data sharing with partners",
   };
 
   return (

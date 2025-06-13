@@ -24,11 +24,17 @@ export const TimelineSlider = React.memo(function TimelineSlider({
     });
   }, []);
 
-  const handleValueChange = useCallback((value: number[]) => {
-    onIndexChange(value[0]);
-  }, [onIndexChange]);
+  const handleValueChange = useCallback(
+    (value: number[]) => {
+      onIndexChange(value[0]);
+    },
+    [onIndexChange],
+  );
 
-  const selectedMetric = useMemo(() => metrics[selectedIndex], [metrics, selectedIndex]);
+  const selectedMetric = useMemo(
+    () => metrics[selectedIndex],
+    [metrics, selectedIndex],
+  );
 
   if (metrics.length === 0) {
     return null;
@@ -39,15 +45,16 @@ export const TimelineSlider = React.memo(function TimelineSlider({
   return (
     <div
       className={cn(
-        "w-full px-4 md:px-6 py-2 md:py-6 bg-background border-t border-border/50 shadow-sm",
+        "w-full border-t border-border/50 bg-background px-4 py-2 shadow-sm md:px-6 md:py-6",
         className,
       )}
     >
       <div className="space-y-2 md:space-y-4">
         {/* Current date display - Centered with smaller font on mobile */}
         <div className="text-center">
-          <div className="text-foreground text-base md:text-lg font-semibold tracking-tight">
-            {currentDate ? formatDate(currentDate) : "No date"} / Entry {selectedIndex + 1} of {metrics.length}
+          <div className="text-base font-semibold tracking-tight text-foreground md:text-lg">
+            {currentDate ? formatDate(currentDate) : "No date"} / Entry{" "}
+            {selectedIndex + 1} of {metrics.length}
           </div>
         </div>
 
@@ -64,7 +71,7 @@ export const TimelineSlider = React.memo(function TimelineSlider({
         </div>
 
         {/* Date range - Smaller, subtler font */}
-        <div className="flex justify-between text-xs text-muted-foreground/70 font-normal px-2 md:px-4">
+        <div className="flex justify-between px-2 text-xs font-normal text-muted-foreground/70 md:px-4">
           <span>{formatDate(metrics[0].date)}</span>
           <span>{formatDate(metrics[metrics.length - 1].date)}</span>
         </div>

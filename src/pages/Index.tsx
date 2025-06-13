@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { LandingPage } from "@/components/LandingPage";
 import { useResponsive } from "@/hooks/use-responsive";
 import { useAuth } from "@/contexts/AuthContext";
-import { Capacitor } from '@capacitor/core';
+import { Capacitor } from "@capacitor/core";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 
 const Index = () => {
@@ -24,27 +24,38 @@ const Index = () => {
 
   useEffect(() => {
     // If user is authenticated, redirect to dashboard
-    console.log('Index: auth state', { 
-      loading, 
-      hasUser: !!user, 
-      isRedirecting, 
+    console.log("Index: auth state", {
+      loading,
+      hasUser: !!user,
+      isRedirecting,
       currentPath: window.location.pathname,
-      search: window.location.search
+      search: window.location.search,
     });
-    
+
     // Check if this is an OAuth redirect (has URL params that indicate OAuth flow)
     const urlParams = new URLSearchParams(window.location.search);
-    const hasOAuthParams = urlParams.has('access_token') || urlParams.has('refresh_token') || urlParams.has('code');
-    
+    const hasOAuthParams =
+      urlParams.has("access_token") ||
+      urlParams.has("refresh_token") ||
+      urlParams.has("code");
+
     if (!loading && user && !isRedirecting) {
-      console.log("Index: Authenticated user detected on homepage", { hasOAuthParams });
-      
+      console.log("Index: Authenticated user detected on homepage", {
+        hasOAuthParams,
+      });
+
       if (hasOAuthParams) {
-        console.log("Index: OAuth redirect detected, clearing URL params and redirecting to dashboard");
+        console.log(
+          "Index: OAuth redirect detected, clearing URL params and redirecting to dashboard",
+        );
         // Clear OAuth params from URL before redirecting
-        window.history.replaceState({}, document.title, window.location.pathname);
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname,
+        );
       }
-      
+
       setIsRedirecting(true);
       // Add a small delay to prevent redirect loops during OAuth flows
       const timer = setTimeout(() => {
@@ -68,10 +79,12 @@ const Index = () => {
   // Show loading while checking authentication or redirecting
   if (loading || isRedirecting) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p className="text-muted-foreground">{isRedirecting ? "Redirecting..." : "Loading..."}</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+          <p className="text-muted-foreground">
+            {isRedirecting ? "Redirecting..." : "Loading..."}
+          </p>
         </div>
       </div>
     );
@@ -85,9 +98,9 @@ const Index = () => {
   // For native platforms, don't render content (will redirect to splash)
   if (Capacitor.isNativePlatform()) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-center">
-          <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>

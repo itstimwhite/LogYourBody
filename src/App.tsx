@@ -12,12 +12,11 @@ import { VercelAnalytics } from "@/components/Analytics";
 import { PerformanceMonitor } from "@/components/PerformanceMonitor";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
-import { Capacitor } from '@capacitor/core';
-import { SplashScreen } from '@capacitor/splash-screen';
-import { serviceWorkerManager } from '@/lib/service-worker-manager';
-import { RouteGuard } from '@/components/RouteGuard';
-import { AuthDebugger } from '@/components/AuthDebugger';
-
+import { Capacitor } from "@capacitor/core";
+import { SplashScreen } from "@capacitor/splash-screen";
+import { serviceWorkerManager } from "@/lib/service-worker-manager";
+import { RouteGuard } from "@/components/RouteGuard";
+import { AuthDebugger } from "@/components/AuthDebugger";
 
 // Lazy load pages for better code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -29,13 +28,14 @@ const Subscription = React.lazy(() => import("./pages/Subscription"));
 const Terms = React.lazy(() => import("./pages/Terms"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
 const Changelog = React.lazy(() => import("./pages/Changelog"));
+const HealthKitTest = React.lazy(() => import("./pages/HealthKitTest"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
 const PageLoader = () => (
-  <div className="min-h-screen bg-background flex items-center justify-center">
+  <div className="flex min-h-screen items-center justify-center bg-background">
     <div className="text-center">
-      <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full mx-auto mb-4"></div>
+      <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
       <p className="text-muted-foreground">Loading...</p>
     </div>
   </div>
@@ -48,9 +48,11 @@ const queryClient = new QueryClient({
       gcTime: 24 * 60 * 60 * 1000, // Keep cache for 24 hours
       retry: (failureCount, error) => {
         // Don't retry on network errors that suggest offline status
-        if (error instanceof Error && 
-            (error.message.includes('NetworkError') || 
-             error.message.includes('Failed to fetch'))) {
+        if (
+          error instanceof Error &&
+          (error.message.includes("NetworkError") ||
+            error.message.includes("Failed to fetch"))
+        ) {
           return false;
         }
         return failureCount < 3;
@@ -73,6 +75,7 @@ const protectedRoutes = [
   { path: "/dashboard", element: <Dashboard /> },
   { path: "/settings", element: <Settings /> },
   { path: "/subscription", element: <Subscription /> },
+  { path: "/healthkit-test", element: <HealthKitTest /> },
 ];
 
 const AppProviders = ({ children }: { children: React.ReactNode }) => (
@@ -93,7 +96,7 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
 
 const AppRoutes = () => {
   console.log("AppRoutes rendering, current path:", window.location.pathname);
-  
+
   return (
     <RouteGuard>
       <Suspense fallback={<PageLoader />}>
@@ -102,18 +105,16 @@ const AppRoutes = () => {
             <Route key={path} path={path} element={element} />
           ))}
           {protectedRoutes.map(({ path, element }) => (
-            <Route 
-              key={path} 
-              path={path} 
+            <Route
+              key={path}
+              path={path}
               element={
                 <AuthGuard>
                   <ProfileGuard>
-                    <Suspense fallback={<PageLoader />}>
-                      {element}
-                    </Suspense>
+                    <Suspense fallback={<PageLoader />}>{element}</Suspense>
                   </ProfileGuard>
                 </AuthGuard>
-              } 
+              }
             />
           ))}
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
@@ -134,7 +135,7 @@ const App = () => {
       try {
         if (Capacitor.isNativePlatform()) {
           // On native platforms, completely disable service workers
-          console.log('Native platform detected - disabling service workers');
+          console.log("Native platform detected - disabling service workers");
           await serviceWorkerManager.disableOnNative();
         } else {
           // On web platforms, check and cleanup as usual
@@ -142,7 +143,7 @@ const App = () => {
           await serviceWorkerManager.checkAndCleanup();
         }
       } catch (error) {
-        console.warn('Error handling service worker issues:', error);
+        console.warn("Error handling service worker issues:", error);
       }
     };
 
@@ -155,33 +156,36 @@ const App = () => {
       const clearStaleAuth = async () => {
         try {
           // Check if this is a fresh launch by looking for a launch flag
-          const launchKey = 'app_launched_' + new Date().toISOString().split('T')[0];
+          const launchKey =
+            "app_launched_" + new Date().toISOString().split("T")[0];
           const hasLaunched = localStorage.getItem(launchKey);
-          
+
           if (!hasLaunched) {
-            console.log('Fresh app launch detected, clearing potential stale auth...');
+            console.log(
+              "Fresh app launch detected, clearing potential stale auth...",
+            );
             // Clear all auth-related storage
-            const authKeys = ['supabase.auth.token', 'sb-auth-token'];
-            authKeys.forEach(key => {
+            const authKeys = ["supabase.auth.token", "sb-auth-token"];
+            authKeys.forEach((key) => {
               localStorage.removeItem(key);
               sessionStorage.removeItem(key);
             });
-            
+
             // Set launch flag
-            localStorage.setItem(launchKey, 'true');
-            
+            localStorage.setItem(launchKey, "true");
+
             // Clean up old launch flags (keep only today's)
-            Object.keys(localStorage).forEach(key => {
-              if (key.startsWith('app_launched_') && key !== launchKey) {
+            Object.keys(localStorage).forEach((key) => {
+              if (key.startsWith("app_launched_") && key !== launchKey) {
                 localStorage.removeItem(key);
               }
             });
           }
         } catch (error) {
-          console.warn('Error clearing stale auth:', error);
+          console.warn("Error clearing stale auth:", error);
         }
       };
-      
+
       clearStaleAuth();
     }
 

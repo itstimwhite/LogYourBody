@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { cn } from '@/lib/utils';
+import React, { useState, useRef, useEffect } from "react";
+import { cn } from "@/lib/utils";
 
 interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
@@ -12,7 +12,7 @@ interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 export const LazyImage = React.memo(function LazyImage({
   src,
   alt,
-  placeholder = '/placeholder.svg',
+  placeholder = "/placeholder.svg",
   className,
   fallback,
   ...props
@@ -30,7 +30,7 @@ export const LazyImage = React.memo(function LazyImage({
           observer.disconnect();
         }
       },
-      { threshold: 0.1 }
+      { threshold: 0.1 },
     );
 
     if (imgRef.current) {
@@ -55,25 +55,25 @@ export const LazyImage = React.memo(function LazyImage({
   }
 
   return (
-    <div ref={imgRef} className={cn('relative overflow-hidden', className)}>
+    <div ref={imgRef} className={cn("relative overflow-hidden", className)}>
       {/* Placeholder */}
       {!isLoaded && (
         <img
           src={placeholder}
           alt=""
           className={cn(
-            'absolute inset-0 w-full h-full object-cover transition-opacity duration-300',
-            isLoaded ? 'opacity-0' : 'opacity-100'
+            "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
+            isLoaded ? "opacity-0" : "opacity-100",
           )}
           aria-hidden="true"
         />
       )}
-      
+
       {/* Loading shimmer */}
       {!isLoaded && isInView && (
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse" />
+        <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-transparent via-white/20 to-transparent" />
       )}
-      
+
       {/* Actual image */}
       {isInView && (
         <img
@@ -82,8 +82,8 @@ export const LazyImage = React.memo(function LazyImage({
           onLoad={handleLoad}
           onError={handleError}
           className={cn(
-            'w-full h-full object-cover transition-opacity duration-300',
-            isLoaded ? 'opacity-100' : 'opacity-0'
+            "h-full w-full object-cover transition-opacity duration-300",
+            isLoaded ? "opacity-100" : "opacity-0",
           )}
           loading="lazy"
           {...props}

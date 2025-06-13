@@ -43,7 +43,7 @@ export function LogEntryModal({
   const [bodyFatPercentage, setBodyFatPercentage] = useState<number[]>([15]);
   const [method, setMethod] = useState<MeasurementMethod>("scale");
   const [syncingHealthKit, setSyncingHealthKit] = useState(false);
-  
+
   const healthKit = useHealthKit();
 
   const handleSave = () => {
@@ -85,7 +85,7 @@ export function LogEntryModal({
       if (!healthKit.isAuthorized) {
         const granted = await healthKit.requestPermissions();
         if (!granted) {
-          console.warn('HealthKit permissions not granted');
+          console.warn("HealthKit permissions not granted");
           return;
         }
       }
@@ -98,7 +98,7 @@ export function LogEntryModal({
         if (units === "imperial") {
           displayWeight = Math.round(healthData.weight * 2.20462 * 10) / 10; // kg to lbs
         }
-        
+
         // Import data and immediately save with HealthKit method
         onSave({
           weight: healthData.weight, // Always save as kg internally
@@ -112,13 +112,17 @@ export function LogEntryModal({
         setBodyFatPercentage([15]);
         setMethod("scale");
         onOpenChange(false);
-        
-        console.log('HealthKit data imported:', displayWeight, units === "imperial" ? "lbs" : "kg");
+
+        console.log(
+          "HealthKit data imported:",
+          displayWeight,
+          units === "imperial" ? "lbs" : "kg",
+        );
       } else {
-        console.warn('No weight data found in HealthKit');
+        console.warn("No weight data found in HealthKit");
       }
     } catch (error) {
-      console.error('Error importing HealthKit data:', error);
+      console.error("Error importing HealthKit data:", error);
     } finally {
       setSyncingHealthKit(false);
     }
@@ -126,9 +130,9 @@ export function LogEntryModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-background border-border text-foreground max-w-md">
+      <DialogContent className="max-w-md border-border bg-background text-foreground">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold text-foreground tracking-tight">
+          <DialogTitle className="text-xl font-semibold tracking-tight text-foreground">
             Log New Measurement
           </DialogTitle>
         </DialogHeader>
@@ -137,7 +141,7 @@ export function LogEntryModal({
           {/* HealthKit Import Section - only show on iOS with HealthKit */}
           {isNativeiOS() && healthKit.isAvailable && (
             <div className="space-y-3">
-              <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+              <Label className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
                 Import from HealthKit
               </Label>
               <Button
@@ -145,21 +149,21 @@ export function LogEntryModal({
                 variant="outline"
                 onClick={handleHealthKitImport}
                 disabled={syncingHealthKit}
-                className="w-full bg-secondary border-border text-foreground hover:bg-muted h-12"
+                className="h-12 w-full border-border bg-secondary text-foreground hover:bg-muted"
               >
                 {syncingHealthKit ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Importing from HealthKit...
                   </>
                 ) : (
                   <>
-                    <Activity className="w-4 h-4 mr-2" />
+                    <Activity className="mr-2 h-4 w-4" />
                     Import from HealthKit
                   </>
                 )}
               </Button>
-              
+
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t border-border" />
@@ -177,7 +181,7 @@ export function LogEntryModal({
           <div className="space-y-3">
             <Label
               htmlFor="weight"
-              className="text-sm font-medium text-muted-foreground uppercase tracking-wide"
+              className="text-sm font-medium uppercase tracking-wide text-muted-foreground"
             >
               Weight ({units === "metric" ? "kg" : "lbs"})
             </Label>
@@ -187,13 +191,13 @@ export function LogEntryModal({
               placeholder="Enter weight"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
-              className="bg-secondary border-border text-foreground placeholder:text-muted-foreground h-12 text-base"
+              className="h-12 border-border bg-secondary text-base text-foreground placeholder:text-muted-foreground"
             />
           </div>
 
           {/* Body Fat Percentage Slider */}
           <div className="space-y-4">
-            <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+            <Label className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
               Body Fat: {bodyFatPercentage[0].toFixed(1)}%
             </Label>
             <Slider
@@ -204,7 +208,7 @@ export function LogEntryModal({
               step={0.1}
               className="w-full"
             />
-            <div className="flex justify-between text-xs text-muted-foreground font-medium">
+            <div className="flex justify-between text-xs font-medium text-muted-foreground">
               <span>3%</span>
               <span>50%</span>
             </div>
@@ -212,17 +216,17 @@ export function LogEntryModal({
 
           {/* Measurement Method */}
           <div className="space-y-3">
-            <Label className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+            <Label className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
               Method
             </Label>
             <Select
               value={method}
               onValueChange={(value: MeasurementMethod) => setMethod(value)}
             >
-              <SelectTrigger className="bg-secondary border-border text-foreground h-12">
+              <SelectTrigger className="h-12 border-border bg-secondary text-foreground">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="bg-background border-border">
+              <SelectContent className="border-border bg-background">
                 {Object.entries(MEASUREMENT_METHODS)
                   .filter(([key]) => key !== "healthkit") // Exclude HealthKit from user selection
                   .map(([key, label]) => (
@@ -243,7 +247,7 @@ export function LogEntryModal({
         <div className="pt-4">
           <Button
             onClick={handleSave}
-            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-12 text-base"
+            className="h-12 w-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
             disabled={!weight || parseFloat(weight) <= 0}
           >
             Save Measurement

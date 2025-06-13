@@ -24,7 +24,7 @@ interface PaywallProps {
 
 export function Paywall({
   onClose,
-  title = "Access Paused", 
+  title = "Access Paused",
   subtitle = "Continue tracking your body composition with LogYourBody Premium",
   showCloseButton = false,
 }: PaywallProps) {
@@ -43,7 +43,7 @@ export function Paywall({
   };
 
   const handleRevenueCatError = (error: string) => {
-    console.error('RevenueCat error:', error);
+    console.error("RevenueCat error:", error);
     // Fallback to legacy system if RevenueCat fails
     setUseRevenueCat(false);
   };
@@ -92,7 +92,7 @@ export function Paywall({
   // Use RevenueCat if available, fallback to legacy paywall
   if (useRevenueCat) {
     return (
-      <div className="fixed inset-0 bg-background z-50 flex flex-col">
+      <div className="fixed inset-0 z-50 flex flex-col bg-background">
         {/* Header */}
         <div className="flex items-center justify-between p-6">
           <div className="text-sm text-muted-foreground">LogYourBody</div>
@@ -101,7 +101,7 @@ export function Paywall({
               size="icon"
               variant="ghost"
               onClick={onClose}
-              className="text-muted-foreground hover:text-foreground h-8 w-8"
+              className="h-8 w-8 text-muted-foreground hover:text-foreground"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -109,22 +109,26 @@ export function Paywall({
         </div>
 
         {/* Content */}
-        <div className="flex-1 px-6 overflow-y-auto">
-          <div className="max-w-md mx-auto space-y-8">
+        <div className="flex-1 overflow-y-auto px-6">
+          <div className="mx-auto max-w-md space-y-8">
             {/* Title */}
             <div className="space-y-3">
-              <h1 className="text-4xl font-light text-foreground">{title.split(' ')[0] || 'ACCESS'}</h1>
-              <h2 className="text-4xl font-bold text-primary">{title.split(' ')[1] || 'PAUSED'}</h2>
-              <p className="text-muted-foreground text-lg">{subtitle}</p>
+              <h1 className="text-4xl font-light text-foreground">
+                {title.split(" ")[0] || "ACCESS"}
+              </h1>
+              <h2 className="text-4xl font-bold text-primary">
+                {title.split(" ")[1] || "PAUSED"}
+              </h2>
+              <p className="text-lg text-muted-foreground">{subtitle}</p>
               {subscriptionInfo.isTrialActive && (
-                <div className="text-sm text-primary font-medium">
+                <div className="text-sm font-medium text-primary">
                   {subscriptionInfo.daysRemainingInTrial} days left in trial
                 </div>
               )}
             </div>
 
             {/* RevenueCat Paywall */}
-            <RevenueCatPaywall 
+            <RevenueCatPaywall
               onSuccess={handleRevenueCatSuccess}
               onError={handleRevenueCatError}
             />
@@ -152,7 +156,7 @@ export function Paywall({
 
   // Legacy paywall fallback
   return (
-    <div className="fixed inset-0 bg-background z-50 flex flex-col">
+    <div className="fixed inset-0 z-50 flex flex-col bg-background">
       {/* Header */}
       <div className="flex items-center justify-between p-6">
         <div className="text-sm text-muted-foreground">LogYourBody</div>
@@ -161,7 +165,7 @@ export function Paywall({
             size="icon"
             variant="ghost"
             onClick={onClose}
-            className="text-muted-foreground hover:text-foreground h-8 w-8"
+            className="h-8 w-8 text-muted-foreground hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -169,15 +173,15 @@ export function Paywall({
       </div>
 
       {/* Content */}
-      <div className="flex-1 px-6 overflow-y-auto">
-        <div className="max-w-md mx-auto space-y-8">
+      <div className="flex-1 overflow-y-auto px-6">
+        <div className="mx-auto max-w-md space-y-8">
           {/* Title */}
           <div className="space-y-3">
             <h1 className="text-4xl font-light text-foreground">ACCESS</h1>
             <h2 className="text-4xl font-bold text-primary">PAUSED</h2>
-            <p className="text-muted-foreground text-lg">{subtitle}</p>
+            <p className="text-lg text-muted-foreground">{subtitle}</p>
             {subscriptionInfo.isTrialActive && (
-              <div className="text-sm text-primary font-medium">
+              <div className="text-sm font-medium text-primary">
                 {subscriptionInfo.daysRemainingInTrial} days left in trial
               </div>
             )}
@@ -188,14 +192,14 @@ export function Paywall({
             {features.map((feature, index) => (
               <div
                 key={index}
-                className="bg-secondary/30 rounded-lg p-4 border border-border"
+                className="rounded-lg border border-border bg-secondary/30 p-4"
               >
-                <feature.icon className="h-8 w-8 text-primary mb-3" />
+                <feature.icon className="mb-3 h-8 w-8 text-primary" />
                 <div className="space-y-1">
-                  <div className="font-semibold text-foreground text-sm">
+                  <div className="text-sm font-semibold text-foreground">
                     {feature.title}
                   </div>
-                  <div className="text-muted-foreground text-sm">
+                  <div className="text-sm text-muted-foreground">
                     {feature.subtitle}
                   </div>
                 </div>
@@ -209,14 +213,14 @@ export function Paywall({
             <div
               onClick={() => setSelectedPlan("yearly")}
               className={cn(
-                "relative p-4 rounded-lg border-2 cursor-pointer transition-all",
+                "relative cursor-pointer rounded-lg border-2 p-4 transition-all",
                 selectedPlan === "yearly"
                   ? "border-primary bg-primary/5"
                   : "border-border bg-secondary/30",
               )}
             >
               {selectedPlan === "yearly" && (
-                <Badge className="absolute -top-2 right-4 bg-primary text-primary-foreground text-xs">
+                <Badge className="absolute -top-2 right-4 bg-primary text-xs text-primary-foreground">
                   Save 42% with Annual
                 </Badge>
               )}
@@ -242,7 +246,7 @@ export function Paywall({
             <div
               onClick={() => setSelectedPlan("monthly")}
               className={cn(
-                "relative p-4 rounded-lg border-2 cursor-pointer transition-all",
+                "relative cursor-pointer rounded-lg border-2 p-4 transition-all",
                 selectedPlan === "monthly"
                   ? "border-primary bg-primary/5"
                   : "border-border bg-secondary/30",
@@ -269,11 +273,11 @@ export function Paywall({
       </div>
 
       {/* Footer */}
-      <div className="p-6 space-y-4">
+      <div className="space-y-4 p-6">
         <Button
           onClick={handlePurchase}
           disabled={isLoading}
-          className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold h-14 text-lg rounded-xl"
+          className="h-14 w-full rounded-xl bg-primary text-lg font-semibold text-primary-foreground hover:bg-primary/90"
         >
           {isLoading ? "Processing..." : "Resume Now"}
         </Button>
@@ -294,7 +298,7 @@ export function Paywall({
           </Button>
         </div>
 
-        <p className="text-xs text-muted-foreground text-center leading-relaxed">
+        <p className="text-center text-xs leading-relaxed text-muted-foreground">
           Subscription automatically renews unless cancelled. Cancel anytime in
           your account settings. By subscribing you agree to our Terms of
           Service and Privacy Policy.

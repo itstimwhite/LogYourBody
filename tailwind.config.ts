@@ -69,32 +69,33 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       height: {
-        '14pt': '18.67px',
-        '16pt': '21.33px',
-        '28pt': '37.33px',
-        '44pt': '58.67px',
-        '48pt': '64px',
-        '56pt': '74.67px',
+        "14pt": "18.67px",
+        "16pt": "21.33px",
+        "28pt": "37.33px",
+        "44pt": "58.67px",
+        "48pt": "64px",
+        "56pt": "74.67px",
       },
       fontSize: {
-        '14pt': ['18.67px', { lineHeight: '1.5' }],
-        '16pt': ['21.33px', { lineHeight: '1.5' }],
-        '28pt': ['37.33px', { lineHeight: '1.2' }],
+        "14pt": ["18.67px", { lineHeight: "1.5" }],
+        "16pt": ["21.33px", { lineHeight: "1.5" }],
+        "28pt": ["37.33px", { lineHeight: "1.2" }],
       },
       padding: {
-        'safe': 'env(safe-area-inset-bottom)',
-      },
-      paddingTop: {
-        'safe': 'env(safe-area-inset-top)',
+        safe: "env(safe-area-inset-bottom)",
+        "safe-top": "env(safe-area-inset-top)",
+        "safe-bottom": "env(safe-area-inset-bottom)",
+        "safe-left": "env(safe-area-inset-left)",
+        "safe-right": "env(safe-area-inset-right)",
       },
       paddingBottom: {
-        'safe': 'env(safe-area-inset-bottom)',
+        safe: "env(safe-area-inset-bottom)",
       },
       paddingLeft: {
-        'safe': 'env(safe-area-inset-left)',
+        safe: "env(safe-area-inset-left)",
       },
       paddingRight: {
-        'safe': 'env(safe-area-inset-right)',
+        safe: "env(safe-area-inset-right)",
       },
       keyframes: {
         "accordion-down": {

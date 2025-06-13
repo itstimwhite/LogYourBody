@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { cn } from "@/lib/utils";
 
 interface VirtualListProps<T> {
   items: T[];
@@ -22,10 +22,13 @@ export const VirtualList = React.memo(function VirtualList<T>({
   const scrollElementRef = useRef<HTMLDivElement>(null);
 
   const visibleRange = useMemo(() => {
-    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - overscan);
+    const startIndex = Math.max(
+      0,
+      Math.floor(scrollTop / itemHeight) - overscan,
+    );
     const endIndex = Math.min(
       items.length - 1,
-      Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan
+      Math.ceil((scrollTop + containerHeight) / itemHeight) + overscan,
     );
     return { startIndex, endIndex };
   }, [scrollTop, itemHeight, containerHeight, items.length, overscan]);
@@ -56,22 +59,24 @@ export const VirtualList = React.memo(function VirtualList<T>({
       setScrollTop(scrollElement.scrollTop);
     };
 
-    scrollElement.addEventListener('scroll', handleScrollEvent, { passive: true });
-    return () => scrollElement.removeEventListener('scroll', handleScrollEvent);
+    scrollElement.addEventListener("scroll", handleScrollEvent, {
+      passive: true,
+    });
+    return () => scrollElement.removeEventListener("scroll", handleScrollEvent);
   }, []);
 
   return (
     <div
       ref={scrollElementRef}
-      className={cn('overflow-auto', className)}
+      className={cn("overflow-auto", className)}
       style={{ height: containerHeight }}
       onScroll={handleScroll}
     >
-      <div style={{ height: totalHeight, position: 'relative' }}>
+      <div style={{ height: totalHeight, position: "relative" }}>
         <div
           style={{
             transform: `translateY(${offsetY}px)`,
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             left: 0,
             right: 0,
