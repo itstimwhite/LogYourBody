@@ -124,6 +124,11 @@ class WeightAnalytics {
     });
   }
 
+  // Complete flow tracking (alias for trackSave)
+  completeFlow(params: any) {
+    console.log(`[Analytics] Flow completed:`, params);
+  }
+
   // Track validation errors
   trackValidationError(params: WeightAnalyticsEvents['validation_error']) {
     this.track('validation_error', params);

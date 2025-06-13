@@ -18,7 +18,7 @@ interface WeightStepProps {
 
 export function WeightStep({ value, onChange }: WeightStepProps) {
   const { setCanGoNext } = useStepper();
-  const [inputValue, setInputValue] = useState(value.value.toString());
+  const [inputValue, setInputValue] = useState(value.value > 0 ? value.value.toString() : '');
   const [unit, setUnit] = useState<'lbs' | 'kg'>(value.unit);
   const [syncingHealthKit, setSyncingHealthKit] = useState(false);
   const [hasInteracted, setHasInteracted] = useState(false);
@@ -26,7 +26,8 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
   
   const isNative = Capacitor.isNativePlatform();
   const healthKit = useHealthKit();
-  const showHealthKit = isNativeiOS() && healthKit.isAvailable;
+  // Show HealthKit button immediately on iOS, hide if not available after loading
+  const showHealthKit = isNativeiOS() && (!healthKit.loading ? healthKit.isAvailable : true);
 
   // Auto-focus on mount
   useEffect(() => {
@@ -39,7 +40,13 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
 
   // Validate and update parent whenever input changes
   useEffect(() => {
-    const numValue = parseFloat(inputValue) || 0;
+    const numValue = parseFloat(inputValue);
+    
+    if (isNaN(numValue) || inputValue === '') {
+      setCanGoNext(false);
+      return;
+    }
+    
     const weightData: WeightData = { value: numValue, unit };
     
     try {
