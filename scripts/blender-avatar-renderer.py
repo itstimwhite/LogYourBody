@@ -29,8 +29,14 @@ SAMPLES = 64  # Render quality
 
 def clear_scene():
     """Clear all objects in the scene"""
-    bpy.ops.object.select_all(action='SELECT')
-    bpy.ops.object.delete(use_global=False)
+    # Ensure we're in object mode
+    if bpy.context.active_object and bpy.context.active_object.mode != 'OBJECT':
+        bpy.ops.object.mode_set(mode='OBJECT')
+    
+    # Select all objects and delete them
+    if bpy.context.selectable_objects:
+        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.delete(use_global=False)
 
 def setup_scene():
     """Setup basic scene with lighting and camera"""
@@ -82,7 +88,8 @@ def create_base_human(gender):
     bpy.ops.object.mode_set(mode='EDIT')
     
     # Get mesh data
-    mesh = bmesh.from_mesh(human.data)
+    mesh = bmesh.new()
+    mesh.from_mesh(human.data)
     
     # Clear default cube and create human torso from scratch
     mesh.clear()
@@ -177,7 +184,8 @@ def apply_body_fat_morph(human, body_fat, gender):
     bpy.ops.object.mode_set(mode='EDIT')
     
     # Get mesh
-    mesh = bmesh.from_mesh(human.data)
+    mesh = bmesh.new()
+    mesh.from_mesh(human.data)
     
     # Calculate morph factors
     fat_factor = (body_fat - 5) / 45.0  # Normalize to 0-1

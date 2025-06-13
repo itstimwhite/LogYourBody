@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ES2020",
-    "module": "CommonJS",
+    "module": "ES2022",
     "lib": ["ES2020"],
     "allowJs": true,
     "outDir": "./dist",
@@ -27,16 +27,11 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ],
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist"],
   "ts-node": {
     "compilerOptions": {
-      "module": "CommonJS"
+      "module": "ES2022"
     }
   }
 }

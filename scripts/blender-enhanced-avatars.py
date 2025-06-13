@@ -26,8 +26,14 @@ SAMPLES = 128  # Higher quality render
 
 def clear_scene():
     """Clear all objects in the scene"""
-    bpy.ops.object.select_all(action='SELECT')
-    bpy.ops.object.delete(use_global=False)
+    # Ensure we're in object mode
+    if bpy.context.active_object and bpy.context.active_object.mode != 'OBJECT':
+        bpy.ops.object.mode_set(mode='OBJECT')
+    
+    # Select all objects and delete them
+    if bpy.context.selectable_objects:
+        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.delete(use_global=False)
 
 def setup_scene():
     """Setup professional lighting and camera"""
@@ -84,7 +90,8 @@ def create_realistic_human_torso(gender):
     bpy.ops.object.mode_set(mode='EDIT')
     
     # Get mesh data
-    mesh = bmesh.from_mesh(torso.data)
+    mesh = bmesh.new()
+    mesh.from_mesh(torso.data)
     
     # Remove bottom hemisphere (we only want torso)
     verts_to_remove = [v for v in mesh.verts if v.co.z < 0.1]
@@ -152,13 +159,14 @@ def create_realistic_human_torso(gender):
                 vert.co.y *= 0.95
     
     # Smooth the mesh
-    bmesh.ops.smooth_vert(mesh, verts=mesh.verts, factor=0.3, repeat=2)
+    bmesh.ops.smooth_vert(mesh, verts=mesh.verts, factor=0.3)
+    
+    # Exit edit mode before updating mesh
+    bpy.ops.object.mode_set(mode='OBJECT')
     
     # Update mesh
     mesh.to_mesh(torso.data)
     mesh.free()
-    
-    bpy.ops.object.mode_set(mode='OBJECT')
     
     # Add subdivision surface for smooth appearance
     modifier = torso.modifiers.new(name="Subsurface", type='SUBSURF')
@@ -221,12 +229,13 @@ def apply_body_fat_morphing(torso, body_fat, gender):
                 vert.co *= expansion
     
     # Apply smoothing to maintain natural curves
-    bmesh.ops.smooth_vert(mesh, verts=mesh.verts, factor=0.2, repeat=1)
+    bmesh.ops.smooth_vert(mesh, verts=mesh.verts, factor=0.2)
+    
+    # Exit edit mode before updating mesh
+    bpy.ops.object.mode_set(mode='OBJECT')
     
     mesh.to_mesh(torso.data)
     mesh.free()
-    
-    bpy.ops.object.mode_set(mode='OBJECT')
 
 def create_wireframe_material():
     """Create professional wireframe material"""

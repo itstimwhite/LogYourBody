@@ -1,8 +1,8 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { tw, settingsTokens } from '@/styles/settings-design';
+import React from "react";
+import { motion } from "framer-motion";
+import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { tw, settingsTokens } from "@/styles/settings-design";
 
 interface SettingItemProps {
   title: string;
@@ -34,53 +34,47 @@ export const SettingItem = React.memo<SettingItemProps>(function SettingItem({
   const isInteractive = !!onPress && !disabled;
 
   const content = (
-    <div className={cn(
-      tw.settingItem,
-      isInteractive && tw.hover,
-      isInteractive && tw.pressed,
-      disabled && tw.disabled,
-      'cursor-pointer' if isInteractive else 'cursor-default',
-      className
-    )}>
+    <div
+      className={cn(
+        tw.settingItem,
+        isInteractive && tw.hover,
+        isInteractive && tw.pressed,
+        disabled && tw.disabled,
+        isInteractive ? "cursor-pointer" : "cursor-default",
+        className,
+      )}
+    >
       {/* Left side */}
-      <div className="flex items-center gap-3 flex-1 min-w-0">
+      <div className="flex min-w-0 flex-1 items-center gap-3">
         {icon && (
-          <div className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+          <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center">
             {icon}
           </div>
         )}
-        
-        <div className="flex-1 min-w-0">
-          <div className={tw.itemTitle}>
-            {title}
-          </div>
-          {subtitle && (
-            <div className={tw.itemSubtitle}>
-              {subtitle}
-            </div>
-          )}
+
+        <div className="min-w-0 flex-1">
+          <div className={tw.itemTitle}>{title}</div>
+          {subtitle && <div className={tw.itemSubtitle}>{subtitle}</div>}
         </div>
       </div>
 
       {/* Right side */}
-      <div className="flex items-center gap-3 flex-shrink-0">
+      <div className="flex flex-shrink-0 items-center gap-3">
         {value && (
-          <div className={cn(
-            tw.itemValue,
-            typeof value === 'string' ? 'text-right' : ''
-          )}>
+          <div
+            className={cn(
+              tw.itemValue,
+              typeof value === "string" ? "text-right" : "",
+            )}
+          >
             {value}
           </div>
         )}
-        
-        {rightElement && (
-          <div className="flex-shrink-0">
-            {rightElement}
-          </div>
-        )}
-        
+
+        {rightElement && <div className="flex-shrink-0">{rightElement}</div>}
+
         {showChevron && (
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
         )}
       </div>
     </div>
@@ -109,7 +103,7 @@ export const SettingItem = React.memo<SettingItemProps>(function SettingItem({
       className="w-full text-left"
       whileTap={{ scale: 0.98 }}
       transition={settingsTokens.animation.fast}
-      aria-label={accessibilityLabel || `${title}${value ? `: ${value}` : ''}`}
+      aria-label={accessibilityLabel || `${title}${value ? `: ${value}` : ""}`}
       aria-describedby={accessibilityHint ? `${title}-hint` : undefined}
     >
       {content}
@@ -148,20 +142,20 @@ export const SettingItemToggle = React.memo<{
           onClick={() => onToggle(!checked)}
           disabled={disabled}
           className={cn(
-            'relative inline-flex h-8 w-14 items-center rounded-full transition-colors',
-            'focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2',
-            checked ? 'bg-primary' : 'bg-secondary',
-            disabled && 'opacity-40 pointer-events-none'
+            "relative inline-flex h-8 w-14 items-center rounded-full transition-colors",
+            "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+            checked ? "bg-primary" : "bg-secondary",
+            disabled && "pointer-events-none opacity-40",
           )}
           whileTap={{ scale: 0.95 }}
-          aria-label={`${title}: ${checked ? 'enabled' : 'disabled'}`}
+          aria-label={`${title}: ${checked ? "enabled" : "disabled"}`}
           role="switch"
           aria-checked={checked}
         >
           <motion.span
             className={cn(
-              'inline-block h-7 w-7 transform rounded-full bg-white shadow-sm transition-transform',
-              checked ? 'translate-x-6' : 'translate-x-0.5'
+              "inline-block h-7 w-7 transform rounded-full bg-white shadow-sm transition-transform",
+              checked ? "translate-x-6" : "translate-x-0.5",
             )}
             animate={{ x: checked ? 24 : 2 }}
             transition={settingsTokens.animation.fast}

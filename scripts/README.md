@@ -5,8 +5,9 @@ This system pre-generates 3,600 wireframe torso avatars covering every combinati
 ## Overview
 
 **Goal**: Pre-render torso wireframe avatars for every combination of:
+
 - **Body Fat %**: 5, 10, 15, 20, 25, 30, 35, 40, 45, 50 (10 values)
-- **FFMI**: 14-25 (12 integer values) 
+- **FFMI**: 14-25 (12 integer values)
 - **Age Range**: 0-4 indices → 18-25, 26-35, 36-45, 46-55, 56-65 (5 ranges)
 - **Sex**: 'm', 'f' (2 values)
 - **Stature**: 's' (≤1.65m), 'm' (1.66-1.85m), 't' (≥1.86m) (3 values)
@@ -41,11 +42,13 @@ npm run render:avatars:full
 ## Avatar Filename Convention
 
 Each avatar follows the pattern:
+
 ```
 {sex}_bf{bodyFat}_ffmi{ffmi}_age{ageIdx}_{stature}.png
 ```
 
 **Examples:**
+
 - `m_bf15_ffmi20_age2_m.png` - Male, 15% body fat, FFMI 20, age range 36-45, medium stature
 - `f_bf25_ffmi16_age0_s.png` - Female, 25% body fat, FFMI 16, age range 18-25, short stature
 
@@ -54,29 +57,34 @@ Each avatar follows the pattern:
 The system applies these transformations to base torso meshes:
 
 ### Muscle Morphing (FFMI)
+
 ```typescript
-muscleMorph = clamp((ffmi - 14) / (25 - 14), 0, 1)
+muscleMorph = clamp((ffmi - 14) / (25 - 14), 0, 1);
 // Affects width and muscle definition
 ```
 
 ### Fat Morphing (Body Fat %)
+
 ```typescript
-fatMorph = clamp((bodyFat - 5) / (50 - 5), 0, 1)
+fatMorph = clamp((bodyFat - 5) / (50 - 5), 0, 1);
 // Affects overall size and shape distribution
 ```
 
 ### Age Morphing
+
 ```typescript
-ageMorph = ageRangeIdx / 4
+ageMorph = ageRangeIdx / 4;
 // Affects posture and slight height changes
 ```
 
 ### Stature Scaling
+
 ```typescript
-scale = 1.0 (medium), 0.9 (short), 1.1 (tall)
+(scale = 1.0(medium)), 0.9(short), 1.1(tall);
 ```
 
 ### Gender-Specific Fat Distribution
+
 - **Female**: More hip/thigh emphasis
 - **Male**: More abdominal emphasis
 
@@ -91,6 +99,7 @@ scale = 1.0 (medium), 0.9 (short), 1.1 (tall)
 ## Current Status
 
 ✅ **Completed:**
+
 - Parameter combination logic (3,600 confirmed)
 - Filename convention system
 - Morphing algorithms
@@ -98,6 +107,7 @@ scale = 1.0 (medium), 0.9 (short), 1.1 (tall)
 - NPM script integration
 
 🚧 **In Progress:**
+
 - Three.js headless rendering setup
 - SMPL-X mesh integration
 - Batch processing optimization
