@@ -24,9 +24,27 @@ const Index = () => {
 
   useEffect(() => {
     // If user is authenticated, redirect to dashboard
-    console.log('Index: auth state', { loading, hasUser: !!user, isRedirecting, currentPath: window.location.pathname });
+    console.log('Index: auth state', { 
+      loading, 
+      hasUser: !!user, 
+      isRedirecting, 
+      currentPath: window.location.pathname,
+      search: window.location.search
+    });
+    
+    // Check if this is an OAuth redirect (has URL params that indicate OAuth flow)
+    const urlParams = new URLSearchParams(window.location.search);
+    const hasOAuthParams = urlParams.has('access_token') || urlParams.has('refresh_token') || urlParams.has('code');
+    
     if (!loading && user && !isRedirecting) {
-      console.log("Index: Authenticated user detected on homepage, redirecting to dashboard");
+      console.log("Index: Authenticated user detected on homepage", { hasOAuthParams });
+      
+      if (hasOAuthParams) {
+        console.log("Index: OAuth redirect detected, clearing URL params and redirecting to dashboard");
+        // Clear OAuth params from URL before redirecting
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      
       setIsRedirecting(true);
       // Add a small delay to prevent redirect loops during OAuth flows
       const timer = setTimeout(() => {

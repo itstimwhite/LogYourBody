@@ -72,30 +72,60 @@ export function useAppleSignIn() {
 
       // Sign in to Supabase with the Apple ID token and user metadata
       console.log('Signing in to Supabase with Apple ID token...');
-      const { data, error } = await supabase.auth.signInWithIdToken({
-        provider: 'apple',
-        token: response.response.identityToken,
-        nonce: response.response.nonce,
-        options: {
-          skipBrowserRedirect: true,
-          // Pass the user's name as metadata
-          data: displayName ? { 
-            name: displayName,
-            given_name: fullName?.givenName,
-            family_name: fullName?.familyName
-          } : undefined
+      
+      // Add timeout and retry logic for network issues
+      let supabaseResult;
+      let attempts = 0;
+      const maxAttempts = 3;
+      
+      while (attempts < maxAttempts) {
+        attempts++;
+        console.log(`Supabase sign-in attempt ${attempts}/${maxAttempts}`);
+        
+        try {
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Request timeout')), 15000)
+          );
+          
+          const signInPromise = supabase.auth.signInWithIdToken({
+            provider: 'apple',
+            token: response.response.identityToken,
+            nonce: response.response.nonce,
+            options: {
+              skipBrowserRedirect: true,
+              // Pass the user's name as metadata
+              data: displayName ? { 
+                name: displayName,
+                given_name: fullName?.givenName,
+                family_name: fullName?.familyName
+              } : undefined
+            }
+          });
+          
+          supabaseResult = await Promise.race([signInPromise, timeoutPromise]);
+          break; // Success, exit retry loop
+          
+        } catch (retryError: any) {
+          console.log(`Attempt ${attempts} failed:`, retryError);
+          
+          if (attempts === maxAttempts) {
+            throw retryError;
+          }
+          
+          // Wait before retry (exponential backoff)
+          await new Promise(resolve => setTimeout(resolve, 1000 * attempts));
         }
-      });
+      }
 
-      if (error) {
-        console.error('Supabase Apple Sign In error:', error);
+      if (supabaseResult?.error) {
+        console.error('Supabase Apple Sign In error:', supabaseResult.error);
         return {
           success: false,
-          error: error.message
+          error: `Authentication failed: ${supabaseResult.error.message}`
         };
       }
 
-      console.log('Apple Sign In successful:', data);
+      console.log('Apple Sign In successful:', supabaseResult.data);
       return {
         success: true
       };
@@ -124,6 +154,22 @@ export function useAppleSignIn() {
         return {
           success: false,
           error: 'Apple Sign In is not supported on this device or iOS version'
+        };
+      }
+      
+      // Handle AuthRetryableFetchError and network issues
+      if (error.name === 'AuthRetryableFetchError' || error.message?.includes('AuthRetryableFetchError') || error.status === 0) {
+        return {
+          success: false,
+          error: 'Network connection issue. Please check your internet connection and try again.'
+        };
+      }
+      
+      // Handle timeout errors
+      if (error.message?.includes('timeout') || error.message?.includes('Request timeout')) {
+        return {
+          success: false,
+          error: 'Sign in timed out. Please try again.'
         };
       }
       

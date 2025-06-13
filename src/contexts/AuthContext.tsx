@@ -523,11 +523,25 @@ export function AuthProvider({ children }: AuthProviderProps) {
       };
     }
 
-    // Use production domain for OAuth redirects
+    // Check platform and set appropriate redirect URL
     const isNative = window.location.protocol === 'capacitor:';
-    const redirectUrl = isNative 
-      ? 'https://logyourbody.com/dashboard'  // Native app should redirect to production domain
-      : `${window.location.origin}/dashboard`; // Web app uses current origin
+    let redirectUrl;
+    
+    if (isNative) {
+      // Native app should redirect to production domain
+      redirectUrl = 'https://logyourbody.com/dashboard';
+    } else {
+      // Web app: check if running on localhost vs production
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (isLocalhost) {
+        // Local development - redirect to local dashboard
+        redirectUrl = `${window.location.origin}/dashboard`;
+      } else {
+        // Production web - use absolute production URL to avoid redirect issues
+        redirectUrl = 'https://logyourbody.com/dashboard';
+      }
+    }
+    
     console.log("Google OAuth redirect URL:", redirectUrl, "isNative:", isNative);
 
     const { error } = await supabase.auth.signInWithOAuth({
@@ -550,11 +564,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
       };
     }
 
-    // Check if running in native iOS app
+    // Check platform and set appropriate redirect URL
     const isNative = window.location.protocol === 'capacitor:';
-    const redirectUrl = isNative 
-      ? 'https://logyourbody.com/dashboard'  // Native app should redirect to production domain
-      : `${window.location.origin}/dashboard`; // Web app - redirect to dashboard directly
+    let redirectUrl;
+    
+    if (isNative) {
+      // Native app should redirect to production domain
+      redirectUrl = 'https://logyourbody.com/dashboard';
+    } else {
+      // Web app: check if running on localhost vs production
+      const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      if (isLocalhost) {
+        // Local development - redirect to local dashboard
+        redirectUrl = `${window.location.origin}/dashboard`;
+      } else {
+        // Production web - use absolute production URL to avoid redirect issues
+        redirectUrl = 'https://logyourbody.com/dashboard';
+      }
+    }
     
     console.log("Apple OAuth redirect URL:", redirectUrl, "isNative:", isNative);
 
