@@ -109,7 +109,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const emergencyTimeout = setTimeout(() => {
       console.warn('AuthContext: Emergency timeout triggered - forcing loading to false');
       setLoading(false);
-    }, 5000); // Reduced to 5 seconds
+    }, 3000); // 3 seconds to match splash timing
 
     // Listen for auth changes
     const {
@@ -151,7 +151,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(emergencyTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const syncEmailSubscriptions = async (user: User) => {

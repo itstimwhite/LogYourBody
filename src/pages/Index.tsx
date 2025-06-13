@@ -19,20 +19,8 @@ const Index = () => {
     threshold: 100,
   });
 
-  // Fallback timeout to prevent hanging
-  useEffect(() => {
-    const fallbackTimer = setTimeout(() => {
-      if (loading && !forceRedirect) {
-        console.warn("Auth loading timeout - forcing redirect to splash");
-        setForceRedirect(true);
-        if (Capacitor.isNativePlatform()) {
-          navigate("/splash", { replace: true });
-        }
-      }
-    }, 3000); // 3 second timeout
-
-    return () => clearTimeout(fallbackTimer);
-  }, [loading, forceRedirect, navigate]);
+  // Remove the fallback timeout - let AuthContext handle timeouts
+  // This prevents conflicting navigation attempts
 
   useEffect(() => {
     // If user is authenticated, redirect to dashboard

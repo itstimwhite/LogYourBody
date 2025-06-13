@@ -356,10 +356,16 @@ const Settings = () => {
                   className="w-full"
                 >
                   <TabsList className="grid w-full grid-cols-2 bg-secondary border border-border">
-                    <TabsTrigger value="imperial">
+                    <TabsTrigger
+                      value="imperial"
+                      className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-muted-foreground/20"
+                    >
                       Imperial (lbs, ft/in)
                     </TabsTrigger>
-                    <TabsTrigger value="metric">
+                    <TabsTrigger
+                      value="metric"
+                      className="text-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent data-[state=inactive]:border-muted-foreground/20"
+                    >
                       Metric (kg, cm)
                     </TabsTrigger>
                   </TabsList>

@@ -12,20 +12,32 @@ After updating your environment variables to use the `VITE_` prefix, you need to
 
 ### Environment Variable Setup
 
-Run these commands to add the RevenueCat public key to all Vercel environments:
-
 ```bash
-# Add to production environment
+# First, add Supabase URL secret and link it
+npx vercel secrets add vite_supabase_url https://przjeunffnkjzxpykvjn.supabase.co
+vercel env add VITE_SUPABASE_URL production
+vercel env add VITE_SUPABASE_URL preview
+
+# Add platform-specific RevenueCat keys
+# iOS key (starts with appl_)
+npx vercel secrets add vite_revenuecat_ios_key appl_dJsnXzyTgEAsntJQjOxeOvOnoXP
+vercel env add VITE_REVENUECAT_IOS_KEY production
+vercel env add VITE_REVENUECAT_IOS_KEY preview
+
+# Web/Stripe key (starts with strp_)
+npx vercel secrets add vite_revenuecat_web_key strp_kPUxxTPVLFHFRUapUTafrHwSMAE
+vercel env add VITE_REVENUECAT_WEB_KEY production
+vercel env add VITE_REVENUECAT_WEB_KEY preview
+
+# Legacy key (can be removed after migration)
+npx vercel secrets add vite_revenuecat_public_key public_live_XXXXXXXXXXXXXXXX
 vercel env add VITE_REVENUECAT_PUBLIC_KEY production
-
-# Add to preview environment  
 vercel env add VITE_REVENUECAT_PUBLIC_KEY preview
-
-# Add to development environment (optional - usually uses local .env)
-vercel env add VITE_REVENUECAT_PUBLIC_KEY development
 ```
 
-When prompted, enter your RevenueCat public key (starts with `public_` or `appl_`).
+When prompted, enter your RevenueCat public key:
+- iOS keys start with `appl_`
+- Web/Stripe keys start with `strp_` or `public_`
 
 ### Alternative: Vercel Dashboard
 
@@ -33,7 +45,10 @@ You can also set these via the Vercel dashboard:
 
 1. Go to your project settings in Vercel
 2. Navigate to "Environment Variables"
-3. Add `VITE_REVENUECAT_PUBLIC_KEY` with your public key
+3. Add the following variables:
+   - `VITE_REVENUECAT_IOS_KEY` with your iOS key (appl_...)
+   - `VITE_REVENUECAT_WEB_KEY` with your Web/Stripe key (strp_...)
+   - `VITE_REVENUECAT_PUBLIC_KEY` (legacy, can be removed later)
 4. Select the appropriate environments (Production, Preview, Development)
 
 ### Verification

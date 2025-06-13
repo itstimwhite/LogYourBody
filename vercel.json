@@ -50,6 +50,8 @@
   "env": {
     "VITE_SUPABASE_URL": "@vite_supabase_url",
     "VITE_SUPABASE_ANON_KEY": "@vite_supabase_anon_key", 
-    "VITE_REVENUECAT_PUBLIC_KEY": "@vite_revenuecat_public_key"
+    "VITE_REVENUECAT_PUBLIC_KEY": "@vite_revenuecat_public_key",
+    "VITE_REVENUECAT_IOS_KEY": "@vite_revenuecat_ios_key",
+    "VITE_REVENUECAT_WEB_KEY": "@vite_revenuecat_web_key"
   }
 }

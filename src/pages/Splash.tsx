@@ -9,6 +9,18 @@ const Splash = () => {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
+    // Check if we've already shown the splash screen
+    const hasShownSplash = sessionStorage.getItem('hasShownSplash');
+    
+    // If we've already shown splash this session, go directly to login
+    if (hasShownSplash === 'true') {
+      navigate("/login", { replace: true });
+      return;
+    }
+    
+    // Mark that we've shown the splash screen
+    sessionStorage.setItem('hasShownSplash', 'true');
+    
     // Show intro stage immediately
     const timer1 = setTimeout(() => {
       setShowContent(true);
@@ -21,7 +33,7 @@ const Splash = () => {
 
     // Auto-navigate after 8 seconds if no interaction
     const timer3 = setTimeout(() => {
-      navigate("/login");
+      navigate("/login", { replace: true });
     }, 8000);
 
     return () => {
@@ -32,11 +44,11 @@ const Splash = () => {
   }, [navigate]);
 
   const handleSignUp = () => {
-    navigate("/login?mode=signup");
+    navigate("/login?mode=signup", { replace: true });
   };
 
   const handleLogin = () => {
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
   return (
@@ -109,7 +121,7 @@ const Splash = () => {
                   className="mb-6"
                 >
                   <div className="text-white font-black text-8xl sm:text-9xl leading-none tracking-tighter">
-                    8
+                   LYB
                   </div>
                   <div className="text-white/60 text-sm uppercase tracking-[0.3em] font-medium mt-2">
                     UNLOCK YOUR POTENTIAL
@@ -123,7 +135,7 @@ const Splash = () => {
                   transition={{ delay: 0.5, duration: 0.6 }}
                   className="text-white font-bold text-3xl sm:text-4xl leading-tight mb-8 tracking-[-0.01em]"
                 >
-                  Sleep fitness begins tonight
+                  Track your body with precision.
                 </motion.h2>
 
                 {/* Feature highlights */}

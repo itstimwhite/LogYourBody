@@ -184,39 +184,8 @@ const App = () => {
       clearStaleAuth();
     }
 
-    // Setup splash screen hiding with fallback
-    let splashHidden = false;
-    
-    const hideSplashScreen = async () => {
-      if (!Capacitor.isNativePlatform() || splashHidden) {
-        return;
-      }
-      
-      try {
-        console.log('Hiding native splash screen...');
-        await SplashScreen.hide();
-        splashHidden = true;
-        console.log('Native splash screen hidden successfully');
-      } catch (error) {
-        console.warn('Error hiding splash screen:', error);
-      }
-    };
-
-    // Fallback timeout to ensure splash never stays forever
-    const fallbackTimer = setTimeout(() => {
-      console.log('Fallback timeout triggered - hiding splash screen');
-      hideSplashScreen();
-    }, 8000); // 8 second fallback
-
-    // Hide splash after initial setup completes
-    const initialTimer = setTimeout(() => {
-      hideSplashScreen();
-    }, 3000);
-
-    return () => {
-      clearTimeout(fallbackTimer);
-      clearTimeout(initialTimer);
-    };
+    // Don't hide splash screen here - let the routing components handle it
+    // This prevents multiple hide attempts and conflicts
   }, []); // Empty deps - runs once
 
   return (

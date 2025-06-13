@@ -35,22 +35,31 @@ export function useRevenueCat(): RevenueCatState & RevenueCatActions {
   useEffect(() => {
     const initializeRevenueCat = async () => {
       try {
-        const rcKey = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY;
+        // Use platform-specific API keys
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const rcKey = isIOS 
+          ? import.meta.env.VITE_REVENUECAT_IOS_KEY 
+          : import.meta.env.VITE_REVENUECAT_WEB_KEY;
         
         if (!rcKey) {
-          throw new Error("RevenueCat public key not set");
+          throw new Error(`RevenueCat ${isIOS ? 'iOS' : 'Web'} public key not set`);
         }
         
         // Validate key format - must be public key, not secret
         if (rcKey.startsWith('sk_')) {
-          throw new Error("RevenueCat secret key detected. Please use the public key (starts with 'public_' or 'appl_')");
+          throw new Error("RevenueCat secret key detected. Please use the public key");
         }
         
-        if (rcKey === 'your_revenuecat_public_key' || rcKey === 'pk_your_public_key_here') {
-          throw new Error("RevenueCat public key not configured properly");
+        // iOS keys start with 'appl_', Web keys start with 'strp_' or 'public_'
+        if (isIOS && !rcKey.startsWith('appl_')) {
+          throw new Error("Invalid iOS RevenueCat key format. Should start with 'appl_'");
+        }
+        
+        if (!isIOS && !rcKey.startsWith('strp_') && !rcKey.startsWith('public_')) {
+          throw new Error("Invalid Web RevenueCat key format. Should start with 'strp_' or 'public_'");
         }
 
-        console.log('Initializing RevenueCat with public key:', rcKey.substring(0, 10) + '...');
+        console.log(`Initializing RevenueCat for ${isIOS ? 'iOS' : 'Web'} with key:`, rcKey.substring(0, 10) + '...');
 
         // Configure RevenueCat with validated public key
         await Purchases.configure({

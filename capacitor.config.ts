@@ -12,12 +12,12 @@ const config: CapacitorConfig = {
     scheme: 'App',
     contentInset: 'automatic',
     scrollEnabled: true,
-    backgroundColor: '#000000',
+    backgroundColor: '#0073ff', // Match splash screen background
     orientation: 'portrait'
   },
   plugins: {
     SplashScreen: {
-      launchShowDuration: 2000, // Show for 2 seconds minimum
+      launchShowDuration: 0, // Show immediately, no minimum duration
       launchAutoHide: false, // Let the app control when to hide
       backgroundColor: '#0073ff', // Blue background to match icon
       showSpinner: false,
@@ -25,7 +25,9 @@ const config: CapacitorConfig = {
       iosSpinnerStyle: 'small',
       spinnerColor: '#ffffff',
       splashFullScreen: true,
-      splashImmersive: true
+      splashImmersive: true,
+      fadeInDuration: 0, // No fade in
+      fadeOutDuration: 200 // Quick fade out
     },
     StatusBar: {
       style: 'dark',
