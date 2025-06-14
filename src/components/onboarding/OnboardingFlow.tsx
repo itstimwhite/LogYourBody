@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { AnimatePresence } from "framer-motion";
 import { OnboardingName } from "./OnboardingName";
 import { OnboardingGender } from "./OnboardingGender";
@@ -45,18 +45,22 @@ export function OnboardingFlow({
     height: healthKitData?.height,
   });
 
-  // Determine which steps to show based on existing data
-  const steps = [
-    { id: "name", show: !data.name },
-    { id: "gender", show: !data.gender },
-    { id: "birthday", show: !data.birthday },
-    { id: "units", show: true }, // Always show units preference
-    { id: "height", show: !data.height },
-    { id: "healthkit", show: isNativeiOS() }, // Show HealthKit step on iOS
-  ].filter((step) => step.show);
+  // Determine which steps to show based on initial data only
+  const [steps] = useState(() => {
+    const initialSteps = [
+      { id: "name" as const, show: !data.name },
+      { id: "gender" as const, show: !data.gender },
+      { id: "birthday" as const, show: !data.birthday },
+      { id: "units" as const, show: true }, // Always show units preference
+      { id: "height" as const, show: !data.height },
+      { id: "healthkit" as const, show: isNativeiOS() }, // Show HealthKit step on iOS
+    ];
+
+    return initialSteps.filter((step) => step.show).map((s) => s.id);
+  });
 
   const totalSteps = steps.length;
-  const currentStepData = steps[currentStep];
+  const currentStepId = steps[currentStep];
 
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
@@ -133,7 +137,7 @@ export function OnboardingFlow({
 
   return (
     <AnimatePresence mode="wait">
-      {currentStepData?.id === "name" && (
+      {currentStepId === "name" && (
         <OnboardingName
           key="name"
           onComplete={(name) => {
@@ -147,7 +151,7 @@ export function OnboardingFlow({
         />
       )}
 
-      {currentStepData?.id === "gender" && (
+      {currentStepId === "gender" && (
         <OnboardingGender
           key="gender"
           onComplete={(gender) => {
@@ -161,7 +165,7 @@ export function OnboardingFlow({
         />
       )}
 
-      {currentStepData?.id === "birthday" && (
+      {currentStepId === "birthday" && (
         <OnboardingBirthday
           key="birthday"
           onComplete={(birthday) => {
@@ -175,7 +179,7 @@ export function OnboardingFlow({
         />
       )}
 
-      {currentStepData?.id === "units" && (
+      {currentStepId === "units" && (
         <OnboardingUnits
           key="units"
           onComplete={(units) => {
@@ -189,7 +193,7 @@ export function OnboardingFlow({
         />
       )}
 
-      {currentStepData?.id === "height" && (
+      {currentStepId === "height" && (
         <OnboardingHeight
           key="height"
           onComplete={(height) => {
@@ -204,7 +208,7 @@ export function OnboardingFlow({
         />
       )}
 
-      {currentStepData?.id === "healthkit" && (
+      {currentStepId === "healthkit" && (
         <OnboardingHealthKit
           key="healthkit"
           onComplete={(enabled) => {
