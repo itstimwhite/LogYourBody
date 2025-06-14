@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { Capacitor } from "@capacitor/core";
-import { Percent } from "lucide-react";
+import { Percent, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStepper } from "@/contexts/StepperContext";
 import {
@@ -107,9 +107,10 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
 
   const presets = bodyFatUtils.getPresets();
   const category = bodyFatUtils.getCategoryForValue(currentValue);
+  const healthWarning = bodyFatUtils.getHealthWarning(currentValue);
 
   // Calculate slider position for custom styling
-  const sliderPosition = ((currentValue - 3) / (50 - 3)) * 100;
+  const sliderPosition = ((currentValue - 4) / (50 - 4)) * 100;
 
   return (
     <motion.div
@@ -149,8 +150,38 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
         <div className="text-5xl font-bold text-foreground">
           {currentValue.toFixed(1)}%
         </div>
-        <div className="text-lg text-muted-foreground">{category}</div>
+        <div className={cn(
+          "text-lg",
+          currentValue < 6 ? "text-destructive font-semibold" : "text-muted-foreground"
+        )}>
+          {category}
+        </div>
       </motion.div>
+
+      {/* Health Warning */}
+      <AnimatePresence>
+        {healthWarning && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: "auto" }}
+            exit={{ opacity: 0, y: -10, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="mx-4 overflow-hidden"
+          >
+            <div className="flex items-start gap-3 rounded-lg bg-destructive/10 p-4">
+              <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-destructive">
+                  Health Warning
+                </p>
+                <p className="text-sm text-destructive/90">
+                  {healthWarning}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Custom Slider */}
       <motion.div
@@ -182,7 +213,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
             <input
               ref={sliderRef}
               type="range"
-              min="3"
+              min="4"
               max="50"
               step="0.5"
               value={currentValue}
@@ -194,22 +225,23 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
               className="slider-enhanced h-4 w-full cursor-pointer bg-transparent"
               style={{
                 background: `linear-gradient(to right, 
-                  hsl(var(--primary)) 0%, 
-                  hsl(var(--primary)) ${sliderPosition}%, 
+                  ${currentValue < 6 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'} 0%, 
+                  ${currentValue < 6 ? 'hsl(var(--destructive))' : 'hsl(var(--primary))'} ${sliderPosition}%, 
                   hsl(var(--secondary)) ${sliderPosition}%, 
                   hsl(var(--secondary)) 100%)`,
               }}
               aria-label="Body fat percentage"
-              aria-valuemin={3}
+              aria-valuemin={4}
               aria-valuemax={50}
               aria-valuenow={currentValue}
               aria-valuetext={`${currentValue.toFixed(1)} percent body fat`}
+              data-warning={currentValue < 6}
             />
 
             {/* Tappable Labels */}
             <div className="pointer-events-none absolute inset-0 flex items-center justify-between">
-              {[3, 8, 15, 22, 30, 50].map((labelValue) => {
-                const position = ((labelValue - 3) / (50 - 3)) * 100;
+              {[4, 8, 15, 22, 30, 50].map((labelValue) => {
+                const position = ((labelValue - 4) / (50 - 4)) * 100;
                 return (
                   <button
                     key={labelValue}
@@ -236,7 +268,7 @@ export function BodyFatStep({ value, onChange }: BodyFatStepProps) {
 
           {/* Range Labels */}
           <div className="mt-3 flex justify-between text-xs text-muted-foreground">
-            <span>Essential (3%)</span>
+            <span className={currentValue < 6 ? "text-destructive font-semibold" : ""}>Min (4%)</span>
             <span>Athletic</span>
             <span>Fitness</span>
             <span>Acceptable</span>
@@ -293,6 +325,10 @@ const sliderStyles = `
     transition: all 0.2s ease;
   }
 
+  .slider-enhanced[data-warning="true"]::-webkit-slider-thumb {
+    background: hsl(var(--destructive));
+  }
+
   .slider-enhanced::-webkit-slider-thumb:hover {
     transform: scale(1.1);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
@@ -318,6 +354,10 @@ const sliderStyles = `
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     border: 4px solid hsl(var(--background));
     transition: all 0.2s ease;
+  }
+
+  .slider-enhanced[data-warning="true"]::-moz-range-thumb {
+    background: hsl(var(--destructive));
   }
 
   .slider-enhanced::-moz-range-thumb:hover {

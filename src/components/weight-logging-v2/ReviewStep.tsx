@@ -8,6 +8,7 @@ import {
   TrendingUp,
   Calendar,
   Camera,
+  AlertTriangle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useStepper } from "@/contexts/StepperContext";
@@ -16,6 +17,7 @@ import {
   type BodyFatData,
   type MethodData,
   weightUtils,
+  bodyFatUtils,
 } from "@/schemas/weight-logging";
 import { weightAnalytics } from "@/utils/weight-analytics";
 
@@ -60,6 +62,7 @@ export function ReviewStep({
 
   const currentDate = new Date();
   const weightHelper = weightUtils.getWeightHelper(weight);
+  const healthWarning = bodyFatUtils.getHealthWarning(bodyFat.value);
 
   const reviewItems = [
     {
@@ -73,8 +76,9 @@ export function ReviewStep({
       icon: Percent,
       label: "Body Fat",
       value: `${bodyFat.value.toFixed(1)}%`,
-      subtitle: "Body fat percentage",
+      subtitle: bodyFat.value < 6 ? "⚠️ Dangerously low" : "Body fat percentage",
       step: 1,
+      warning: bodyFat.value < 6,
     },
     {
       icon: TrendingUp,
@@ -120,6 +124,28 @@ export function ReviewStep({
         </div>
       </div>
 
+      {/* Health Warning for low body fat */}
+      {healthWarning && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05, duration: 0.3 }}
+          className="mx-4"
+        >
+          <div className="flex items-start gap-3 rounded-lg bg-destructive/10 p-4">
+            <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-destructive" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold text-destructive">
+                Health Warning
+              </p>
+              <p className="text-sm text-destructive/90">
+                {healthWarning}
+              </p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       {/* Review Card */}
       <motion.div
         className="space-y-4 rounded-3xl bg-secondary/20 p-6"
@@ -163,10 +189,16 @@ export function ReviewStep({
                     <Edit3 className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
                   )}
                 </div>
-                <div className="truncate text-lg font-semibold text-foreground">
+                <div className={cn(
+                  "truncate text-lg font-semibold",
+                  item.warning ? "text-destructive" : "text-foreground"
+                )}>
                   {item.value}
                 </div>
-                <div className="truncate text-sm text-muted-foreground">
+                <div className={cn(
+                  "truncate text-sm",
+                  item.warning ? "text-destructive font-semibold" : "text-muted-foreground"
+                )}>
                   {item.subtitle}
                 </div>
               </div>

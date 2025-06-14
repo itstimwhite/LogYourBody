@@ -20,7 +20,7 @@ export const weightSchema = z.object({
 export const bodyFatSchema = z.object({
   value: z
     .number()
-    .min(3, "Body fat percentage must be at least 3%")
+    .min(4, "Body fat below 4% is dangerously low. Please verify your measurement or seek medical supervision.")
     .max(50, "Body fat percentage must be less than 50%")
     .refine((val) => {
       // Snap to 0.5% increments
@@ -114,9 +114,27 @@ export const bodyFatUtils = {
   ],
 
   getCategoryForValue: (value: number): string => {
-    if (value <= 10) return "Essential/Athletic";
-    if (value <= 18) return "Athletic/Fitness";
-    if (value <= 25) return "Fitness/Acceptable";
+    if (value < 4) return "⚠️ Dangerously Low";
+    if (value <= 6) return "Essential Fat Only";
+    if (value <= 10) return "Athletic";
+    if (value <= 18) return "Fitness";
+    if (value <= 25) return "Acceptable";
     return "Above Average";
+  },
+
+  isHealthyRange: (value: number): boolean => {
+    // Men: 6-24% is healthy, Women: 14-31% is healthy
+    // We'll use the more conservative range
+    return value >= 6 && value <= 31;
+  },
+
+  getHealthWarning: (value: number): string | null => {
+    if (value < 4) {
+      return "Body fat below 4% is extremely dangerous and can cause organ failure. Please seek immediate medical supervision.";
+    }
+    if (value < 6) {
+      return "Body fat below 6% is at essential levels only. This may impact hormone production and immune function.";
+    }
+    return null;
   },
 };
