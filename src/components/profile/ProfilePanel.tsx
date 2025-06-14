@@ -54,7 +54,7 @@ export const ProfilePanel = React.memo<ProfilePanelProps>(
       <motion.div
         className={cn(
           "flex h-full w-full flex-col justify-center p-3 md:p-6",
-          "bg-background/95 backdrop-blur-sm",
+          "bg-linear-bg/95 backdrop-blur-sm",
           className,
         )}
         initial={{ opacity: 0, x: 20 }}
@@ -71,7 +71,7 @@ export const ProfilePanel = React.memo<ProfilePanelProps>(
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...fadeIn, delay: 0.1 }}
           >
-            <h1 className="text-sm font-semibold tracking-tight text-foreground md:text-lg">
+            <h1 className="text-sm font-semibold tracking-tight text-linear-text md:text-lg">
               {user.name}
             </h1>
           </motion.div>
@@ -85,7 +85,7 @@ export const ProfilePanel = React.memo<ProfilePanelProps>(
         />
 
         {/* User attributes row */}
-        <div className="mt-auto border-t border-border/30">
+        <div className="mt-auto border-t border-linear-border/30">
           <AttributeRow
             user={user}
             userAge={userAge}

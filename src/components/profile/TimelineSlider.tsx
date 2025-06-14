@@ -123,7 +123,7 @@ export const TimelineSlider = React.memo<TimelineSliderProps>(
     return (
       <motion.div
         className={cn(
-          "w-full border-t border-border/50 bg-background shadow-sm",
+          "w-full border-t border-linear-border/50 bg-linear-bg shadow-sm",
           tw.safeArea,
           className,
         )}

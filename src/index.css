@@ -111,10 +111,10 @@
     background: rgba(255, 255, 255, 0.2);
   }
 
-  /* Enhanced focus indicators */
+  /* Enhanced focus indicators - Linear style */
   :focus-visible {
-    outline: 2px solid hsl(var(--primary));
-    outline-offset: 2px;
+    outline: none;
+    border-color: #5E6AD2;
   }
 
   /* Hide scrollbars for wheel picker */

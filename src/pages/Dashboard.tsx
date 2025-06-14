@@ -214,10 +214,10 @@ const Dashboard = () => {
   // Don't block on HealthKit - load in background
   if (loading || !user || !settings) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-linear-bg font-inter">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-          <p className="text-muted-foreground">Loading your data...</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent"></div>
+          <p className="text-linear-text-secondary">Loading your data...</p>
         </div>
       </div>
     );
@@ -227,7 +227,7 @@ const Dashboard = () => {
   if (showWeightPrompt && !hasWeightData) {
     return (
       <TrialGuard>
-        <div className="flex min-h-screen items-center justify-center bg-background p-6">
+        <div className="flex min-h-screen items-center justify-center bg-linear-bg p-6 font-inter">
           <WeightPrompt
             onComplete={(data) => {
               handleAddMetric(data);
@@ -242,16 +242,16 @@ const Dashboard = () => {
 
   return (
     <TrialGuard>
-      <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground md:min-h-screen md:overflow-auto">
+      <div className="flex h-screen flex-col overflow-hidden bg-linear-bg text-linear-text font-inter md:min-h-screen md:overflow-auto">
         {/* Email confirmation banner */}
         <div className="px-4 pt-4 md:px-6">
           <EmailConfirmationBanner />
         </div>
 
         {/* Header - Desktop only */}
-        <div className="hidden items-center justify-between border-b border-border px-6 py-4 md:flex">
+        <div className="hidden items-center justify-between border-b border-linear-border px-6 py-4 md:flex">
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-semibold tracking-tight">
+            <h1 className="text-xl font-semibold tracking-tight text-linear-text">
               LogYourBody
             </h1>
             <VersionDisplay />
@@ -261,9 +261,9 @@ const Dashboard = () => {
             {isNativeiOS() && (
               <Button
                 size="icon"
-                variant="outline"
+                variant="ghost"
                 onClick={() => navigate("/healthkit-test")}
-                className="border-border bg-secondary text-foreground hover:bg-muted"
+                className="text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
                 title="HealthKit Testing (Development)"
               >
                 <Heart className="h-4 w-4" />
@@ -271,7 +271,7 @@ const Dashboard = () => {
             )}
             <Button
               size="icon"
-              variant="outline"
+              variant="ghost"
               onClick={() => {
                 if (!hasWeightData) {
                   setShowWeightPrompt(true);
@@ -279,15 +279,15 @@ const Dashboard = () => {
                   setShowPremiumWeightLog(true);
                 }
               }}
-              className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
+              className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
             >
               <Plus className="h-4 w-4" />
             </Button>
             <Button
               size="icon"
-              variant="outline"
+              variant="ghost"
               onClick={() => navigate("/settings")}
-              className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
+              className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
             >
               <Settings className="h-4 w-4" />
             </Button>
@@ -334,7 +334,7 @@ const Dashboard = () => {
             <div className="top-safe-top absolute right-4 z-20 flex gap-3 md:hidden">
               <Button
                 size="icon"
-                variant="outline"
+                variant="ghost"
                 onClick={() => {
                   if (!hasWeightData) {
                     setShowWeightPrompt(true);
@@ -342,15 +342,15 @@ const Dashboard = () => {
                     setShowPremiumWeightLog(true);
                   }
                 }}
-                className="h-10 w-10 border-border bg-background/80 text-foreground shadow-lg backdrop-blur-sm hover:bg-muted"
+                className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm hover:bg-linear-card hover:text-linear-text transition-colors"
               >
                 <Plus className="h-4 w-4" />
               </Button>
               <Button
                 size="icon"
-                variant="outline"
+                variant="ghost"
                 onClick={() => navigate("/settings")}
-                className="h-10 w-10 border-border bg-background/80 text-foreground shadow-lg backdrop-blur-sm hover:bg-muted"
+                className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm hover:bg-linear-card hover:text-linear-text transition-colors"
               >
                 <Settings className="h-4 w-4" />
               </Button>
@@ -358,7 +358,7 @@ const Dashboard = () => {
           </div>
 
           {/* Profile Panel - Reduced height on mobile, 1/3 on desktop */}
-          <div className="min-h-0 flex-[0.8] border-border md:w-1/3 md:flex-1 md:border-l">
+          <div className="min-h-0 flex-[0.8] border-linear-border md:w-1/3 md:flex-1 md:border-l">
             <ProfilePanel
               metrics={currentMetrics}
               user={user}

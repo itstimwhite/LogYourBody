@@ -167,30 +167,30 @@ function WeightLoggingFlowContent({
   };
 
   return (
-      <div className="flex h-full flex-col bg-background">
+      <div className="flex h-full flex-col bg-linear-bg font-inter">
         {/* Header with Progress */}
         <div className="pt-safe-top flex-shrink-0 px-6">
           {/* Navigation */}
           <div className="flex h-14 items-center justify-between">
             <button
               onClick={currentStep === 0 ? onCancel : goBack}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary/20 transition-colors hover:bg-secondary/30"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-border/30 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
               aria-label={currentStep === 0 ? "Cancel" : "Go back"}
             >
-              <ArrowLeft className="h-5 w-5 text-foreground" />
+              <ArrowLeft className="h-5 w-5" />
             </button>
 
             <div className="text-center">
-              <div className="text-sm font-medium text-muted-foreground">
+              <div className="text-sm font-medium text-linear-text-secondary">
                 Step {currentStep + 1} of {totalSteps}
               </div>
-              <div className="text-lg font-semibold text-foreground">
+              <div className="text-lg font-semibold text-linear-text">
                 {stepTitles[currentStep]}
               </div>
             </div>
 
             <div className="flex h-10 w-10 items-center justify-center">
-              <div className="text-sm font-medium text-muted-foreground">
+              <div className="text-sm font-medium text-linear-text-secondary">
                 {Math.round(progress)}%
               </div>
             </div>
@@ -198,9 +198,9 @@ function WeightLoggingFlowContent({
 
           {/* Progress Bar */}
           <div className="mb-6 mt-4">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-secondary/20">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-linear-border">
               <motion.div
-                className="h-full rounded-full bg-primary"
+                className="h-full rounded-full bg-linear-purple"
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
@@ -215,7 +215,7 @@ function WeightLoggingFlowContent({
             <React.Suspense
               fallback={
                 <div className="flex h-full items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent" />
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent" />
                 </div>
               }
             >
@@ -226,7 +226,7 @@ function WeightLoggingFlowContent({
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.25, type: "spring", damping: 20 }}
-                  className="h-full"
+                  className="h-full text-linear-text"
                 >
                   {renderStep()}
                 </motion.div>
@@ -242,7 +242,7 @@ function WeightLoggingFlowContent({
             {currentStep > 0 && (
               <motion.button
                 onClick={goBack}
-                className="h-14 flex-1 rounded-2xl bg-secondary/20 font-semibold text-foreground transition-colors hover:bg-secondary/30"
+                className="h-14 flex-1 rounded-xl border border-linear-border bg-linear-card font-medium text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -257,11 +257,11 @@ function WeightLoggingFlowContent({
               onClick={goNext}
               disabled={!canGoNext}
               className={cn(
-                "flex h-14 items-center justify-center gap-2 rounded-2xl font-semibold transition-all duration-200",
+                "flex h-14 items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200",
                 currentStep === 0 ? "flex-1" : "flex-[2]",
                 canGoNext
-                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                  : "cursor-not-allowed bg-secondary/20 text-muted-foreground",
+                  ? "bg-linear-text text-linear-bg hover:bg-linear-text/90"
+                  : "cursor-not-allowed bg-linear-card border border-linear-border text-linear-text-tertiary",
               )}
               whileTap={canGoNext ? { scale: 0.98 } : {}}
             >

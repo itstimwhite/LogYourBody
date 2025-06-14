@@ -59,18 +59,18 @@ export const tokens = {
     safeAreaPadding: "env(safe-area-inset-bottom)",
   },
 
-  // Colors (WCAG AA compliant)
+  // Colors (Linear Design System)
   colors: {
-    primary: "hsl(var(--primary))",
-    foreground: "hsl(var(--foreground))",
-    background: "hsl(var(--background))",
-    muted: "hsl(var(--muted-foreground))",
-    border: "hsl(var(--border))",
-    // AA compliant text colors on black background
+    primary: "#5E6AD2", // Linear purple
+    foreground: "#F7F8F8", // Linear text
+    background: "#0A0B0D", // Linear bg
+    muted: "#6E7178", // Linear text tertiary
+    border: "#1F2023", // Linear border
+    // Linear text colors
     text: {
-      primary: "#FFFFFF", // 100% white
-      secondary: "#CCCCCC", // 80% white (AA compliant)
-      tertiary: "#999999", // 60% white (upgrade from this)
+      primary: "#F7F8F8", // Linear text
+      secondary: "#9CA0A8", // Linear text secondary
+      tertiary: "#6E7178", // Linear text tertiary
     },
   },
 
@@ -183,16 +183,16 @@ export const getAnimation = (tokenName: keyof typeof tokens.animation) => {
 
 // Tailwind class generators based on tokens - Ultra compact mobile layout
 export const tw = {
-  profileValue: "text-xl md:text-3xl lg:text-4xl font-semibold leading-none text-foreground",
+  profileValue: "text-xl md:text-3xl lg:text-4xl font-semibold leading-none text-linear-text",
   profileLabel:
-    "text-[10px] md:text-sm font-medium uppercase opacity-70 tracking-wider text-muted-foreground",
-  profileUnit: "text-lg md:text-2xl font-medium opacity-80 text-muted-foreground",
-  bodyFatOverlay: "text-sm md:text-base font-medium text-center text-foreground",
+    "text-[10px] md:text-sm font-medium uppercase opacity-70 tracking-wider text-linear-text-secondary",
+  profileUnit: "text-lg md:text-2xl font-medium opacity-80 text-linear-text-secondary",
+  bodyFatOverlay: "text-sm md:text-base font-medium text-center text-linear-text",
   attributeLabel:
-    "text-[9px] md:text-xs font-medium uppercase opacity-70 tracking-wider text-muted-foreground",
-  attributeValue: "text-[11px] md:text-sm font-semibold text-foreground",
-  timelineLabel: "text-[9px] md:text-xs font-medium opacity-70 text-muted-foreground",
-  timelineValue: "text-xs md:text-base font-semibold text-foreground",
+    "text-[9px] md:text-xs font-medium uppercase opacity-70 tracking-wider text-linear-text-tertiary",
+  attributeValue: "text-[11px] md:text-sm font-semibold text-linear-text",
+  timelineLabel: "text-[9px] md:text-xs font-medium opacity-70 text-linear-text-tertiary",
+  timelineValue: "text-xs md:text-base font-semibold text-linear-text",
 
   // Layout utilities - ultra compact mobile with minimal gaps
   statsGrid: "grid grid-cols-2 gap-2 md:flex md:flex-col md:gap-4",

@@ -159,20 +159,20 @@ const Settings = () => {
   // Show loading skeleton for better perceived performance
   if (loading) {
     return (
-      <div className="min-h-screen bg-background text-foreground">
+      <div className="min-h-screen bg-linear-bg text-linear-text font-inter">
         <div className="animate-pulse">
           {/* Header skeleton */}
-          <div className="h-16 border-b border-border bg-secondary/20" />
+          <div className="h-16 border-b border-linear-border bg-linear-card" />
 
           {/* Content skeleton */}
           <div className="space-y-8 p-6">
             {[1, 2, 3].map((i) => (
               <div key={i} className="space-y-4">
-                <div className="h-4 w-24 rounded bg-secondary/30" />
+                <div className="h-4 w-24 rounded bg-linear-border" />
                 <div className="space-y-3">
-                  <div className="h-12 rounded bg-secondary/20" />
-                  <div className="h-12 rounded bg-secondary/20" />
-                  <div className="h-12 rounded bg-secondary/20" />
+                  <div className="h-12 rounded bg-linear-card" />
+                  <div className="h-12 rounded bg-linear-card" />
+                  <div className="h-12 rounded bg-linear-card" />
                 </div>
               </div>
             ))}
@@ -185,14 +185,14 @@ const Settings = () => {
   // Handle error state
   if (!user || !settings) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-linear-bg font-inter">
         <div className="text-center">
-          <p className="text-muted-foreground">
+          <p className="text-linear-text-secondary">
             Failed to load settings. Please try again.
           </p>
           <Button
             onClick={() => window.location.reload()}
-            className="mt-4"
+            className="mt-4 border-linear-border bg-linear-card text-linear-text hover:bg-linear-border/50"
             variant="outline"
           >
             Retry
@@ -204,18 +204,18 @@ const Settings = () => {
 
   return (
     <AuthGuard>
-      <div className="flex h-screen flex-col overflow-hidden bg-background text-foreground">
+      <div className="flex h-screen flex-col overflow-hidden bg-linear-bg text-linear-text font-inter">
         {/* Header with safe area padding */}
-        <div className="flex flex-shrink-0 items-center gap-4 border-b border-border px-6 pb-4 pt-safe-top">
+        <div className="flex flex-shrink-0 items-center gap-4 border-b border-linear-border px-6 pb-4 pt-safe-top">
           <Button
             size="icon"
-            variant="outline"
+            variant="ghost"
             onClick={() => navigate("/dashboard")}
-            className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
+            className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-lg font-semibold tracking-tight">Settings</h1>
+          <h1 className="text-lg font-semibold tracking-tight text-linear-text">Settings</h1>
         </div>
 
         {/* Settings List - Scrollable */}
@@ -225,30 +225,30 @@ const Settings = () => {
             <div className="space-y-6">
               {/* User Name */}
               <div
-                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-border px-2 py-3 hover:bg-secondary/20"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-linear-border px-2 py-3 hover:bg-linear-border/20 transition-colors"
                 onClick={() => setShowNameEdit(true)}
               >
-                <div className="text-base font-medium text-foreground">
+                <div className="text-base font-medium text-linear-text">
                   Name
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-muted-foreground">
+                  <div className="text-linear-text-secondary">
                     {user?.name || "Not set"}
                   </div>
-                  <Edit className="h-4 w-4 text-muted-foreground" />
+                  <Edit className="h-4 w-4 text-linear-text-tertiary" />
                 </div>
               </div>
 
               {/* Birthday */}
               <div
-                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-border px-2 py-3 hover:bg-secondary/20"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-linear-border px-2 py-3 hover:bg-linear-border/20 transition-colors"
                 onClick={() => setShowBirthdayEdit(true)}
               >
-                <div className="text-base font-medium text-foreground">
+                <div className="text-base font-medium text-linear-text">
                   Birthday
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-muted-foreground">
+                  <div className="text-linear-text-secondary">
                     {user?.birthday
                       ? user.birthday.toLocaleDateString("en-US", {
                           month: "short",
@@ -257,14 +257,14 @@ const Settings = () => {
                         })
                       : "Not set"}
                   </div>
-                  <Edit className="h-4 w-4 text-muted-foreground" />
+                  <Edit className="h-4 w-4 text-linear-text-tertiary" />
                 </div>
               </div>
 
               {/* Biological Sex - Inline */}
-              <div className="border-b border-border py-3">
+              <div className="border-b border-linear-border py-3">
                 <div className="mb-3 flex items-center justify-between">
-                  <div className="text-base font-medium text-foreground">
+                  <div className="text-base font-medium text-linear-text">
                     Biological sex
                   </div>
                 </div>
@@ -273,16 +273,16 @@ const Settings = () => {
                   onValueChange={handleGenderChange}
                   className="w-full"
                 >
-                  <TabsList className="grid w-full grid-cols-2 border border-border bg-secondary">
+                  <TabsList className="grid w-full grid-cols-2 border border-linear-border bg-linear-card">
                     <TabsTrigger
                       value="male"
-                      className="text-foreground data-[state=inactive]:border-muted-foreground/20 data-[state=active]:bg-primary data-[state=inactive]:bg-transparent data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
+                      className="text-linear-text data-[state=inactive]:border-linear-border data-[state=active]:bg-linear-purple data-[state=inactive]:bg-transparent data-[state=active]:text-white data-[state=inactive]:text-linear-text-secondary"
                     >
                       Male
                     </TabsTrigger>
                     <TabsTrigger
                       value="female"
-                      className="text-foreground data-[state=inactive]:border-muted-foreground/20 data-[state=active]:bg-primary data-[state=inactive]:bg-transparent data-[state=active]:text-primary-foreground data-[state=inactive]:text-muted-foreground"
+                      className="text-linear-text data-[state=inactive]:border-linear-border data-[state=active]:bg-linear-purple data-[state=inactive]:bg-transparent data-[state=active]:text-white data-[state=inactive]:text-linear-text-secondary"
                     >
                       Female
                     </TabsTrigger>
@@ -292,17 +292,17 @@ const Settings = () => {
 
               {/* Height */}
               <div
-                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-border px-2 py-3 hover:bg-secondary/20"
+                className="-mx-2 flex cursor-pointer items-center justify-between rounded border-b border-linear-border px-2 py-3 hover:bg-linear-border/20 transition-colors"
                 onClick={() => setShowHeightEdit(true)}
               >
-                <div className="text-base font-medium text-foreground">
+                <div className="text-base font-medium text-linear-text">
                   Height
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="text-muted-foreground">
+                  <div className="text-linear-text-secondary">
                     {user?.height ? getFormattedHeight(user.height) : "Not set"}
                   </div>
-                  <Edit className="h-4 w-4 text-muted-foreground" />
+                  <Edit className="h-4 w-4 text-linear-text-tertiary" />
                 </div>
               </div>
             </div>

@@ -241,18 +241,18 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
       {/* Header */}
       <div className="space-y-4 text-center">
         <motion.div
-          className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-primary/10"
+          className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-linear-purple/10"
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <Scale className="h-10 w-10 text-primary" />
+          <Scale className="h-10 w-10 text-linear-purple" />
         </motion.div>
 
         <div>
-          <h1 className="mb-2 text-3xl font-bold text-foreground">
+          <h1 className="mb-2 text-3xl font-bold text-linear-text">
             What's your weight?
           </h1>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-lg text-linear-text-secondary">
             Enter your current weight measurement
           </p>
         </div>
@@ -263,7 +263,7 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
         <motion.button
           onClick={handleHealthKitImport}
           disabled={syncingHealthKit}
-          className="flex h-14 w-full items-center justify-center gap-3 rounded-2xl border-2 border-transparent bg-secondary/20 transition-colors hover:border-border disabled:opacity-50"
+          className="flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-linear-border bg-linear-card transition-colors hover:bg-linear-border/50 disabled:opacity-50"
           whileTap={{ scale: 0.98 }}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -271,15 +271,15 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
         >
           {syncingHealthKit ? (
             <>
-              <Loader2 className="h-5 w-5 animate-spin text-primary" />
-              <span className="font-medium text-foreground">
+              <Loader2 className="h-5 w-5 animate-spin text-linear-purple" />
+              <span className="font-medium text-linear-text">
                 Importing from HealthKit...
               </span>
             </>
           ) : (
             <>
-              <Activity className="h-5 w-5 text-primary" />
-              <span className="font-medium text-foreground">
+              <Activity className="h-5 w-5 text-linear-purple" />
+              <span className="font-medium text-linear-text">
                 Import from HealthKit
               </span>
             </>
@@ -294,14 +294,14 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.25 }}
       >
-        <div className="flex rounded-2xl bg-secondary/30 p-1">
+        <div className="flex rounded-xl bg-linear-card border border-linear-border p-1">
           <button
             onClick={handleUnitToggle}
             className={cn(
-              "rounded-xl px-6 py-3 font-medium transition-all duration-200",
+              "rounded-lg px-6 py-3 font-medium transition-all duration-200",
               unit === "lbs"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+                ? "bg-linear-purple text-white shadow-sm"
+                : "text-linear-text-secondary hover:text-linear-text",
             )}
           >
             lbs
@@ -309,10 +309,10 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
           <button
             onClick={handleUnitToggle}
             className={cn(
-              "rounded-xl px-6 py-3 font-medium transition-all duration-200",
+              "rounded-lg px-6 py-3 font-medium transition-all duration-200",
               unit === "kg"
-                ? "bg-primary text-primary-foreground shadow-sm"
-                : "text-muted-foreground hover:text-foreground",
+                ? "bg-linear-purple text-white shadow-sm"
+                : "text-linear-text-secondary hover:text-linear-text",
             )}
           >
             kg
@@ -339,19 +339,19 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
             placeholder={unit === "lbs" ? "150.0" : "68.0"}
             className={cn(
               "h-16 w-full px-6 text-center text-3xl font-bold",
-              "rounded-2xl border-2 bg-secondary/20",
-              "text-foreground placeholder:text-muted-foreground/50",
+              "rounded-xl border border-linear-border bg-linear-card",
+              "text-linear-text placeholder:text-linear-text-tertiary/50",
               "transition-all duration-200",
-              "focus:border-primary focus:bg-background focus:outline-none focus:ring-4 focus:ring-primary/20",
+              "focus:border-linear-purple focus:bg-linear-card focus:outline-none",
               !isValid &&
                 hasInteracted &&
                 currentValue > 0 &&
-                "border-destructive focus:border-destructive focus:ring-destructive/20",
+                "border-red-500 focus:border-red-500 focus:ring-red-500/20",
             )}
             aria-label={`Weight in ${unit}`}
             aria-invalid={!isValid && hasInteracted && currentValue > 0}
           />
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 transform text-xl font-medium text-muted-foreground">
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 transform text-xl font-medium text-linear-text-secondary">
             {unit}
           </div>
         </div>
@@ -361,7 +361,7 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
           {helperText && (
             <motion.p
               key={helperText}
-              className="text-center text-lg text-muted-foreground"
+              className="text-center text-lg text-linear-text-secondary"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
@@ -376,7 +376,7 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
         <AnimatePresence mode="wait">
           {!isValid && hasInteracted && currentValue > 0 && (
             <motion.p
-              className="text-center text-destructive"
+              className="text-center text-red-500"
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
@@ -398,7 +398,7 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4, duration: 0.25 }}
       >
-        <p className="text-center text-sm font-medium text-muted-foreground">
+        <p className="text-center text-sm font-medium text-linear-text-tertiary">
           Quick presets
         </p>
         <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
@@ -407,10 +407,10 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
               key={preset}
               onClick={() => handlePresetSelect(preset)}
               className={cn(
-                "flex-shrink-0 rounded-xl border-2 px-4 py-3 font-medium transition-all duration-200",
+                "flex-shrink-0 rounded-xl border px-4 py-3 font-medium transition-all duration-200",
                 parseFloat(inputValue) === preset
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-transparent bg-secondary/20 text-foreground hover:border-border",
+                  ? "border-linear-purple bg-linear-purple text-white"
+                  : "border-linear-border bg-linear-card text-linear-text hover:bg-linear-border/50",
               )}
               whileTap={{ scale: 0.95 }}
             >

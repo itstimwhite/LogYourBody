@@ -132,14 +132,14 @@ export function LandingPage() {
       </div>
       {/* Header */}
       <header className="border-b border-linear-border" role="banner">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-4 sm:px-6 py-4">
           <nav
             className="flex items-center justify-between"
             role="navigation"
             aria-label="Main navigation"
           >
-            <div className="flex items-center space-x-8">
-              <div className="text-xl font-semibold text-linear-text">
+            <div className="flex items-center space-x-6 sm:space-x-8">
+              <div className="text-lg sm:text-xl font-semibold text-linear-text">
                 LogYourBody
               </div>
               <div className="hidden md:flex items-center space-x-6">
@@ -149,19 +149,19 @@ export function LandingPage() {
                 <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Contact</button>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               <Button
                 variant="ghost"
                 onClick={() => navigate("/login")}
                 aria-label="Sign in to your account"
-                className="text-sm text-linear-text-secondary hover:text-linear-text"
+                className="text-sm text-linear-text-secondary hover:text-linear-text hidden sm:block"
               >
                 Log in
               </Button>
               <Button
                 onClick={() => navigate("/login")}
                 aria-label="Start your 3-day free trial"
-                className="bg-linear-text text-linear-bg text-sm font-medium px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
+                className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
               >
                 Sign up
               </Button>
@@ -171,34 +171,34 @@ export function LandingPage() {
       </header>
 
       {/* Main Content */}
-      <main id="main-content" tabIndex="-1">
+      <main id="main-content" tabIndex={-1}>
         {/* Hero Section */}
         <section
-          className="relative py-32"
+          className="relative py-20 md:py-32"
           role="banner"
           aria-labelledby="hero-heading"
         >
-          <div className="container mx-auto px-6">
-            <div className="mx-auto max-w-4xl text-center">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="mx-auto max-w-4xl">
               <h1
                 id="hero-heading"
-                className="mb-6 text-6xl font-bold tracking-tight text-linear-text md:text-7xl"
+                className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-linear-text text-center"
               >
                 Illuminate your gains
               </h1>
-              <p className="mx-auto mb-12 max-w-2xl text-lg text-linear-text-secondary">
+              <p className="mx-auto mb-12 max-w-2xl text-base sm:text-lg text-linear-text-secondary text-center">
                 Track body fat, muscle mass, and FFMI. Not just weight.
                 Used by 10,000+ fitness professionals.
               </p>
-              <div className="flex items-center justify-center gap-4">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
-                  className="bg-linear-text text-linear-bg px-6 py-3 text-sm font-medium rounded-lg hover:bg-linear-text-secondary transition-colors"
+                  className="bg-linear-text text-linear-bg px-6 py-3 text-sm font-medium rounded-lg hover:bg-linear-text-secondary transition-colors w-full sm:w-auto"
                   onClick={() => navigate("/login")}
                 >
                   Try free for 3 days
                 </Button>
                 <button
-                  className="flex items-center gap-2 text-sm text-linear-text-secondary hover:text-linear-text transition-colors"
+                  className="flex items-center justify-center gap-2 text-sm text-linear-text-secondary hover:text-linear-text transition-colors w-full sm:w-auto"
                   aria-label="View live demo"
                 >
                   See it in action
@@ -211,8 +211,8 @@ export function LandingPage() {
 
         {/* Social Proof */}
         <section className="py-12 border-y border-linear-border">
-          <div className="container mx-auto px-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 text-center">
               <div>
                 <div className="text-3xl font-bold text-linear-text">10,000+</div>
                 <div className="text-sm text-linear-text-secondary">Active users</div>
@@ -235,7 +235,7 @@ export function LandingPage() {
 
         {/* Features Grid */}
         <section className="py-20" aria-labelledby="features-heading">
-          <div className="container mx-auto px-6">
+          <div className="container mx-auto px-4 sm:px-6">
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4" role="list">
               <div className="space-y-3" role="listitem">
                 <div className="flex items-center gap-2">
@@ -278,19 +278,19 @@ export function LandingPage() {
         </section>
 
         {/* Main Features Section */}
-        <section className="py-32">
-          <div className="container mx-auto px-6">
-            <div className="mb-4">
-              <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20">
+        <section className="py-20 md:py-32">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="mb-4 text-center">
+              <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20 inline-block">
                 Used by 10,000+ users
               </Badge>
             </div>
-            <h2 className="mb-8 text-6xl font-bold tracking-tight text-linear-text">
+            <h2 className="mb-8 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-linear-text text-center">
               Finally see if your
               <br />
               workout plan works
             </h2>
-            <p className="mb-12 max-w-2xl text-lg text-linear-text-secondary">
+            <p className="mb-12 max-w-2xl mx-auto text-base sm:text-lg text-linear-text-secondary text-center">
               Stop guessing. Start measuring.
               Track the metrics that actually matter for body composition.
             </p>
@@ -316,18 +316,18 @@ export function LandingPage() {
         </section>
 
         {/* Timeline Feature Section */}
-        <section className="relative py-32 overflow-hidden">
-          <div className="container mx-auto px-6">
+        <section className="relative py-20 md:py-32 overflow-hidden">
+          <div className="container mx-auto px-4 sm:px-6">
             <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
               {/* Content */}
               <div className="order-2 lg:order-1">
-                <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20">
+                <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20 inline-block">
                   Game-changing feature
                 </Badge>
-                <h2 className="mb-6 text-5xl font-bold tracking-tight text-linear-text lg:text-6xl">
+                <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-linear-text">
                   Your body's time machine
                 </h2>
-                <p className="mb-8 text-xl text-linear-text-secondary">
+                <p className="mb-8 text-lg sm:text-xl text-linear-text-secondary">
                   Slide through time. See exactly how you looked on any date. 
                   Body fat, weight, FFMI — with photos to prove it.
                 </p>
@@ -433,12 +433,12 @@ export function LandingPage() {
         </section>
 
         {/* Pricing Section */}
-        <section className="container mx-auto px-6 py-20">
+        <section className="container mx-auto px-4 sm:px-6 py-20">
           <div className="mb-16 text-center">
-            <h2 className="mb-4 text-5xl font-bold tracking-tight text-linear-text">
+            <h2 className="mb-4 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
               Less than your protein powder
             </h2>
-            <p className="text-xl text-linear-text-secondary">
+            <p className="text-lg sm:text-xl text-linear-text-secondary">
               3 days free. Then $5.83/month. Cancel anytime.
             </p>
           </div>
@@ -561,9 +561,9 @@ export function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-32 text-center">
-          <div className="container mx-auto px-6">
-            <h2 className="mb-4 text-5xl font-bold tracking-tight text-linear-text">
+        <section className="py-20 md:py-32 text-center">
+          <div className="container mx-auto px-4 sm:px-6">
+            <h2 className="mb-4 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
               Start tracking what matters.
               <br />
               Stop guessing.
@@ -595,7 +595,7 @@ export function LandingPage() {
 
       {/* Footer */}
       <footer className="border-t border-linear-border py-12 font-inter" role="contentinfo">
-        <div className="container mx-auto px-6 text-center">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
           <div className="mb-8">
             <h3 className="mb-4 text-2xl font-bold text-linear-text">
               LogYourBody
@@ -605,20 +605,20 @@ export function LandingPage() {
               health professionals.
             </p>
           </div>
-          <div className="mb-8 flex justify-center space-x-8">
-            <Button variant="ghost" onClick={() => navigate("/privacy")} className="text-linear-text-secondary hover:text-linear-text">
+          <div className="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-8">
+            <Button variant="ghost" onClick={() => navigate("/privacy")} className="text-linear-text-secondary hover:text-linear-text text-sm">
               Privacy Policy
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/terms")} className="text-linear-text-secondary hover:text-linear-text">
+            <Button variant="ghost" onClick={() => navigate("/terms")} className="text-linear-text-secondary hover:text-linear-text text-sm">
               Terms of Service
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/changelog")} className="text-linear-text-secondary hover:text-linear-text">
+            <Button variant="ghost" onClick={() => navigate("/changelog")} className="text-linear-text-secondary hover:text-linear-text text-sm">
               Changelog
             </Button>
             <Button
               variant="ghost"
               onClick={() => window.open("mailto:support@logyourbody.com")}
-              className="text-linear-text-secondary hover:text-linear-text"
+              className="text-linear-text-secondary hover:text-linear-text text-sm"
             >
               Contact Support
             </Button>
