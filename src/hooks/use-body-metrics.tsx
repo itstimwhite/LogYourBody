@@ -25,6 +25,7 @@ const mockMetrics: BodyMetrics[] = [
     weight: 80,
     bodyFatPercentage: 15,
     method: "dexa",
+    stepCount: 5000,
   },
   {
     id: "2",
@@ -33,6 +34,7 @@ const mockMetrics: BodyMetrics[] = [
     weight: 79.5,
     bodyFatPercentage: 14.5,
     method: "scale",
+    stepCount: 6500,
   },
   {
     id: "3",
@@ -41,6 +43,7 @@ const mockMetrics: BodyMetrics[] = [
     weight: 79,
     bodyFatPercentage: 14,
     method: "calipers",
+    stepCount: 7000,
   },
   {
     id: "4",
@@ -49,6 +52,7 @@ const mockMetrics: BodyMetrics[] = [
     weight: 78.5,
     bodyFatPercentage: 13.5,
     method: "scale",
+    stepCount: 8000,
   },
 ];
 
@@ -125,6 +129,7 @@ export function useBodyMetrics() {
         weight: 0,
         ffmi: 0,
         leanBodyMass: 0,
+        stepCount: 0,
         date: new Date(),
       };
     }
@@ -140,6 +145,7 @@ export function useBodyMetrics() {
       weight: metric.weight,
       ffmi: Math.round(ffmi * 10) / 10,
       leanBodyMass: Math.round(leanBodyMass * 10) / 10,
+      stepCount: metric.stepCount,
       date: metric.date,
     };
   }, [sortedMetrics, selectedDateIndex, user.height]);

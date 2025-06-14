@@ -26,10 +26,11 @@ describe("StatsGrid", () => {
     ffmi: 21,
     weight: 80,
     leanBodyMass: 67.6,
+    stepCount: 9000,
     date: new Date(),
   };
 
-  it("renders exactly 4 stat items", () => {
+  it("renders exactly 5 stat items", () => {
     const { container } = render(
       <StatsGrid
         metrics={mockMetrics}
@@ -38,9 +39,9 @@ describe("StatsGrid", () => {
       />,
     );
 
-    // Check that we have 4 stat items
+    // Check that we have 5 stat items
     const statItems = container.querySelectorAll('[aria-label*=":"]');
-    expect(statItems).toHaveLength(4);
+    expect(statItems).toHaveLength(5);
   });
 
   it("displays body fat percentage with unit", () => {
@@ -96,6 +97,19 @@ describe("StatsGrid", () => {
     expect(screen.getByText("Lean Body Mass")).toBeInTheDocument();
   });
 
+  it("displays step count correctly", () => {
+    render(
+      <StatsGrid
+        metrics={mockMetrics}
+        formattedWeight="176 lbs"
+        formattedLeanBodyMass="149 lbs"
+      />,
+    );
+
+    expect(screen.getByText("9000")).toBeInTheDocument();
+    expect(screen.getByText("Steps")).toBeInTheDocument();
+  });
+
   it("has proper accessibility labels for all stats", () => {
     render(
       <StatsGrid
@@ -115,6 +129,7 @@ describe("StatsGrid", () => {
     expect(
       screen.getByLabelText("Lean body mass: 149 lbs"),
     ).toBeInTheDocument();
+    expect(screen.getByLabelText("Step count: 9000")).toBeInTheDocument();
   });
 
   it("uses flex-wrapped, centered grid layout", () => {
@@ -153,6 +168,7 @@ describe("StatsGrid", () => {
       ...mockMetrics,
       bodyFatPercentage: 0,
       ffmi: 0,
+      stepCount: 0,
     };
 
     render(

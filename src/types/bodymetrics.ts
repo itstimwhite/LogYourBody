@@ -15,6 +15,7 @@ export interface BodyMetrics {
   weight: number; // in kg
   bodyFatPercentage: number;
   method: MeasurementMethod;
+  stepCount?: number;
   leanBodyMass?: number; // calculated
   ffmi?: number; // calculated
 }
@@ -38,6 +39,7 @@ export interface DashboardMetrics {
   weight: number;
   ffmi: number;
   leanBodyMass: number;
+  stepCount?: number;
   date: Date;
 }
 

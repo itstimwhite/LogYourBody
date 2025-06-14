@@ -274,6 +274,22 @@ export function useHealthKit(): UseHealthKitReturn {
         console.log("Could not get weight data:", err);
       }
 
+      // Get step count data
+      try {
+        const stepResult = await healthKit.getStatisticsCollection({
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          anchorDate: startDate.toISOString(),
+          interval: { unit: "day", value: 1 },
+          quantityTypeSampleName: "stepCount",
+        });
+        if (stepResult.data.length > 0) {
+          healthData.stepCount = stepResult.data[stepResult.data.length - 1].value;
+        }
+      } catch (err) {
+        console.log("Could not get step count data:", err);
+      }
+
       // For this simplified plugin, we can only get body mass data
       // Other data types would require different API calls or might not be supported
 
@@ -421,8 +437,55 @@ export function useHealthKit(): UseHealthKitReturn {
         console.warn("Error syncing weight data:", error);
       }
 
-      // Note: This plugin only supports body mass data, so we can't sync body fat or steps
-      // If you need those features, you'll need a more comprehensive HealthKit plugin
+      // 2. Sync step count data
+      try {
+        const stepData = await healthKit.getStatisticsCollection({
+          startDate: startDate.toISOString(),
+          endDate: endDate.toISOString(),
+          anchorDate: startDate.toISOString(),
+          interval: { unit: "day", value: 1 },
+          quantityTypeSampleName: "stepCount",
+        });
+
+        if (stepData.data && stepData.data.length > 0) {
+          for (const sample of stepData.data) {
+            const sampleDate = new Date(sample.startDate)
+              .toISOString()
+              .split("T")[0];
+
+            const { data: existing } = await supabase
+              .from("body_metrics")
+              .select("id")
+              .eq("user_id", user.id)
+              .eq("date", sampleDate)
+              .single();
+
+            if (existing) {
+              const { error } = await supabase
+                .from("body_metrics")
+                .update({ step_count: sample.value })
+                .eq("id", existing.id);
+              if (!error) {
+                result.stepEntries = (result.stepEntries || 0) + 1;
+              }
+            } else {
+              const { error } = await supabase.from("body_metrics").insert({
+                user_id: user.id,
+                date: sampleDate,
+                weight: 0,
+                body_fat_percentage: 0,
+                step_count: sample.value,
+                method: "healthkit",
+              });
+              if (!error) {
+                result.stepEntries = (result.stepEntries || 0) + 1;
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.warn("Error syncing step data:", error);
+      }
 
       result.success = true;
       console.log("HealthKit sync completed:", result);
