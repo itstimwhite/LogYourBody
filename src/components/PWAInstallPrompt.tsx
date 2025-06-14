@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { X, Download, Share, Plus } from "lucide-react";
 import { shouldShowPWAFeatures } from "@/lib/platform";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface BeforeInstallPromptEvent extends Event {
   readonly platforms: string[];
@@ -38,6 +39,7 @@ const supportsPWAInstall = () => {
 };
 
 export function PWAInstallPrompt() {
+  const { user } = useAuth();
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showInstallPrompt, setShowInstallPrompt] = useState(false);
@@ -45,6 +47,11 @@ export function PWAInstallPrompt() {
   const [installPromptDismissed, setInstallPromptDismissed] = useState(false);
 
   useEffect(() => {
+    // Only show PWA install prompt for authenticated users
+    if (!user) {
+      return;
+    }
+
     // Don't show PWA features in native apps
     if (!shouldShowPWAFeatures()) {
       return;
@@ -89,7 +96,7 @@ export function PWAInstallPrompt() {
     }
 
     return () => window.removeEventListener("beforeinstallprompt", handler);
-  }, [deferredPrompt, installPromptDismissed]);
+  }, [user, deferredPrompt, installPromptDismissed]);
 
   const handleInstall = async () => {
     if (!deferredPrompt) return;
