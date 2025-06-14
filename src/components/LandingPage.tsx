@@ -19,6 +19,7 @@ import {
   Star,
   Check,
   ArrowRight,
+  Calendar,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { VersionDisplay } from "@/components/VersionDisplay";
