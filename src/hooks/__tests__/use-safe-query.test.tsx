@@ -1,16 +1,17 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { vi, type MockedFunction } from "vitest";
 import { useSafeQuery } from "../use-safe-query";
 import { toast } from "sonner";
 
 // Mock sonner toast
-jest.mock("sonner", () => ({
+vi.mock("sonner", () => ({
   toast: {
-    error: jest.fn(),
+    error: vi.fn(),
   },
 }));
 
-const mockToast = toast.error as jest.MockedFunction<typeof toast.error>;
+const mockToast = toast.error as MockedFunction<typeof toast.error>;
 
 // Test wrapper with QueryClient
 const createWrapper = () => {
@@ -30,17 +31,17 @@ const createWrapper = () => {
 
 describe("useSafeQuery", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    jest.useFakeTimers();
+    vi.clearAllMocks();
+    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it("should successfully execute query and return data", async () => {
     const mockData = { id: 1, name: "Test" };
-    const mockQueryFn = jest.fn().mockResolvedValue(mockData);
+    const mockQueryFn = vi.fn().mockResolvedValue(mockData);
 
     const { result } = renderHook(
       () =>
@@ -50,6 +51,8 @@ describe("useSafeQuery", () => {
         }),
       { wrapper: createWrapper() },
     );
+
+    await vi.advanceTimersByTimeAsync(0);
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
@@ -61,7 +64,7 @@ describe("useSafeQuery", () => {
   });
 
   it("should handle query timeout and show toast notification", async () => {
-    const mockQueryFn = jest.fn().mockImplementation(
+    const mockQueryFn = vi.fn().mockImplementation(
       () => new Promise((resolve) => setTimeout(resolve, 5000)), // 5 second delay
     );
 
@@ -75,8 +78,10 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
+    await vi.advanceTimersByTimeAsync(0);
+
     // Fast-forward past timeout
-    jest.advanceTimersByTime(1100);
+    await vi.advanceTimersByTimeAsync(1100);
 
     await waitFor(() => {
       expect(result.current.isTimedOut).toBe(true);
@@ -94,7 +99,7 @@ describe("useSafeQuery", () => {
 
   it("should handle query errors gracefully", async () => {
     const mockError = new Error("Network error");
-    const mockQueryFn = jest.fn().mockRejectedValue(mockError);
+    const mockQueryFn = vi.fn().mockRejectedValue(mockError);
 
     const { result } = renderHook(
       () =>
@@ -105,6 +110,8 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
+    await vi.advanceTimersByTimeAsync(0);
+
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
     });
@@ -114,7 +121,7 @@ describe("useSafeQuery", () => {
   });
 
   it("should cancel request on unmount", async () => {
-    const mockQueryFn = jest
+    const mockQueryFn = vi
       .fn()
       .mockImplementation(
         () => new Promise((resolve) => setTimeout(resolve, 2000)),
@@ -129,11 +136,13 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
+    await vi.advanceTimersByTimeAsync(0);
+
     // Unmount before query completes
     unmount();
 
     // Advance timers to simulate async operation
-    jest.advanceTimersByTime(2100);
+    await vi.advanceTimersByTimeAsync(2100);
 
     // Should not show timeout toast after unmount
     expect(mockToast).not.toHaveBeenCalled();
@@ -141,7 +150,7 @@ describe("useSafeQuery", () => {
 
   it("should provide retry functionality", async () => {
     const mockData = { id: 1, name: "Test" };
-    const mockQueryFn = jest
+    const mockQueryFn = vi
       .fn()
       .mockRejectedValueOnce(new Error("First attempt failed"))
       .mockResolvedValue(mockData);
@@ -154,6 +163,8 @@ describe("useSafeQuery", () => {
         }),
       { wrapper: createWrapper() },
     );
+
+    await vi.advanceTimersByTimeAsync(0);
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -172,7 +183,7 @@ describe("useSafeQuery", () => {
   });
 
   it("should not show timeout toast when disabled", async () => {
-    const mockQueryFn = jest
+    const mockQueryFn = vi
       .fn()
       .mockImplementation(
         () => new Promise((resolve) => setTimeout(resolve, 5000)),
@@ -189,7 +200,9 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
-    jest.advanceTimersByTime(1100);
+    await vi.advanceTimersByTimeAsync(0);
+
+    await vi.advanceTimersByTimeAsync(1100);
 
     await waitFor(() => {
       expect(mockToast).not.toHaveBeenCalled();
@@ -197,8 +210,8 @@ describe("useSafeQuery", () => {
   });
 
   it("should call custom onTimeout callback", async () => {
-    const mockOnTimeout = jest.fn();
-    const mockQueryFn = jest
+    const mockOnTimeout = vi.fn();
+    const mockQueryFn = vi
       .fn()
       .mockImplementation(
         () => new Promise((resolve) => setTimeout(resolve, 5000)),
@@ -215,7 +228,9 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
-    jest.advanceTimersByTime(1100);
+    await vi.advanceTimersByTimeAsync(0);
+
+    await vi.advanceTimersByTimeAsync(1100);
 
     await waitFor(() => {
       expect(mockOnTimeout).toHaveBeenCalledTimes(1);
@@ -224,7 +239,7 @@ describe("useSafeQuery", () => {
 
   it("should use default caching configuration", async () => {
     const mockData = { id: 1, name: "Test" };
-    const mockQueryFn = jest.fn().mockResolvedValue(mockData);
+    const mockQueryFn = vi.fn().mockResolvedValue(mockData);
 
     const { result } = renderHook(
       () =>
@@ -234,6 +249,8 @@ describe("useSafeQuery", () => {
         }),
       { wrapper: createWrapper() },
     );
+
+    await vi.advanceTimersByTimeAsync(0);
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
