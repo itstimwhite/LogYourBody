@@ -2139,7 +2139,7 @@ define(["exports"], function (exports) {
       // Set the body if present.
       if (request.method !== "GET") {
         // Use ArrayBuffer to support non-text request bodies.
-        // NOTE: we can't use Blobs becuse Safari doesn't support storing
+        // NOTE: we can't use Blobs because Safari doesn't support storing
         // Blobs in IndexedDB in some cases:
         // https://github.com/dfahlander/Dexie.js/issues/618#issuecomment-398348457
         requestData.body = await request.clone().arrayBuffer();
@@ -3321,7 +3321,7 @@ define(["exports"], function (exports) {
      * you call each callback, whatever object parameter you pass it will
      * be merged with the plugin's current state).
      *
-     * @param {string} name The name fo the callback to run
+     * @param {string} name The name of the callback to run
      * @return {Array<Function>}
      */
     *iterateCallbacks(name) {
