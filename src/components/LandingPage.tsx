@@ -10,12 +10,6 @@ import {
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import {
   BarChart3,
   Camera,
   Smartphone,
@@ -31,6 +25,7 @@ import { VersionDisplay } from "@/components/VersionDisplay";
 import LandingTimelineDemo from "@/components/LandingTimelineDemo";
 import { prefetchRoute } from "@/lib/prefetch";
 import { StepTrackerSection } from "./StepTrackerModule";
+import { FeaturesFlyout } from "./FeaturesFlyout";
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -93,15 +88,6 @@ export function LandingPage() {
     },
   ];
 
-  const featureLinks = [
-    { id: "advanced-analytics", label: "Advanced Analytics" },
-    { id: "progress-photos-grid", label: "Progress Photos" },
-    { id: "health-app-sync", label: "Health App Sync" },
-    { id: "progress-insights", label: "Progress Insights" },
-    ...appFeatures.map((f) => ({ id: slugify(f.title), label: f.title })),
-    { id: "timeline-feature", label: "Timeline" },
-  ];
-
   const testimonials = [
     {
       name: "Sarah C.",
@@ -146,6 +132,10 @@ export function LandingPage() {
     }
   };
 
+  const handleFeatureClick = (featureId: string) => {
+    scrollToSection(featureId);
+  };
+
   return (
     <div className="min-h-svh bg-linear-bg font-inter">
       {/* Skip Links */}
@@ -171,23 +161,7 @@ export function LandingPage() {
               </div>
               <div className="hidden md:flex items-center space-x-6">
                 <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Product</button>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">
-                      Features
-                    </button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    {featureLinks.map((f) => (
-                      <DropdownMenuItem
-                        key={f.id}
-                        onSelect={() => scrollToSection(f.id)}
-                      >
-                        {f.label}
-                      </DropdownMenuItem>
-                    ))}
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <FeaturesFlyout onFeatureClick={handleFeatureClick} />
                 <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Resources</button>
                 <button
                   className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors"
