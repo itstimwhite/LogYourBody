@@ -44,6 +44,7 @@ import { SplashScreen } from "@capacitor/splash-screen";
 import { serviceWorkerManager } from "@/lib/service-worker-manager";
 import { RouteGuard } from "@/components/RouteGuard";
 import { AuthDebugger } from "@/components/AuthDebugger";
+import { FaceIDGate } from "@/components/FaceIDGate";
 
 // Lazy load pages for better code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -241,13 +242,15 @@ const App = () => {
   }, []); // Empty deps - runs once
 
   return (
-    <AppProviders>
-      <BrowserRouter>
-        <SEOHead />
-        <AppRoutes />
-        <AuthDebugger />
-      </BrowserRouter>
-    </AppProviders>
+    <FaceIDGate>
+      <AppProviders>
+        <BrowserRouter>
+          <SEOHead />
+          <AppRoutes />
+          <AuthDebugger />
+        </BrowserRouter>
+      </AppProviders>
+    </FaceIDGate>
   );
 };
 
