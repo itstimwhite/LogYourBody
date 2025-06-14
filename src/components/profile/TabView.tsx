@@ -264,8 +264,7 @@ export const useTabAccessibility = (tabs: TabItem[], selectedIndex: number) => {
 // Utility for creating tab configurations
 export const createProfileTabs = (
   avatarContent: React.ReactNode,
-  photoContent: React.ReactNode,
-  progressPhotosContent?: React.ReactNode,
+  photosContent: React.ReactNode,
 ): TabItem[] => {
   const tabs: TabItem[] = [
     {
@@ -274,19 +273,11 @@ export const createProfileTabs = (
       content: avatarContent,
     },
     {
-      id: "photo",
-      label: "Photo",
-      content: photoContent,
+      id: "photos",
+      label: "Photos",
+      content: photosContent,
     },
   ];
-  
-  if (progressPhotosContent) {
-    tabs.push({
-      id: "progress",
-      label: "Progress",
-      content: progressPhotosContent,
-    });
-  }
-  
+
   return tabs;
 };

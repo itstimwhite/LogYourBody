@@ -319,18 +319,6 @@ const Dashboard = () => {
                   />
                 </Suspense>,
                 <Suspense fallback={<AvatarLoader />}>
-                  <AvatarDisplay
-                    gender={user.gender}
-                    bodyFatPercentage={currentMetrics.bodyFatPercentage}
-                    showPhoto={true}
-                    profileImage={user.profileImage}
-                    className="h-full w-full"
-                    weight={currentMetrics.weight}
-                    height={user.height}
-                    age={getAgeFromBirthday(user.birthday)}
-                  />
-                </Suspense>,
-                <Suspense fallback={<AvatarLoader />}>
                   <ProgressPhotosGallery
                     metrics={metrics}
                     className="h-full w-full p-4 overflow-y-auto"
