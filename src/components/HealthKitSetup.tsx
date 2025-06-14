@@ -168,7 +168,7 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
       </div>
 
       {/* Fixed Action Buttons at Bottom */}
-      <div className="space-y-4 pb-safe">
+      <div className="space-y-4 pb-safe-bottom">
         <Button
           onClick={handleEnableHealthKit}
           disabled={isRequesting || loading}
@@ -200,7 +200,7 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
       </div>
 
       {/* Fixed Action Buttons at Bottom */}
-      <div className="space-y-4 pb-safe">
+      <div className="space-y-4 pb-safe-bottom">
         <p className="text-center text-sm text-muted-foreground">
           You can always enable this later in Settings
         </p>

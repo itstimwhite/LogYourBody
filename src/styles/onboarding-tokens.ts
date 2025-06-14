@@ -139,7 +139,8 @@ export const onboardingTokens = {
 // Tailwind class mappings for consistent styling
 export const onboardingClasses = {
   container: "min-h-svh flex flex-col bg-background",
-  safeArea: "flex-1 flex flex-col px-6 pt-safe pb-safe",
+  // Use platform safe-area insets for proper spacing on notch devices
+  safeArea: "flex-1 flex flex-col px-6 pt-safe-top pb-safe-bottom",
 
   progress: {
     container: "flex items-center justify-center gap-3 py-4",
