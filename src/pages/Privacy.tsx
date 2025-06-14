@@ -126,7 +126,19 @@ const Privacy = () => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold">7. Your Rights</h3>
+            <h3 className="text-xl font-semibold">7. Third-Party Services</h3>
+            <p className="leading-relaxed text-muted-foreground">
+              We use trusted third-party vendors to operate LogYourBody. These
+              include Supabase for data storage and authentication, RevenueCat
+              and Stripe for subscription management and payment processing, and
+              Vercel for hosting and analytics. These providers may process your
+              information solely to provide their services to us and are
+              obligated to protect your data.
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-xl font-semibold">8. Your Rights</h3>
             <p className="leading-relaxed text-muted-foreground">
               You have the right to:
             </p>
@@ -140,7 +152,7 @@ const Privacy = () => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold">8. Children's Privacy</h3>
+            <h3 className="text-xl font-semibold">9. Children's Privacy</h3>
             <p className="leading-relaxed text-muted-foreground">
               LogYourBody is not intended for use by children under the age of
               13. We do not knowingly collect personal information from children
@@ -149,7 +161,7 @@ const Privacy = () => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold">9. Changes to This Policy</h3>
+            <h3 className="text-xl font-semibold">10. Changes to This Policy</h3>
             <p className="leading-relaxed text-muted-foreground">
               We may update this privacy policy from time to time. We will
               notify you of any changes by posting the new privacy policy on
@@ -158,7 +170,7 @@ const Privacy = () => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold">10. Contact Us</h3>
+            <h3 className="text-xl font-semibold">11. Contact Us</h3>
             <p className="leading-relaxed text-muted-foreground">
               If you have any questions about this Privacy Policy, please
               contact us at:

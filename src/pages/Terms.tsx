@@ -115,7 +115,18 @@ const Terms = () => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold">7. Changes to Terms</h3>
+            <h3 className="text-xl font-semibold">7. Third-Party Services</h3>
+            <p className="leading-relaxed text-muted-foreground">
+              LogYourBody relies on services such as Supabase for data storage
+              and authentication, RevenueCat and Stripe for handling
+              subscriptions and payments, and Vercel for hosting and analytics.
+              Your use of the Service is also subject to these providers'
+              respective terms and policies.
+            </p>
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-xl font-semibold">8. Changes to Terms</h3>
             <p className="leading-relaxed text-muted-foreground">
               LogYourBody may revise these terms of service at any time without
               notice. By using this application, you are agreeing to be bound by
@@ -124,7 +135,7 @@ const Terms = () => {
           </section>
 
           <section className="space-y-4">
-            <h3 className="text-xl font-semibold">8. Contact Information</h3>
+            <h3 className="text-xl font-semibold">9. Contact Information</h3>
             <p className="leading-relaxed text-muted-foreground">
               If you have any questions about these Terms of Service, please
               contact us at:
