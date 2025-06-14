@@ -318,7 +318,7 @@ const Blog = () => {
           <div className="container mx-auto px-4 sm:px-6">
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-linear-text mb-4">
-                {selectedTag ? `Posts tagged "${selectedTag}"` : "Latest Articles"}
+                {selectedTag ? `Posts tagged \"${selectedTag}\"` : "Latest Articles"}
               </h2>
               <p className="text-linear-text-secondary">
                 {filteredPosts.length} article{filteredPosts.length !== 1 ? 's' : ''}
