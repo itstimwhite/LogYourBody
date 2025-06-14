@@ -1,6 +1,6 @@
 ---
 triple:          'arm64-apple-darwin'
-binary-path:     '/Users/timwhite/Library/Developer/Xcode/DerivedData/App-fqsrevpczgedahfmklmhyhdoekhc/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/CapacitorCommunityAppleSignIn.framework/CapacitorCommunityAppleSignIn'
+binary-path:     '/Users/timwhite/Documents/GitHub/TBF/LogYourBody/ios/DerivedData/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/CapacitorCommunityAppleSignIn.framework/CapacitorCommunityAppleSignIn'
 relocations:
   - { offsetInCU: 0x34, offset: 0x5EC59, size: 0x8, addend: 0x0, symName: _CapacitorCommunityAppleSignInVersionString, symObjAddr: 0x0, symBinAddr: 0x7B00, symSize: 0x0 }
   - { offsetInCU: 0x69, offset: 0x5EC8E, size: 0x8, addend: 0x0, symName: _CapacitorCommunityAppleSignInVersionNumber, symObjAddr: 0x40, symBinAddr: 0x7B40, symSize: 0x0 }

@@ -1,6 +1,6 @@
 ---
 triple:          'arm64-apple-darwin'
-binary-path:     '/Users/timwhite/Library/Developer/Xcode/DerivedData/App-fqsrevpczgedahfmklmhyhdoekhc/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/CapacitorSplashScreen.framework/CapacitorSplashScreen'
+binary-path:     '/Users/timwhite/Documents/GitHub/TBF/LogYourBody/ios/DerivedData/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/CapacitorSplashScreen.framework/CapacitorSplashScreen'
 relocations:
   - { offsetInCU: 0x34, offset: 0x59436, size: 0x8, addend: 0x0, symName: _CapacitorSplashScreenVersionString, symObjAddr: 0x0, symBinAddr: 0xE340, symSize: 0x0 }
   - { offsetInCU: 0x69, offset: 0x5946B, size: 0x8, addend: 0x0, symName: _CapacitorSplashScreenVersionNumber, symObjAddr: 0x38, symBinAddr: 0xE378, symSize: 0x0 }

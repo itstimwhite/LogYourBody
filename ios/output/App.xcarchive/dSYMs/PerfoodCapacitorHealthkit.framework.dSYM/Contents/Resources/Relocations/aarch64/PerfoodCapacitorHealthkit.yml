@@ -1,6 +1,6 @@
 ---
 triple:          'arm64-apple-darwin'
-binary-path:     '/Users/timwhite/Library/Developer/Xcode/DerivedData/App-fqsrevpczgedahfmklmhyhdoekhc/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/PerfoodCapacitorHealthkit.framework/PerfoodCapacitorHealthkit'
+binary-path:     '/Users/timwhite/Documents/GitHub/TBF/LogYourBody/ios/DerivedData/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/PerfoodCapacitorHealthkit.framework/PerfoodCapacitorHealthkit'
 relocations:
   - { offsetInCU: 0x34, offset: 0xB427F, size: 0x8, addend: 0x0, symName: _PerfoodCapacitorHealthkitVersionString, symObjAddr: 0x0, symBinAddr: 0x10C70, symSize: 0x0 }
   - { offsetInCU: 0x69, offset: 0xB42B4, size: 0x8, addend: 0x0, symName: _PerfoodCapacitorHealthkitVersionNumber, symObjAddr: 0x38, symBinAddr: 0x10CA8, symSize: 0x0 }
@@ -39,7 +39,7 @@ relocations:
   - { offsetInCU: 0x477, offset: 0xB4870, size: 0x8, addend: 0x0, symName: '_$sSC11HKErrorCodeLeV10Foundation13CustomNSErrorSCAcDP11errorDomainSSvgZTW', symObjAddr: 0x85C, symBinAddr: 0x4990, symSize: 0x10 }
   - { offsetInCU: 0x49E, offset: 0xB4897, size: 0x8, addend: 0x0, symName: '_$sSo11HKErrorCodeVSYSCSY8rawValuexSg03RawD0Qz_tcfCTW', symObjAddr: 0xA38, symBinAddr: 0x4B6C, symSize: 0x10 }
   - { offsetInCU: 0x4BA, offset: 0xB48B3, size: 0x8, addend: 0x0, symName: '_$sSo11HKErrorCodeVSYSCSY8rawValue03RawD0QzvgTW', symObjAddr: 0xA48, symBinAddr: 0x4B7C, symSize: 0xC }
-  - { offsetInCU: 0x4B, offset: 0xB4A16, size: 0x8, addend: 0x0, symName: '_$s25PerfoodCapacitorHealthkit11healthStoreSo08HKHealthE0Cvp', symObjAddr: 0x200F8, symBinAddr: 0x19260, symSize: 0x0 }
+  - { offsetInCU: 0x4B, offset: 0xB4A16, size: 0x8, addend: 0x0, symName: '_$s25PerfoodCapacitorHealthkit11healthStoreSo08HKHealthE0Cvp', symObjAddr: 0x20118, symBinAddr: 0x19260, symSize: 0x0 }
   - { offsetInCU: 0x59, offset: 0xB4A24, size: 0x8, addend: 0x0, symName: '_$s25PerfoodCapacitorHealthkit11healthStore_WZ', symObjAddr: 0x0, symBinAddr: 0x4F64, symSize: 0x30 }
   - { offsetInCU: 0x14A, offset: 0xB4B15, size: 0x8, addend: 0x0, symName: '_$s25PerfoodCapacitorHealthkit0bC6PluginC20requestAuthorizationyySo13CAPPluginCallCFySb_s5Error_pSgtcfU_', symObjAddr: 0x3F8, symBinAddr: 0x535C, symSize: 0x7C }
   - { offsetInCU: 0x1AE, offset: 0xB4B79, size: 0x8, addend: 0x0, symName: '_$s25PerfoodCapacitorHealthkit0bC6PluginC20requestAuthorizationyySo13CAPPluginCallCFTo', symObjAddr: 0x4D8, symBinAddr: 0x543C, symSize: 0x48 }

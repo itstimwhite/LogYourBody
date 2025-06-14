@@ -1,6 +1,6 @@
 ---
 triple:          'arm64-apple-darwin'
-binary-path:     '/Users/timwhite/Library/Developer/Xcode/DerivedData/App-fqsrevpczgedahfmklmhyhdoekhc/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/CapacitorStatusBar.framework/CapacitorStatusBar'
+binary-path:     '/Users/timwhite/Documents/GitHub/TBF/LogYourBody/ios/DerivedData/Build/Intermediates.noindex/ArchiveIntermediates/App/IntermediateBuildFilesPath/UninstalledProducts/iphoneos/CapacitorStatusBar.framework/CapacitorStatusBar'
 relocations:
   - { offsetInCU: 0x34, offset: 0x59436, size: 0x8, addend: 0x0, symName: _CapacitorStatusBarVersionString, symObjAddr: 0x0, symBinAddr: 0xC430, symSize: 0x0 }
   - { offsetInCU: 0x69, offset: 0x5946B, size: 0x8, addend: 0x0, symName: _CapacitorStatusBarVersionNumber, symObjAddr: 0x30, symBinAddr: 0xC460, symSize: 0x0 }
