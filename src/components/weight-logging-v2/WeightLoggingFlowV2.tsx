@@ -39,6 +39,10 @@ interface WeightLoggingFlowV2Props {
     bodyFat?: BodyFatData;
     method?: MethodData;
   };
+  /**
+   * Default units if no initial weight is provided
+   */
+  units?: "imperial" | "metric";
 }
 
 interface WeightLoggingFlowContentProps extends WeightLoggingFlowV2Props {
@@ -243,8 +247,9 @@ function WeightLoggingFlowContent({
 
 export function WeightLoggingFlowV2(props: WeightLoggingFlowV2Props) {
   // Store form data at the top level
+  const defaultUnit = props.units === "metric" ? "kg" : "lbs";
   const [weightData, setWeightData] = useState<WeightData>(
-    props.initialData?.weight || { value: 0, unit: "lbs" },
+    props.initialData?.weight || { value: 0, unit: defaultUnit },
   );
   const [bodyFatData, setBodyFatData] = useState<BodyFatData>(
     props.initialData?.bodyFat || { value: 15 },

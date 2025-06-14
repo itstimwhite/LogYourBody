@@ -84,6 +84,7 @@ export function WeightLoggingWrapper({
             onComplete={handleComplete}
             onCancel={onClose}
             initialData={initialData}
+            units={units}
           />
         </motion.div>
       )}

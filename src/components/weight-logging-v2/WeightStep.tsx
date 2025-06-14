@@ -21,7 +21,7 @@ interface WeightStepProps {
 }
 
 export function WeightStep({ value, onChange }: WeightStepProps) {
-  const { setCanGoNext } = useStepper();
+  const { setCanGoNext, goNext, canGoNext } = useStepper();
   const [inputValue, setInputValue] = useState(
     value.value > 0 ? value.value.toString() : "",
   );
@@ -218,6 +218,9 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
           interaction_type: "keyboard",
           value: `${numValue} ${unit}`,
         });
+        if (canGoNext) {
+          goNext();
+        }
       }
     }
   };
@@ -294,7 +297,7 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.25 }}
       >
-        <div className="flex rounded-xl bg-linear-card border border-linear-border p-1">
+        <div className="flex rounded-xl border border-linear-border bg-linear-card p-1">
           <button
             onClick={handleUnitToggle}
             className={cn(
