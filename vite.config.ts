@@ -89,8 +89,29 @@ export default defineConfig(({ mode }) => ({
     sourcemap: mode === "development",
     // Minification optimizations
     minify: "esbuild",
+    // Additional esbuild tweaks for smaller bundles
+    esbuild: {
+      drop: mode === "production" ? ["console", "debugger"] : [],
+    },
+    // Disable legacy modulepreload polyfill
+    modulePreload: {
+      polyfill: false,
+    },
     // Asset optimization
     assetsInlineLimit: 4096,
+  },
+  // Speed up dev server and tests by pre-bundling heavy deps
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "@tanstack/react-query",
+      "@supabase/supabase-js",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-dropdown-menu",
+      "@radix-ui/react-toast",
+    ],
   },
   plugins: [
     react(),
