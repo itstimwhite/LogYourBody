@@ -51,83 +51,7 @@ const Careers = () => {
     },
   ];
 
-  const openPositions = [
-    {
-      title: "Senior Frontend Engineer",
-      department: "Engineering",
-      type: "Full-time",
-      location: "Remote",
-      description: "Lead the development of our React/TypeScript web application. Experience with modern frontend technologies and user experience design required.",
-      requirements: [
-        "5+ years of React/TypeScript experience",
-        "Experience with modern CSS frameworks (Tailwind)",
-        "Strong UX/UI sensibilities",
-        "Experience with PWA development",
-        "Passion for health and fitness technology",
-      ],
-      icon: Code,
-    },
-    {
-      title: "Mobile Developer (iOS/Android)",
-      department: "Engineering",
-      type: "Full-time",
-      location: "Remote",
-      description: "Develop and maintain our native mobile applications using React Native and Capacitor. HealthKit and Google Fit integration experience preferred.",
-      requirements: [
-        "3+ years of React Native development",
-        "Experience with HealthKit/Google Fit APIs",
-        "App Store and Play Store deployment experience",
-        "Understanding of mobile app security",
-        "Interest in health data and privacy",
-      ],
-      icon: Code,
-    },
-    {
-      title: "Product Designer",
-      department: "Design",
-      type: "Full-time",
-      location: "Remote",
-      description: "Shape the user experience of our body composition tracking platform. Create intuitive designs that make complex health data accessible.",
-      requirements: [
-        "3+ years of product design experience",
-        "Proficiency in Figma and design systems",
-        "Experience designing for health/fitness apps",
-        "Strong understanding of data visualization",
-        "User research and testing experience",
-      ],
-      icon: Palette,
-    },
-    {
-      title: "Data Scientist",
-      department: "Product",
-      type: "Full-time",
-      location: "Remote",
-      description: "Analyze user health data to improve our algorithms and provide better insights. Help us understand what makes people successful in their fitness journeys.",
-      requirements: [
-        "PhD or MS in Statistics, Data Science, or related field",
-        "Experience with health/fitness data analysis",
-        "Proficiency in Python, R, and SQL",
-        "Knowledge of machine learning techniques",
-        "Understanding of health data privacy regulations",
-      ],
-      icon: BarChart3,
-    },
-    {
-      title: "Customer Success Manager",
-      department: "Customer Success",
-      type: "Full-time",
-      location: "Remote",
-      description: "Help our users get the most out of LogYourBody. Provide support, gather feedback, and ensure our community thrives.",
-      requirements: [
-        "2+ years in customer success or support",
-        "Excellent written and verbal communication",
-        "Experience with health/fitness platforms",
-        "Problem-solving mindset",
-        "Passion for helping people achieve their goals",
-      ],
-      icon: Headphones,
-    },
-  ];
+  const openPositions = [];
 
   const benefits = [
     {
@@ -300,65 +224,89 @@ Best regards,
               </p>
             </div>
 
-            <div className="space-y-6">
-              {openPositions.map((position, index) => {
-                const IconComponent = position.icon;
-                return (
-                  <Card key={index} className="border-linear-border bg-linear-card">
-                    <CardHeader>
-                      <div className="flex items-start justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-linear-purple/10">
-                            <IconComponent className="h-6 w-6 text-linear-purple" />
-                          </div>
-                          <div>
-                            <CardTitle className="text-xl text-linear-text">
-                              {position.title}
-                            </CardTitle>
-                            <div className="flex items-center gap-4 mt-2">
-                              <Badge variant="secondary" className="text-xs">
-                                {position.department}
-                              </Badge>
-                              <div className="flex items-center gap-1 text-sm text-linear-text-secondary">
-                                <Briefcase className="h-4 w-4" />
-                                {position.type}
-                              </div>
-                              <div className="flex items-center gap-1 text-sm text-linear-text-secondary">
-                                <MapPin className="h-4 w-4" />
-                                {position.location}
+            {openPositions.length > 0 ? (
+              <div className="space-y-6">
+                {openPositions.map((position, index) => {
+                  const IconComponent = position.icon;
+                  return (
+                    <Card key={index} className="border-linear-border bg-linear-card">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-linear-purple/10">
+                              <IconComponent className="h-6 w-6 text-linear-purple" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-xl text-linear-text">
+                                {position.title}
+                              </CardTitle>
+                              <div className="flex items-center gap-4 mt-2">
+                                <Badge variant="secondary" className="text-xs">
+                                  {position.department}
+                                </Badge>
+                                <div className="flex items-center gap-1 text-sm text-linear-text-secondary">
+                                  <Briefcase className="h-4 w-4" />
+                                  {position.type}
+                                </div>
+                                <div className="flex items-center gap-1 text-sm text-linear-text-secondary">
+                                  <MapPin className="h-4 w-4" />
+                                  {position.location}
+                                </div>
                               </div>
                             </div>
                           </div>
+                          <Button
+                            onClick={() => handleApply(position.title)}
+                            className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary"
+                          >
+                            Apply Now
+                          </Button>
                         </div>
-                        <Button
-                          onClick={() => handleApply(position.title)}
-                          className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary"
-                        >
-                          Apply Now
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <CardDescription className="mb-4 text-linear-text-secondary">
-                        {position.description}
-                      </CardDescription>
-                      
-                      <div>
-                        <h4 className="mb-3 font-medium text-linear-text">Requirements:</h4>
-                        <ul className="space-y-2">
-                          {position.requirements.map((req, reqIndex) => (
-                            <li key={reqIndex} className="flex items-start gap-2 text-sm text-linear-text-secondary">
-                              <div className="h-1.5 w-1.5 bg-linear-purple rounded-full mt-2 flex-shrink-0" />
-                              {req}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
+                      </CardHeader>
+                      <CardContent>
+                        <CardDescription className="mb-4 text-linear-text-secondary">
+                          {position.description}
+                        </CardDescription>
+                        
+                        <div>
+                          <h4 className="mb-3 font-medium text-linear-text">Requirements:</h4>
+                          <ul className="space-y-2">
+                            {position.requirements.map((req, reqIndex) => (
+                              <li key={reqIndex} className="flex items-start gap-2 text-sm text-linear-text-secondary">
+                                <div className="h-1.5 w-1.5 bg-linear-purple rounded-full mt-2 flex-shrink-0" />
+                                {req}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            ) : (
+              <Card className="border-linear-border bg-linear-card">
+                <CardContent className="text-center py-16">
+                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-linear-purple/10">
+                    <Briefcase className="h-8 w-8 text-linear-purple/60" />
+                  </div>
+                  <h3 className="mb-3 text-xl font-semibold text-linear-text">
+                    No Open Positions
+                  </h3>
+                  <p className="mb-6 text-linear-text-secondary max-w-md mx-auto">
+                    We don't have any open positions at the moment, but we're always interested in hearing from talented people who share our passion for health technology.
+                  </p>
+                  <Button
+                    onClick={() => handleApply("General Application")}
+                    variant="outline"
+                    className="border-linear-border text-linear-text hover:bg-linear-border/30"
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Send General Application
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
 
             {/* No Perfect Match CTA */}
             <div className="mt-16 text-center">
