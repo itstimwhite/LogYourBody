@@ -19,6 +19,10 @@ import {
   Check,
   ArrowRight,
   Calendar,
+  Monitor,
+  Tablet,
+  Zap,
+  Download,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Footer from "@/components/Footer";
@@ -242,7 +246,7 @@ export function LandingPage() {
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="h-1.5 w-1.5 bg-linear-purple rounded-full flex-shrink-0"></div>
-                      <span className="text-linear-text font-medium">Progress photos with automated reminders</span>
+                      <span className="text-linear-text font-medium">Works seamlessly on mobile, desktop, and tablet</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="h-1.5 w-1.5 bg-linear-purple rounded-full flex-shrink-0"></div>
@@ -556,6 +560,177 @@ export function LandingPage() {
         </section>
 
         <StepTrackerSection />
+
+        {/* Cross-Platform Section */}
+        <section className="py-20 md:py-32 bg-linear-card/30">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="mx-auto max-w-6xl">
+              <div className="mb-16 text-center">
+                <Badge className="mb-6 bg-linear-purple/10 text-linear-purple border-linear-purple/20 inline-block">
+                  Available Everywhere
+                </Badge>
+                <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
+                  Your data follows you
+                  <br />
+                  <span className="bg-gradient-to-r from-linear-text via-linear-purple to-linear-text bg-clip-text text-transparent">
+                    everywhere you go
+                  </span>
+                </h2>
+                <p className="mx-auto max-w-2xl text-lg text-linear-text-secondary">
+                  Whether you're at home, in the gym, or traveling, LogYourBody works seamlessly 
+                  across all your devices with real-time sync.
+                </p>
+              </div>
+
+              <div className="grid gap-12 lg:grid-cols-2 lg:items-center">
+                {/* Visual Content */}
+                <div className="relative">
+                  {/* Device mockups */}
+                  <div className="relative">
+                    {/* Desktop mockup */}
+                    <div className="rounded-2xl border border-linear-border/50 bg-linear-card/50 backdrop-blur-sm p-6 shadow-xl">
+                      <div className="mb-4 flex items-center gap-3">
+                        <div className="flex gap-2">
+                          <div className="h-3 w-3 rounded-full bg-red-500/60"></div>
+                          <div className="h-3 w-3 rounded-full bg-yellow-500/60"></div>
+                          <div className="h-3 w-3 rounded-full bg-green-500/60"></div>
+                        </div>
+                        <div className="flex-1 text-center">
+                          <div className="h-4 w-48 rounded bg-linear-border/30 mx-auto"></div>
+                        </div>
+                      </div>
+                      <div className="aspect-[16/10] bg-gradient-to-br from-linear-purple/10 to-linear-purple/5 rounded-lg border border-linear-border/30 flex items-center justify-center">
+                        <div className="text-center">
+                          <Monitor className="h-12 w-12 text-linear-purple/50 mx-auto mb-3" />
+                          <p className="text-sm text-linear-text-secondary">Web Dashboard</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mobile mockup - positioned to overlap */}
+                    <div className="absolute -bottom-8 -right-8 w-48 rounded-2xl border border-linear-border/50 bg-linear-card/80 backdrop-blur-sm p-4 shadow-xl">
+                      <div className="mb-3 flex justify-center">
+                        <div className="h-1 w-12 rounded-full bg-linear-border/50"></div>
+                      </div>
+                      <div className="aspect-[9/16] bg-gradient-to-br from-linear-purple/10 to-linear-purple/5 rounded-lg border border-linear-border/30 flex items-center justify-center">
+                        <div className="text-center">
+                          <Smartphone className="h-8 w-8 text-linear-purple/50 mx-auto mb-2" />
+                          <p className="text-xs text-linear-text-secondary">Mobile App</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sync indicator */}
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                      <div className="bg-linear-bg/90 backdrop-blur-sm border border-linear-border/50 rounded-full p-3 shadow-lg">
+                        <Zap className="h-6 w-6 text-linear-purple animate-pulse" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="space-y-8">
+                  <div>
+                    <h3 className="mb-4 text-2xl font-bold text-linear-text">
+                      One app, every platform
+                    </h3>
+                    <p className="text-lg text-linear-text-secondary mb-6">
+                      Log your metrics on your phone at the gym, review progress on your laptop at home, 
+                      or check trends on your tablet anywhere. Your data syncs instantly across all devices.
+                    </p>
+                  </div>
+
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <div className="flex gap-4">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
+                        <Smartphone className="h-6 w-6 text-linear-purple" />
+                      </div>
+                      <div>
+                        <h4 className="mb-1 font-semibold text-linear-text">
+                          Native Mobile Apps
+                        </h4>
+                        <p className="text-sm text-linear-text-secondary">
+                          Full-featured iOS and Android apps with offline support and HealthKit integration.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
+                        <Monitor className="h-6 w-6 text-linear-purple" />
+                      </div>
+                      <div>
+                        <h4 className="mb-1 font-semibold text-linear-text">
+                          Web Dashboard
+                        </h4>
+                        <p className="text-sm text-linear-text-secondary">
+                          Powerful web interface perfect for detailed analysis and data management.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
+                        <Tablet className="h-6 w-6 text-linear-purple" />
+                      </div>
+                      <div>
+                        <h4 className="mb-1 font-semibold text-linear-text">
+                          Tablet Optimized
+                        </h4>
+                        <p className="text-sm text-linear-text-secondary">
+                          Perfect for coaching sessions and reviewing progress with larger charts and graphs.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
+                        <Zap className="h-6 w-6 text-linear-purple" />
+                      </div>
+                      <div>
+                        <h4 className="mb-1 font-semibold text-linear-text">
+                          Real-time Sync
+                        </h4>
+                        <p className="text-sm text-linear-text-secondary">
+                          Log on one device, see it instantly on all others. No manual syncing required.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg border border-linear-border/50 bg-linear-bg/50 p-6">
+                    <div className="flex items-center gap-3 mb-3">
+                      <Download className="h-5 w-5 text-linear-purple" />
+                      <h4 className="font-semibold text-linear-text">Get started today</h4>
+                    </div>
+                    <p className="text-sm text-linear-text-secondary mb-4">
+                      Download the app or sign up on the web. Your account works everywhere from day one.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <Button
+                        onClick={() => navigate("/login")}
+                        onMouseEnter={() => prefetchRoute("/login")}
+                        onFocus={() => prefetchRoute("/login")}
+                        className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary transition-colors"
+                      >
+                        Start Free Trial
+                      </Button>
+                      <Button
+                        variant="outline"
+                        className="border-linear-border text-linear-text-secondary hover:bg-linear-border/30 hover:text-linear-text"
+                        onClick={() => window.open("https://apps.apple.com/app/logyourbody", "_blank")}
+                      >
+                        <Smartphone className="h-4 w-4 mr-2" />
+                        Download App
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Pricing Section */}
         <section id="pricing" className="container mx-auto px-4 sm:px-6 py-20">
