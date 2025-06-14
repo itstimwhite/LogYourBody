@@ -19,6 +19,12 @@ export default {
     },
     extend: {
       colors: {
+        // Custom brand colors
+        'magic-blue': '#5E6AD2',
+        'mercury-white': '#F4F5F8',
+        'nordic-gray': '#222326',
+        'text-secondary': '#95A2B3',
+        // Existing colors
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -62,6 +68,9 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      fontFamily: {
+        inter: ['Inter', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         lg: "var(--radius)",
