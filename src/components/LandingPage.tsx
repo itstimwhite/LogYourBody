@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { VersionDisplay } from "@/components/VersionDisplay";
+import { StepTrackerSection } from "./StepTrackerModule";
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -431,6 +432,8 @@ export function LandingPage() {
             </div>
           </div>
         </section>
+
+        <StepTrackerSection />
 
         {/* Pricing Section */}
         <section className="container mx-auto px-4 sm:px-6 py-20">
