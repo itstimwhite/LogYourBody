@@ -626,7 +626,7 @@ export function LandingPage() {
           <div className="flex flex-col items-center gap-4">
             <VersionDisplay />
             <p className="text-sm text-linear-text-tertiary">
-              © 2024 LogYourBody. All rights reserved.
+              © {import.meta.env.VITE_BUILD_YEAR} LogYourBody. All rights reserved.
             </p>
           </div>
         </div>

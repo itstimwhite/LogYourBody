@@ -23,6 +23,7 @@ export default defineConfig(({ mode }) => ({
         process.env.GITHUB_SHA ||
         Date.now().toString(),
     ),
+    "import.meta.env.VITE_BUILD_YEAR": JSON.stringify(new Date().getFullYear().toString()),
   },
   build: {
     target: "esnext",

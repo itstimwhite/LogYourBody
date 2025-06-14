@@ -52,8 +52,6 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
-    await vi.advanceTimersByTimeAsync(0);
-
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
     });
@@ -77,8 +75,6 @@ describe("useSafeQuery", () => {
         }),
       { wrapper: createWrapper() },
     );
-
-    await vi.advanceTimersByTimeAsync(0);
 
     // Fast-forward past timeout
     await vi.advanceTimersByTimeAsync(1100);
@@ -110,8 +106,6 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
-    await vi.advanceTimersByTimeAsync(0);
-
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
     });
@@ -135,8 +129,6 @@ describe("useSafeQuery", () => {
         }),
       { wrapper: createWrapper() },
     );
-
-    await vi.advanceTimersByTimeAsync(0);
 
     // Unmount before query completes
     unmount();
@@ -163,8 +155,6 @@ describe("useSafeQuery", () => {
         }),
       { wrapper: createWrapper() },
     );
-
-    await vi.advanceTimersByTimeAsync(0);
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
@@ -200,8 +190,6 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
-    await vi.advanceTimersByTimeAsync(0);
-
     await vi.advanceTimersByTimeAsync(1100);
 
     await waitFor(() => {
@@ -228,8 +216,6 @@ describe("useSafeQuery", () => {
       { wrapper: createWrapper() },
     );
 
-    await vi.advanceTimersByTimeAsync(0);
-
     await vi.advanceTimersByTimeAsync(1100);
 
     await waitFor(() => {
@@ -249,8 +235,6 @@ describe("useSafeQuery", () => {
         }),
       { wrapper: createWrapper() },
     );
-
-    await vi.advanceTimersByTimeAsync(0);
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
