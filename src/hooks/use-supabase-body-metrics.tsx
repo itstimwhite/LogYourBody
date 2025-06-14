@@ -122,6 +122,7 @@ export function useSupabaseBodyMetrics() {
     const processedData = (data || []).map((item) => ({
       ...item,
       date: new Date(item.date),
+      stepCount: item.step_count ?? undefined,
     }));
 
     return processedData;
@@ -190,6 +191,7 @@ export function useSupabaseBodyMetrics() {
         weight: 0,
         ffmi: 0,
         leanBodyMass: 0,
+        stepCount: 0,
         date: new Date(),
       };
     }
@@ -205,6 +207,7 @@ export function useSupabaseBodyMetrics() {
       weight: metric.weight,
       ffmi: Math.round(ffmi * 10) / 10,
       leanBodyMass: Math.round(leanBodyMass * 10) / 10,
+      stepCount: metric.stepCount,
       date: metric.date,
     };
   }, [sortedMetrics, selectedDateIndex, userProfile]);
@@ -222,6 +225,7 @@ export function useSupabaseBodyMetrics() {
             weight: newMetric.weight,
             body_fat_percentage: newMetric.bodyFatPercentage,
             method: newMetric.method,
+            step_count: newMetric.stepCount ?? null,
           })
           .select()
           .single();
