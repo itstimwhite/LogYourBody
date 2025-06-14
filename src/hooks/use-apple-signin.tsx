@@ -87,27 +87,38 @@ export function useAppleSignIn() {
             setTimeout(() => reject(new Error("Request timeout")), 15000),
           );
 
+          // First attempt with minimal metadata to avoid 500 errors
+          let signInOptions: any = {
+            skipBrowserRedirect: true,
+          };
+
+          // Only add user metadata on first attempt, skip it on retries to avoid 500 errors
+          if (attempts === 1 && displayName) {
+            signInOptions.data = {
+              name: displayName,
+              given_name: fullName?.givenName,
+              family_name: fullName?.familyName,
+            };
+          }
+
           const signInPromise = supabase.auth.signInWithIdToken({
             provider: "apple",
             token: response.response.identityToken,
             nonce: response.response.nonce,
-            options: {
-              skipBrowserRedirect: true,
-              // Pass the user's name as metadata
-              data: displayName
-                ? {
-                    name: displayName,
-                    given_name: fullName?.givenName,
-                    family_name: fullName?.familyName,
-                  }
-                : undefined,
-            },
+            options: signInOptions,
           });
 
           supabaseResult = await Promise.race([signInPromise, timeoutPromise]);
           break; // Success, exit retry loop
         } catch (retryError: any) {
           console.log(`Attempt ${attempts} failed:`, retryError);
+
+          // If we get a 500 error (unexpected_failure), this is likely a Supabase Apple Sign In bug
+          // Try without metadata on next attempt
+          if (retryError.status === 500 && retryError.code === "unexpected_failure") {
+            console.log("Got 500 unexpected_failure error - this is a known Supabase Apple Sign In issue");
+            console.log("Retrying without user metadata...");
+          }
 
           if (attempts === maxAttempts) {
             throw retryError;
@@ -120,6 +131,15 @@ export function useAppleSignIn() {
 
       if (supabaseResult?.error) {
         console.error("Supabase Apple Sign In error:", supabaseResult.error);
+        
+        // Handle specific 500 unexpected_failure error
+        if (supabaseResult.error.status === 500 && supabaseResult.error.code === "unexpected_failure") {
+          return {
+            success: false,
+            error: "There's a temporary issue with Apple Sign In. Please try email sign in instead, or contact support if this persists.",
+          };
+        }
+        
         return {
           success: false,
           error: `Authentication failed: ${supabaseResult.error.message}`,
@@ -179,6 +199,14 @@ export function useAppleSignIn() {
         return {
           success: false,
           error: "Sign in timed out. Please try again.",
+        };
+      }
+
+      // Handle 500 unexpected_failure error (known Supabase Apple Sign In issue)
+      if (error.status === 500 && error.code === "unexpected_failure") {
+        return {
+          success: false,
+          error: "There's a temporary issue with Apple Sign In. Please try email sign in instead, or contact support if this persists.",
         };
       }
 

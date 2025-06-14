@@ -184,10 +184,10 @@ export function LandingPage() {
                 id="hero-heading"
                 className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-linear-text text-center"
               >
-                Illuminate your gains
+                Track your body<br/>with precision
               </h1>
               <p className="mx-auto mb-12 max-w-2xl text-base sm:text-lg text-linear-text-secondary text-center">
-                Track body fat, muscle mass, and FFMI. Not just weight.
+                Track BF%, FFMI, & Lean-body mass.
                 Used by 10,000+ fitness professionals.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
