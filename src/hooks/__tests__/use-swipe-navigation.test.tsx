@@ -1,4 +1,5 @@
 import { renderHook } from "@testing-library/react";
+import { vi } from "vitest";
 import { useSwipeNavigation } from "../use-swipe-navigation";
 
 // Mock DOM methods
@@ -9,20 +10,20 @@ Object.defineProperty(window, "innerWidth", {
 });
 
 describe("useSwipeNavigation", () => {
-  let mockOnSwipeLeft: jest.Mock;
-  let mockOnSwipeRight: jest.Mock;
+  let mockOnSwipeLeft: vi.Mock;
+  let mockOnSwipeRight: vi.Mock;
 
   beforeEach(() => {
-    mockOnSwipeLeft = jest.fn();
-    mockOnSwipeRight = jest.fn();
-    jest.clearAllMocks();
+    mockOnSwipeLeft = vi.fn();
+    mockOnSwipeRight = vi.fn();
+    vi.clearAllMocks();
   });
 
   afterEach(() => {
     // Clean up event listeners
-    document.removeEventListener("touchstart", jest.fn());
-    document.removeEventListener("touchmove", jest.fn());
-    document.removeEventListener("touchend", jest.fn());
+    document.removeEventListener("touchstart", vi.fn());
+    document.removeEventListener("touchmove", vi.fn());
+    document.removeEventListener("touchend", vi.fn());
   });
 
   it("should trigger onSwipeLeft for left swipe gesture", () => {
@@ -279,7 +280,7 @@ describe("useSwipeNavigation", () => {
     });
 
     // Mock fast swipe (100px in 100ms = 1 px/ms velocity)
-    jest
+    vi
       .spyOn(Date, "now")
       .mockReturnValueOnce(startTime)
       .mockReturnValueOnce(startTime + 100);
@@ -299,7 +300,7 @@ describe("useSwipeNavigation", () => {
     expect(mockOnSwipeLeft).toHaveBeenCalledTimes(1);
     expect(mockOnSwipeRight).not.toHaveBeenCalled();
 
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it("should handle conflicting element selectors correctly", () => {
