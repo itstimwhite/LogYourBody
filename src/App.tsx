@@ -43,6 +43,7 @@ import { Capacitor } from "@capacitor/core";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { serviceWorkerManager } from "@/lib/service-worker-manager";
 import { RouteGuard } from "@/components/RouteGuard";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthDebugger } from "@/components/AuthDebugger";
 
 // Lazy load pages for better code splitting
@@ -244,7 +245,9 @@ const App = () => {
     <AppProviders>
       <BrowserRouter>
         <SEOHead />
-        <AppRoutes />
+        <ErrorBoundary>
+          <AppRoutes />
+        </ErrorBoundary>
         <AuthDebugger />
       </BrowserRouter>
     </AppProviders>
