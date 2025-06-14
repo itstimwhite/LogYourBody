@@ -29,6 +29,7 @@
     "dev": "vite",
     "build": "vite build",
     "test": "vitest --run",
+    "test:watch": "vitest",
     "format.fix": "prettier --write .",
     "typecheck": "tsc",
     "supabase:start": "npx supabase start",
