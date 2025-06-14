@@ -104,6 +104,8 @@
     "embla-carousel-react": "^8.3.0",
     "framer-motion": "^12.17.3",
     "heic2any": "^0.0.4",
+    "dompurify": "^3.2.6",
+    "marked": "^15.0.12",
     "input-otp": "^1.2.4",
     "libphonenumber-js": "^1.12.9",
     "lucide-react": "^0.462.0",
