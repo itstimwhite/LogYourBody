@@ -58,6 +58,8 @@ const Subscription = React.lazy(() => import("./pages/Subscription"));
 const Terms = React.lazy(() => import("./pages/Terms"));
 const Privacy = React.lazy(() => import("./pages/Privacy"));
 const About = React.lazy(() => import("./pages/About"));
+const Careers = React.lazy(() => import("./pages/Careers"));
+const Security = React.lazy(() => import("./pages/Security"));
 const Changelog = React.lazy(() => import("./pages/Changelog"));
 const HealthKitTest = React.lazy(() => import("./pages/HealthKitTest"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
@@ -98,6 +100,8 @@ const publicRoutes = [
   { path: "/splash", element: <Splash /> },
   { path: "/login", element: <Login /> },
   { path: "/about", element: <About /> },
+  { path: "/careers", element: <Careers /> },
+  { path: "/security", element: <Security /> },
   { path: "/terms", element: <Terms /> },
   { path: "/privacy", element: <Privacy /> },
   { path: "/changelog", element: <Changelog /> },

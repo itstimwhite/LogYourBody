@@ -30,9 +30,10 @@ export function Footer() {
       title: "Company",
       links: [
         { label: "About", action: () => handleLinkClick("/about") },
+        { label: "Careers", action: () => handleLinkClick("/careers") },
         { label: "Privacy Policy", action: () => handleLinkClick("/privacy") },
         { label: "Terms of Service", action: () => handleLinkClick("/terms") },
-        { label: "Security", action: () => {}, disabled: true },
+        { label: "Security", action: () => handleLinkClick("/security") },
         { label: "Contact", action: () => handleExternalLink("mailto:support@logyourbody.com") },
       ]
     },
