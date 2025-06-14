@@ -132,7 +132,7 @@ export function Footer() {
         <div className="border-t border-linear-border mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <p className="text-sm text-linear-text-tertiary">
-              © {import.meta.env.VITE_BUILD_YEAR} LogYourBody. All rights reserved.
+              © {import.meta.env.VITE_BUILD_YEAR} LogYourBody
             </p>
             <VersionDisplay />
           </div>
