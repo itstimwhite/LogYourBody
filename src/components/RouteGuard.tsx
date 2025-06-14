@@ -58,14 +58,22 @@ export function RouteGuard({
             hideSplashScreen();
           }
 
-          toast.error("Loading timeout - redirecting", {
-            description: "Redirecting to home due to loading timeout.",
+          toast.error("Loading timeout", {
+            description: location.pathname === "/login"
+              ? "The login screen is taking a while to load."
+              : "Redirecting to home due to loading timeout.",
           });
 
-          // Force navigation to fallback route (home)
-          setTimeout(() => {
-            navigate(fallbackRoute, { replace: true });
-          }, 1000);
+          // Avoid redirect loops on the login screen
+          if (location.pathname !== "/login") {
+            setTimeout(() => {
+              navigate(fallbackRoute, { replace: true });
+            }, 1000);
+          } else {
+            console.warn(
+              "RouteGuard timeout occurred on /login - staying on page",
+            );
+          }
         });
       }
     }, redirectTimeout);
