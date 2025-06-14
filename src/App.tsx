@@ -65,6 +65,7 @@ const HealthKitTest = React.lazy(() => import("./pages/HealthKitTest"));
 const Epic = React.lazy(() => import("./pages/Epic"));
 const Blog = React.lazy(() => import("./pages/Blog"));
 const Mobile = React.lazy(() => import("./pages/Mobile"));
+const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
@@ -120,6 +121,7 @@ const protectedRoutes = [
   { path: "/settings", element: <Settings /> },
   { path: "/subscription", element: <Subscription /> },
   { path: "/healthkit-test", element: <HealthKitTest /> },
+  { path: "/admin", element: <AdminDashboard /> },
 ];
 
 const AppProviders = ({ children }: { children: React.ReactNode }) => (
