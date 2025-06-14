@@ -81,7 +81,7 @@ export function OnboardingFlow({
       // Save profile
       const { error: profileError } = await supabase.from("profiles").upsert({
         id: user.id,
-        email: user.email || "",
+        email: user.email ?? null,
         name: data.name,
         gender: data.gender,
         birthday: data.birthday,
