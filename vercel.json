@@ -47,6 +47,7 @@
       ]
     }
   ],
+  "buildCommand": "npm run build",
   "build": {
     "env": {
       "VITE_SUPABASE_URL": "https://przjeunffnkjzxpykvjn.supabase.co",
