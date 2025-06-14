@@ -266,7 +266,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Create minimal profile that will trigger ProfileSetup
         const { error: profileError } = await supabase.from("profiles").insert({
           id: user.id,
-          email: user.email || "",
+          email: user.email ?? null,
           name: userName,
           // Don't set gender, birthday, height - let ProfileGuard show ProfileSetup
         });
