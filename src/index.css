@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -114,7 +112,7 @@
   /* Enhanced focus indicators - Linear style */
   :focus-visible {
     outline: none;
-    border-color: #5E6AD2;
+    border-color: #5e6ad2;
   }
 
   /* Hide scrollbars for wheel picker */
@@ -245,15 +243,15 @@
   .prose h1 {
     @apply text-[62px] font-extrabold leading-[72px];
   }
-  
+
   .prose h2 {
     @apply text-4xl font-bold leading-10;
   }
-  
+
   .prose h3 {
     @apply text-2xl font-semibold leading-8;
   }
-  
+
   .prose p {
     @apply text-base leading-6 text-text-secondary;
   }
@@ -264,7 +262,7 @@
   .theme-dark {
     @apply bg-nordic-gray text-mercury-white;
   }
-  
+
   .theme-light {
     @apply bg-mercury-white text-nordic-gray;
   }
