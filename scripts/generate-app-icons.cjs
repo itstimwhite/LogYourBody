@@ -41,16 +41,54 @@ const iconSizes = {
 
 async function generateIcon(size) {
   const actualSize = size;
-  const fontSize = Math.floor(actualSize * 0.5);
-  const padding = Math.floor(actualSize * 0.1);
-
-  // Create SVG with black background and white text
+  // Use smaller font size for better balance and more padding
+  const fontSize = Math.floor(actualSize * 0.28); // Reduced from 0.5 to 0.28
+  
+  // Create a more sophisticated design with gradient background
   const svg = `
     <svg width="${actualSize}" height="${actualSize}" xmlns="http://www.w3.org/2000/svg">
-      <rect width="${actualSize}" height="${actualSize}" fill="#000000"/>
-      <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" 
-            font-family="SF Pro Display, -apple-system, BlinkMacSystemFont, sans-serif" 
-            font-weight="bold" font-size="${fontSize}px" fill="#FFFFFF">
+      <defs>
+        <!-- Gradient background for depth -->
+        <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+          <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+        </linearGradient>
+        
+        <!-- Subtle inner shadow for depth -->
+        <filter id="innerShadow">
+          <feGaussianBlur stdDeviation="2" result="offset-blur"/>
+          <feComposite operator="out" in="SourceGraphic" in2="offset-blur" result="inverse"/>
+          <feFlood flood-color="black" flood-opacity="0.2" result="color"/>
+          <feComposite operator="in" in="color" in2="inverse" result="shadow"/>
+          <feComposite operator="over" in="shadow" in2="SourceGraphic"/>
+        </filter>
+        
+        <!-- Subtle glow for the text -->
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      
+      <!-- Background with gradient -->
+      <rect width="${actualSize}" height="${actualSize}" fill="url(#bgGradient)" rx="${actualSize * 0.17}" ry="${actualSize * 0.17}"/>
+      
+      <!-- Subtle border for definition -->
+      <rect x="1" y="1" width="${actualSize - 2}" height="${actualSize - 2}" 
+            fill="none" stroke="#333333" stroke-width="0.5" opacity="0.3"
+            rx="${actualSize * 0.17}" ry="${actualSize * 0.17}"/>
+      
+      <!-- Main text with improved typography -->
+      <text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" 
+            font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif" 
+            font-weight="600" 
+            font-size="${fontSize}px" 
+            fill="#FFFFFF"
+            letter-spacing="${fontSize * 0.08}"
+            filter="url(#glow)">
         LYB
       </text>
     </svg>
@@ -62,7 +100,7 @@ async function generateIcon(size) {
 }
 
 async function generateIcons() {
-  console.log('Generating app icons with black background and white text...');
+  console.log('Generating premium app icons with modern design...');
 
   // Generate iOS icons
   const iosPath = path.join(__dirname, '../ios/App/App/Assets.xcassets/AppIcon.appiconset');
@@ -102,7 +140,7 @@ async function generateIcons() {
     .toFile(path.join(publicPath, 'favicon.ico'));
   console.log('✓ Generated favicon.ico');
 
-  console.log('\nAll icons generated successfully!');
+  console.log('\nAll premium icons generated successfully!');
 }
 
 generateIcons().catch(console.error);

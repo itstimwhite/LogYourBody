@@ -9,14 +9,14 @@
 		"scheme": "App",
 		"contentInset": "automatic",
 		"scrollEnabled": true,
-		"backgroundColor": "#0073ff",
+		"backgroundColor": "#000000",
 		"orientation": "portrait"
 	},
 	"plugins": {
 		"SplashScreen": {
 			"launchShowDuration": 0,
 			"launchAutoHide": false,
-			"backgroundColor": "#0073ff",
+			"backgroundColor": "#000000",
 			"showSpinner": false,
 			"androidSpinnerStyle": "large",
 			"iosSpinnerStyle": "small",
@@ -27,7 +27,7 @@
 			"fadeOutDuration": 200
 		},
 		"StatusBar": {
-			"style": "dark",
+			"style": "light",
 			"backgroundColor": "#000000"
 		}
 	},
