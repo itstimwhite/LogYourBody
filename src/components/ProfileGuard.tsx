@@ -59,9 +59,9 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
     console.log("ProfileGuard: Loading profile for user:", user.id);
 
     try {
-      // Add timeout to prevent hanging
+      // Add timeout to prevent hanging - increase to 10 seconds for better reliability
       const timeoutPromise = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error("Profile query timeout")), 3000);
+        setTimeout(() => reject(new Error("Profile query timeout")), 10000);
       });
 
       const queryPromise = supabase
@@ -116,14 +116,31 @@ export function ProfileGuard({ children }: ProfileGuardProps) {
         setProfile(profileData);
         setNeedsSetup(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("ProfileGuard: Profile loading error:", error);
+      
+      // Check if it's a timeout error
+      if (error.message === "Profile query timeout") {
+        console.warn("ProfileGuard: Query timed out - database might be slow");
+      }
+      
       // On timeout or error, allow access rather than blocking the user
       console.log(
         "ProfileGuard: Allowing access due to error - user can complete profile later",
       );
+      
+      // Set a default empty profile to prevent issues
+      setProfile({
+        id: user.id,
+        name: user.email?.split('@')[0] || 'User',
+        gender: 'male' as const,
+        birthday: new Date(Date.now() - 30 * 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        height: 180,
+        email: user.email || '',
+      });
+      
       setLoading(false);
-      // Don't force profile setup on error - let user continue and they can complete profile from dashboard
+      setNeedsSetup(false); // Don't force setup on error
     } finally {
       setLoading(false);
     }
