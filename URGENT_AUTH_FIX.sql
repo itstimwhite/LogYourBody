@@ -8,6 +8,8 @@
 
 -- Check current function and trigger status
 DO $$
+DECLARE
+    r RECORD;
 BEGIN
     RAISE NOTICE '========================================';
     RAISE NOTICE 'DIAGNOSTIC: Current Auth Setup Status';
