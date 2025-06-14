@@ -198,61 +198,115 @@ export function LandingPage() {
       <main id="main-content" tabIndex={-1}>
         {/* Hero Section */}
         <section
-          className="relative py-20 md:py-32"
+          className="relative py-24 md:py-40 overflow-hidden"
           role="banner"
           aria-labelledby="hero-heading"
         >
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="mx-auto max-w-4xl">
+          {/* Background gradient */}
+          <div className="absolute inset-0 bg-gradient-to-br from-linear-purple/5 via-transparent to-linear-purple/5" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(94,106,210,0.1),transparent)]" />
+          
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
+            <div className="mx-auto max-w-5xl">
+              {/* Badge */}
+              <div className="mb-8 text-center">
+                <Badge className="bg-linear-purple/10 text-linear-purple border-linear-purple/20 text-sm px-4 py-2">
+                  Trusted by 10,000+ users worldwide
+                </Badge>
+              </div>
+              
+              {/* Main headline with gradient */}
               <h1
                 id="hero-heading"
-                className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-linear-text text-center"
+                className="mb-8 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-center"
               >
-                Track your body<br/>with precision
+                <span className="bg-gradient-to-br from-linear-text via-linear-text to-linear-text-secondary bg-clip-text text-transparent">
+                  Track your body
+                </span>
+                <br />
+                <span className="text-linear-text">with precision</span>
               </h1>
-              <p className="mx-auto mb-12 max-w-2xl text-base sm:text-lg text-linear-text-secondary text-center">
-                Track BF%, FFMI, & Lean-body mass.
-                Used by 10,000+ fitness professionals.
+              
+              {/* Subtitle with better spacing */}
+              <p className="mx-auto mb-12 max-w-3xl text-lg sm:text-xl md:text-2xl text-linear-text-secondary text-center leading-relaxed">
+                The professional body composition tracker. 
+                <span className="text-linear-text"> Track BF%, FFMI, and lean mass</span> with 
+                scientific precision.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              
+              {/* CTA buttons with improved styling */}
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
                 <Button
-                  className="bg-linear-text text-linear-bg px-6 py-3 text-sm font-medium rounded-lg hover:bg-linear-text-secondary transition-colors w-full sm:w-auto"
+                  className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 w-full sm:w-auto shadow-lg"
                   onMouseEnter={() => prefetchRoute("/login")}
                   onFocus={() => prefetchRoute("/login")}
                   onClick={() => navigate("/login")}
                 >
-                  Try free for 3 days
+                  Start free trial
                 </Button>
                 <button
-                  className="flex items-center justify-center gap-2 text-sm text-linear-text-secondary hover:text-linear-text transition-colors w-full sm:w-auto"
+                  className="flex items-center justify-center gap-2 text-base text-linear-text-secondary hover:text-linear-text transition-colors w-full sm:w-auto group"
                   aria-label="View live demo"
                 >
                   See it in action
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
                 </button>
+              </div>
+              
+              {/* Product preview placeholder */}
+              <div className="mx-auto max-w-4xl">
+                <div className="relative rounded-2xl bg-gradient-to-br from-linear-card/50 to-linear-card/30 border border-linear-border/50 backdrop-blur-sm p-8 shadow-2xl">
+                  <div className="aspect-video bg-gradient-to-br from-linear-purple/10 to-linear-purple/5 rounded-xl border border-linear-border/30 flex items-center justify-center">
+                    <div className="text-center">
+                      <BarChart3 className="h-16 w-16 text-linear-purple/50 mx-auto mb-4" />
+                      <p className="text-linear-text-secondary">App Preview Coming Soon</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </section>
 
         {/* Social Proof */}
-        <section className="py-12 border-y border-linear-border">
+        <section className="py-16 bg-gradient-to-r from-linear-card/20 via-linear-card/10 to-linear-card/20 border-y border-linear-border/50">
           <div className="container mx-auto px-4 sm:px-6">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 text-center">
-              <div>
-                <div className="text-3xl font-bold text-linear-text">10,000+</div>
+            {/* Companies/Users trust badge */}
+            <div className="mb-12 text-center">
+              <p className="text-sm text-linear-text-tertiary mb-6">Trusted by fitness professionals worldwide</p>
+              <div className="flex justify-center items-center gap-8 opacity-60">
+                <div className="text-lg font-semibold text-linear-text-secondary">10K+ Users</div>
+                <div className="h-1 w-1 bg-linear-text-tertiary rounded-full"></div>
+                <div className="text-lg font-semibold text-linear-text-secondary">2M+ Logs</div>
+                <div className="h-1 w-1 bg-linear-text-tertiary rounded-full"></div>
+                <div className="text-lg font-semibold text-linear-text-secondary">4.9★ Rating</div>
+              </div>
+            </div>
+            
+            {/* Key metrics with better visual hierarchy */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div className="group">
+                <div className="bg-gradient-to-br from-linear-text via-linear-text to-linear-text-secondary bg-clip-text text-transparent text-4xl md:text-5xl font-bold mb-2">
+                  10,000+
+                </div>
                 <div className="text-sm text-linear-text-secondary">Active users</div>
               </div>
-              <div>
-                <div className="text-3xl font-bold text-linear-text">2M+</div>
+              <div className="group">
+                <div className="bg-gradient-to-br from-linear-text via-linear-text to-linear-text-secondary bg-clip-text text-transparent text-4xl md:text-5xl font-bold mb-2">
+                  2M+
+                </div>
                 <div className="text-sm text-linear-text-secondary">Measurements logged</div>
               </div>
-              <div>
-                <div className="text-3xl font-bold text-linear-text">4.9/5</div>
+              <div className="group">
+                <div className="bg-gradient-to-br from-linear-text via-linear-text to-linear-text-secondary bg-clip-text text-transparent text-4xl md:text-5xl font-bold mb-2">
+                  4.9/5
+                </div>
                 <div className="text-sm text-linear-text-secondary">App Store rating</div>
               </div>
-              <div>
-                <div className="text-3xl font-bold text-linear-text">30 sec</div>
+              <div className="group">
+                <div className="bg-gradient-to-br from-linear-text via-linear-text to-linear-text-secondary bg-clip-text text-transparent text-4xl md:text-5xl font-bold mb-2">
+                  30 sec
+                </div>
                 <div className="text-sm text-linear-text-secondary">Average log time</div>
               </div>
             </div>
@@ -260,43 +314,71 @@ export function LandingPage() {
         </section>
 
         {/* Features Grid */}
-        <section id="features-grid" className="py-20" aria-labelledby="features-heading">
+        <section id="features-grid" className="py-24 md:py-32" aria-labelledby="features-heading">
           <div className="container mx-auto px-4 sm:px-6">
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4" role="list">
-              <div id="advanced-analytics" className="space-y-3" role="listitem">
-                <div className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-linear-purple" aria-hidden="true" />
-                  <h3 className="text-base font-medium text-linear-text">Advanced Analytics</h3>
+            {/* Section header */}
+            <div className="mb-20 text-center">
+              <Badge className="mb-6 bg-linear-purple/10 text-linear-purple border-linear-purple/20">
+                Core Features
+              </Badge>
+              <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
+                Everything you need to
+                <br />
+                <span className="bg-gradient-to-r from-linear-text via-linear-purple to-linear-text bg-clip-text text-transparent">
+                  track real progress
+                </span>
+              </h2>
+              <p className="mx-auto max-w-2xl text-lg text-linear-text-secondary">
+                Professional-grade body composition tracking with the simplicity of a modern app.
+              </p>
+            </div>
+            
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4" role="list">
+              <div id="advanced-analytics" className="group relative rounded-2xl border border-linear-border/50 bg-gradient-to-br from-linear-card/50 to-transparent p-8 transition-all duration-300 hover:border-linear-purple/30 hover:bg-linear-card/30" role="listitem">
+                <div className="mb-6">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
+                    <BarChart3 className="h-6 w-6 text-linear-purple" aria-hidden="true" />
+                  </div>
                 </div>
+                <h3 className="mb-3 text-lg font-semibold text-linear-text">Advanced Analytics</h3>
                 <p className="text-sm text-linear-text-secondary leading-relaxed">
-                  See what's really changing. Not just weight.
+                  See what's really changing. Track body fat percentage, FFMI, and lean mass with scientific precision.
                 </p>
               </div>
-              <div id="progress-photos-grid" className="space-y-3" role="listitem">
-                <div className="flex items-center gap-2">
-                  <Camera className="h-5 w-5 text-linear-purple" aria-hidden="true" />
-                  <h3 className="text-base font-medium text-linear-text">Progress Photos</h3>
+              
+              <div id="progress-photos-grid" className="group relative rounded-2xl border border-linear-border/50 bg-gradient-to-br from-linear-card/50 to-transparent p-8 transition-all duration-300 hover:border-linear-purple/30 hover:bg-linear-card/30" role="listitem">
+                <div className="mb-6">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
+                    <Camera className="h-6 w-6 text-linear-purple" aria-hidden="true" />
+                  </div>
                 </div>
+                <h3 className="mb-3 text-lg font-semibold text-linear-text">Progress Photos</h3>
                 <p className="text-sm text-linear-text-secondary leading-relaxed">
-                  Side-by-side comparisons that show real progress.
+                  Automated photo reminders with consistent angles. Side-by-side comparisons that show real progress.
                 </p>
               </div>
-              <div id="health-app-sync" className="space-y-3" role="listitem">
-                <div className="flex items-center gap-2">
-                  <Smartphone className="h-5 w-5 text-linear-purple" aria-hidden="true" />
-                  <h3 className="text-base font-medium text-linear-text">Health App Sync</h3>
+              
+              <div id="health-app-sync" className="group relative rounded-2xl border border-linear-border/50 bg-gradient-to-br from-linear-card/50 to-transparent p-8 transition-all duration-300 hover:border-linear-purple/30 hover:bg-linear-card/30" role="listitem">
+                <div className="mb-6">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
+                    <Smartphone className="h-6 w-6 text-linear-purple" aria-hidden="true" />
+                  </div>
                 </div>
+                <h3 className="mb-3 text-lg font-semibold text-linear-text">Health App Sync</h3>
                 <p className="text-sm text-linear-text-secondary leading-relaxed">
-                  Auto-imports from your health apps. Zero manual entry.
+                  Auto-imports from Apple Health and Google Fit. Zero manual entry, always up to date.
                 </p>
               </div>
-              <div id="progress-insights" className="space-y-3" role="listitem">
-                <div className="flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-linear-purple" aria-hidden="true" />
-                  <h3 className="text-base font-medium text-linear-text">Progress Insights</h3>
+              
+              <div id="progress-insights" className="group relative rounded-2xl border border-linear-border/50 bg-gradient-to-br from-linear-card/50 to-transparent p-8 transition-all duration-300 hover:border-linear-purple/30 hover:bg-linear-card/30" role="listitem">
+                <div className="mb-6">
+                  <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
+                    <TrendingUp className="h-6 w-6 text-linear-purple" aria-hidden="true" />
+                  </div>
                 </div>
+                <h3 className="mb-3 text-lg font-semibold text-linear-text">Progress Insights</h3>
                 <p className="text-sm text-linear-text-secondary leading-relaxed">
-                  Spot trends before they become problems.
+                  Intelligent trend analysis and predictions. Spot patterns before they become problems.
                 </p>
               </div>
             </div>
@@ -551,38 +633,63 @@ export function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="py-20 md:py-32 text-center">
-          <div className="container mx-auto px-4 sm:px-6">
-            <h2 className="mb-4 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
-              Start tracking what matters.
-              <br />
-              Stop guessing.
-            </h2>
-            <p className="mx-auto mb-8 max-w-2xl text-lg text-linear-text-secondary">
-              Join 10,000+ people finally seeing real progress.
-            </p>
-            <div className="flex justify-center gap-4">
-              <Button
-                className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-lg hover:bg-linear-text-secondary transition-colors"
-                onMouseEnter={() => prefetchRoute("/login")}
-                onFocus={() => prefetchRoute("/login")}
-                onClick={() => navigate("/login")}
-              >
-                Try free for 3 days
-              </Button>
-              <Button
-                variant="ghost"
-                className="border border-linear-border text-linear-text-secondary hover:bg-linear-border/50 hover:text-linear-text px-8 py-4 text-base rounded-lg transition-all"
-                onMouseEnter={() => prefetchRoute("/login")}
-                onFocus={() => prefetchRoute("/login")}
-                onClick={() => navigate("/login")}
-              >
-                View demo
-              </Button>
+        <section className="relative py-24 md:py-32 overflow-hidden">
+          {/* Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-linear-purple/5 via-transparent to-linear-purple/5" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(94,106,210,0.1),transparent)]" />
+          
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
+            <div className="mx-auto max-w-4xl text-center">
+              <Badge className="mb-8 bg-linear-purple/10 text-linear-purple border-linear-purple/20">
+                Ready to get started?
+              </Badge>
+              <h2 className="mb-6 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-linear-text">
+                Start tracking what 
+                <br />
+                <span className="bg-gradient-to-r from-linear-text via-linear-purple to-linear-text bg-clip-text text-transparent">
+                  really matters
+                </span>
+              </h2>
+              <p className="mx-auto mb-12 max-w-2xl text-lg sm:text-xl text-linear-text-secondary leading-relaxed">
+                Join 10,000+ people who've discovered the difference accurate body composition tracking makes.
+                Stop guessing, start measuring.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
+                <Button
+                  className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
+                  onMouseEnter={() => prefetchRoute("/login")}
+                  onFocus={() => prefetchRoute("/login")}
+                  onClick={() => navigate("/login")}
+                >
+                  Start free trial
+                </Button>
+                <Button
+                  variant="ghost"
+                  className="border border-linear-border/50 text-linear-text-secondary hover:bg-linear-border/30 hover:text-linear-text px-8 py-4 text-base rounded-xl transition-all backdrop-blur-sm"
+                  onClick={() => navigate("/about")}
+                  onMouseEnter={() => prefetchRoute("/about")}
+                  onFocus={() => prefetchRoute("/about")}
+                >
+                  Learn more
+                </Button>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-linear-text-tertiary">
+                <div className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-linear-purple" />
+                  <span>No credit card required</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-linear-purple" />
+                  <span>3-day free trial</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Check className="h-4 w-4 text-linear-purple" />
+                  <span>Cancel anytime</span>
+                </div>
+              </div>
             </div>
-            <p className="mt-4 text-sm text-linear-text-tertiary">
-              No credit card • 3-day trial • Cancel anytime
-            </p>
           </div>
         </section>
       </main>
