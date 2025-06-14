@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { VersionDisplay } from "@/components/VersionDisplay";
+import LandingTimelineDemo from "@/components/LandingTimelineDemo";
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -383,49 +384,8 @@ export function LandingPage() {
                   {/* Background gradient */}
                   <div className="absolute inset-0 bg-gradient-to-br from-linear-purple/20 via-transparent to-transparent blur-3xl" />
                   
-                  {/* Mock timeline interface */}
-                  <div className="relative rounded-2xl border border-linear-border bg-linear-card p-8">
-                    <div className="mb-6 text-center">
-                      <div className="inline-flex items-center gap-2 rounded-full bg-linear-purple/10 px-4 py-2">
-                        <Calendar className="h-4 w-4 text-linear-purple" />
-                        <span className="text-sm font-medium text-linear-purple">March 15, 2024</span>
-                      </div>
-                    </div>
-                    
-                    <div className="grid gap-4 text-center mb-8">
-                      <div>
-                        <div className="text-3xl font-bold text-linear-text">14.5%</div>
-                        <div className="text-sm text-linear-text-tertiary">Body Fat</div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <div className="text-2xl font-semibold text-linear-text">165 lbs</div>
-                          <div className="text-sm text-linear-text-tertiary">Weight</div>
-                        </div>
-                        <div>
-                          <div className="text-2xl font-semibold text-linear-text">23.1</div>
-                          <div className="text-sm text-linear-text-tertiary">FFMI</div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Timeline slider */}
-                    <div className="relative">
-                      <div className="mb-2 flex items-center justify-between text-xs text-linear-text-tertiary">
-                        <span>Jan 2024</span>
-                        <span>Today</span>
-                      </div>
-                      <div className="relative h-3 rounded-full bg-linear-border">
-                        <div className="absolute left-0 h-full w-3/4 rounded-full bg-gradient-to-r from-linear-purple/60 to-linear-purple" />
-                        <div className="absolute left-3/4 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full border-2 border-linear-bg bg-linear-purple shadow-lg" />
-                      </div>
-                      <div className="mt-4 text-center">
-                        <p className="text-sm text-linear-text-secondary">
-                          ← Swipe to travel through time →
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  {/* Interactive timeline demo */}
+                  <LandingTimelineDemo />
                 </div>
               </div>
             </div>
