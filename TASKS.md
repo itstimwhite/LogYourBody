@@ -1,0 +1,3 @@
+- [ ] Add testimonials section to landing page
+- [ ] Add "Back to top" link in footer
+- [ ] Hook up "See it in action" button to scroll to demo

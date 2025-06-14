@@ -26,6 +26,7 @@ import LandingTimelineDemo from "@/components/LandingTimelineDemo";
 import { prefetchRoute } from "@/lib/prefetch";
 import { StepTrackerSection } from "./StepTrackerModule";
 import { FeaturesFlyout } from "./FeaturesFlyout";
+import { TestimonialsSection } from "./TestimonialsSection";
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -137,7 +138,7 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-svh bg-linear-bg font-inter">
+    <div id="page-top" className="min-h-svh bg-linear-bg font-inter">
       {/* Skip Links */}
       <div className="sr-only z-50 focus:not-sr-only focus:absolute focus:left-4 focus:top-4">
         <button
@@ -229,6 +230,7 @@ export function LandingPage() {
                 <button
                   className="flex items-center justify-center gap-2 text-sm text-linear-text-secondary hover:text-linear-text transition-colors w-full sm:w-auto"
                   aria-label="View live demo"
+                  onClick={() => scrollToSection('timeline-feature')}
                 >
                   See it in action
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -422,6 +424,8 @@ export function LandingPage() {
         </section>
 
         <StepTrackerSection />
+
+        <TestimonialsSection testimonials={testimonials} />
 
         {/* Pricing Section */}
         <section id="pricing" className="container mx-auto px-4 sm:px-6 py-20">
@@ -639,6 +643,12 @@ export function LandingPage() {
             </Button>
           </div>
           <div className="flex flex-col items-center gap-4">
+            <button
+              onClick={() => scrollToSection('page-top')}
+              className="rounded-lg border border-linear-border px-4 py-2 text-sm text-linear-text-secondary hover:bg-linear-border/50 hover:text-linear-text transition-colors"
+            >
+              Back to top
+            </button>
             <VersionDisplay />
             <p className="text-sm text-linear-text-tertiary">
               © {import.meta.env.VITE_BUILD_YEAR} LogYourBody. All rights reserved.
