@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { tw, settingsTokens } from "@/styles/settings-design";
 import { SettingModal, ModalActions } from "./SettingModal";
-import { DatePickerWheel } from "./PickerWheel";
+import { DateWheelPicker } from "@/components/ui/wheel-picker";
 
 interface EditBirthdayModalProps {
   isOpen: boolean;
@@ -100,7 +100,7 @@ export const EditBirthdayModal = React.memo<EditBirthdayModalProps>(
 
           {/* Date picker */}
           <div className="space-y-4">
-            <DatePickerWheel
+            <DateWheelPicker
               date={selectedDate}
               onDateChange={setSelectedDate}
               className="h-60"
