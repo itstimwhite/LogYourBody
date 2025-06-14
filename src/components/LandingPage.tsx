@@ -148,7 +148,10 @@ export function LandingPage() {
         </button>
       </div>
       {/* Header */}
-      <header className="border-b border-linear-border" role="banner">
+      <header
+        className="sticky top-0 z-40 border-b border-linear-border bg-linear-bg/80 backdrop-blur"
+        role="banner"
+      >
         <div className="container mx-auto px-4 sm:px-6 py-4">
           <nav
             className="flex items-center justify-between"
@@ -201,7 +204,7 @@ export function LandingPage() {
       <main id="main-content" tabIndex={-1}>
         {/* Hero Section */}
         <section
-          className="relative py-20 md:py-32"
+          className="relative overflow-hidden bg-gradient-to-b from-linear-purple/30 via-linear-bg/90 to-linear-bg py-24 md:py-36"
           role="banner"
           aria-labelledby="hero-heading"
         >
@@ -209,9 +212,9 @@ export function LandingPage() {
             <div className="mx-auto max-w-4xl">
               <h1
                 id="hero-heading"
-                className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-linear-text text-center"
+                className="mb-6 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight bg-gradient-to-br from-linear-purple to-white bg-clip-text text-transparent text-center"
               >
-                Track your body<br/>with precision
+                Track your body<br />with precision
               </h1>
               <p className="mx-auto mb-12 max-w-2xl text-base sm:text-lg text-linear-text-secondary text-center">
                 Track BF%, FFMI, & Lean-body mass.
@@ -219,7 +222,7 @@ export function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
-                  className="bg-linear-text text-linear-bg px-6 py-3 text-sm font-medium rounded-lg hover:bg-linear-text-secondary transition-colors w-full sm:w-auto"
+                  className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-lg hover:bg-linear-text-secondary transition-colors w-full sm:w-auto"
                   onMouseEnter={() => prefetchRoute("/login")}
                   onFocus={() => prefetchRoute("/login")}
                   onClick={() => navigate("/login")}
