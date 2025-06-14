@@ -49,6 +49,7 @@ import { AuthDebugger } from "@/components/AuthDebugger";
 // Lazy load pages for better code splitting
 const Index = React.lazy(() => import("./pages/Index"));
 const Splash = React.lazy(() => import("./pages/Splash"));
+const TestAuth = React.lazy(() => import("./pages/TestAuth"));
 const Login = React.lazy(() => import("./pages/Login"));
 const Dashboard = React.lazy(() => import("./pages/Dashboard"));
 const Settings = React.lazy(() => import("./pages/Settings"));
@@ -97,6 +98,7 @@ const publicRoutes = [
   { path: "/terms", element: <Terms /> },
   { path: "/privacy", element: <Privacy /> },
   { path: "/changelog", element: <Changelog /> },
+  { path: "/test-auth", element: <TestAuth /> },
 ];
 
 const protectedRoutes = [
