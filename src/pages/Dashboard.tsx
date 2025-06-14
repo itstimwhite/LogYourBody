@@ -12,6 +12,7 @@ import { WeightPrompt } from "@/components/WeightPrompt";
 import { TrialGuard } from "@/components/TrialGuard";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import { EmailConfirmationBanner } from "@/components/EmailConfirmationBanner";
+import { ProgressPhotosGallery } from "@/components/profile/ProgressPhotosGallery";
 import { prefetchRoute } from "@/lib/prefetch";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
@@ -329,6 +330,12 @@ const Dashboard = () => {
                     age={getAgeFromBirthday(user.birthday)}
                   />
                 </Suspense>,
+                <Suspense fallback={<AvatarLoader />}>
+                  <ProgressPhotosGallery
+                    metrics={metrics}
+                    className="h-full w-full p-4 overflow-y-auto"
+                  />
+                </Suspense>
               )}
               defaultIndex={activeTabIndex}
               onTabChange={handleTabChange}

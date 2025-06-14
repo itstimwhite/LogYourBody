@@ -39,47 +39,8 @@ export function WeightLoggingWrapper({
     weight: WeightData;
     bodyFat: BodyFatData;
     method: MethodData;
-    photo?: File;
+    photoUrl?: string;
   }) => {
-    let photoUrl: string | undefined;
-
-    if (data.photo && supabase && user) {
-      try {
-        let uploadFile: File | Blob = data.photo;
-        if (
-          data.photo.type === "image/heic" ||
-          data.photo.type === "image/heif" ||
-          /\.heic$/i.test(data.photo.name)
-        ) {
-          const converted = await heic2any({
-            blob: data.photo,
-            toType: "image/jpeg",
-            quality: 0.9,
-          });
-          uploadFile = new File(
-            [converted as BlobPart],
-            data.photo.name.replace(/\.heic$/i, ".jpg"),
-            { type: "image/jpeg" },
-          );
-        }
-
-        const filePath = `${user.id}/${Date.now()}_${(uploadFile as File).name}`;
-        const { error } = await supabase.storage
-          .from("progress-photos")
-          .upload(filePath, uploadFile);
-        if (!error) {
-          const { data: urlData } = supabase.storage
-            .from("progress-photos")
-            .getPublicUrl(filePath);
-          photoUrl = urlData.publicUrl;
-        } else {
-          console.error("Photo upload error", error);
-        }
-      } catch (err) {
-        console.error("Failed to process photo", err);
-      }
-    }
-
     onSave({
       weight: data.weight.value,
       bodyFatPercentage: data.bodyFat.value,
@@ -88,7 +49,7 @@ export function WeightLoggingWrapper({
         label: data.method.label,
       },
       date: new Date(),
-      photoUrl,
+      photoUrl: data.photoUrl,
     });
     onClose();
   };

@@ -10,6 +10,7 @@ import {
   type MethodData,
 } from "@/schemas/weight-logging";
 import { weightAnalytics } from "@/utils/weight-analytics";
+import { PhotoCapture } from "@/components/PhotoCapture";
 
 // Lazy load steps for better performance
 const WeightStep = React.lazy(() =>
@@ -30,7 +31,7 @@ interface WeightLoggingFlowV2Props {
     weight: WeightData;
     bodyFat: BodyFatData;
     method: MethodData;
-    photo?: File;
+    photoUrl?: string;
   }) => void;
   onCancel: () => void;
   initialData?: {
@@ -47,8 +48,10 @@ interface WeightLoggingFlowContentProps extends WeightLoggingFlowV2Props {
   setBodyFatData: (data: BodyFatData) => void;
   methodData: MethodData;
   setMethodData: (data: MethodData) => void;
-  photoData?: File;
-  setPhotoData: (data: File | undefined) => void;
+  photoUrl?: string;
+  setPhotoUrl: (url: string | undefined) => void;
+  showPhotoCapture: boolean;
+  setShowPhotoCapture: (show: boolean) => void;
 }
 
 function WeightLoggingFlowContent({
@@ -61,8 +64,10 @@ function WeightLoggingFlowContent({
   setBodyFatData,
   methodData,
   setMethodData,
-  photoData,
-  setPhotoData,
+  photoUrl,
+  setPhotoUrl,
+  showPhotoCapture,
+  setShowPhotoCapture,
 }: WeightLoggingFlowContentProps) {
   const { currentStep, canGoNext, goNext, goBack, goToStep, progress } =
     useStepper();
@@ -78,52 +83,15 @@ function WeightLoggingFlowContent({
     goToStep(step);
   };
 
-  const handleAddPhoto = async () => {
-    try {
-      // Create file input element
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.capture = "user"; // Use front camera on mobile
+  const handleAddPhoto = () => {
+    setShowPhotoCapture(true);
+  };
 
-      // Handle file selection
-      input.onchange = async (event) => {
-        const file = (event.target as HTMLInputElement).files?.[0];
-        if (!file) return;
-
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-          toast({
-            title: "File too large",
-            description: "Please select an image under 5MB",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        setPhotoData(file);
-
-        weightAnalytics.trackPhotoAdded({
-          file_size_kb: Math.round(file.size / 1024),
-          file_type: file.type,
-        });
-
-        toast({
-          title: "Photo added",
-          description: "Your progress photo has been attached",
-        });
-      };
-
-      // Trigger file picker
-      input.click();
-    } catch (error) {
-      console.error("Error capturing photo:", error);
-      toast({
-        title: "Error",
-        description: "Failed to capture photo",
-        variant: "destructive",
-      });
-    }
+  const handlePhotoUploaded = (url: string) => {
+    setPhotoUrl(url);
+    weightAnalytics.trackPhotoAdded({
+      photo_url: url,
+    });
   };
 
   const renderStep = () => {
@@ -151,6 +119,13 @@ function WeightLoggingFlowContent({
 
   return (
     <div className="flex h-full flex-col bg-linear-bg font-inter">
+      {/* Photo Capture Dialog */}
+      <PhotoCapture
+        isOpen={showPhotoCapture}
+        onClose={() => setShowPhotoCapture(false)}
+        onPhotoUploaded={handlePhotoUploaded}
+      />
+
       {/* Header with Progress */}
       <div className="flex-shrink-0 px-6 pt-safe-top">
         {/* Navigation */}
@@ -277,7 +252,8 @@ export function WeightLoggingFlowV2(props: WeightLoggingFlowV2Props) {
   const [methodData, setMethodData] = useState<MethodData>(
     props.initialData?.method || { value: "scale", label: "Digital Scale" },
   );
-  const [photoData, setPhotoData] = useState<File | undefined>();
+  const [photoUrl, setPhotoUrl] = useState<string | undefined>();
+  const [showPhotoCapture, setShowPhotoCapture] = useState(false);
 
   const handleComplete = async () => {
     // Track completion analytics
@@ -287,14 +263,14 @@ export function WeightLoggingFlowV2(props: WeightLoggingFlowV2Props) {
       final_weight: `${weightData.value} ${weightData.unit}`,
       final_body_fat: `${bodyFatData.value}%`,
       final_method: methodData.label,
-      had_photo: !!photoData,
+      had_photo: !!photoUrl,
     });
 
     props.onComplete({
       weight: weightData,
       bodyFat: bodyFatData,
       method: methodData,
-      photo: photoData,
+      photoUrl: photoUrl,
     });
   };
 
@@ -308,8 +284,10 @@ export function WeightLoggingFlowV2(props: WeightLoggingFlowV2Props) {
         setBodyFatData={setBodyFatData}
         methodData={methodData}
         setMethodData={setMethodData}
-        photoData={photoData}
-        setPhotoData={setPhotoData}
+        photoUrl={photoUrl}
+        setPhotoUrl={setPhotoUrl}
+        showPhotoCapture={showPhotoCapture}
+        setShowPhotoCapture={setShowPhotoCapture}
       />
     </StepperProvider>
   );
