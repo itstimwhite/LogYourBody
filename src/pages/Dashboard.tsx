@@ -277,8 +277,8 @@ const Dashboard = () => {
 
         {/* Main Content - Refactored with TabView */}
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
-          {/* Avatar/Photo Section with Tabs - Top half on mobile, 2/3 on desktop */}
-          <div className="relative min-h-0 flex-1 md:w-2/3">
+          {/* Avatar/Photo Section with Tabs - Increased height on mobile, 2/3 on desktop */}
+          <div className="relative min-h-0 flex-[1.5] md:flex-1 md:w-2/3">
             <TabView
               tabs={createProfileTabs(
                 <Suspense fallback={<AvatarLoader />}>
@@ -338,8 +338,8 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Profile Panel - Bottom half on mobile, 1/3 on desktop */}
-          <div className="min-h-0 flex-1 border-border md:w-1/3 md:flex-none md:border-l">
+          {/* Profile Panel - Reduced height on mobile, 1/3 on desktop */}
+          <div className="min-h-0 flex-[0.8] border-border md:w-1/3 md:flex-1 md:border-l">
             <ProfilePanel
               metrics={currentMetrics}
               user={user}

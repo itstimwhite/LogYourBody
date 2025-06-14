@@ -10,49 +10,23 @@ interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const [navigationInitiated, setNavigationInitiated] = React.useState(false);
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const hasOAuthParams =
-      urlParams.has("access_token") ||
-      urlParams.has("refresh_token") ||
-      urlParams.has("code");
+    // Prevent multiple navigation attempts
+    if (navigationInitiated) return;
+    
+    // Still loading - don't navigate
+    if (loading) return;
+    
+    // User exists - don't navigate
+    if (user) return;
 
-    console.log("AuthGuard: state check", {
-      loading,
-      hasUser: !!user,
-      currentPath: window.location.pathname,
-      hasOAuthParams,
-    });
-
-    // Don't redirect immediately - give auth time to load
-    if (!loading && !user && !hasOAuthParams) {
-      // Add a small delay before redirecting to prevent rapid redirects
-      const redirectTimer = setTimeout(() => {
-        if (!user) {
-          console.log(
-            "AuthGuard: redirecting to home - no user found and not OAuth flow",
-          );
-          navigate("/");
-        }
-      }, 500); // 500ms delay to allow auth to settle
-      return () => clearTimeout(redirectTimer);
-    } else if (!loading && !user && hasOAuthParams) {
-      console.log(
-        "AuthGuard: OAuth params detected, waiting for auth to complete...",
-      );
-      // Give auth more time to process OAuth redirect
-      const timer = setTimeout(() => {
-        if (!user) {
-          console.log(
-            "AuthGuard: OAuth processing timeout, redirecting to home",
-          );
-          navigate("/");
-        }
-      }, 10000); // 10 second grace period for OAuth processing
-      return () => clearTimeout(timer);
-    }
-  }, [user, loading, navigate]);
+    // No user and loading complete - navigate to home
+    console.log("AuthGuard: No user found, redirecting to home");
+    setNavigationInitiated(true);
+    navigate("/", { replace: true });
+  }, [user, loading, navigate, navigationInitiated]);
 
   if (loading) {
     return (

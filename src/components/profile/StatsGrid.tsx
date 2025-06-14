@@ -52,7 +52,7 @@ export const StatsGrid = React.memo<StatsGridProps>(function StatsGrid({
 
   return (
     <motion.div
-      className={cn(tw.statsGrid, "mb-6 md:mb-8", className)}
+      className={cn(tw.statsGrid, "mb-3 md:mb-8", className)}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={fadeIn}
@@ -80,7 +80,7 @@ export const StatsGrid = React.memo<StatsGridProps>(function StatsGrid({
           </div>
 
           {/* Label */}
-          <div className={cn(tw.profileLabel, "mt-1")}>{stat.label}</div>
+          <div className={cn(tw.profileLabel, "mt-0.5")}>{stat.label}</div>
         </motion.div>
       ))}
     </motion.div>

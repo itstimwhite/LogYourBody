@@ -15,14 +15,14 @@ const config: CapacitorConfig = {
     scheme: "App",
     contentInset: "automatic",
     scrollEnabled: true,
-    backgroundColor: "#0073ff", // Match splash screen background
+    backgroundColor: "#000000", // Black background
     orientation: "portrait",
   },
   plugins: {
     SplashScreen: {
       launchShowDuration: 0, // Show immediately, no minimum duration
       launchAutoHide: false, // Let the app control when to hide
-      backgroundColor: "#0073ff", // Blue background to match icon
+      backgroundColor: "#000000", // Black background
       showSpinner: false,
       androidSpinnerStyle: "large",
       iosSpinnerStyle: "small",
@@ -33,7 +33,7 @@ const config: CapacitorConfig = {
       fadeOutDuration: 200, // Quick fade out
     },
     StatusBar: {
-      style: "dark",
+      style: "light",
       backgroundColor: "#000000",
     },
   },

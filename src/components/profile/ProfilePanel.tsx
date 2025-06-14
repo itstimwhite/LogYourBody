@@ -53,7 +53,7 @@ export const ProfilePanel = React.memo<ProfilePanelProps>(
     return (
       <motion.div
         className={cn(
-          "flex h-full w-full flex-col justify-center p-4 md:p-6",
+          "flex h-full w-full flex-col justify-center p-3 md:p-6",
           "bg-background/95 backdrop-blur-sm",
           className,
         )}
@@ -66,12 +66,12 @@ export const ProfilePanel = React.memo<ProfilePanelProps>(
         {/* User name header */}
         {user.name && (
           <motion.div
-            className="mb-6 md:mb-8"
+            className="mb-3 md:mb-8"
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ ...fadeIn, delay: 0.1 }}
           >
-            <h1 className="text-base font-semibold tracking-tight text-foreground md:text-lg">
+            <h1 className="text-sm font-semibold tracking-tight text-foreground md:text-lg">
               {user.name}
             </h1>
           </motion.div>

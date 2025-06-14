@@ -181,23 +181,23 @@ export const getAnimation = (tokenName: keyof typeof tokens.animation) => {
   return tokens.animation[tokenName];
 };
 
-// Tailwind class generators based on tokens
+// Tailwind class generators based on tokens - Ultra compact mobile layout
 export const tw = {
-  profileValue: "text-2xl md:text-3xl lg:text-4xl font-semibold leading-tight text-foreground",
+  profileValue: "text-xl md:text-3xl lg:text-4xl font-semibold leading-none text-foreground",
   profileLabel:
-    "text-xs md:text-sm font-medium uppercase opacity-70 tracking-wider text-muted-foreground",
-  profileUnit: "text-xl md:text-2xl font-medium opacity-80 text-muted-foreground",
+    "text-[10px] md:text-sm font-medium uppercase opacity-70 tracking-wider text-muted-foreground",
+  profileUnit: "text-lg md:text-2xl font-medium opacity-80 text-muted-foreground",
   bodyFatOverlay: "text-sm md:text-base font-medium text-center text-foreground",
   attributeLabel:
-    "text-[10px] md:text-xs font-medium uppercase opacity-70 tracking-wider text-muted-foreground",
-  attributeValue: "text-xs md:text-sm font-semibold text-foreground",
-  timelineLabel: "text-[10px] md:text-xs font-medium opacity-70 text-muted-foreground",
-  timelineValue: "text-sm md:text-base font-semibold text-foreground",
+    "text-[9px] md:text-xs font-medium uppercase opacity-70 tracking-wider text-muted-foreground",
+  attributeValue: "text-[11px] md:text-sm font-semibold text-foreground",
+  timelineLabel: "text-[9px] md:text-xs font-medium opacity-70 text-muted-foreground",
+  timelineValue: "text-xs md:text-base font-semibold text-foreground",
 
-  // Layout utilities - optimized for mobile
-  statsGrid: "grid grid-cols-2 gap-3 md:flex md:flex-col md:gap-4",
-  attributeRow: "grid grid-cols-3 gap-3 min-h-[40px] md:min-h-[48px]",
-  avatarContainer: "relative h-[50vh] max-h-[400px] md:h-full w-full",
+  // Layout utilities - ultra compact mobile with minimal gaps
+  statsGrid: "grid grid-cols-2 gap-2 md:flex md:flex-col md:gap-4",
+  attributeRow: "grid grid-cols-3 gap-2 min-h-[32px] md:min-h-[48px]",
+  avatarContainer: "relative h-[35vh] max-h-[280px] md:h-full w-full",
   safeArea: "pb-[env(safe-area-inset-bottom)]",
 
   // Interactive states

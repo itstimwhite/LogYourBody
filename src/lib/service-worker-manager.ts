@@ -23,7 +23,7 @@ class ServiceWorkerManager {
   } = {
     count: 0,
     startTime: Date.now(),
-    threshold: 3, // Max redirects in 2 seconds
+    threshold: 20, // Increased from 3 to 20 - only trigger on severe loops
   };
 
   public async disableOnNative(): Promise<void> {
@@ -104,7 +104,7 @@ class ServiceWorkerManager {
     const now = Date.now();
 
     // Reset counter if too much time has passed
-    if (now - this.redirectLoopDetector.startTime > 2000) {
+    if (now - this.redirectLoopDetector.startTime > 10000) { // Increased from 2s to 10s
       this.redirectLoopDetector.count = 0;
       this.redirectLoopDetector.startTime = now;
     }
@@ -139,10 +139,8 @@ class ServiceWorkerManager {
           "The app has been reset to fix loading issues. Refreshing...",
       });
 
-      // Force reload after a brief delay
-      setTimeout(() => {
-        window.location.href = window.location.origin;
-      }, 1500);
+      // Instead of forcing reload, just notify the user
+      // Removed automatic reload to prevent infinite loops
     } catch (error) {
       console.error("Error handling redirect loop:", error);
       this.state.unregistrationInProgress = false;
@@ -230,7 +228,10 @@ class ServiceWorkerManager {
         // Listen for the new SW to take control
         navigator.serviceWorker.addEventListener("controllerchange", () => {
           console.log("New service worker activated");
-          window.location.reload();
+          // Notify user instead of automatic reload
+          toast.success("App updated", {
+            description: "A new version is ready. Please refresh when convenient.",
+          });
         });
       }
     } catch (error) {

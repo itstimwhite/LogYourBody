@@ -119,7 +119,7 @@ export function RouteGuard({
     // Add current redirect
     redirectHistory.push({ path: location.pathname, timestamp: now });
 
-    // Check for loops (same path visited 12+ times in 10 seconds) - very tolerant threshold
+    // Check for loops (same path visited 25+ times in 10 seconds) - extremely tolerant threshold
     const pathCounts = redirectHistory.reduce(
       (acc, entry) => {
         acc[entry.path] = (acc[entry.path] || 0) + 1;
@@ -128,10 +128,10 @@ export function RouteGuard({
       {} as Record<string, number>,
     );
 
-    const hasLoop = Object.values(pathCounts).some((count) => count >= 12);
+    const hasLoop = Object.values(pathCounts).some((count) => count >= 25);
 
     // Add detailed logging for redirect tracking
-    if (Object.values(pathCounts).some((count) => count >= 6)) {
+    if (Object.values(pathCounts).some((count) => count >= 15)) {
       console.warn("RouteGuard: Potential redirect loop detected", {
         pathCounts,
         currentPath: location.pathname,

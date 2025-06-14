@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { StepperProvider } from "@/contexts/StepperContext";
+import { StepperProvider, useStepper } from "@/contexts/StepperContext";
 import {
   type WeightData,
   type BodyFatData,
@@ -39,73 +39,38 @@ interface WeightLoggingFlowV2Props {
   };
 }
 
-export function WeightLoggingFlowV2({
+interface WeightLoggingFlowContentProps extends WeightLoggingFlowV2Props {
+  weightData: WeightData;
+  setWeightData: (data: WeightData) => void;
+  bodyFatData: BodyFatData;
+  setBodyFatData: (data: BodyFatData) => void;
+  methodData: MethodData;
+  setMethodData: (data: MethodData) => void;
+  photoData?: string;
+  setPhotoData: (data: string | undefined) => void;
+}
+
+function WeightLoggingFlowContent({
   onComplete,
   onCancel,
   initialData,
-}: WeightLoggingFlowV2Props) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [canGoNext, setCanGoNext] = useState(false);
+  weightData,
+  setWeightData,
+  bodyFatData,
+  setBodyFatData,
+  methodData,
+  setMethodData,
+  photoData,
+  setPhotoData,
+}: WeightLoggingFlowContentProps) {
+  const { currentStep, canGoNext, goNext, goBack, goToStep, progress } = useStepper();
 
-  // Form data state
-  const [weightData, setWeightData] = useState<WeightData>(
-    initialData?.weight || { value: 0, unit: "lbs" },
-  );
-  const [bodyFatData, setBodyFatData] = useState<BodyFatData>(
-    initialData?.bodyFat || { value: 15 },
-  );
-  const [methodData, setMethodData] = useState<MethodData>(
-    initialData?.method || { value: "scale", label: "Digital Scale" },
-  );
-  const [photoData, setPhotoData] = useState<string | undefined>();
+  // Form data is now passed from parent
 
   const totalSteps = 4;
   const stepTitles = ["Weight", "Body Fat", "Method", "Review"];
 
-  const goNext = useCallback(() => {
-    if (currentStep < totalSteps - 1 && canGoNext) {
-      setCurrentStep((prev) => prev + 1);
-      setCanGoNext(false);
-    } else if (currentStep === totalSteps - 1) {
-      // Complete the flow
-      handleComplete();
-    }
-  }, [currentStep, canGoNext]);
-
-  const goBack = useCallback(() => {
-    if (currentStep > 0) {
-      setCurrentStep((prev) => prev - 1);
-    }
-  }, [currentStep]);
-
-  const goToStep = useCallback(
-    (step: number) => {
-      if (step >= 0 && step < totalSteps) {
-        setCurrentStep(step);
-        setCanGoNext(false);
-      }
-    },
-    [totalSteps],
-  );
-
-  const handleComplete = async () => {
-    // Track completion analytics
-    weightAnalytics.completeFlow({
-      total_steps: totalSteps,
-      completion_time_seconds: Date.now() - (weightAnalytics as any).startTime,
-      final_weight: `${weightData.value} ${weightData.unit}`,
-      final_body_fat: `${bodyFatData.value}%`,
-      final_method: methodData.label,
-      had_photo: !!photoData,
-    });
-
-    onComplete({
-      weight: weightData,
-      bodyFat: bodyFatData,
-      method: methodData,
-      photo: photoData,
-    });
-  };
+  // Handle complete will be called from parent
 
   const handleEditStep = (step: number) => {
     goToStep(step);
@@ -116,7 +81,6 @@ export function WeightLoggingFlowV2({
     console.log("Photo capture not yet implemented");
   };
 
-  const progress = ((currentStep + 1) / totalSteps) * 100;
 
   const renderStep = () => {
     switch (currentStep) {
@@ -142,15 +106,6 @@ export function WeightLoggingFlowV2({
   };
 
   return (
-    <StepperProvider
-      currentStep={currentStep}
-      totalSteps={totalSteps}
-      canGoNext={canGoNext}
-      setCanGoNext={setCanGoNext}
-      goNext={goNext}
-      goBack={goBack}
-      goToStep={goToStep}
-    >
       <div className="flex h-full flex-col bg-background">
         {/* Header with Progress */}
         <div className="pt-safe-top flex-shrink-0 px-6">
@@ -264,6 +219,58 @@ export function WeightLoggingFlowV2({
           </div>
         </div>
       </div>
+  );
+}
+
+export function WeightLoggingFlowV2(props: WeightLoggingFlowV2Props) {
+  // Store form data at the top level
+  const [weightData, setWeightData] = useState<WeightData>(
+    props.initialData?.weight || { value: 0, unit: "lbs" },
+  );
+  const [bodyFatData, setBodyFatData] = useState<BodyFatData>(
+    props.initialData?.bodyFat || { value: 15 },
+  );
+  const [methodData, setMethodData] = useState<MethodData>(
+    props.initialData?.method || { value: "scale", label: "Digital Scale" },
+  );
+  const [photoData, setPhotoData] = useState<string | undefined>();
+  
+  const handleComplete = async () => {
+    // Track completion analytics
+    weightAnalytics.completeFlow({
+      total_steps: 4,
+      completion_time_seconds: Date.now() - (weightAnalytics as any).startTime,
+      final_weight: `${weightData.value} ${weightData.unit}`,
+      final_body_fat: `${bodyFatData.value}%`,
+      final_method: methodData.label,
+      had_photo: !!photoData,
+    });
+
+    props.onComplete({
+      weight: weightData,
+      bodyFat: bodyFatData,
+      method: methodData,
+      photo: photoData,
+    });
+  };
+  
+  return (
+    <StepperProvider
+      totalSteps={4}
+      initialStep={0}
+      onComplete={handleComplete}
+    >
+      <WeightLoggingFlowContent 
+        {...props}
+        weightData={weightData}
+        setWeightData={setWeightData}
+        bodyFatData={bodyFatData}
+        setBodyFatData={setBodyFatData}
+        methodData={methodData}
+        setMethodData={setMethodData}
+        photoData={photoData}
+        setPhotoData={setPhotoData}
+      />
     </StepperProvider>
   );
 }
