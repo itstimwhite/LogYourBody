@@ -314,6 +314,123 @@ export function LandingPage() {
           </div>
         </section>
 
+        {/* Timeline Feature Section */}
+        <section className="relative py-32 overflow-hidden">
+          <div className="container mx-auto px-6">
+            <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
+              {/* Content */}
+              <div className="order-2 lg:order-1">
+                <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20">
+                  Game-changing feature
+                </Badge>
+                <h2 className="mb-6 text-5xl font-bold tracking-tight text-linear-text lg:text-6xl">
+                  Your body's time machine
+                </h2>
+                <p className="mb-8 text-xl text-linear-text-secondary">
+                  Slide through time. See exactly how you looked on any date. 
+                  Body fat, weight, FFMI — with photos to prove it.
+                </p>
+                
+                <div className="space-y-6">
+                  <div className="flex gap-4">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
+                      <Clock className="h-6 w-6 text-linear-purple" />
+                    </div>
+                    <div>
+                      <h3 className="mb-1 text-lg font-semibold text-linear-text">
+                        Instant time travel
+                      </h3>
+                      <p className="text-linear-text-secondary">
+                        Drag the slider. Jump to any date. See your exact stats and photo from that day.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
+                      <Camera className="h-6 w-6 text-linear-purple" />
+                    </div>
+                    <div>
+                      <h3 className="mb-1 text-lg font-semibold text-linear-text">
+                        Visual proof
+                      </h3>
+                      <p className="text-linear-text-secondary">
+                        Every data point paired with your progress photo. No more guessing if you've changed.
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex gap-4">
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
+                      <TrendingUp className="h-6 w-6 text-linear-purple" />
+                    </div>
+                    <div>
+                      <h3 className="mb-1 text-lg font-semibold text-linear-text">
+                        Spot patterns instantly
+                      </h3>
+                      <p className="text-linear-text-secondary">
+                        See when you peaked. When you plateaued. What actually worked.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Visual Demo */}
+              <div className="order-1 lg:order-2">
+                <div className="relative">
+                  {/* Background gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-linear-purple/20 via-transparent to-transparent blur-3xl" />
+                  
+                  {/* Mock timeline interface */}
+                  <div className="relative rounded-2xl border border-linear-border bg-linear-card p-8">
+                    <div className="mb-6 text-center">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-linear-purple/10 px-4 py-2">
+                        <Calendar className="h-4 w-4 text-linear-purple" />
+                        <span className="text-sm font-medium text-linear-purple">March 15, 2024</span>
+                      </div>
+                    </div>
+                    
+                    <div className="grid gap-4 text-center mb-8">
+                      <div>
+                        <div className="text-3xl font-bold text-linear-text">14.5%</div>
+                        <div className="text-sm text-linear-text-tertiary">Body Fat</div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-2xl font-semibold text-linear-text">165 lbs</div>
+                          <div className="text-sm text-linear-text-tertiary">Weight</div>
+                        </div>
+                        <div>
+                          <div className="text-2xl font-semibold text-linear-text">23.1</div>
+                          <div className="text-sm text-linear-text-tertiary">FFMI</div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Timeline slider */}
+                    <div className="relative">
+                      <div className="mb-2 flex items-center justify-between text-xs text-linear-text-tertiary">
+                        <span>Jan 2024</span>
+                        <span>Today</span>
+                      </div>
+                      <div className="relative h-3 rounded-full bg-linear-border">
+                        <div className="absolute left-0 h-full w-3/4 rounded-full bg-gradient-to-r from-linear-purple/60 to-linear-purple" />
+                        <div className="absolute left-3/4 top-1/2 h-6 w-6 -translate-y-1/2 rounded-full border-2 border-linear-bg bg-linear-purple shadow-lg" />
+                      </div>
+                      <div className="mt-4 text-center">
+                        <p className="text-sm text-linear-text-secondary">
+                          ← Swipe to travel through time →
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Pricing Section */}
         <section className="container mx-auto px-6 py-20">
           <div className="mb-16 text-center">
