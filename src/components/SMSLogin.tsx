@@ -12,6 +12,7 @@ import {
 import { ArrowLeft, MessageSquare, Shield, Smartphone } from "lucide-react";
 import { useSMSAuth } from "@/hooks/use-sms-auth";
 import { cn } from "@/lib/utils";
+import { AsYouType, parsePhoneNumberFromString } from "libphonenumber-js";
 
 interface SMSLoginProps {
   onBack: () => void;
@@ -39,6 +40,7 @@ export const SMSLogin = React.memo(function SMSLogin({
 
   const [resendCountdown, setResendCountdown] = useState(0);
   const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const isPhoneValid = !!parsePhoneNumberFromString(phoneNumber, "US")?.isValid();
 
   // Auto-paste functionality for verification codes
   useEffect(() => {
@@ -69,10 +71,9 @@ export const SMSLogin = React.memo(function SMSLogin({
   }, [resendCountdown]);
 
   const formatPhoneDisplay = (phone: string) => {
-    const digits = phone.replace(/\D/g, "");
-    if (digits.length >= 10) {
-      const formatted = digits.slice(-10);
-      return `(${formatted.slice(0, 3)}) ${formatted.slice(3, 6)}-${formatted.slice(6)}`;
+    const parsed = parsePhoneNumberFromString(phone, "US");
+    if (parsed) {
+      return parsed.formatInternational();
     }
     return phone;
   };
@@ -182,9 +183,11 @@ export const SMSLogin = React.memo(function SMSLogin({
                 <Input
                   id="phone"
                   type="tel"
-                  placeholder="(555) 123-4567"
+                  placeholder="+1 555 123 4567"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) =>
+                    setPhoneNumber(new AsYouType("US").input(e.target.value))
+                  }
                   className="h-12 text-lg"
                   autoComplete="tel"
                   autoFocus
@@ -200,7 +203,7 @@ export const SMSLogin = React.memo(function SMSLogin({
               <Button
                 type="submit"
                 className="h-12 w-full text-base"
-                disabled={isLoading || !phoneNumber.trim()}
+                disabled={isLoading || !isPhoneValid}
               >
                 {isLoading ? (
                   <div className="flex items-center gap-2">

@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { parsePhoneNumberFromString } from "libphonenumber-js";
 
 interface UseSMSAuthReturn {
   isLoading: boolean;
@@ -25,15 +26,12 @@ export function useSMSAuth(): UseSMSAuthReturn {
   const [verificationCode, setVerificationCode] = useState("");
   const [error, setError] = useState<string | null>(null);
 
-  const formatPhoneNumber = useCallback((phone: string): string => {
-    // Remove all non-digits and ensure it starts with +1 for US numbers
-    const digits = phone.replace(/\D/g, "");
-    if (digits.length === 10) {
-      return `+1${digits}`;
-    } else if (digits.length === 11 && digits.startsWith("1")) {
-      return `+${digits}`;
+  const formatPhoneNumber = useCallback((phone: string): string | null => {
+    const parsed = parsePhoneNumberFromString(phone, "US");
+    if (!parsed || !parsed.isValid()) {
+      return null;
     }
-    return `+${digits}`;
+    return parsed.number; // E.164 format
   }, []);
 
   const sendSMSCode = useCallback(async (): Promise<boolean> => {
@@ -47,6 +45,11 @@ export function useSMSAuth(): UseSMSAuthReturn {
 
     try {
       const formattedPhone = formatPhoneNumber(phoneNumber);
+
+      if (!formattedPhone) {
+        setError("Invalid phone number format");
+        return false;
+      }
 
       const { error } = await supabase.auth.signInWithOtp({
         phone: formattedPhone,
@@ -84,6 +87,10 @@ export function useSMSAuth(): UseSMSAuthReturn {
 
     try {
       const formattedPhone = formatPhoneNumber(phoneNumber);
+      if (!formattedPhone) {
+        setError("Invalid phone number format");
+        return false;
+      }
 
       const { data, error } = await supabase.auth.verifyOtp({
         phone: formattedPhone,
