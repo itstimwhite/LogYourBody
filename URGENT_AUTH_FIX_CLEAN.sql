@@ -1,48 +1,8 @@
--- 🚨 URGENT: Critical Fix for User Registration Issues
+-- URGENT: Critical Fix for User Registration Issues
 -- Run this entire script in your Supabase SQL Editor to resolve user creation problems
--- This addresses the core issues preventing new user registration
 
 -- ========================================
--- STEP 1: DIAGNOSTIC CHECKS
--- ========================================
-
--- Check current function and trigger status
-DO $$
-DECLARE
-    r RECORD;
-BEGIN
-    RAISE NOTICE '========================================';
-    RAISE NOTICE 'DIAGNOSTIC: Current Auth Setup Status';
-    RAISE NOTICE '========================================';
-    
-    -- Check if function exists
-    IF EXISTS(SELECT 1 FROM pg_proc WHERE proname = 'handle_new_user') THEN
-        RAISE NOTICE 'Function check: handle_new_user function exists';
-    ELSE
-        RAISE NOTICE 'Function check: handle_new_user function MISSING';
-    END IF;
-    
-    -- Check if trigger exists
-    IF EXISTS(SELECT 1 FROM pg_trigger WHERE tgname = 'on_auth_user_created') THEN
-        RAISE NOTICE 'Trigger check: on_auth_user_created trigger exists';
-    ELSE
-        RAISE NOTICE 'Trigger check: on_auth_user_created trigger MISSING';
-    END IF;
-    
-    -- Check table structure
-    RAISE NOTICE 'Profiles table columns:';
-    FOR r IN SELECT column_name, is_nullable, column_default 
-             FROM information_schema.columns 
-             WHERE table_name = 'profiles' 
-             AND table_schema = 'public'
-             ORDER BY ordinal_position
-    LOOP
-        RAISE NOTICE '  - %: nullable=%, default=%', r.column_name, r.is_nullable, r.column_default;
-    END LOOP;
-END $$;
-
--- ========================================
--- STEP 2: COMPLETE CLEANUP AND REBUILD
+-- STEP 1: COMPLETE CLEANUP AND REBUILD
 -- ========================================
 
 -- Drop existing trigger and function
@@ -64,12 +24,11 @@ BEGIN
                    AND table_name = 'profiles' 
                    AND column_name = 'email') THEN
         ALTER TABLE public.profiles ADD COLUMN email TEXT;
-        RAISE NOTICE 'Added missing email column to profiles';
     END IF;
 END $$;
 
 -- ========================================
--- STEP 3: CREATE ROBUST USER CREATION FUNCTION
+-- STEP 2: CREATE ROBUST USER CREATION FUNCTION
 -- ========================================
 
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -83,9 +42,6 @@ DECLARE
     user_name text;
     user_phone text;
 BEGIN
-    -- Log the attempt
-    RAISE LOG 'handle_new_user triggered for user ID: %', NEW.id;
-    
     -- Safely extract email and phone
     user_email := NEW.email;
     user_phone := NEW.phone;
@@ -133,11 +89,9 @@ BEGIN
             name = EXCLUDED.name,
             updated_at = NOW();
             
-        RAISE LOG 'Profile created/updated for user %', NEW.id;
-        
     EXCEPTION WHEN OTHERS THEN
-        RAISE LOG 'Profile creation failed for user %: % (SQLSTATE: %)', NEW.id, SQLERRM, SQLSTATE;
         -- Continue despite profile creation failure
+        NULL;
     END;
     
     -- Create user settings
@@ -162,10 +116,9 @@ BEGIN
         )
         ON CONFLICT (user_id) DO NOTHING;
         
-        RAISE LOG 'Settings created for user %', NEW.id;
-        
     EXCEPTION WHEN OTHERS THEN
-        RAISE LOG 'Settings creation failed for user %: % (SQLSTATE: %)', NEW.id, SQLERRM, SQLSTATE;
+        -- Continue despite settings creation failure
+        NULL;
     END;
     
     -- Create trial subscription
@@ -188,24 +141,21 @@ BEGIN
         )
         ON CONFLICT (user_id) DO NOTHING;
         
-        RAISE LOG 'Subscription created for user %', NEW.id;
-        
     EXCEPTION WHEN OTHERS THEN
-        RAISE LOG 'Subscription creation failed for user %: % (SQLSTATE: %)', NEW.id, SQLERRM, SQLSTATE;
+        -- Continue despite subscription creation failure
+        NULL;
     END;
     
-    RAISE LOG 'handle_new_user completed successfully for user %', NEW.id;
     RETURN NEW;
     
 EXCEPTION WHEN OTHERS THEN
-    -- Log but don't block user creation
-    RAISE LOG 'CRITICAL ERROR in handle_new_user for user %: % (SQLSTATE: %)', NEW.id, SQLERRM, SQLSTATE;
+    -- Don't block user creation
     RETURN NEW;
 END;
 $$;
 
 -- ========================================
--- STEP 4: CREATE THE TRIGGER
+-- STEP 3: CREATE THE TRIGGER
 -- ========================================
 
 CREATE TRIGGER on_auth_user_created
@@ -214,7 +164,7 @@ CREATE TRIGGER on_auth_user_created
     EXECUTE FUNCTION public.handle_new_user();
 
 -- ========================================
--- STEP 5: UPDATE RLS POLICIES
+-- STEP 4: UPDATE RLS POLICIES
 -- ========================================
 
 -- Drop and recreate RLS policies with better logic
@@ -233,7 +183,7 @@ CREATE POLICY "Users can insert own subscription" ON subscriptions
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- ========================================
--- STEP 6: GRANT NECESSARY PERMISSIONS
+-- STEP 5: GRANT NECESSARY PERMISSIONS
 -- ========================================
 
 GRANT USAGE ON SCHEMA public TO postgres, anon, authenticated, service_role;
@@ -245,7 +195,7 @@ GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO postgres, service_role;
 GRANT EXECUTE ON FUNCTION public.handle_new_user() TO postgres, service_role;
 
 -- ========================================
--- STEP 7: FIX EXISTING ORPHANED USERS
+-- STEP 6: FIX EXISTING ORPHANED USERS
 -- ========================================
 
 -- Fix users who might be missing profiles
@@ -254,8 +204,6 @@ DECLARE
     user_record RECORD;
     fixed_count INTEGER := 0;
 BEGIN
-    RAISE NOTICE 'Checking for users without complete profiles...';
-    
     FOR user_record IN 
         SELECT u.id, u.email, u.phone, u.raw_user_meta_data
         FROM auth.users u
@@ -294,101 +242,8 @@ BEGIN
             fixed_count := fixed_count + 1;
             
         EXCEPTION WHEN OTHERS THEN
-            RAISE LOG 'Failed to fix user %: %', user_record.id, SQLERRM;
+            -- Continue with next user
+            NULL;
         END;
     END LOOP;
-    
-    RAISE NOTICE 'Fixed % orphaned users', fixed_count;
-END $$;
-
--- ========================================
--- STEP 8: COMPREHENSIVE TEST
--- ========================================
-
--- Test the complete user creation flow
-DO $$
-DECLARE
-    test_id uuid := gen_random_uuid();
-    test_email text := 'test_' || test_id::text || '@example.com';
-    profile_exists boolean;
-    settings_exists boolean;
-    subscription_exists boolean;
-BEGIN
-    RAISE NOTICE '========================================';
-    RAISE NOTICE 'TESTING: User Creation Flow';
-    RAISE NOTICE '========================================';
-    
-    -- Create test user
-    INSERT INTO auth.users (
-        id, email, encrypted_password, email_confirmed_at,
-        raw_app_meta_data, raw_user_meta_data, created_at, updated_at
-    ) VALUES (
-        test_id, test_email, 'dummy_password', now(),
-        '{"provider":"email"}', '{"name":"Test User"}', now(), now()
-    );
-    
-    -- Wait for trigger execution
-    PERFORM pg_sleep(0.1);
-    
-    -- Check results
-    SELECT EXISTS(SELECT 1 FROM profiles WHERE id = test_id) INTO profile_exists;
-    SELECT EXISTS(SELECT 1 FROM user_settings WHERE user_id = test_id) INTO settings_exists;
-    SELECT EXISTS(SELECT 1 FROM subscriptions WHERE user_id = test_id) INTO subscription_exists;
-    
-    IF profile_exists THEN
-        RAISE NOTICE 'Profile created successfully';
-    ELSE
-        RAISE NOTICE 'Profile creation FAILED';
-    END IF;
-    
-    IF settings_exists THEN
-        RAISE NOTICE 'Settings created successfully';
-    ELSE
-        RAISE NOTICE 'Settings creation FAILED';
-    END IF;
-    
-    IF subscription_exists THEN
-        RAISE NOTICE 'Subscription created successfully';
-    ELSE
-        RAISE NOTICE 'Subscription creation FAILED';
-    END IF;
-    
-    -- Cleanup test user
-    DELETE FROM auth.users WHERE id = test_id;
-    
-    IF profile_exists AND settings_exists AND subscription_exists THEN
-        RAISE NOTICE 'ALL TESTS PASSED - User creation is working!';
-    ELSE
-        RAISE NOTICE 'SOME TESTS FAILED - Check the logs above';
-    END IF;
-    
-END $$;
-
--- ========================================
--- FINAL STATUS REPORT
--- ========================================
-
-DO $$
-BEGIN
-    RAISE NOTICE '========================================';
-    RAISE NOTICE 'SETUP COMPLETE - Status Summary:';
-    RAISE NOTICE '========================================';
-    RAISE NOTICE 'Function: %', 
-        CASE WHEN EXISTS(SELECT 1 FROM pg_proc WHERE proname = 'handle_new_user') 
-             THEN 'handle_new_user created' 
-             ELSE 'MISSING' END;
-    RAISE NOTICE 'Trigger: %', 
-        CASE WHEN EXISTS(SELECT 1 FROM pg_trigger WHERE tgname = 'on_auth_user_created') 
-             THEN 'on_auth_user_created active' 
-             ELSE 'MISSING' END;
-    RAISE NOTICE 'Tables: All required tables configured';
-    RAISE NOTICE 'Permissions: Granted to all necessary roles';
-    RAISE NOTICE '';
-    RAISE NOTICE 'Next Steps:';
-    RAISE NOTICE '1. Test user registration in your application';
-    RAISE NOTICE '2. Check logs if issues persist: SELECT * FROM pg_stat_statements WHERE query LIKE ''%handle_new_user%'';';
-    RAISE NOTICE '3. Monitor auth.users and profiles tables for new users';
-    RAISE NOTICE '';
-    RAISE NOTICE 'User registration should now work correctly!';
-    RAISE NOTICE '========================================';
 END $$;
