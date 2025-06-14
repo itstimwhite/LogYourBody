@@ -214,7 +214,7 @@ const Dashboard = () => {
   // Don't block on HealthKit - load in background
   if (loading || !user || !settings) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-bg font-inter">
+      <div className="flex min-h-svh items-center justify-center bg-linear-bg font-inter">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent"></div>
           <p className="text-linear-text-secondary">Loading your data...</p>
@@ -227,7 +227,7 @@ const Dashboard = () => {
   if (showWeightPrompt && !hasWeightData) {
     return (
       <TrialGuard>
-        <div className="flex min-h-screen items-center justify-center bg-linear-bg p-6 font-inter">
+        <div className="flex min-h-svh items-center justify-center bg-linear-bg p-6 font-inter">
           <WeightPrompt
             onComplete={(data) => {
               handleAddMetric(data);
@@ -242,7 +242,7 @@ const Dashboard = () => {
 
   return (
     <TrialGuard>
-      <div className="flex h-screen flex-col overflow-hidden bg-linear-bg text-linear-text font-inter md:min-h-screen md:overflow-auto">
+      <div className="flex h-svh flex-col overflow-hidden bg-linear-bg text-linear-text font-inter md:min-h-svh md:overflow-auto">
         {/* Email confirmation banner */}
         <div className="px-4 pt-4 md:px-6">
           <EmailConfirmationBanner />

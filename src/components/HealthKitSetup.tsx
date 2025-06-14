@@ -69,7 +69,7 @@ export function HealthKitSetup({ onComplete, onSkip }: HealthKitSetupProps) {
   }
 
   return (
-    <div className="safe-area-inset flex min-h-screen flex-col justify-between bg-background p-6">
+    <div className="safe-area-inset flex min-h-svh flex-col justify-between bg-background p-6">
       <div className="flex flex-1 flex-col justify-center space-y-8">
         {/* Header */}
         <div className="space-y-4 text-center">

@@ -9,7 +9,7 @@ const HealthKitTest = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="flex min-h-svh flex-col bg-background text-foreground">
       {/* Header */}
       <div className="flex items-center gap-4 border-b border-border px-6 py-4">
         <Button

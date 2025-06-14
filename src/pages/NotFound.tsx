@@ -32,7 +32,7 @@ const NotFound = () => {
         description="The page you're looking for could not be found. Return to LogYourBody to continue tracking your body composition with precision."
         keywords="404, page not found, error, LogYourBody"
       />
-      <div className="flex min-h-screen flex-col bg-background text-foreground">
+      <div className="flex min-h-svh flex-col bg-background text-foreground">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border p-6">
           <div className="text-sm text-muted-foreground">LogYourBody</div>

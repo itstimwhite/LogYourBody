@@ -159,7 +159,7 @@ const Settings = () => {
   // Show loading skeleton for better perceived performance
   if (loading) {
     return (
-      <div className="min-h-screen bg-linear-bg text-linear-text font-inter">
+      <div className="min-h-svh bg-linear-bg text-linear-text font-inter">
         <div className="animate-pulse">
           {/* Header skeleton */}
           <div className="h-16 border-b border-linear-border bg-linear-card" />
@@ -185,7 +185,7 @@ const Settings = () => {
   // Handle error state
   if (!user || !settings) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-bg font-inter">
+      <div className="flex min-h-svh items-center justify-center bg-linear-bg font-inter">
         <div className="text-center">
           <p className="text-linear-text-secondary">
             Failed to load settings. Please try again.
@@ -204,7 +204,7 @@ const Settings = () => {
 
   return (
     <AuthGuard>
-      <div className="flex h-screen flex-col overflow-hidden bg-linear-bg text-linear-text font-inter">
+      <div className="flex h-svh flex-col overflow-hidden bg-linear-bg text-linear-text font-inter">
         {/* Header with safe area padding */}
         <div className="flex flex-shrink-0 items-center gap-4 border-b border-linear-border px-6 pb-4 pt-safe-top">
           <Button

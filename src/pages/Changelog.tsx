@@ -284,7 +284,7 @@ const Changelog = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-bg">
+      <div className="flex min-h-svh items-center justify-center bg-linear-bg">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent"></div>
           <p className="text-linear-text-secondary">Loading changelog...</p>
@@ -294,7 +294,7 @@ const Changelog = () => {
   }
 
   return (
-    <div className="min-h-screen bg-linear-bg text-linear-text font-inter">
+    <div className="min-h-svh bg-linear-bg text-linear-text font-inter">
       {/* Navigation */}
       <div className="sticky top-0 z-40 border-b border-linear-border bg-linear-bg/95 backdrop-blur supports-[backdrop-filter]:bg-linear-bg/60">
         <div className="container mx-auto max-w-6xl px-4 py-4 sm:px-6">

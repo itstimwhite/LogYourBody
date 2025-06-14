@@ -52,7 +52,7 @@ const Splash = () => {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-linear-bg font-inter">
+    <div className="relative h-svh w-full overflow-hidden bg-linear-bg font-inter">
       {/* Background with subtle gradient */}
       <div className="absolute inset-0 bg-gradient-to-br from-linear-bg via-[#0F1012] to-linear-bg" />
 
