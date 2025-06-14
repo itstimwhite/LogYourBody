@@ -45,6 +45,7 @@ import { serviceWorkerManager } from "@/lib/service-worker-manager";
 import { RouteGuard } from "@/components/RouteGuard";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { AuthDebugger } from "@/components/AuthDebugger";
+import { FaceIDGate } from "@/components/FaceIDGate";
 
 // Lazy load pages for better code splitting
 const Index = React.lazy(() => import("./pages/Index"));
@@ -244,15 +245,17 @@ const App = () => {
   }, []); // Empty deps - runs once
 
   return (
-    <AppProviders>
-      <BrowserRouter>
-        <SEOHead />
-        <ErrorBoundary>
-          <AppRoutes />
-        </ErrorBoundary>
-        <AuthDebugger />
-      </BrowserRouter>
-    </AppProviders>
+    <FaceIDGate>
+      <AppProviders>
+        <BrowserRouter>
+          <SEOHead />
+          <ErrorBoundary>
+            <AppRoutes />
+          </ErrorBoundary>
+          <AuthDebugger />
+        </BrowserRouter>
+      </AppProviders>
+    </FaceIDGate>
   );
 };
 
