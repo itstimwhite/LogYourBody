@@ -179,10 +179,10 @@ export function useHealthKit(): UseHealthKitReturn {
       setIsAvailable(true);
       console.log("HealthKit is available");
 
-      // Check if we already have authorization for body mass
+      // Check if we already have authorization for weight data
       try {
         const authStatus = await healthKit.getAuthorizationStatus({
-          sampleName: "bodyMass",
+          sampleName: "weight",
         });
         const authorized = authStatus.status === "sharingAuthorized";
         setIsAuthorized(authorized);
@@ -218,20 +218,12 @@ export function useHealthKit(): UseHealthKitReturn {
     try {
       // Request authorization - use simplified names without HK prefix
       await healthKit.requestAuthorization({
-        all: [
-          "height",
-          "bodyMass",
-          "bodyFatPercentage",
-          "leanBodyMass",
-          "stepCount",
-          "dateOfBirth",
-          "biologicalSex",
-        ],
+        read: ["weight", "stepCount"],
       });
 
       // Check authorization status for a sample type to see if we got permission
       const authStatus = await healthKit.getAuthorizationStatus({
-        sampleName: "bodyMass",
+        sampleName: "weight",
       });
 
       const isAuthorized = authStatus.status === "sharingAuthorized";
