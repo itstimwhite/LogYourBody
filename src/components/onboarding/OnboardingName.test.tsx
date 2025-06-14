@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type MockedFunction } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { OnboardingName } from "./OnboardingName";
+import { Capacitor } from "@capacitor/core";
+import { Haptics } from "@capacitor/haptics";
 
 // Mock Capacitor modules
 vi.mock("@capacitor/core", () => ({
@@ -315,5 +317,19 @@ describe("OnboardingName", () => {
         screen.queryByText("Please enter at least 2 characters"),
       ).not.toBeInTheDocument();
     });
+  });
+
+  it("auto focuses input and triggers haptic feedback on native", () => {
+    vi.useFakeTimers();
+    const isNativeMock = Capacitor.isNativePlatform as unknown as MockedFunction<typeof Capacitor.isNativePlatform>;
+    isNativeMock.mockReturnValue(true);
+    render(
+      <OnboardingName onComplete={mockOnComplete} currentStep={1} totalSteps={5} />,
+    );
+    vi.advanceTimersByTime(400);
+    const input = screen.getByPlaceholderText("Enter your full name");
+    expect(document.activeElement).toBe(input);
+    expect(Haptics.impact).toHaveBeenCalledWith({ style: "light" });
+    vi.useRealTimers();
   });
 });

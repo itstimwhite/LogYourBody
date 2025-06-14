@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { render, screen, cleanup } from "@testing-library/react";
+import { render, screen, cleanup, renderHook } from "@testing-library/react";
 import React from "react";
-import { StatsGrid } from "../StatsGrid";
+import { StatsGrid, useStatsAnnouncement } from "../StatsGrid";
 import { DashboardMetrics } from "@/types/bodymetrics";
 
 // Mock framer-motion
@@ -218,5 +218,17 @@ describe("StatsGrid", () => {
     // Should have responsive classes for mobile/desktop layouts
     const gridElement = container.firstChild;
     expect(gridElement).toHaveClass("md:flex-col");
+  });
+
+  it("announces stat updates via live region", () => {
+    vi.useFakeTimers();
+    renderHook(() => useStatsAnnouncement(mockMetrics, "176 lbs"));
+    const liveRegion = document.querySelector('div[aria-live="polite"]');
+    expect(liveRegion).toBeInTheDocument();
+    vi.advanceTimersByTime(150);
+    expect(liveRegion?.textContent).toContain("Stats updated");
+    vi.advanceTimersByTime(1000);
+    expect(document.querySelector('div[aria-live="polite"]')).not.toBeInTheDocument();
+    vi.useRealTimers();
   });
 });
