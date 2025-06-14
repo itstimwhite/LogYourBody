@@ -463,10 +463,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
           };
         }
 
-        if (error.message.includes("Password should be at least")) {
+        if (error.message.includes("Password should be at least") || error.name === "AuthWeakPasswordError") {
+          // Extract the actual password requirements from the error message
+          let passwordMessage = "Password must be at least 10 characters long and contain both uppercase and lowercase letters and numbers.";
+          
+          // Try to use the actual error message if it's clear enough
+          if (error.message.includes("Password should")) {
+            // Clean up the technical error message for users
+            passwordMessage = error.message
+              .replace("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ", "uppercase and lowercase letters")
+              .replace("0123456789", "numbers");
+          }
+          
           return {
             error: {
-              message: "Password must be at least 6 characters long.",
+              message: passwordMessage,
               name: "WeakPasswordError",
               status: 400,
             } as any,

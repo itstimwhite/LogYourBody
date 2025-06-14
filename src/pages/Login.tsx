@@ -330,6 +330,13 @@ const Login = () => {
                   </button>
                 </div>
 
+                {/* Password requirements hint for signup */}
+                {!isLogin && (
+                  <p className="text-xs text-linear-text-tertiary">
+                    Password must be at least 10 characters with uppercase, lowercase, and numbers
+                  </p>
+                )}
+
                 <Button
                   type="submit"
                   disabled={loading}
