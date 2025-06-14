@@ -5,8 +5,10 @@ import { OnboardingGender } from "./OnboardingGender";
 import { OnboardingBirthday } from "./OnboardingBirthday";
 import { OnboardingUnits } from "./OnboardingUnits";
 import { OnboardingHeight } from "./OnboardingHeight";
+import { OnboardingHealthKit } from "./OnboardingHealthKit";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { isNativeiOS } from "@/lib/platform";
 
 interface OnboardingFlowProps {
   onComplete: () => void;
@@ -23,6 +25,7 @@ export interface OnboardingData {
   birthday: string;
   units: "imperial" | "metric";
   height: number; // in cm
+  healthKitEnabled?: boolean;
 }
 
 export function OnboardingFlow({
@@ -49,6 +52,7 @@ export function OnboardingFlow({
     { id: "birthday", show: !data.birthday },
     { id: "units", show: true }, // Always show units preference
     { id: "height", show: !data.height },
+    { id: "healthkit", show: isNativeiOS() }, // Show HealthKit step on iOS
   ].filter((step) => step.show);
 
   const totalSteps = steps.length;
@@ -97,7 +101,7 @@ export function OnboardingFlow({
         .upsert({
           user_id: user.id,
           units: data.units || "imperial",
-          health_kit_sync_enabled: !!healthKitData,
+          health_kit_sync_enabled: data.healthKitEnabled || !!healthKitData,
           updated_at: new Date().toISOString(),
         });
 
@@ -197,6 +201,19 @@ export function OnboardingFlow({
           totalSteps={totalSteps}
           initialValue={data.height}
           units={data.units || "imperial"}
+        />
+      )}
+
+      {currentStepData?.id === "healthkit" && (
+        <OnboardingHealthKit
+          key="healthkit"
+          onComplete={(enabled) => {
+            updateData({ healthKitEnabled: enabled });
+            handleNext();
+          }}
+          onBack={handleBack}
+          currentStep={currentStep + 1}
+          totalSteps={totalSteps}
         />
       )}
 

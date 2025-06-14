@@ -4,3 +4,4 @@ export { OnboardingGender } from "./OnboardingGender";
 export { OnboardingBirthday } from "./OnboardingBirthday";
 export { OnboardingUnits } from "./OnboardingUnits";
 export { OnboardingHeight } from "./OnboardingHeight";
+export { OnboardingHealthKit } from "./OnboardingHealthKit";

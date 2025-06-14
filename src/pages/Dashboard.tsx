@@ -90,6 +90,7 @@ const Dashboard = () => {
   const [showWeightPrompt, setShowWeightPrompt] = useState(false);
   const [healthKitWeightData, setHealthKitWeightData] = useState<any>(null);
   const [healthKitDataChecked, setHealthKitDataChecked] = useState(false);
+  const [showHealthKitBanner, setShowHealthKitBanner] = useState(false);
 
   const handleTabChange = (tabIndex: number) => {
     setActiveTabIndex(tabIndex);
@@ -127,11 +128,7 @@ const Dashboard = () => {
         // Run HealthKit check in background without blocking UI
         const checkHealthKitData = async () => {
           try {
-            // Request permissions if not already authorized
-            if (!healthKit.isAuthorized) {
-              await healthKit.requestPermissions();
-            }
-
+            // Check if permissions are already authorized
             if (healthKit.isAuthorized) {
               // Get recent weight data
               const healthData = await healthKit.getHealthData();
@@ -158,7 +155,7 @@ const Dashboard = () => {
             );
             setHealthKitDataChecked(true);
           }
-        }, 3000); // Reduced to 3 seconds
+        }, 3000); // 3 seconds timeout for HealthKit check
 
         return () => clearTimeout(timeout);
       } else {
@@ -220,7 +217,7 @@ const Dashboard = () => {
       <div className="flex min-h-svh items-center justify-center bg-linear-bg font-inter">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent"></div>
-          <p className="text-linear-text-secondary">Loading your data...</p>
+          <p className="text-linear-text-secondary">Setting up your dashboard...</p>
         </div>
       </div>
     );
@@ -250,6 +247,8 @@ const Dashboard = () => {
         <div className="px-4 pt-4 md:px-6">
           <EmailConfirmationBanner />
         </div>
+
+        {/* HealthKit banner removed - now handled in onboarding */}
 
         {/* Header - Desktop only */}
         <div className="hidden items-center justify-between border-b border-linear-border px-6 py-4 md:flex">

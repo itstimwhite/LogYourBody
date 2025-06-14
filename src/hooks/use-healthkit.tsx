@@ -135,7 +135,7 @@ export function useHealthKit(): UseHealthKitReturn {
     // Delay HealthKit check to ensure Capacitor is fully initialized
     const initTimer = setTimeout(() => {
       checkAvailability();
-    }, 1000); // Give Capacitor more time to load plugins
+    }, 500); // Reduced delay for faster initialization
 
     // Safety timeout to prevent hanging on HealthKit initialization
     const timeoutTimer = setTimeout(() => {
@@ -145,7 +145,7 @@ export function useHealthKit(): UseHealthKitReturn {
         setIsAvailable(false);
         setInitialized(true);
       }
-    }, 3000); // 3 second timeout for safety
+    }, 3000); // 3 second timeout to match dashboard
 
     return () => {
       clearTimeout(initTimer);

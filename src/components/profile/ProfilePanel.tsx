@@ -64,18 +64,16 @@ export const ProfilePanel = React.memo<ProfilePanelProps>(
         aria-label="User profile and body metrics"
       >
         {/* User name header */}
-        {user.name && (
-          <motion.div
-            className="mb-3 md:mb-8"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ ...fadeIn, delay: 0.1 }}
-          >
-            <h1 className="text-sm font-semibold tracking-tight text-linear-text md:text-lg">
-              {user.name}
-            </h1>
-          </motion.div>
-        )}
+        <motion.div
+          className="mb-3 md:mb-8"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...fadeIn, delay: 0.1 }}
+        >
+          <h1 className="text-sm font-semibold tracking-tight text-linear-text md:text-lg">
+            {user.name || 'Anonymous User'}
+          </h1>
+        </motion.div>
 
         {/* Main stats grid */}
         <StatsGrid

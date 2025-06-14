@@ -180,9 +180,11 @@ describe("StatsGrid", () => {
       />,
     );
 
-    // Both body fat and FFMI will show "0.0"
-    const zeroElements = screen.getAllByText("0.0");
-    expect(zeroElements).toHaveLength(2); // Body fat and FFMI
+    // Body fat shows "--" when zero
+    expect(screen.getByText("--")).toBeInTheDocument();
+    
+    // FFMI should still show "0.0"
+    expect(screen.getByText("0.0")).toBeInTheDocument();
     
     // Check step count shows "0" (without decimal)
     expect(screen.getByText("0")).toBeInTheDocument();

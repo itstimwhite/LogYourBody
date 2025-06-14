@@ -28,10 +28,10 @@ export const StatsGrid = React.memo<StatsGridProps>(function StatsGrid({
 
   const stats: StatItem[] = [
     {
-      value: (metrics.bodyFatPercentage || 0).toFixed(1),
-      unit: "%",
+      value: metrics.bodyFatPercentage > 0 ? metrics.bodyFatPercentage.toFixed(1) : "--",
+      unit: metrics.bodyFatPercentage > 0 ? "%" : undefined,
       label: "Body Fat",
-      accessibilityLabel: `Body fat percentage: ${(metrics.bodyFatPercentage || 0).toFixed(1)} percent`,
+      accessibilityLabel: `Body fat percentage: ${metrics.bodyFatPercentage > 0 ? metrics.bodyFatPercentage.toFixed(1) + ' percent' : 'not available'}`,
     },
     {
       value: formattedWeight,
@@ -99,7 +99,7 @@ export const useStatsAnnouncement = (
 ) => {
   React.useEffect(() => {
     // Announce stats update for screen readers
-    const announcement = `Stats updated: Body fat ${(metrics.bodyFatPercentage || 0).toFixed(1)} percent, Weight ${formattedWeight}, FFMI ${metrics.ffmi}, Steps ${metrics.stepCount ?? 0}`;
+    const announcement = `Stats updated: Body fat ${metrics.bodyFatPercentage > 0 ? metrics.bodyFatPercentage.toFixed(1) + ' percent' : 'not available'}, Weight ${formattedWeight}, FFMI ${metrics.ffmi}, Steps ${metrics.stepCount ?? 0}`;
 
     // Create a live region for announcements
     const liveRegion = document.createElement("div");

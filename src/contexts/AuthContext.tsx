@@ -212,7 +212,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.log("Creating new profile...");
 
         // Extract name from Apple Sign In metadata or fallback to other sources
-        let userName = "User";
+        let userName = null; // Set to null initially to trigger ProfileSetup
         if (user.user_metadata?.name) {
           userName = user.user_metadata.name;
         } else if (
@@ -222,9 +222,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           // Construct name from Apple Sign In given/family names
           const firstName = user.user_metadata.given_name || "";
           const lastName = user.user_metadata.family_name || "";
-          userName = `${firstName} ${lastName}`.trim() || "User";
-        } else if (user.email) {
-          userName = user.email.split("@")[0];
+          userName = `${firstName} ${lastName}`.trim() || null;
         }
 
         console.log("Creating profile with name:", userName);
