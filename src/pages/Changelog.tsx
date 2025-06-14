@@ -178,7 +178,7 @@ const Changelog = () => {
   const getCommitType = (message: string) => {
     const firstLine = message.split("\n")[0].toLowerCase();
     if (firstLine.includes("fix") || firstLine.includes("bug")) {
-      return { type: "fix", color: "bg-red-100 text-red-800 border-red-200" };
+      return { type: "fix", color: "" };
     }
     if (
       firstLine.includes("feat") ||
@@ -187,7 +187,7 @@ const Changelog = () => {
     ) {
       return {
         type: "feature",
-        color: "bg-green-100 text-green-800 border-green-200",
+        color: "",
       };
     }
     if (
@@ -197,18 +197,18 @@ const Changelog = () => {
     ) {
       return {
         type: "improvement",
-        color: "bg-blue-100 text-blue-800 border-blue-200",
+        color: "",
       };
     }
     if (firstLine.includes("refactor") || firstLine.includes("clean")) {
       return {
         type: "refactor",
-        color: "bg-purple-100 text-purple-800 border-purple-200",
+        color: "",
       };
     }
     return {
       type: "change",
-      color: "bg-gray-100 text-gray-800 border-gray-200",
+      color: "",
     };
   };
 
@@ -278,26 +278,26 @@ const Changelog = () => {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-linear-bg">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-          <p className="text-muted-foreground">Loading changelog...</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent"></div>
+          <p className="text-linear-text-secondary">Loading changelog...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-linear-bg text-linear-text font-inter">
       {/* Navigation */}
-      <div className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto max-w-6xl px-6 py-4">
+      <div className="sticky top-0 z-40 border-b border-linear-border bg-linear-bg/95 backdrop-blur supports-[backdrop-filter]:bg-linear-bg/60">
+        <div className="container mx-auto max-w-6xl px-4 py-4 sm:px-6">
           <div className="flex items-center gap-4">
             <Button
               size="icon"
-              variant="outline"
+              variant="ghost"
               onClick={() => navigate(-1)}
-              className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
+              className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -308,16 +308,16 @@ const Changelog = () => {
 
       {/* Hero Header */}
       <div className="relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background" />
-        <div className="container relative mx-auto max-w-6xl px-6 py-16">
+        <div className="absolute inset-0 bg-gradient-to-br from-linear-purple/5 via-linear-bg to-linear-bg" />
+        <div className="container relative mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
           <div className="max-w-3xl">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                <GitCommit className="h-6 w-6 text-primary" />
+            <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-3">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-linear-purple/10">
+                <GitCommit className="h-6 w-6 text-linear-purple" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold tracking-tight">Changelog</h1>
-                <p className="mt-2 text-xl text-muted-foreground">
+                <h1 className="text-3xl font-bold tracking-tight text-linear-text sm:text-4xl">Changelog</h1>
+                <p className="mt-2 text-lg text-linear-text-secondary sm:text-xl">
                   Stay up to date with the latest features, improvements, and
                   fixes
                 </p>
@@ -325,22 +325,22 @@ const Changelog = () => {
             </div>
 
             {/* Email Subscription */}
-            <div className="mt-8 rounded-lg border border-border bg-card p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                  <Mail className="h-5 w-5 text-primary" />
+            <div className="mt-8 rounded-lg border border-linear-border bg-linear-card p-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
+                  <Mail className="h-5 w-5 text-linear-purple" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="mb-2 text-lg font-semibold">
+                  <h3 className="mb-2 text-lg font-semibold text-linear-text">
                     Subscribe to updates
                   </h3>
-                  <p className="mb-4 text-muted-foreground">
+                  <p className="mb-4 text-linear-text-secondary">
                     Get notified when we ship new features and improvements
                   </p>
 
                   <form
                     onSubmit={handleEmailSubscription}
-                    className="flex gap-2"
+                    className="flex flex-col gap-2 sm:flex-row"
                   >
                     <Input
                       type="email"
@@ -348,12 +348,12 @@ const Changelog = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={isSubscribing}
-                      className="flex-1"
+                      className="flex-1 h-12 border border-linear-border bg-linear-card text-base text-linear-text placeholder:text-linear-text-tertiary rounded-lg transition-all focus:border-linear-purple focus:outline-none focus:ring-2 focus:ring-linear-purple/20"
                     />
                     <Button
                       type="submit"
                       disabled={isSubscribing || !email}
-                      className="flex-shrink-0"
+                      className="h-12 flex-shrink-0 bg-linear-text text-linear-bg hover:bg-linear-text/90 rounded-lg transition-colors font-medium"
                     >
                       {isSubscribing ? (
                         <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
@@ -367,8 +367,8 @@ const Changelog = () => {
                     <div
                       className={`mt-3 flex items-center gap-2 text-sm ${
                         subscriptionStatus === "success"
-                          ? "text-green-600"
-                          : "text-destructive"
+                          ? "text-green-500"
+                          : "text-red-500"
                       }`}
                     >
                       {subscriptionStatus === "success" ? (
@@ -387,99 +387,190 @@ const Changelog = () => {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto max-w-4xl px-6 py-8">
+      <div className="container mx-auto max-w-4xl px-4 py-8 sm:px-6">
         {error && (
-          <div className="mb-6 rounded-lg border border-destructive/20 bg-destructive/10 p-4">
-            <p className="text-sm text-destructive">{error}</p>
+          <div className="mb-6 rounded-lg border border-red-500/20 bg-red-500/10 p-4">
+            <p className="text-sm text-red-500">{error}</p>
           </div>
         )}
 
-        {/* Commit Timeline with Virtual Scrolling */}
-        <VirtualList
-          items={commits}
-          itemHeight={280} // Approximate height per commit item
-          containerHeight={800} // Fixed container height for virtual scrolling
-          className="space-y-8"
-          renderItem={(commit, index) => {
+        {/* Commit Timeline - Mobile optimized without virtual scrolling on small screens */}
+        <div className="block sm:hidden">
+          {commits.map((commit, index) => {
             const { title, body } = parseCommitMessage(commit.message);
             const commitType = getCommitType(title);
             const isLastItem = index === commits.length - 1;
 
             return (
-              <div className="relative mb-8">
+              <div key={commit.sha} className="relative mb-8">
                 {/* Timeline line */}
                 {!isLastItem && (
-                  <div className="absolute bottom-0 left-5 top-12 w-px bg-border" />
+                  <div className="absolute bottom-0 left-5 top-12 w-px bg-linear-border" />
                 )}
 
-                <div className="flex gap-4">
+                <div className="flex gap-3">
                   {/* Timeline dot */}
                   <div className="relative flex-shrink-0">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-border bg-background">
-                      <GitCommit className="h-4 w-4 text-muted-foreground" />
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-linear-border bg-linear-bg">
+                      <GitCommit className="h-4 w-4 text-linear-text-tertiary" />
                     </div>
                   </div>
 
                   {/* Commit content */}
                   <div className="min-w-0 flex-1">
-                    <div className="rounded-lg border border-border bg-card p-6 transition-shadow hover:shadow-md">
+                    <div className="rounded-lg border border-linear-border bg-linear-card p-4 transition-shadow hover:shadow-md">
                       {/* Commit header */}
-                      <div className="mb-4 flex items-start justify-between gap-4">
-                        <div className="min-w-0 flex-1">
-                          <div className="mb-2 flex items-center gap-2">
-                            <Badge
-                              variant="outline"
-                              className={`border text-xs ${commitType.color}`}
-                            >
-                              {commitType.type}
-                            </Badge>
-                            <code className="rounded bg-muted px-2 py-1 font-mono text-xs">
-                              {getShortSha(commit.sha)}
-                            </code>
-                          </div>
-                          <h3 className="mb-2 break-words text-lg font-semibold text-foreground">
-                            {title}
-                          </h3>
+                      <div className="mb-3">
+                        <div className="mb-2 flex flex-wrap items-center gap-2">
+                          <Badge
+                            variant="outline"
+                            className={`border text-xs ${
+                              commitType.type === "fix" ? "border-red-500/30 bg-red-500/10 text-red-500" :
+                              commitType.type === "feature" ? "border-green-500/30 bg-green-500/10 text-green-500" :
+                              commitType.type === "improvement" ? "border-blue-500/30 bg-blue-500/10 text-blue-500" :
+                              commitType.type === "refactor" ? "border-purple-500/30 bg-purple-500/10 text-purple-500" :
+                              "border-linear-border bg-linear-card text-linear-text-tertiary"
+                            }`}
+                          >
+                            {commitType.type}
+                          </Badge>
+                          <code className="rounded bg-linear-border px-2 py-1 font-mono text-xs text-linear-text-tertiary">
+                            {getShortSha(commit.sha)}
+                          </code>
                         </div>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => window.open(commit.html_url, "_blank")}
-                          className="flex-shrink-0"
-                        >
-                          <ExternalLink className="mr-1 h-3 w-3" />
-                          View
-                        </Button>
+                        <h3 className="mb-2 break-words text-base font-semibold text-linear-text">
+                          {title}
+                        </h3>
                       </div>
 
                       {/* Commit body */}
                       {body && (
-                        <div className="mb-4 whitespace-pre-line border-l-2 border-border pl-4 text-sm text-muted-foreground">
+                        <div className="mb-3 whitespace-pre-line border-l-2 border-linear-border pl-3 text-sm text-linear-text-secondary">
                           {body}
                         </div>
                       )}
 
-                      {/* Commit metadata */}
-                      <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                        <div className="flex items-center gap-1">
+                      {/* Commit metadata and view button */}
+                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="flex items-center gap-1 text-xs text-linear-text-tertiary">
                           <Calendar className="h-3 w-3" />
                           <span>
                             {formatDate(commit.author.date)} at{" "}
                             {formatTime(commit.author.date)}
                           </span>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => window.open(commit.html_url, "_blank")}
+                          className="h-8 text-xs text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50"
+                        >
+                          <ExternalLink className="mr-1 h-3 w-3" />
+                          View
+                        </Button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
             );
-          }}
-        />
+          })}
+        </div>
+
+        {/* Desktop view with virtual scrolling */}
+        <div className="hidden sm:block">
+          <VirtualList
+            items={commits}
+            itemHeight={280}
+            containerHeight={800}
+            className="space-y-8"
+            renderItem={(commit, index) => {
+              const { title, body } = parseCommitMessage(commit.message);
+              const commitType = getCommitType(title);
+              const isLastItem = index === commits.length - 1;
+
+              return (
+                <div className="relative mb-8">
+                  {/* Timeline line */}
+                  {!isLastItem && (
+                    <div className="absolute bottom-0 left-5 top-12 w-px bg-linear-border" />
+                  )}
+
+                  <div className="flex gap-4">
+                    {/* Timeline dot */}
+                    <div className="relative flex-shrink-0">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-linear-border bg-linear-bg">
+                        <GitCommit className="h-4 w-4 text-linear-text-tertiary" />
+                      </div>
+                    </div>
+
+                    {/* Commit content */}
+                    <div className="min-w-0 flex-1">
+                      <div className="rounded-lg border border-linear-border bg-linear-card p-6 transition-all hover:border-linear-text-tertiary">
+                        {/* Commit header */}
+                        <div className="mb-4 flex items-start justify-between gap-4">
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-2 flex items-center gap-2">
+                              <Badge
+                                variant="outline"
+                                className={`border text-xs ${
+                                  commitType.type === "fix" ? "border-red-500/30 bg-red-500/10 text-red-500" :
+                                  commitType.type === "feature" ? "border-green-500/30 bg-green-500/10 text-green-500" :
+                                  commitType.type === "improvement" ? "border-blue-500/30 bg-blue-500/10 text-blue-500" :
+                                  commitType.type === "refactor" ? "border-purple-500/30 bg-purple-500/10 text-purple-500" :
+                                  "border-linear-border bg-linear-card text-linear-text-tertiary"
+                                }`}
+                              >
+                                {commitType.type}
+                              </Badge>
+                              <code className="rounded bg-linear-border px-2 py-1 font-mono text-xs text-linear-text-tertiary">
+                                {getShortSha(commit.sha)}
+                              </code>
+                            </div>
+                            <h3 className="mb-2 break-words text-lg font-semibold text-linear-text">
+                              {title}
+                            </h3>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => window.open(commit.html_url, "_blank")}
+                            className="flex-shrink-0 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50"
+                          >
+                            <ExternalLink className="mr-1 h-3 w-3" />
+                            View
+                          </Button>
+                        </div>
+
+                        {/* Commit body */}
+                        {body && (
+                          <div className="mb-4 whitespace-pre-line border-l-2 border-linear-border pl-4 text-sm text-linear-text-secondary">
+                            {body}
+                          </div>
+                        )}
+
+                        {/* Commit metadata */}
+                        <div className="flex items-center gap-4 text-xs text-linear-text-tertiary">
+                          <div className="flex items-center gap-1">
+                            <Calendar className="h-3 w-3" />
+                            <span>
+                              {formatDate(commit.author.date)} at{" "}
+                              {formatTime(commit.author.date)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            }}
+          />
+        </div>
 
         {/* Footer */}
-        <div className="mt-12 border-t border-border pt-8">
-          <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
+        <div className="mt-12 border-t border-linear-border pt-8">
+          <div className="flex flex-col items-center gap-2 text-center text-sm text-linear-text-tertiary sm:flex-row sm:justify-center sm:gap-4">
             <Github className="h-4 w-4" />
             <span>View full commit history on</span>
             <Button
@@ -491,7 +582,7 @@ const Changelog = () => {
                   "_blank",
                 )
               }
-              className="h-auto p-0 text-primary hover:text-primary/80"
+              className="h-auto p-0 text-linear-purple hover:text-linear-purple/80"
             >
               GitHub
             </Button>

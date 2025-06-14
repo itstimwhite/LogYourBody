@@ -15,7 +15,7 @@
     --popover: 0 0% 0%;
     --popover-foreground: 0 0% 100%;
 
-    --primary: 213 100% 50%;
+    --primary: 233 54% 60%; /* Linear purple #5E6AD2 */
     --primary-foreground: 0 0% 100%;
 
     --secondary: 0 0% 6%;
@@ -24,7 +24,7 @@
     --muted: 0 0% 6%;
     --muted-foreground: 0 0% 80%;
 
-    --accent: 213 100% 50%;
+    --accent: 240 2% 12%; /* Linear hover state #1F2023 */
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
