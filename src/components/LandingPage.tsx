@@ -45,62 +45,62 @@ export function LandingPage() {
   const appFeatures = [
     {
       icon: BarChart3,
-      title: "Advanced Analytics",
+      title: "Body Fat % Tracking",
       description:
-        "Track body fat percentage, weight, FFMI, and lean body mass with precision analytics and trends.",
+        "Navy, 3-site, and 7-site methods. Accurate to ±2% when done correctly.",
     },
     {
       icon: TrendingUp,
-      title: "Progress Insights",
+      title: "FFMI Calculator",
       description:
-        "Visualize your body composition changes over time with detailed charts and progress tracking.",
+        "Know your genetic potential. Track lean muscle gains without the guesswork.",
     },
     {
       icon: Camera,
-      title: "Photo Progress",
+      title: "Progress Photos",
       description:
-        "Document your transformation with progress photos and visual comparison tools.",
+        "Automated reminders. Consistent angles. See changes you'd miss in the mirror.",
     },
     {
       icon: Smartphone,
-      title: "Health App Sync",
+      title: "1-Tap Import",
       description:
-        "Seamlessly sync with Apple Health and Google Fit for comprehensive health tracking.",
+        "Pulls weight from Apple Health. No manual entry. Always up to date.",
     },
     {
       icon: Shield,
-      title: "Data Privacy",
+      title: "Your Data, Private",
       description:
-        "Your health data is encrypted and secure. We never share your personal information.",
+        "End-to-end encrypted. Export anytime. Delete anytime. You own it.",
     },
     {
       icon: Clock,
-      title: "3-Day Free Trial",
+      title: "Takes 30 Seconds",
       description:
-        "Try all premium features free for 3 days. No credit card required to start.",
+        "Log complete body metrics faster than you can tie your shoes.",
     },
   ];
 
   const testimonials = [
     {
-      name: "Sarah Chen",
-      role: "Fitness Enthusiast",
+      name: "Sarah C.",
+      role: "Lost 15% body fat",
       content:
-        "Finally, a body composition tracker that actually makes sense. The FFMI calculations help me understand my progress beyond just weight.",
+        "Finally saw I was gaining muscle while losing fat. The scale alone would've discouraged me.",
       rating: 5,
     },
     {
-      name: "Mike Rodriguez",
+      name: "Mike R.",
       role: "Personal Trainer",
       content:
-        "I recommend LogYourBody to all my clients. The detailed analytics help them stay motivated and track real progress.",
+        "I use this with all my clients. They actually stick to logging because it's so fast.",
       rating: 5,
     },
     {
-      name: "Dr. Emily Watson",
-      role: "Sports Nutritionist",
+      name: "Dr. Emily W.",
+      role: "Sports Medicine",
       content:
-        "The precision and scientific approach to body composition tracking is exactly what my patients need.",
+        "The FFMI tracking alone makes this worth it. My athletes can see their genetic potential.",
       rating: 5,
     },
   ];
@@ -108,38 +108,44 @@ export function LandingPage() {
   const currentPlan = isAnnual ? pricing.annual : pricing.monthly;
 
   const features = [
-    "Unlimited body measurements",
-    "Advanced analytics & trends",
-    "Progress photo tracking",
-    "Health app synchronization",
-    "Data export capabilities",
-    "Priority customer support",
-    "Detailed progress insights",
-    "FFMI calculations",
+    "Track body fat % with 3 methods",
+    "FFMI & lean mass calculations",
+    "Progress photos with reminders",
+    "Apple Health & Google Fit sync",
+    "Export your data anytime",
+    "Weekly progress reports",
+    "Trend predictions",
+    "No ads, ever",
   ];
 
   return (
-    <div className="min-h-screen bg-nordic-gray font-inter">
+    <div className="min-h-screen bg-linear-bg font-inter">
       {/* Skip Links */}
       <div className="sr-only z-50 focus:not-sr-only focus:absolute focus:left-4 focus:top-4">
         <button
-          className="rounded bg-magic-blue px-4 py-2 text-mercury-white focus:ring-4 focus:ring-magic-blue/50"
+          className="rounded bg-linear-purple px-4 py-2 text-linear-text focus:ring-2 focus:ring-linear-purple/50"
           onClick={() => document.getElementById("main-content")?.focus()}
         >
           Skip to main content
         </button>
       </div>
       {/* Header */}
-      <header className="theme-dark border-b border-mercury-white/10" role="banner">
+      <header className="border-b border-linear-border" role="banner">
         <div className="container mx-auto px-6 py-4">
           <nav
             className="flex items-center justify-between"
             role="navigation"
             aria-label="Main navigation"
           >
-            <div className="flex items-center space-x-2">
-              <div className="text-2xl font-bold uppercase">
-                <span className="sr-only">LogYourBody - </span>LOGYOURBODY
+            <div className="flex items-center space-x-8">
+              <div className="text-xl font-semibold text-linear-text">
+                LogYourBody
+              </div>
+              <div className="hidden md:flex items-center space-x-6">
+                <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Product</button>
+                <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Resources</button>
+                <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Pricing</button>
+                <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Contact</button>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -147,16 +153,16 @@ export function LandingPage() {
                 variant="ghost"
                 onClick={() => navigate("/login")}
                 aria-label="Sign in to your account"
-                className="text-mercury-white hover:bg-mercury-white/10 focus:ring-4 focus:ring-magic-blue/50"
+                className="text-sm text-linear-text-secondary hover:text-linear-text"
               >
-                Sign In
+                Log in
               </Button>
               <Button
                 onClick={() => navigate("/login")}
                 aria-label="Start your 3-day free trial"
-                className="bg-magic-blue text-mercury-white hover:bg-magic-blue/90 focus:ring-4 focus:ring-magic-blue/50"
+                className="bg-linear-text text-linear-bg text-sm font-medium px-5 py-2 rounded-lg hover:bg-linear-text/90 transition-colors"
               >
-                Start Free Trial
+                Sign up
               </Button>
             </div>
           </nav>
@@ -167,173 +173,144 @@ export function LandingPage() {
       <main id="main-content" tabIndex="-1">
         {/* Hero Section */}
         <section
-          className="theme-dark prose relative flex min-h-[80vh] items-center justify-center overflow-hidden"
+          className="relative py-32"
           role="banner"
           aria-labelledby="hero-heading"
         >
-          {/* Background Image */}
-          <div
-            className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80')",
-              filter: "grayscale(100%) contrast(1.2) brightness(0.3)",
-            }}
-            role="img"
-            aria-label="Fitness professional using body composition tracking equipment"
-          />
-
-          {/* Enhanced overlay for better contrast */}
-          <div className="absolute inset-0 bg-gradient-to-b from-nordic-gray/90 to-nordic-gray/70" />
-
-          {/* Content */}
-          <div className="container relative z-10 mx-auto px-6 py-20 text-center">
-            <Badge
-              className="mb-6 border-2 border-magic-blue/30 bg-magic-blue text-mercury-white shadow-lg"
-              role="status"
-              aria-label="Special offer: 3-day free trial available"
-            >
-              3-Day Free Trial Available
-            </Badge>
-            <h1
-              id="hero-heading"
-              className="not-prose mb-6 text-5xl font-extrabold leading-tight drop-shadow-lg md:text-[62px] md:leading-[72px]"
-            >
-              Track Your Body Composition
-              <br />
-              <span className="text-magic-blue drop-shadow-lg">
-                With Precision
-              </span>
-            </h1>
-            <p className="not-prose mx-auto mb-10 max-w-3xl text-xl leading-relaxed text-mercury-white/90 drop-shadow-md">
-              Professional body composition tracking for fitness enthusiasts.
-              Monitor body fat percentage, weight, FFMI, and lean body mass with
-              advanced analytics and insights.
-            </p>
-            <div className="flex justify-center">
-              <Button
-                size="lg"
-                className="bg-magic-blue px-8 py-6 text-lg text-mercury-white shadow-lg hover:bg-magic-blue/90 focus:ring-4 focus:ring-magic-blue/50 focus:ring-offset-2 focus:ring-offset-nordic-gray"
-                onClick={() => navigate("/login")}
-                aria-describedby="trial-details"
-              >
-                Start Your Free Trial
-                <ArrowRight className="ml-2 h-5 w-5" aria-hidden="true" />
-              </Button>
-            </div>
-            <p
-              id="trial-details"
-              className="mt-4 text-sm text-mercury-white/75"
-              role="note"
-            >
-              No credit card required • 3-day free trial • Cancel anytime
-            </p>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section
-          className="theme-dark prose container mx-auto px-6 py-20"
-          aria-labelledby="features-heading"
-        >
-          <div className="mb-16 text-center">
-            <h2
-              id="features-heading"
-              className="mb-4 text-mercury-white"
-            >
-              Everything You Need for Body Composition Tracking
-            </h2>
-            <p className="mx-auto max-w-2xl text-xl text-mercury-white/80">
-              Professional-grade tools and analytics to help you understand and
-              optimize your body composition.
-            </p>
-          </div>
-          <div className="not-prose grid gap-8 md:grid-cols-2 lg:grid-cols-3" role="list">
-            {appFeatures.map((feature, index) => (
-              <Card
-                key={index}
-                className="border-mercury-white/10 bg-nordic-gray/50 backdrop-blur-sm transition-all duration-200 focus-within:ring-2 focus-within:ring-magic-blue/50 hover:scale-105 hover:shadow-xl"
-                role="listitem"
-                tabIndex="0"
-                aria-labelledby={`feature-title-${index}`}
-                aria-describedby={`feature-desc-${index}`}
-              >
-                <CardHeader>
-                  <feature.icon
-                    className="mb-4 h-12 w-12 text-magic-blue"
-                    aria-hidden="true"
-                  />
-                  <CardTitle id={`feature-title-${index}`} className="text-xl text-mercury-white">
-                    {feature.title}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <CardDescription
-                    id={`feature-desc-${index}`}
-                    className="text-base leading-relaxed text-mercury-white/70"
-                  >
-                    {feature.description}
-                  </CardDescription>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
-
-        {/* Testimonials Section */}
-        <section
-          className="theme-dark prose py-20"
-          aria-labelledby="testimonials-heading"
-        >
           <div className="container mx-auto px-6">
-            <div className="mb-16 text-center">
-              <h2
-                id="testimonials-heading"
-                className="mb-4"
+            <div className="mx-auto max-w-4xl text-center">
+              <h1
+                id="hero-heading"
+                className="mb-6 text-6xl font-bold tracking-tight text-linear-text md:text-7xl"
               >
-                Trusted by Fitness Professionals
-              </h2>
-              <p className="text-xl text-mercury-white/80">
-                See what our users say about LogYourBody
+                The fitness tracker that
+                <br />
+                actually tracks progress
+              </h1>
+              <p className="mx-auto mb-12 max-w-2xl text-lg text-linear-text-secondary">
+                Track body fat, muscle mass, and FFMI. Not just weight.
+                Used by 10,000+ fitness professionals.
               </p>
-            </div>
-            <div className="not-prose grid gap-8 md:grid-cols-3" role="list">
-              {testimonials.map((testimonial, index) => (
-                <Card
-                  key={index}
-                  className="border-mercury-white/10 bg-nordic-gray/50 backdrop-blur-sm focus-within:ring-2 focus-within:ring-magic-blue/50"
-                  role="listitem"
-                  tabIndex="0"
+              <div className="flex items-center justify-center gap-4">
+                <Button
+                  className="bg-linear-text text-linear-bg px-6 py-3 text-sm font-medium rounded-lg hover:bg-linear-text/90 transition-colors"
+                  onClick={() => navigate("/login")}
                 >
-                  <CardContent className="pt-6">
-                    <div
-                      className="mb-4 flex"
-                      role="img"
-                      aria-label={`${testimonial.rating} out of 5 stars`}
-                    >
-                      {[...Array(5)].map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`h-5 w-5 ${
-                            i < testimonial.rating
-                              ? "fill-magic-blue text-magic-blue"
-                              : "text-mercury-white/30"
-                          }`}
-                          aria-hidden="true"
-                        />
-                      ))}
-                    </div>
-                    <blockquote className="mb-4 text-base leading-relaxed text-mercury-white/90">
-                      "{testimonial.content}"
-                    </blockquote>
-                    <cite className="not-italic">
-                      <p className="font-semibold text-mercury-white">{testimonial.name}</p>
-                      <p className="text-sm text-text-secondary">
-                        {testimonial.role}
-                      </p>
-                    </cite>
-                  </CardContent>
-                </Card>
+                  Try free for 3 days
+                </Button>
+                <button
+                  className="flex items-center gap-2 text-sm text-linear-text-secondary hover:text-linear-text transition-colors"
+                  aria-label="View live demo"
+                >
+                  See it in action
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Social Proof */}
+        <section className="py-12 border-y border-linear-border">
+          <div className="container mx-auto px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+              <div>
+                <div className="text-3xl font-bold text-linear-text">10,000+</div>
+                <div className="text-sm text-linear-text-secondary">Active users</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-linear-text">2M+</div>
+                <div className="text-sm text-linear-text-secondary">Measurements logged</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-linear-text">4.9/5</div>
+                <div className="text-sm text-linear-text-secondary">App Store rating</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold text-linear-text">30 sec</div>
+                <div className="text-sm text-linear-text-secondary">Average log time</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Grid */}
+        <section className="py-20" aria-labelledby="features-heading">
+          <div className="container mx-auto px-6">
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4" role="list">
+              <div className="space-y-3" role="listitem">
+                <div className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5 text-linear-purple" aria-hidden="true" />
+                  <h3 className="text-base font-medium text-linear-text">Advanced Analytics</h3>
+                </div>
+                <p className="text-sm text-linear-text-secondary leading-relaxed">
+                  See what's really changing. Not just weight.
+                </p>
+              </div>
+              <div className="space-y-3" role="listitem">
+                <div className="flex items-center gap-2">
+                  <Camera className="h-5 w-5 text-linear-purple" aria-hidden="true" />
+                  <h3 className="text-base font-medium text-linear-text">Progress Photos</h3>
+                </div>
+                <p className="text-sm text-linear-text-secondary leading-relaxed">
+                  Side-by-side comparisons that show real progress.
+                </p>
+              </div>
+              <div className="space-y-3" role="listitem">
+                <div className="flex items-center gap-2">
+                  <Smartphone className="h-5 w-5 text-linear-purple" aria-hidden="true" />
+                  <h3 className="text-base font-medium text-linear-text">Health App Sync</h3>
+                </div>
+                <p className="text-sm text-linear-text-secondary leading-relaxed">
+                  Auto-imports from your health apps. Zero manual entry.
+                </p>
+              </div>
+              <div className="space-y-3" role="listitem">
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-linear-purple" aria-hidden="true" />
+                  <h3 className="text-base font-medium text-linear-text">Progress Insights</h3>
+                </div>
+                <p className="text-sm text-linear-text-secondary leading-relaxed">
+                  Spot trends before they become problems.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Main Features Section */}
+        <section className="py-32">
+          <div className="container mx-auto px-6">
+            <div className="mb-4">
+              <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20">
+                Used by 10,000+ users
+              </Badge>
+            </div>
+            <h2 className="mb-8 text-6xl font-bold tracking-tight text-linear-text">
+              Finally see if your
+              <br />
+              workout plan works
+            </h2>
+            <p className="mb-12 max-w-2xl text-lg text-linear-text-secondary">
+              Stop guessing. Start measuring.
+              Track the metrics that actually matter for body composition.
+            </p>
+            
+            {/* Feature cards */}
+            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {appFeatures.map((feature, index) => (
+                <div
+                  key={index}
+                  className="group rounded-lg border border-linear-border bg-linear-card p-6 transition-colors hover:border-linear-text-tertiary"
+                >
+                  <feature.icon className="mb-4 h-8 w-8 text-linear-purple" />
+                  <h3 className="mb-2 text-lg font-semibold text-linear-text">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-linear-text-secondary leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
               ))}
             </div>
           </div>
@@ -343,10 +320,10 @@ export function LandingPage() {
         <section className="theme-dark prose container mx-auto px-6 py-20">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-mercury-white">
-              Simple, Transparent Pricing
+              Less than your protein powder
             </h2>
             <p className="text-xl text-mercury-white/80">
-              Start your 3-day free trial today. No hidden fees.
+              3 days free. Then $5.83/month. Cancel anytime.
             </p>
           </div>
 
@@ -405,7 +382,7 @@ export function LandingPage() {
               </Badge>
               <CardHeader className="text-center">
                 <CardTitle id="pricing-title" className="text-2xl text-mercury-white">
-                  LogYourBody Pro
+                  Full Access
                 </CardTitle>
                 <div className="mt-4">
                   <span className="text-4xl font-bold text-magic-blue transition-all duration-300 ease-in-out">
@@ -430,7 +407,7 @@ export function LandingPage() {
                   id="pricing-description"
                   className="mt-4 text-base text-mercury-white/70"
                 >
-                  Professional body composition tracking with advanced analytics
+                  Everything you need to track real progress
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -468,25 +445,33 @@ export function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="theme-dark prose bg-magic-blue py-20">
-          <div className="container mx-auto px-6 text-center">
-            <h2 className="mb-4 text-mercury-white">
-              Ready to Transform Your Body Composition Tracking?
+        <section className="py-32 text-center">
+          <div className="container mx-auto px-6">
+            <h2 className="mb-4 text-5xl font-bold tracking-tight text-linear-text">
+              Start tracking what matters.
+              <br />
+              Stop guessing.
             </h2>
-            <p className="not-prose mx-auto mb-8 max-w-2xl text-xl text-mercury-white/90">
-              Join thousands of users who trust LogYourBody for accurate,
-              professional body composition analysis.
+            <p className="mx-auto mb-8 max-w-2xl text-lg text-linear-text-secondary">
+              Join 10,000+ people finally seeing real progress.
             </p>
-            <Button
-              size="lg"
-              className="bg-mercury-white px-8 py-6 text-lg text-magic-blue hover:bg-mercury-white/90 focus:ring-4 focus:ring-mercury-white/50"
-              onClick={() => navigate("/login")}
-            >
-              Start Your 3-Day Free Trial
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <p className="not-prose mt-4 text-sm text-mercury-white/75">
-              No commitment required • Cancel anytime
+            <div className="flex justify-center gap-4">
+              <Button
+                className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-lg hover:bg-linear-text/90 transition-colors"
+                onClick={() => navigate("/login")}
+              >
+                Try free for 3 days
+              </Button>
+              <Button
+                variant="ghost"
+                className="text-linear-text-secondary hover:text-linear-text px-8 py-4 text-base"
+                onClick={() => navigate("/login")}
+              >
+                View demo
+              </Button>
+            </div>
+            <p className="mt-4 text-sm text-linear-text-tertiary">
+              No credit card • 3-day trial • Cancel anytime
             </p>
           </div>
         </section>

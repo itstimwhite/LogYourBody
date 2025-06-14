@@ -19,7 +19,15 @@ export default {
     },
     extend: {
       colors: {
-        // Custom brand colors
+        // Linear-inspired design system
+        'linear-purple': '#5E6AD2',
+        'linear-bg': '#0A0B0D',
+        'linear-card': '#111113',
+        'linear-border': '#1F2023',
+        'linear-text': '#F7F8F8',
+        'linear-text-secondary': '#9CA0A8',
+        'linear-text-tertiary': '#6E7178',
+        // Legacy colors (kept for backward compatibility)
         'magic-blue': '#5E6AD2',
         'mercury-white': '#F4F5F8',
         'nordic-gray': '#222326',
