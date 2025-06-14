@@ -30,6 +30,7 @@ import { useNavigate } from "react-router-dom";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import LandingTimelineDemo from "@/components/LandingTimelineDemo";
 import { prefetchRoute } from "@/lib/prefetch";
+import { StepTrackerSection } from "./StepTrackerModule";
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -445,6 +446,8 @@ export function LandingPage() {
             </div>
           </div>
         </section>
+
+        <StepTrackerSection />
 
         {/* Pricing Section */}
         <section id="pricing" className="container mx-auto px-4 sm:px-6 py-20">
