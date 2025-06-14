@@ -4,6 +4,7 @@ import { LandingPage } from "@/components/LandingPage";
 import { useResponsive } from "@/hooks/use-responsive";
 import { useAuth } from "@/contexts/AuthContext";
 import { Capacitor } from "@capacitor/core";
+import { isPWAInstalled } from "@/lib/platform";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { prefetchRoute } from "@/lib/prefetch";
 
@@ -69,9 +70,14 @@ const Index = () => {
   }, [user, loading, navigate, isRedirecting]);
 
   useEffect(() => {
-    // For native iOS, automatically navigate to splash after a short delay
-    if (Capacitor.isNativePlatform() && !loading && !user && !isRedirecting) {
-      console.log("Native platform detected, navigating to splash");
+    // For native apps or installed PWA, automatically navigate to splash after a short delay
+    if (
+      (Capacitor.isNativePlatform() || isPWAInstalled()) &&
+      !loading &&
+      !user &&
+      !isRedirecting
+    ) {
+      console.log("Native or installed PWA detected, navigating to splash");
       const timer = setTimeout(() => {
         navigate("/splash", { replace: true });
       }, 500);
@@ -103,8 +109,8 @@ const Index = () => {
     );
   }
 
-  // For native platforms, don't render content (will redirect to splash)
-  if (Capacitor.isNativePlatform()) {
+  // For native platforms or installed PWA, don't render content (will redirect to splash)
+  if (Capacitor.isNativePlatform() || isPWAInstalled()) {
     return (
       <div className="flex min-h-svh items-center justify-center bg-background">
         <div className="text-center">
