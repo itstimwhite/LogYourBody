@@ -24,6 +24,17 @@ export const isWebApp = (): boolean => {
   return Capacitor.getPlatform() === "web";
 };
 
+// Check if app is installed as a PWA (standalone display mode)
+export const isPWAInstalled = (): boolean => {
+  if (typeof window === "undefined") {
+    return false;
+  }
+  return (
+    window.matchMedia("(display-mode: standalone)").matches ||
+    (window.navigator as any).standalone === true
+  );
+};
+
 // Check if running in development mode
 export const isDevelopment = (): boolean => {
   return process.env.NODE_ENV === "development";
@@ -65,6 +76,7 @@ export const getPlatformInfo = () => {
     isWeb: isWebApp(),
     isiOS: isNativeiOS(),
     isAndroid: isNativeAndroid(),
+    isPWAInstalled: isPWAInstalled(),
     shouldShowPWA: shouldShowPWAFeatures(),
     shouldShowEmailAuth: shouldShowEmailAuth(),
     shouldShowGoogleSignIn: shouldShowGoogleSignIn(),
@@ -80,6 +92,7 @@ export const logPlatformInfo = (): void => {
   console.log("Is iOS:", info.isiOS);
   console.log("Is Android:", info.isAndroid);
   console.log("Is Web:", info.isWeb);
+  console.log("PWA Installed:", info.isPWAInstalled);
   console.log("Show PWA Features:", info.shouldShowPWA);
   console.log("Show Email Auth:", info.shouldShowEmailAuth);
   console.log("Show Google Sign In:", info.shouldShowGoogleSignIn);
