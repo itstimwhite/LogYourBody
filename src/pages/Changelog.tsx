@@ -219,6 +219,12 @@ const Changelog = () => {
     return { title, body };
   };
 
+  const getBodySnippet = (body: string) => {
+    if (!body) return "";
+    const cleaned = body.replace(/\n+/g, " ").trim();
+    return cleaned.length > 120 ? `${cleaned.slice(0, 117)}...` : cleaned;
+  };
+
   const getShortSha = (sha: string) => sha.substring(0, 7);
 
   const handleEmailSubscription = async (e: React.FormEvent) => {
@@ -297,9 +303,10 @@ const Changelog = () => {
               size="icon"
               variant="ghost"
               onClick={() => navigate(-1)}
+              aria-label="Go back"
               className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
             >
-              <ArrowLeft className="h-4 w-4" />
+              <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             </Button>
             <VersionDisplay />
           </div>
@@ -313,7 +320,7 @@ const Changelog = () => {
           <div className="max-w-3xl">
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-linear-purple/10">
-                <GitCommit className="h-6 w-6 text-linear-purple" />
+                <GitCommit className="h-6 w-6 text-linear-purple" aria-hidden="true" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold tracking-tight text-linear-text sm:text-4xl">Changelog</h1>
@@ -325,62 +332,50 @@ const Changelog = () => {
             </div>
 
             {/* Email Subscription */}
-            <div className="mt-8 rounded-lg border border-linear-border bg-linear-card p-6">
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-                <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
-                  <Mail className="h-5 w-5 text-linear-purple" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="mb-2 text-lg font-semibold text-linear-text">
-                    Subscribe to updates
-                  </h3>
-                  <p className="mb-4 text-linear-text-secondary">
-                    Get notified when we ship new features and improvements
-                  </p>
-
-                  <form
-                    onSubmit={handleEmailSubscription}
-                    className="flex flex-col gap-2 sm:flex-row"
-                  >
-                    <Input
-                      type="email"
-                      placeholder="Enter your email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isSubscribing}
-                      className="flex-1 h-12 border border-linear-border bg-linear-card text-base text-linear-text placeholder:text-linear-text-tertiary rounded-lg transition-all focus:border-linear-purple focus:outline-none focus:ring-2 focus:ring-linear-purple/20"
-                    />
-                    <Button
-                      type="submit"
-                      disabled={isSubscribing || !email}
-                      className="h-12 flex-shrink-0 bg-linear-text text-linear-bg hover:bg-linear-text/90 rounded-lg transition-colors font-medium"
-                    >
-                      {isSubscribing ? (
-                        <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
-                      ) : (
-                        "Subscribe"
-                      )}
-                    </Button>
-                  </form>
-
-                  {subscriptionMessage && (
-                    <div
-                      className={`mt-3 flex items-center gap-2 text-sm ${
-                        subscriptionStatus === "success"
-                          ? "text-green-500"
-                          : "text-red-500"
-                      }`}
-                    >
-                      {subscriptionStatus === "success" ? (
-                        <Check className="h-4 w-4" />
-                      ) : (
-                        <AlertCircle className="h-4 w-4" />
-                      )}
-                      {subscriptionMessage}
-                    </div>
+            <div className="mt-8 rounded-lg border border-linear-border bg-linear-card p-4">
+              <form
+                onSubmit={handleEmailSubscription}
+                className="flex flex-col gap-2 sm:flex-row sm:items-center"
+              >
+                <Input
+                  type="email"
+                  aria-label="Email address"
+                  placeholder="Your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  disabled={isSubscribing}
+                  className="flex-1 h-10 text-sm"
+                />
+                <Button
+                  type="submit"
+                  disabled={isSubscribing || !email}
+                  className="h-10 px-4 flex-shrink-0 bg-linear-text text-linear-bg hover:bg-linear-text/90"
+                >
+                  {isSubscribing ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                  ) : (
+                    "Sign up"
                   )}
-                </div>
-              </div>
+                </Button>
+              </form>
+
+              {subscriptionMessage && (
+                <p
+                  className={`mt-2 flex items-center gap-2 text-sm ${
+                    subscriptionStatus === "success"
+                      ? "text-green-500"
+                      : "text-red-500"
+                  }`}
+                  aria-live="polite"
+                >
+                  {subscriptionStatus === "success" ? (
+                    <Check className="h-4 w-4" aria-hidden="true" />
+                  ) : (
+                    <AlertCircle className="h-4 w-4" aria-hidden="true" />
+                  )}
+                  {subscriptionMessage}
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -398,11 +393,12 @@ const Changelog = () => {
         <div className="block sm:hidden">
           {commits.map((commit, index) => {
             const { title, body } = parseCommitMessage(commit.message);
+            const snippet = getBodySnippet(body);
             const commitType = getCommitType(title);
             const isLastItem = index === commits.length - 1;
 
             return (
-              <div key={commit.sha} className="relative mb-8">
+              <div key={commit.sha} className="relative mb-6">
                 {/* Timeline line */}
                 {!isLastItem && (
                   <div className="absolute bottom-0 left-5 top-12 w-px bg-linear-border" />
@@ -412,15 +408,15 @@ const Changelog = () => {
                   {/* Timeline dot */}
                   <div className="relative flex-shrink-0">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-linear-border bg-linear-bg">
-                      <GitCommit className="h-4 w-4 text-linear-text-tertiary" />
+                      <GitCommit className="h-4 w-4 text-linear-text-tertiary" aria-hidden="true" />
                     </div>
                   </div>
 
                   {/* Commit content */}
                   <div className="min-w-0 flex-1">
-                    <div className="rounded-lg border border-linear-border bg-linear-card p-4 transition-shadow hover:shadow-md">
+                    <div className="rounded-lg border border-linear-border bg-linear-card p-3 transition-shadow hover:shadow-md">
                       {/* Commit header */}
-                      <div className="mb-3">
+                      <div className="mb-2">
                         <div className="mb-2 flex flex-wrap items-center gap-2">
                           <Badge
                             variant="outline"
@@ -444,16 +440,16 @@ const Changelog = () => {
                       </div>
 
                       {/* Commit body */}
-                      {body && (
-                        <div className="mb-3 whitespace-pre-line border-l-2 border-linear-border pl-3 text-sm text-linear-text-secondary">
-                          {body}
-                        </div>
+                      {snippet && (
+                        <p className="mb-3 text-sm text-linear-text-secondary">
+                          {snippet}
+                        </p>
                       )}
 
                       {/* Commit metadata and view button */}
                       <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex items-center gap-1 text-xs text-linear-text-tertiary">
-                          <Calendar className="h-3 w-3" />
+                          <Calendar className="h-3 w-3" aria-hidden="true" />
                           <span>
                             {formatDate(commit.author.date)} at{" "}
                             {formatTime(commit.author.date)}
@@ -463,9 +459,10 @@ const Changelog = () => {
                           variant="ghost"
                           size="sm"
                           onClick={() => window.open(commit.html_url, "_blank")}
+                          aria-label={`View commit ${getShortSha(commit.sha)}`}
                           className="h-8 text-xs text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50"
                         >
-                          <ExternalLink className="mr-1 h-3 w-3" />
+                          <ExternalLink className="mr-1 h-3 w-3" aria-hidden="true" />
                           View
                         </Button>
                       </div>
@@ -481,16 +478,17 @@ const Changelog = () => {
         <div className="hidden sm:block">
           <VirtualList
             items={commits}
-            itemHeight={280}
+            itemHeight={220}
             containerHeight={800}
-            className="space-y-8"
+            className="space-y-6"
             renderItem={(commit, index) => {
               const { title, body } = parseCommitMessage(commit.message);
+              const snippet = getBodySnippet(body);
               const commitType = getCommitType(title);
               const isLastItem = index === commits.length - 1;
 
               return (
-                <div className="relative mb-8">
+                <div className="relative mb-6">
                   {/* Timeline line */}
                   {!isLastItem && (
                     <div className="absolute bottom-0 left-5 top-12 w-px bg-linear-border" />
@@ -500,7 +498,7 @@ const Changelog = () => {
                     {/* Timeline dot */}
                     <div className="relative flex-shrink-0">
                       <div className="flex h-10 w-10 items-center justify-center rounded-full border-2 border-linear-border bg-linear-bg">
-                        <GitCommit className="h-4 w-4 text-linear-text-tertiary" />
+                        <GitCommit className="h-4 w-4 text-linear-text-tertiary" aria-hidden="true" />
                       </div>
                     </div>
 
@@ -535,24 +533,25 @@ const Changelog = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => window.open(commit.html_url, "_blank")}
+                            aria-label={`View commit ${getShortSha(commit.sha)}`}
                             className="flex-shrink-0 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50"
                           >
-                            <ExternalLink className="mr-1 h-3 w-3" />
-                            View
+                          <ExternalLink className="mr-1 h-3 w-3" aria-hidden="true" />
+                          View
                           </Button>
                         </div>
 
                         {/* Commit body */}
-                        {body && (
-                          <div className="mb-4 whitespace-pre-line border-l-2 border-linear-border pl-4 text-sm text-linear-text-secondary">
-                            {body}
-                          </div>
+                        {snippet && (
+                          <p className="mb-4 text-sm text-linear-text-secondary">
+                            {snippet}
+                          </p>
                         )}
 
                         {/* Commit metadata */}
                         <div className="flex items-center gap-4 text-xs text-linear-text-tertiary">
                           <div className="flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
+                            <Calendar className="h-3 w-3" aria-hidden="true" />
                             <span>
                               {formatDate(commit.author.date)} at{" "}
                               {formatTime(commit.author.date)}
@@ -571,7 +570,7 @@ const Changelog = () => {
         {/* Footer */}
         <div className="mt-12 border-t border-linear-border pt-8">
           <div className="flex flex-col items-center gap-2 text-center text-sm text-linear-text-tertiary sm:flex-row sm:justify-center sm:gap-4">
-            <Github className="h-4 w-4" />
+            <Github className="h-4 w-4" aria-hidden="true" />
             <span>View full commit history on</span>
             <Button
               variant="link"
