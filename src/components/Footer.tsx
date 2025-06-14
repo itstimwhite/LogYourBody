@@ -44,7 +44,7 @@ export function Footer() {
         { label: "Community", action: () => {}, disabled: true },
         { label: "Support", action: () => handleExternalLink("mailto:support@logyourbody.com") },
         { label: "Documentation", action: () => {}, disabled: true },
-        { label: "Status", action: () => {}, disabled: true },
+        { label: "Status", action: () => handleExternalLink("https://status.logyourbody.com") },
       ]
     },
     {
