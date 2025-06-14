@@ -182,7 +182,7 @@ export function useHealthKit(): UseHealthKitReturn {
       // Check if we already have authorization for body mass
       try {
         const authStatus = await healthKit.getAuthorizationStatus({
-          sampleName: "HKQuantityTypeIdentifierBodyMass",
+          sampleName: "bodyMass",
         });
         const authorized = authStatus.status === "sharingAuthorized";
         setIsAuthorized(authorized);
@@ -216,22 +216,22 @@ export function useHealthKit(): UseHealthKitReturn {
     setError(null);
 
     try {
-      // Request authorization - this doesn't return a granted status
+      // Request authorization - use simplified names without HK prefix
       await healthKit.requestAuthorization({
         all: [
-          "HKQuantityTypeIdentifierHeight",
-          "HKQuantityTypeIdentifierBodyMass",
-          "HKQuantityTypeIdentifierBodyFatPercentage",
-          "HKQuantityTypeIdentifierLeanBodyMass",
-          "HKQuantityTypeIdentifierStepCount",
-          "HKCharacteristicTypeIdentifierDateOfBirth",
-          "HKCharacteristicTypeIdentifierBiologicalSex",
+          "height",
+          "bodyMass",
+          "bodyFatPercentage",
+          "leanBodyMass",
+          "stepCount",
+          "dateOfBirth",
+          "biologicalSex",
         ],
       });
 
       // Check authorization status for a sample type to see if we got permission
       const authStatus = await healthKit.getAuthorizationStatus({
-        sampleName: "HKQuantityTypeIdentifierBodyMass",
+        sampleName: "bodyMass",
       });
 
       const isAuthorized = authStatus.status === "sharingAuthorized";

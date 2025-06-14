@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { StepperProvider, useStepper } from "@/contexts/StepperContext";
 import {
@@ -76,9 +77,68 @@ function WeightLoggingFlowContent({
     goToStep(step);
   };
 
-  const handleAddPhoto = () => {
-    // TODO: Implement photo capture
-    console.log("Photo capture not yet implemented");
+  const handleAddPhoto = async () => {
+    try {
+      // Create file input element
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.capture = 'user'; // Use front camera on mobile
+      
+      // Handle file selection
+      input.onchange = async (event) => {
+        const file = (event.target as HTMLInputElement).files?.[0];
+        if (!file) return;
+        
+        // Validate file size (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+          toast({
+            title: "File too large",
+            description: "Please select an image under 5MB",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Convert to base64
+        const reader = new FileReader();
+        reader.onload = () => {
+          const base64 = reader.result as string;
+          setPhotoData(base64);
+          
+          // Track photo addition
+          weightAnalytics.trackPhotoAdded({
+            file_size_kb: Math.round(file.size / 1024),
+            file_type: file.type,
+          });
+          
+          toast({
+            title: "Photo added",
+            description: "Your progress photo has been attached",
+          });
+        };
+        
+        reader.onerror = () => {
+          toast({
+            title: "Error",
+            description: "Failed to process photo",
+            variant: "destructive",
+          });
+        };
+        
+        reader.readAsDataURL(file);
+      };
+      
+      // Trigger file picker
+      input.click();
+    } catch (error) {
+      console.error("Error capturing photo:", error);
+      toast({
+        title: "Error",
+        description: "Failed to capture photo",
+        variant: "destructive",
+      });
+    }
   };
 
 
@@ -98,6 +158,7 @@ function WeightLoggingFlowContent({
             method={methodData}
             onEditStep={handleEditStep}
             onAddPhoto={handleAddPhoto}
+            photoData={photoData}
           />
         );
       default:

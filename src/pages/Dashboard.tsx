@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Settings, Heart } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -93,9 +93,28 @@ const Dashboard = () => {
     setActiveTabIndex(tabIndex);
   };
 
-  // Add swipe navigation to go to settings
+  // Add swipe navigation for log entries
+  const handleSwipeLeft = useCallback(() => {
+    // Navigate to next log entry (newer)
+    if (selectedDateIndex < metrics.length - 1) {
+      setSelectedDateIndex(selectedDateIndex + 1);
+    } else {
+      // If at the latest entry, navigate to settings
+      navigate("/settings");
+    }
+  }, [selectedDateIndex, metrics.length, setSelectedDateIndex, navigate]);
+
+  const handleSwipeRight = useCallback(() => {
+    // Navigate to previous log entry (older)
+    if (selectedDateIndex > 0) {
+      setSelectedDateIndex(selectedDateIndex - 1);
+    }
+  }, [selectedDateIndex, setSelectedDateIndex]);
+
+  // Add swipe navigation
   useSwipeNavigation({
-    onSwipeLeft: () => navigate("/settings"),
+    onSwipeLeft: handleSwipeLeft,
+    onSwipeRight: handleSwipeRight,
     threshold: 100,
   });
 
