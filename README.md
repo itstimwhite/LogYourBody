@@ -96,6 +96,9 @@ A modern body composition tracking application built with React and TypeScript. 
    SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
 
    # RevenueCat Configuration
+   VITE_REVENUECAT_IOS_KEY=your_ios_public_key
+   VITE_REVENUECAT_WEB_KEY=your_web_public_key
+   # Legacy (optional)
    VITE_REVENUECAT_PUBLIC_KEY=your_revenuecat_public_key
 
    # Stripe Product IDs (for RevenueCat configuration)

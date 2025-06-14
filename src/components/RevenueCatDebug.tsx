@@ -135,9 +135,7 @@ export function RevenueCatDebug() {
             <div>
               <span className="font-medium">Will Renew:</span>
               <Badge
-                variant={
-                  subscriptionStatus.willRenew ? "default" : "secondary"
-                }
+                variant={subscriptionStatus.willRenew ? "default" : "secondary"}
               >
                 {subscriptionStatus.willRenew ? "Yes" : "No"}
               </Badge>
@@ -237,12 +235,33 @@ export function RevenueCatDebug() {
           <div>
             Public Key:{" "}
             {(() => {
-              const key = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY;
-              if (!key) return "✗ Missing";
-              if (key.startsWith("sk_"))
+              const isIOS =
+                Capacitor.isNativePlatform() &&
+                Capacitor.getPlatform() === "ios";
+              const key = isIOS
+                ? import.meta.env.VITE_REVENUECAT_IOS_KEY
+                : import.meta.env.VITE_REVENUECAT_WEB_KEY;
+              const legacy = import.meta.env.VITE_REVENUECAT_PUBLIC_KEY;
+
+              if (!key && !legacy) return "✗ Missing";
+
+              const activeKey = key || legacy;
+
+              if (activeKey.startsWith("sk_"))
                 return "✗ Secret key (should be public)";
-              if (key === "your_revenuecat_public_key")
+
+              const validIOS = isIOS && activeKey.startsWith("appl_");
+              const validWeb =
+                !isIOS &&
+                (activeKey.startsWith("strp_") ||
+                  activeKey.startsWith("public_"));
+
+              if (isIOS && !validIOS) return "✗ Invalid iOS key";
+              if (!isIOS && !validWeb) return "✗ Invalid Web key";
+
+              if (activeKey === "your_revenuecat_public_key")
                 return "✗ Not configured";
+
               return "✓ Configured";
             })()}
           </div>

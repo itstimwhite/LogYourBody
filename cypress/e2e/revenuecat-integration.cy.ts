@@ -18,7 +18,7 @@ describe("RevenueCat Integration", () => {
   });
 
   describe("RevenueCat Debug Card", () => {
-    it('should show "Ready" status when VITE_REVENUECAT_PUBLIC_KEY is properly configured', () => {
+    it('should show "Ready" status when RevenueCat API keys are properly configured', () => {
       // Visit settings page where RevenueCat debug card should be displayed
       cy.visit("/settings");
 

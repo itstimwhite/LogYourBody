@@ -39,7 +39,7 @@
     "supabase:generate-types": "npx supabase gen types typescript --local > src/types/supabase.ts",
     "render:avatars": "node ./scripts/svg-avatar-renderer.cjs",
     "render:avatars:full": "tsc --project ./scripts/tsconfig.json && node ./scripts/dist/render-avatars.js && rimraf ./scripts/dist ./scripts/__tmp",
-    "revenuecat:validate": "node -e \"console.log('RevenueCat configuration:', {configured: !!process.env.VITE_REVENUECAT_PUBLIC_KEY, key: process.env.VITE_REVENUECAT_PUBLIC_KEY?.slice(0,20) + '...'})\"",
+    "revenuecat:validate": "node -e \"const ios=process.env.VITE_REVENUECAT_IOS_KEY; const web=process.env.VITE_REVENUECAT_WEB_KEY; const legacy=process.env.VITE_REVENUECAT_PUBLIC_KEY; console.log('RevenueCat configuration:', { ios: !!ios, web: !!web, legacy: !!legacy });\"",
     "revenuecat:test": "echo 'Testing RevenueCat integration...' && npm run dev",
     "vercel:dev": "vercel dev",
     "vercel:build": "vercel build",

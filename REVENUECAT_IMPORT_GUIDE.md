@@ -90,9 +90,12 @@
 ## Step 7: Get API Keys
 
 1. Go to **Project Settings** → **API Keys**
-2. Copy the **Public API Key** for Web
+2. Copy the **Public API Key** for Web and iOS
 3. Update your `.env` file:
    ```env
+   VITE_REVENUECAT_WEB_KEY=your_web_public_key
+   VITE_REVENUECAT_IOS_KEY=your_ios_public_key
+   # Legacy (optional)
    VITE_REVENUECAT_PUBLIC_KEY=your_copied_public_key
    ```
 
