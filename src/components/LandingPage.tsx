@@ -216,7 +216,7 @@ export function LandingPage() {
               <div className="space-y-8">
                 {/* Top horizontal bar of F - Badge and headline */}
                 <div className="space-y-6">
-                  <Badge className="bg-linear-purple/10 text-linear-purple border-linear-purple/20 text-sm px-4 py-2 inline-block">
+                  <Badge className="bg-linear-purple/10 text-white border-linear-purple/20 text-sm px-4 py-2 inline-block">
                     Trusted by 10,000+ users worldwide
                   </Badge>
                   
@@ -278,7 +278,7 @@ export function LandingPage() {
                   {/* Social proof metrics */}
                   <div className="flex flex-wrap items-center gap-6 text-sm text-linear-text-tertiary">
                     <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-linear-purple" />
+                      <Check className="h-4 w-4 text-white" />
                       <span>No credit card required</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -301,7 +301,7 @@ export function LandingPage() {
                   <div className="relative rounded-2xl bg-gradient-to-br from-linear-card/50 to-linear-card/30 border border-linear-border/50 backdrop-blur-sm p-6 shadow-2xl">
                     <div className="aspect-[4/5] bg-gradient-to-br from-linear-purple/10 to-linear-purple/5 rounded-xl border border-linear-border/30 flex items-center justify-center">
                       <div className="text-center">
-                        <BarChart3 className="h-16 w-16 text-linear-purple/50 mx-auto mb-4" />
+                        <BarChart3 className="h-16 w-16 text-white/50 mx-auto mb-4" />
                         <p className="text-linear-text-secondary text-sm">App Preview Coming Soon</p>
                       </div>
                     </div>
@@ -377,7 +377,7 @@ export function LandingPage() {
           <div className="container mx-auto px-4 sm:px-6">
             {/* Section header */}
             <div className="mb-20 text-center">
-              <Badge className="mb-6 bg-linear-purple/10 text-linear-purple border-linear-purple/20">
+              <Badge className="mb-6 bg-linear-purple/10 text-white border-linear-purple/20">
                 Core Features
               </Badge>
               <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
@@ -396,7 +396,7 @@ export function LandingPage() {
               <div id="advanced-analytics" className="group relative rounded-2xl border border-linear-border/50 bg-gradient-to-br from-linear-card/50 to-transparent p-8 transition-all duration-300 hover:border-linear-purple/30 hover:bg-linear-card/30" role="listitem">
                 <div className="mb-6">
                   <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
-                    <BarChart3 className="h-6 w-6 text-linear-purple" aria-hidden="true" />
+                    <BarChart3 className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
                 </div>
                 <h3 className="mb-3 text-lg font-semibold text-linear-text">Advanced Analytics</h3>
@@ -408,7 +408,7 @@ export function LandingPage() {
               <div id="progress-photos-grid" className="group relative rounded-2xl border border-linear-border/50 bg-gradient-to-br from-linear-card/50 to-transparent p-8 transition-all duration-300 hover:border-linear-purple/30 hover:bg-linear-card/30" role="listitem">
                 <div className="mb-6">
                   <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
-                    <Camera className="h-6 w-6 text-linear-purple" aria-hidden="true" />
+                    <Camera className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
                 </div>
                 <h3 className="mb-3 text-lg font-semibold text-linear-text">Progress Photos</h3>
@@ -420,7 +420,7 @@ export function LandingPage() {
               <div id="health-app-sync" className="group relative rounded-2xl border border-linear-border/50 bg-gradient-to-br from-linear-card/50 to-transparent p-8 transition-all duration-300 hover:border-linear-purple/30 hover:bg-linear-card/30" role="listitem">
                 <div className="mb-6">
                   <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
-                    <Smartphone className="h-6 w-6 text-linear-purple" aria-hidden="true" />
+                    <Smartphone className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
                 </div>
                 <h3 className="mb-3 text-lg font-semibold text-linear-text">Health App Sync</h3>
@@ -432,7 +432,7 @@ export function LandingPage() {
               <div id="progress-insights" className="group relative rounded-2xl border border-linear-border/50 bg-gradient-to-br from-linear-card/50 to-transparent p-8 transition-all duration-300 hover:border-linear-purple/30 hover:bg-linear-card/30" role="listitem">
                 <div className="mb-6">
                   <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
-                    <TrendingUp className="h-6 w-6 text-linear-purple" aria-hidden="true" />
+                    <TrendingUp className="h-6 w-6 text-white" aria-hidden="true" />
                   </div>
                 </div>
                 <h3 className="mb-3 text-lg font-semibold text-linear-text">Progress Insights</h3>
@@ -448,7 +448,7 @@ export function LandingPage() {
         <section id="main-features" className="py-20 md:py-32">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="mb-4 text-center">
-              <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20 inline-block">
+              <Badge className="mb-4 bg-linear-purple/10 text-white border-linear-purple/20 inline-block">
                 Used by 10,000+ users
               </Badge>
             </div>
@@ -470,7 +470,7 @@ export function LandingPage() {
                   id={slugify(feature.title)}
                   className="group rounded-lg border border-linear-border bg-linear-card p-6 transition-colors hover:border-linear-text-tertiary"
                 >
-                  <feature.icon className="mb-4 h-8 w-8 text-linear-purple" />
+                  <feature.icon className="mb-4 h-8 w-8 text-white" />
                   <h3 className="mb-2 text-lg font-semibold text-linear-text">
                     {feature.title}
                   </h3>
@@ -489,7 +489,7 @@ export function LandingPage() {
             <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
               {/* Content */}
               <div className="order-2 lg:order-1">
-                <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20 inline-block">
+                <Badge className="mb-4 bg-linear-purple/10 text-white border-linear-purple/20 inline-block">
                   Game-changing feature
                 </Badge>
                 <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-linear-text">
@@ -503,7 +503,7 @@ export function LandingPage() {
                 <div className="space-y-6">
                   <div className="flex gap-4">
                     <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
-                      <Clock className="h-6 w-6 text-linear-purple" />
+                      <Clock className="h-6 w-6 text-white" />
                     </div>
                     <div>
                       <h3 className="mb-1 text-lg font-semibold text-linear-text">
@@ -517,7 +517,7 @@ export function LandingPage() {
                   
                   <div className="flex gap-4">
                     <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
-                      <Camera className="h-6 w-6 text-linear-purple" />
+                      <Camera className="h-6 w-6 text-white" />
                     </div>
                     <div>
                       <h3 className="mb-1 text-lg font-semibold text-linear-text">
@@ -531,7 +531,7 @@ export function LandingPage() {
                   
                   <div className="flex gap-4">
                     <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
-                      <TrendingUp className="h-6 w-6 text-linear-purple" />
+                      <TrendingUp className="h-6 w-6 text-white" />
                     </div>
                     <div>
                       <h3 className="mb-1 text-lg font-semibold text-linear-text">
@@ -566,7 +566,7 @@ export function LandingPage() {
           <div className="container mx-auto px-4 sm:px-6">
             <div className="mx-auto max-w-6xl">
               <div className="mb-16 text-center">
-                <Badge className="mb-6 bg-linear-purple/10 text-linear-purple border-linear-purple/20 inline-block">
+                <Badge className="mb-6 bg-linear-purple/10 text-white border-linear-purple/20 inline-block">
                   Available Everywhere
                 </Badge>
                 <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
@@ -601,7 +601,7 @@ export function LandingPage() {
                       </div>
                       <div className="aspect-[16/10] bg-gradient-to-br from-linear-purple/10 to-linear-purple/5 rounded-lg border border-linear-border/30 flex items-center justify-center">
                         <div className="text-center">
-                          <Monitor className="h-12 w-12 text-linear-purple/50 mx-auto mb-3" />
+                          <Monitor className="h-12 w-12 text-white/50 mx-auto mb-3" />
                           <p className="text-sm text-linear-text-secondary">Web Dashboard</p>
                         </div>
                       </div>
@@ -614,7 +614,7 @@ export function LandingPage() {
                       </div>
                       <div className="aspect-[9/16] bg-gradient-to-br from-linear-purple/10 to-linear-purple/5 rounded-lg border border-linear-border/30 flex items-center justify-center">
                         <div className="text-center">
-                          <Smartphone className="h-8 w-8 text-linear-purple/50 mx-auto mb-2" />
+                          <Smartphone className="h-8 w-8 text-white/50 mx-auto mb-2" />
                           <p className="text-xs text-linear-text-secondary">Mobile App</p>
                         </div>
                       </div>
@@ -623,7 +623,7 @@ export function LandingPage() {
                     {/* Sync indicator */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
                       <div className="bg-linear-bg/90 backdrop-blur-sm border border-linear-border/50 rounded-full p-3 shadow-lg">
-                        <Zap className="h-6 w-6 text-linear-purple animate-pulse" />
+                        <Zap className="h-6 w-6 text-white animate-pulse" />
                       </div>
                     </div>
                   </div>
@@ -644,7 +644,7 @@ export function LandingPage() {
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div className="flex gap-4">
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
-                        <Smartphone className="h-6 w-6 text-linear-purple" />
+                        <Smartphone className="h-6 w-6 text-white" />
                       </div>
                       <div>
                         <h4 className="mb-1 font-semibold text-linear-text">
@@ -658,7 +658,7 @@ export function LandingPage() {
 
                     <div className="flex gap-4">
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
-                        <Monitor className="h-6 w-6 text-linear-purple" />
+                        <Monitor className="h-6 w-6 text-white" />
                       </div>
                       <div>
                         <h4 className="mb-1 font-semibold text-linear-text">
@@ -672,7 +672,7 @@ export function LandingPage() {
 
                     <div className="flex gap-4">
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
-                        <Tablet className="h-6 w-6 text-linear-purple" />
+                        <Tablet className="h-6 w-6 text-white" />
                       </div>
                       <div>
                         <h4 className="mb-1 font-semibold text-linear-text">
@@ -686,7 +686,7 @@ export function LandingPage() {
 
                     <div className="flex gap-4">
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10">
-                        <Zap className="h-6 w-6 text-linear-purple" />
+                        <Zap className="h-6 w-6 text-white" />
                       </div>
                       <div>
                         <h4 className="mb-1 font-semibold text-linear-text">
@@ -701,7 +701,7 @@ export function LandingPage() {
 
                   <div className="rounded-lg border border-linear-border/50 bg-linear-bg/50 p-6">
                     <div className="flex items-center gap-3 mb-3">
-                      <Download className="h-5 w-5 text-linear-purple" />
+                      <Download className="h-5 w-5 text-white" />
                       <h4 className="font-semibold text-linear-text">Get started today</h4>
                     </div>
                     <p className="text-sm text-linear-text-secondary mb-4">
@@ -835,7 +835,7 @@ export function LandingPage() {
                       role="listitem"
                     >
                       <Check
-                        className="mr-3 h-5 w-5 text-linear-purple"
+                        className="mr-3 h-5 w-5 text-white"
                         aria-hidden="true"
                       />
                       <span className="text-sm">{feature}</span>
@@ -870,7 +870,7 @@ export function LandingPage() {
           
           <div className="container mx-auto px-4 sm:px-6 relative z-10">
             <div className="mx-auto max-w-4xl text-center">
-              <Badge className="mb-8 bg-linear-purple/10 text-linear-purple border-linear-purple/20">
+              <Badge className="mb-8 bg-linear-purple/10 text-white border-linear-purple/20">
                 Ready to get started?
               </Badge>
               <h2 className="mb-6 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-linear-text">
@@ -907,15 +907,15 @@ export function LandingPage() {
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-linear-text-tertiary">
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-linear-purple" />
+                  <Check className="h-4 w-4 text-white" />
                   <span>No credit card required</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-linear-purple" />
+                  <Check className="h-4 w-4 text-white" />
                   <span>3-day free trial</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-linear-purple" />
+                  <Check className="h-4 w-4 text-white" />
                   <span>Cancel anytime</span>
                 </div>
               </div>

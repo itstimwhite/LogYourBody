@@ -62,6 +62,7 @@ const Careers = React.lazy(() => import("./pages/Careers"));
 const Security = React.lazy(() => import("./pages/Security"));
 const Changelog = React.lazy(() => import("./pages/Changelog"));
 const HealthKitTest = React.lazy(() => import("./pages/HealthKitTest"));
+const Epic = React.lazy(() => import("./pages/Epic"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
 // Loading fallback component
@@ -105,6 +106,7 @@ const publicRoutes = [
   { path: "/terms", element: <Terms /> },
   { path: "/privacy", element: <Privacy /> },
   { path: "/changelog", element: <Changelog /> },
+  { path: "/epic", element: <Epic /> },
   { path: "/test-auth", element: <TestAuth /> },
 ];
 
