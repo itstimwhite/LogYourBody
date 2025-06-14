@@ -10,13 +10,18 @@ import {
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import {
   BarChart3,
   Camera,
   Smartphone,
   TrendingUp,
   Shield,
   Clock,
-  Star,
   Check,
   ArrowRight,
   Calendar,
@@ -29,6 +34,9 @@ import { prefetchRoute } from "@/lib/prefetch";
 export function LandingPage() {
   const navigate = useNavigate();
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
+
+  const slugify = (text: string) =>
+    text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   const pricing = {
     monthly: {
@@ -84,6 +92,15 @@ export function LandingPage() {
     },
   ];
 
+  const featureLinks = [
+    { id: "advanced-analytics", label: "Advanced Analytics" },
+    { id: "progress-photos-grid", label: "Progress Photos" },
+    { id: "health-app-sync", label: "Health App Sync" },
+    { id: "progress-insights", label: "Progress Insights" },
+    ...appFeatures.map((f) => ({ id: slugify(f.title), label: f.title })),
+    { id: "timeline-feature", label: "Timeline" },
+  ];
+
   const testimonials = [
     {
       name: "Sarah C.",
@@ -121,6 +138,13 @@ export function LandingPage() {
     "No ads, ever",
   ];
 
+  const scrollToSection = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="min-h-svh bg-linear-bg font-inter">
       {/* Skip Links */}
@@ -146,8 +170,30 @@ export function LandingPage() {
               </div>
               <div className="hidden md:flex items-center space-x-6">
                 <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Product</button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">
+                      Features
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    {featureLinks.map((f) => (
+                      <DropdownMenuItem
+                        key={f.id}
+                        onSelect={() => scrollToSection(f.id)}
+                      >
+                        {f.label}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Resources</button>
-                <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Pricing</button>
+                <button
+                  className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors"
+                  onClick={() => scrollToSection('pricing')}
+                >
+                  Pricing
+                </button>
                 <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Contact</button>
               </div>
             </div>
@@ -242,10 +288,10 @@ export function LandingPage() {
         </section>
 
         {/* Features Grid */}
-        <section className="py-20" aria-labelledby="features-heading">
+        <section id="features-grid" className="py-20" aria-labelledby="features-heading">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4" role="list">
-              <div className="space-y-3" role="listitem">
+              <div id="advanced-analytics" className="space-y-3" role="listitem">
                 <div className="flex items-center gap-2">
                   <BarChart3 className="h-5 w-5 text-linear-purple" aria-hidden="true" />
                   <h3 className="text-base font-medium text-linear-text">Advanced Analytics</h3>
@@ -254,7 +300,7 @@ export function LandingPage() {
                   See what's really changing. Not just weight.
                 </p>
               </div>
-              <div className="space-y-3" role="listitem">
+              <div id="progress-photos-grid" className="space-y-3" role="listitem">
                 <div className="flex items-center gap-2">
                   <Camera className="h-5 w-5 text-linear-purple" aria-hidden="true" />
                   <h3 className="text-base font-medium text-linear-text">Progress Photos</h3>
@@ -263,7 +309,7 @@ export function LandingPage() {
                   Side-by-side comparisons that show real progress.
                 </p>
               </div>
-              <div className="space-y-3" role="listitem">
+              <div id="health-app-sync" className="space-y-3" role="listitem">
                 <div className="flex items-center gap-2">
                   <Smartphone className="h-5 w-5 text-linear-purple" aria-hidden="true" />
                   <h3 className="text-base font-medium text-linear-text">Health App Sync</h3>
@@ -272,7 +318,7 @@ export function LandingPage() {
                   Auto-imports from your health apps. Zero manual entry.
                 </p>
               </div>
-              <div className="space-y-3" role="listitem">
+              <div id="progress-insights" className="space-y-3" role="listitem">
                 <div className="flex items-center gap-2">
                   <TrendingUp className="h-5 w-5 text-linear-purple" aria-hidden="true" />
                   <h3 className="text-base font-medium text-linear-text">Progress Insights</h3>
@@ -286,7 +332,7 @@ export function LandingPage() {
         </section>
 
         {/* Main Features Section */}
-        <section className="py-20 md:py-32">
+        <section id="main-features" className="py-20 md:py-32">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="mb-4 text-center">
               <Badge className="mb-4 bg-linear-purple/10 text-linear-purple border-linear-purple/20 inline-block">
@@ -308,6 +354,7 @@ export function LandingPage() {
               {appFeatures.map((feature, index) => (
                 <div
                   key={index}
+                  id={slugify(feature.title)}
                   className="group rounded-lg border border-linear-border bg-linear-card p-6 transition-colors hover:border-linear-text-tertiary"
                 >
                   <feature.icon className="mb-4 h-8 w-8 text-linear-purple" />
@@ -324,7 +371,7 @@ export function LandingPage() {
         </section>
 
         {/* Timeline Feature Section */}
-        <section className="relative py-20 md:py-32 overflow-hidden">
+        <section id="timeline-feature" className="relative py-20 md:py-32 overflow-hidden">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
               {/* Content */}
@@ -400,7 +447,7 @@ export function LandingPage() {
         </section>
 
         {/* Pricing Section */}
-        <section className="container mx-auto px-4 sm:px-6 py-20">
+        <section id="pricing" className="container mx-auto px-4 sm:px-6 py-20">
           <div className="mb-16 text-center">
             <h2 className="mb-4 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
               Less than your protein powder
