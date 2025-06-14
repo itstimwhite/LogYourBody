@@ -24,14 +24,8 @@ const About = () => {
     {
       name: "Tim White",
       role: "Founder & Developer",
-      bio: "Passionate about creating tools that help people understand their bodies better. 10+ years in software development.",
+      bio: "Passionate about creating tools that help people understand their bodies better. 10+ years in software development with a focus on health and fitness technology.",
       avatar: "TW",
-    },
-    {
-      name: "Claude AI",
-      role: "AI Development Partner",
-      bio: "Advanced AI assistant helping to build intuitive user experiences and robust functionality.",
-      avatar: "AI",
     },
   ];
 
@@ -254,33 +248,35 @@ const About = () => {
                 Our Team
               </Badge>
               <h2 className="mb-4 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
-                Meet the makers
+                Meet the founder
               </h2>
               <p className="mx-auto max-w-2xl text-lg text-linear-text-secondary">
-                A small but passionate team dedicated to revolutionizing fitness tracking.
+                Founded by a passionate developer dedicated to revolutionizing fitness tracking.
               </p>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:gap-12">
-              {teamMembers.map((member, index) => (
-                <div
-                  key={index}
-                  className="rounded-lg border border-linear-border bg-linear-card p-8 text-center"
-                >
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-linear-purple/10 text-xl font-bold text-linear-purple">
-                    {member.avatar}
+            <div className="flex justify-center">
+              <div className="max-w-md">
+                {teamMembers.map((member, index) => (
+                  <div
+                    key={index}
+                    className="rounded-lg border border-linear-border bg-linear-card p-8 text-center"
+                  >
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-linear-purple/10 text-xl font-bold text-linear-purple">
+                      {member.avatar}
+                    </div>
+                    <h3 className="mb-2 text-xl font-semibold text-linear-text">
+                      {member.name}
+                    </h3>
+                    <p className="mb-4 text-sm font-medium text-linear-purple">
+                      {member.role}
+                    </p>
+                    <p className="text-sm text-linear-text-secondary leading-relaxed">
+                      {member.bio}
+                    </p>
                   </div>
-                  <h3 className="mb-2 text-xl font-semibold text-linear-text">
-                    {member.name}
-                  </h3>
-                  <p className="mb-4 text-sm font-medium text-linear-purple">
-                    {member.role}
-                  </p>
-                  <p className="text-sm text-linear-text-secondary leading-relaxed">
-                    {member.bio}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </section>
