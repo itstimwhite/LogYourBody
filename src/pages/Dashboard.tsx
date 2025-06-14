@@ -12,6 +12,7 @@ import { WeightPrompt } from "@/components/WeightPrompt";
 import { TrialGuard } from "@/components/TrialGuard";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import { EmailConfirmationBanner } from "@/components/EmailConfirmationBanner";
+import { prefetchRoute } from "@/lib/prefetch";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
 // Helper function to calculate age from birthday
@@ -262,6 +263,8 @@ const Dashboard = () => {
               <Button
                 size="icon"
                 variant="ghost"
+                onMouseEnter={() => prefetchRoute("/healthkit-test")}
+                onFocus={() => prefetchRoute("/healthkit-test")}
                 onClick={() => navigate("/healthkit-test")}
                 className="text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
                 title="HealthKit Testing (Development)"
@@ -286,6 +289,8 @@ const Dashboard = () => {
             <Button
               size="icon"
               variant="ghost"
+              onMouseEnter={() => prefetchRoute("/settings")}
+              onFocus={() => prefetchRoute("/settings")}
               onClick={() => navigate("/settings")}
               className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
             >
@@ -349,6 +354,8 @@ const Dashboard = () => {
               <Button
                 size="icon"
                 variant="ghost"
+                onMouseEnter={() => prefetchRoute("/settings")}
+                onFocus={() => prefetchRoute("/settings")}
                 onClick={() => navigate("/settings")}
                 className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm hover:bg-linear-card hover:text-linear-text transition-colors"
               >

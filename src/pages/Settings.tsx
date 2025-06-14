@@ -31,6 +31,7 @@ import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useSupabaseSubscription } from "@/hooks/use-supabase-subscription";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { LogOut } from "lucide-react";
+import { prefetchRoute } from "@/lib/prefetch";
 
 const Settings = () => {
   const navigate = useNavigate();
@@ -210,6 +211,8 @@ const Settings = () => {
           <Button
             size="icon"
             variant="ghost"
+            onMouseEnter={() => prefetchRoute("/dashboard")}
+            onFocus={() => prefetchRoute("/dashboard")}
             onClick={() => navigate("/dashboard")}
             className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
           >
@@ -344,6 +347,8 @@ const Settings = () => {
                   </div>
                   <ArrowLeft
                     className="h-4 w-4 rotate-180 cursor-pointer text-muted-foreground"
+                    onMouseEnter={() => prefetchRoute("/subscription")}
+                    onFocus={() => prefetchRoute("/subscription")}
                     onClick={() => navigate("/subscription")}
                   />
                 </div>

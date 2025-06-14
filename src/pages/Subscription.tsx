@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import { useSubscription } from "@/hooks/use-subscription";
 import { Paywall } from "@/components/Paywall";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
+import { prefetchRoute } from "@/lib/prefetch";
 
 const Subscription = () => {
   const navigate = useNavigate();
@@ -65,6 +66,8 @@ const Subscription = () => {
         <Button
           size="icon"
           variant="outline"
+          onMouseEnter={() => prefetchRoute("/settings")}
+          onFocus={() => prefetchRoute("/settings")}
           onClick={() => navigate("/settings")}
           className="h-10 w-10 border-border bg-secondary text-foreground hover:bg-muted"
         >

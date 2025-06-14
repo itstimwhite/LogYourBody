@@ -15,6 +15,7 @@ import {
 import { useAppleSignIn } from "@/hooks/use-apple-signin";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
 import { VersionDisplay } from "@/components/VersionDisplay";
+import { prefetchRoute } from "@/lib/prefetch";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -231,6 +232,8 @@ const Login = () => {
       <div className="flex items-center justify-between p-6">
         <Button
           variant="ghost"
+          onMouseEnter={() => prefetchRoute("/")}
+          onFocus={() => prefetchRoute("/")}
           onClick={() => navigate("/")}
           className="text-linear-text-secondary hover:text-linear-text"
         >
@@ -447,6 +450,8 @@ const Login = () => {
         <p className="text-sm text-linear-text-tertiary">
           By continuing, you agree to our{" "}
           <button
+            onMouseEnter={() => prefetchRoute("/terms")}
+            onFocus={() => prefetchRoute("/terms")}
             onClick={() => navigate("/terms")}
             className="text-linear-purple hover:underline"
           >
@@ -454,6 +459,8 @@ const Login = () => {
           </button>{" "}
           and{" "}
           <button
+            onMouseEnter={() => prefetchRoute("/privacy")}
+            onFocus={() => prefetchRoute("/privacy")}
             onClick={() => navigate("/privacy")}
             className="text-linear-purple hover:underline"
           >
@@ -462,6 +469,8 @@ const Login = () => {
         </p>
         <div className="mt-4 flex justify-center gap-4">
           <button
+            onMouseEnter={() => prefetchRoute("/changelog")}
+            onFocus={() => prefetchRoute("/changelog")}
             onClick={() => navigate("/changelog")}
             className="text-sm text-linear-text-tertiary transition-colors hover:text-linear-text"
           >
