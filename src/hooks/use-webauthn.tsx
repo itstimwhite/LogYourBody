@@ -241,7 +241,7 @@ export function useWebAuthn(): WebAuthnState & WebAuthnActions {
     try {
       const challenge = generateChallenge();
       const allowCredentials = state.credentials.map((cred) => ({
-        id: new TextEncoder().encode(cred.id),
+        id: base64urlToBuffer(cred.id),
         type: "public-key" as const,
       }));
 
