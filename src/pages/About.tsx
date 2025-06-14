@@ -12,6 +12,9 @@ import {
   Shield,
   Award,
   Github,
+  Flame,
+  GraduationCap,
+  Rocket,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { prefetchRoute } from "@/lib/prefetch";
@@ -31,24 +34,44 @@ const About = () => {
 
   const values = [
     {
-      icon: Target,
-      title: "Precision Matters",
-      description: "We believe in accurate measurement over vanity metrics. Real progress requires real data.",
+      icon: Award,
+      title: "Be So Good They Can't Ignore You",
+      description: "We don't compete on marketing budgets. We compete on substance. Every feature must be undeniably excellent.",
     },
     {
-      icon: Shield,
-      title: "Privacy First",
-      description: "Your health data belongs to you. We encrypt everything and never sell your information.",
+      icon: Flame,
+      title: "Be Sexy",
+      description: "Health tracking should be inspiring, not clinical. Beautiful design makes complex data accessible and motivating.",
     },
     {
-      icon: Heart,
-      title: "Health, Not Aesthetics",
-      description: "We focus on health metrics that matter, not just appearance-based goals.",
+      icon: BarChart3,
+      title: "Evidence-Based Solutions",
+      description: "We track what actually matters for body composition, not vanity metrics. Real data drives real progress.",
     },
     {
       icon: Zap,
       title: "Simplicity in Complexity",
-      description: "Advanced body composition tracking made simple enough for daily use.",
+      description: "Professional-grade analysis hidden behind elegant interfaces. 30-second logging for complete body metrics.",
+    },
+    {
+      icon: Shield,
+      title: "Privacy by Design",
+      description: "Your body data is deeply personal. End-to-end encryption, complete control, and transparent policies.",
+    },
+    {
+      icon: Target,
+      title: "Precision Over Perception",
+      description: "We measure reality, not feelings. Accurate body composition tracking, even when progress isn't linear.",
+    },
+    {
+      icon: Rocket,
+      title: "Ship Fast, Learn Faster",
+      description: "Rapid iteration guided by user feedback. Perfect is the enemy of good, but good enough isn't good enough.",
+    },
+    {
+      icon: GraduationCap,
+      title: "Education Over Selling",
+      description: "We succeed when our users succeed. Teaching how body composition works, not just selling features.",
     },
   ];
 
@@ -110,8 +133,8 @@ const About = () => {
                 body composition tracking
               </h1>
               <p className="mx-auto mb-8 max-w-2xl text-lg text-linear-text-secondary">
-                We believe everyone deserves access to accurate, professional-grade body composition data. 
-                LogYourBody makes advanced fitness tracking simple, private, and accessible.
+                We're building the future of body composition tracking. Not another vanity metrics app, 
+                but professional-grade tools that are beautiful, accurate, and inspire real progress.
               </p>
             </div>
           </div>
@@ -140,21 +163,20 @@ const About = () => {
                   Our Mission
                 </Badge>
                 <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
-                  Track what really matters
+                  Evidence over vanity metrics
                 </h2>
                 <div className="space-y-6 text-lg text-linear-text-secondary">
                   <p>
-                    Most fitness apps focus on the wrong metrics. Weight alone tells you nothing about 
-                    muscle gain, fat loss, or overall health improvements. We built LogYourBody to bridge 
-                    the gap between professional body composition analysis and everyday fitness tracking.
+                    Most fitness apps are built to make you feel good, not get results. They track steps, 
+                    calories burned, and weight—metrics that tell you almost nothing about real body composition changes.
                   </p>
                   <p>
-                    Our platform combines the accuracy of DEXA scans with the convenience of daily logging, 
-                    giving you insights that actually help you understand your body's changes over time.
+                    We track what actually matters: body fat percentage, lean mass, and FFMI. The same metrics 
+                    used by professional bodybuilders and sports scientists, but made simple enough for daily use.
                   </p>
                   <p>
-                    Whether you're a fitness professional working with clients or someone on their own 
-                    health journey, LogYourBody provides the data you need to make informed decisions.
+                    Our tools are beautiful because complex data should be inspiring, not intimidating. 
+                    And they're accurate because we believe in measuring reality, not perception.
                   </p>
                 </div>
               </div>
@@ -166,7 +188,7 @@ const About = () => {
                     Professional Grade
                   </h3>
                   <p className="text-sm text-linear-text-secondary">
-                    Body fat percentage tracking with ±2% accuracy when measured correctly.
+                    DEXA-scan accuracy in your pocket. Body fat tracking with ±2% precision when done right.
                   </p>
                 </div>
                 <div className="rounded-lg border border-linear-border bg-linear-card p-6">
@@ -175,7 +197,7 @@ const About = () => {
                     Visual Progress
                   </h3>
                   <p className="text-sm text-linear-text-secondary">
-                    Progress photos with consistent angles and automated reminders.
+                    See changes your scale can't measure. Automated photo reminders with consistent angles.
                   </p>
                 </div>
                 <div className="rounded-lg border border-linear-border bg-linear-card p-6">
@@ -184,16 +206,16 @@ const About = () => {
                     FFMI Tracking
                   </h3>
                   <p className="text-sm text-linear-text-secondary">
-                    Understand your genetic potential and track lean muscle gains.
+                    Know your genetic potential. Track lean muscle gains without the guesswork.
                   </p>
                 </div>
                 <div className="rounded-lg border border-linear-border bg-linear-card p-6">
                   <Users className="mb-4 h-8 w-8 text-linear-purple" />
                   <h3 className="mb-2 text-lg font-semibold text-linear-text">
-                    For Everyone
+                    Built for Results
                   </h3>
                   <p className="text-sm text-linear-text-secondary">
-                    From personal use to professional coaching, built for all levels.
+                    From personal use to professional coaching. Tools that actually move the needle.
                   </p>
                 </div>
               </div>
@@ -216,18 +238,18 @@ const About = () => {
               </p>
             </div>
 
-            <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {values.map((value, index) => {
                 const IconComponent = value.icon;
                 return (
                   <div
                     key={index}
-                    className="rounded-lg border border-linear-border bg-linear-bg p-6 text-center"
+                    className="rounded-lg border border-linear-border bg-linear-bg p-6 text-center hover:bg-linear-card/50 transition-colors"
                   >
                     <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-linear-purple/10">
                       <IconComponent className="h-6 w-6 text-linear-purple" />
                     </div>
-                    <h3 className="mb-2 text-lg font-semibold text-linear-text">
+                    <h3 className="mb-3 text-base font-semibold text-linear-text leading-tight">
                       {value.title}
                     </h3>
                     <p className="text-sm text-linear-text-secondary leading-relaxed">
