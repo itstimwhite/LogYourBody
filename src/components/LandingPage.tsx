@@ -119,7 +119,7 @@ export function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen font-inter">
+    <div className="min-h-screen bg-nordic-gray font-inter">
       {/* Skip Links */}
       <div className="sr-only z-50 focus:not-sr-only focus:absolute focus:left-4 focus:top-4">
         <button
@@ -233,17 +233,17 @@ export function LandingPage() {
 
         {/* Features Section */}
         <section
-          className="theme-light prose container mx-auto px-6 py-20"
+          className="theme-dark prose container mx-auto px-6 py-20"
           aria-labelledby="features-heading"
         >
           <div className="mb-16 text-center">
             <h2
               id="features-heading"
-              className="mb-4"
+              className="mb-4 text-mercury-white"
             >
               Everything You Need for Body Composition Tracking
             </h2>
-            <p className="mx-auto max-w-2xl text-xl">
+            <p className="mx-auto max-w-2xl text-xl text-mercury-white/80">
               Professional-grade tools and analytics to help you understand and
               optimize your body composition.
             </p>
@@ -252,7 +252,7 @@ export function LandingPage() {
             {appFeatures.map((feature, index) => (
               <Card
                 key={index}
-                className="border-mercury-white bg-mercury-white transition-all duration-200 focus-within:ring-2 focus-within:ring-magic-blue/50 hover:scale-105 hover:shadow-xl"
+                className="border-mercury-white/10 bg-nordic-gray/50 backdrop-blur-sm transition-all duration-200 focus-within:ring-2 focus-within:ring-magic-blue/50 hover:scale-105 hover:shadow-xl"
                 role="listitem"
                 tabIndex="0"
                 aria-labelledby={`feature-title-${index}`}
@@ -263,14 +263,14 @@ export function LandingPage() {
                     className="mb-4 h-12 w-12 text-magic-blue"
                     aria-hidden="true"
                   />
-                  <CardTitle id={`feature-title-${index}`} className="text-xl text-nordic-gray">
+                  <CardTitle id={`feature-title-${index}`} className="text-xl text-mercury-white">
                     {feature.title}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <CardDescription
                     id={`feature-desc-${index}`}
-                    className="text-base leading-relaxed text-text-secondary"
+                    className="text-base leading-relaxed text-mercury-white/70"
                   >
                     {feature.description}
                   </CardDescription>
@@ -340,12 +340,12 @@ export function LandingPage() {
         </section>
 
         {/* Pricing Section */}
-        <section className="theme-light prose container mx-auto px-6 py-20">
+        <section className="theme-dark prose container mx-auto px-6 py-20">
           <div className="mb-16 text-center">
-            <h2 className="mb-4">
+            <h2 className="mb-4 text-mercury-white">
               Simple, Transparent Pricing
             </h2>
-            <p className="text-xl">
+            <p className="text-xl text-mercury-white/80">
               Start your 3-day free trial today. No hidden fees.
             </p>
           </div>
@@ -360,7 +360,7 @@ export function LandingPage() {
               Choose billing frequency
             </span>
             <span
-              className={`text-lg font-medium ${!isAnnual ? "text-nordic-gray" : "text-text-secondary"}`}
+              className={`text-lg font-medium ${!isAnnual ? "text-mercury-white" : "text-mercury-white/50"}`}
               id="monthly-label"
             >
               Monthly
@@ -373,7 +373,7 @@ export function LandingPage() {
               aria-describedby="billing-savings"
             />
             <span
-              className={`text-lg font-medium ${isAnnual ? "text-nordic-gray" : "text-text-secondary"}`}
+              className={`text-lg font-medium ${isAnnual ? "text-mercury-white" : "text-mercury-white/50"}`}
               id="annual-label"
             >
               Annual
@@ -392,7 +392,7 @@ export function LandingPage() {
           {/* Single Pricing Card */}
           <div className="not-prose mx-auto max-w-md">
             <Card
-              className="relative border-magic-blue/20 shadow-xl ring-2 ring-magic-blue focus-within:ring-4 focus-within:ring-magic-blue/50"
+              className="relative border-mercury-white/10 bg-nordic-gray/50 backdrop-blur-sm shadow-xl ring-2 ring-magic-blue focus-within:ring-4 focus-within:ring-magic-blue/50"
               role="region"
               aria-labelledby="pricing-title"
               aria-describedby="pricing-description"
@@ -404,31 +404,31 @@ export function LandingPage() {
                 3-Day Free Trial
               </Badge>
               <CardHeader className="text-center">
-                <CardTitle id="pricing-title" className="text-2xl text-nordic-gray">
+                <CardTitle id="pricing-title" className="text-2xl text-mercury-white">
                   LogYourBody Pro
                 </CardTitle>
                 <div className="mt-4">
                   <span className="text-4xl font-bold text-magic-blue transition-all duration-300 ease-in-out">
                     <span className="sr-only">Price: </span>${currentPlan.price}
                   </span>
-                  <span className="text-text-secondary transition-all duration-300 ease-in-out">
+                  <span className="text-mercury-white/70 transition-all duration-300 ease-in-out">
                     /{currentPlan.period}
                   </span>
                 </div>
                 {isAnnual && (
                   <div className="mt-2 transition-all duration-300 ease-in-out">
-                    <span className="text-sm text-text-secondary">
+                    <span className="text-sm text-mercury-white/60">
                       ${pricing.annual.monthlyEquivalent}/month when billed
                       annually
                     </span>
-                    <div className="text-sm font-medium text-green-600">
+                    <div className="text-sm font-medium text-green-400">
                       Save ${pricing.annual.savings} vs monthly billing
                     </div>
                   </div>
                 )}
                 <CardDescription
                   id="pricing-description"
-                  className="mt-4 text-base text-text-secondary"
+                  className="mt-4 text-base text-mercury-white/70"
                 >
                   Professional body composition tracking with advanced analytics
                 </CardDescription>
@@ -438,7 +438,7 @@ export function LandingPage() {
                   {features.map((feature, index) => (
                     <li
                       key={index}
-                      className="flex items-center text-nordic-gray"
+                      className="flex items-center text-mercury-white"
                       role="listitem"
                     >
                       <Check
@@ -458,7 +458,7 @@ export function LandingPage() {
                 </Button>
                 <p
                   id="trial-terms"
-                  className="mt-3 text-center text-xs text-text-secondary"
+                  className="mt-3 text-center text-xs text-mercury-white/60"
                 >
                   No credit card required • Cancel anytime
                 </p>
@@ -493,38 +493,38 @@ export function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="theme-light border-t border-mercury-white/20 py-12 font-inter" role="contentinfo">
+      <footer className="theme-dark border-t border-mercury-white/10 py-12 font-inter" role="contentinfo">
         <div className="container mx-auto px-6 text-center">
           <div className="mb-8">
             <h3 className="mb-4 text-2xl font-bold text-magic-blue">
               LogYourBody
             </h3>
-            <p className="mx-auto max-w-md text-text-secondary">
+            <p className="mx-auto max-w-md text-mercury-white/70">
               Professional body composition tracking for fitness enthusiasts and
               health professionals.
             </p>
           </div>
           <div className="mb-8 flex justify-center space-x-8">
-            <Button variant="ghost" onClick={() => navigate("/privacy")} className="text-nordic-gray hover:bg-nordic-gray/5 hover:text-magic-blue">
+            <Button variant="ghost" onClick={() => navigate("/privacy")} className="text-mercury-white hover:bg-mercury-white/10 hover:text-magic-blue">
               Privacy Policy
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/terms")} className="text-nordic-gray hover:bg-nordic-gray/5 hover:text-magic-blue">
+            <Button variant="ghost" onClick={() => navigate("/terms")} className="text-mercury-white hover:bg-mercury-white/10 hover:text-magic-blue">
               Terms of Service
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/changelog")} className="text-nordic-gray hover:bg-nordic-gray/5 hover:text-magic-blue">
+            <Button variant="ghost" onClick={() => navigate("/changelog")} className="text-mercury-white hover:bg-mercury-white/10 hover:text-magic-blue">
               Changelog
             </Button>
             <Button
               variant="ghost"
               onClick={() => window.open("mailto:support@logyourbody.com")}
-              className="text-nordic-gray hover:bg-nordic-gray/5 hover:text-magic-blue"
+              className="text-mercury-white hover:bg-mercury-white/10 hover:text-magic-blue"
             >
               Contact Support
             </Button>
           </div>
           <div className="flex flex-col items-center gap-4">
             <VersionDisplay />
-            <p className="text-sm text-text-secondary">
+            <p className="text-sm text-mercury-white/60">
               © 2024 LogYourBody. All rights reserved.
             </p>
           </div>
