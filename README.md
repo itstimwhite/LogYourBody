@@ -103,7 +103,15 @@ A modern body composition tracking application built with React and TypeScript. 
    STRIPE_ANNUAL_PRICE_ID=price_1RY9YJRCO021kiwCBzaxnVEU
    STRIPE_MONTHLY_PRODUCT_ID=prod_ST5iisIAa5WOlT
    STRIPE_ANNUAL_PRODUCT_ID=prod_ST5jCsCdmToZ1d
+
+   # SMS Authentication (Twilio)
+   SUPABASE_AUTH_SMS_TWILIO_ACCOUNT_SID=your_twilio_account_sid
+   SUPABASE_AUTH_SMS_TWILIO_MESSAGE_SERVICE_SID=your_message_service_sid
+   SUPABASE_AUTH_SMS_TWILIO_AUTH_TOKEN=your_twilio_auth_token
    ```
+
+   Make sure SMS sign-ups are enabled in `supabase/config.toml` by setting
+   `enable_signup = true` under `[auth.sms]` and enabling the Twilio provider.
 
 4. **Database Setup**
 
