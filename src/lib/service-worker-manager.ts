@@ -225,14 +225,18 @@ class ServiceWorkerManager {
       if (registration?.waiting) {
         registration.waiting.postMessage({ type: "SKIP_WAITING" });
 
-        // Listen for the new SW to take control
-        navigator.serviceWorker.addEventListener("controllerchange", () => {
+        // Listen once for the new SW to take control
+        const onControllerChange = () => {
           console.log("New service worker activated");
-          // Notify user instead of automatic reload
           toast.success("App updated", {
             description: "A new version is ready. Please refresh when convenient.",
           });
-        });
+        };
+        navigator.serviceWorker.addEventListener(
+          "controllerchange",
+          onControllerChange,
+          { once: true },
+        );
       }
     } catch (error) {
       console.error("Error skipping waiting service worker:", error);

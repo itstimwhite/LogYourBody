@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { toast } from "sonner";
 
 interface UseSMSAuthReturn {
@@ -42,6 +42,11 @@ export function useSMSAuth(): UseSMSAuthReturn {
       return false;
     }
 
+    if (!isSupabaseConfigured || !supabase) {
+      setError("Authentication service not available");
+      return false;
+    }
+
     setIsLoading(true);
     setError(null);
 
@@ -76,6 +81,11 @@ export function useSMSAuth(): UseSMSAuthReturn {
   const verifySMSCode = useCallback(async (): Promise<boolean> => {
     if (!verificationCode.trim() || verificationCode.length !== 6) {
       setError("Please enter a valid 6-digit verification code");
+      return false;
+    }
+
+    if (!isSupabaseConfigured || !supabase) {
+      setError("Authentication service not available");
       return false;
     }
 

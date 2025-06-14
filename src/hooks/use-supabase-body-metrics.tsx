@@ -92,14 +92,18 @@ export function useSupabaseBodyMetrics() {
       .eq("user_id", user.id)
       .single();
 
-    if (error && error.code !== "PGRST116") {
-      // Return default settings if none exist
-      return {
-        userId: user.id,
-        units: "imperial",
-        healthKitSyncEnabled: false,
-        googleFitSyncEnabled: false,
-      };
+    if (error) {
+      if (error.code === "PGRST116") {
+        // Return default settings if none exist
+        return {
+          userId: user.id,
+          units: "imperial",
+          healthKitSyncEnabled: false,
+          googleFitSyncEnabled: false,
+        };
+      }
+
+      throw new Error(`Failed to fetch settings: ${error.message}`);
     }
 
     return data;

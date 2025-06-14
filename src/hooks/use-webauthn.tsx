@@ -183,9 +183,14 @@ export function useWebAuthn(): WebAuthnState & WebAuthnActions {
       }
 
       const response = credential.response as AuthenticatorAttestationResponse;
+      const publicKeyBytes =
+        typeof (response as any).getPublicKey === "function"
+          ? (response as any).getPublicKey()
+          : response.attestationObject;
+
       const newCredential: WebAuthnCredential = {
         id: credential.id,
-        publicKey: bufferToBase64url(response.getPublicKey()!),
+        publicKey: bufferToBase64url(publicKeyBytes),
         counter: 0,
         deviceType: getDeviceType(),
         createdAt: new Date().toISOString(),
