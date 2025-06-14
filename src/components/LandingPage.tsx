@@ -24,6 +24,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import LandingTimelineDemo from "@/components/LandingTimelineDemo";
+import { prefetchRoute } from "@/lib/prefetch";
 
 export function LandingPage() {
   const navigate = useNavigate();
@@ -153,6 +154,8 @@ export function LandingPage() {
             <div className="flex items-center space-x-2 sm:space-x-4">
               <Button
                 variant="ghost"
+                onMouseEnter={() => prefetchRoute("/login")}
+                onFocus={() => prefetchRoute("/login")}
                 onClick={() => navigate("/login")}
                 aria-label="Sign in to your account"
                 className="text-sm text-linear-text-secondary hover:text-linear-text hidden sm:block"
@@ -160,6 +163,8 @@ export function LandingPage() {
                 Log in
               </Button>
               <Button
+                onMouseEnter={() => prefetchRoute("/login")}
+                onFocus={() => prefetchRoute("/login")}
                 onClick={() => navigate("/login")}
                 aria-label="Start your 3-day free trial"
                 className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
@@ -194,6 +199,8 @@ export function LandingPage() {
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Button
                   className="bg-linear-text text-linear-bg px-6 py-3 text-sm font-medium rounded-lg hover:bg-linear-text-secondary transition-colors w-full sm:w-auto"
+                  onMouseEnter={() => prefetchRoute("/login")}
+                  onFocus={() => prefetchRoute("/login")}
                   onClick={() => navigate("/login")}
                 >
                   Try free for 3 days
@@ -504,6 +511,8 @@ export function LandingPage() {
                 </ul>
                 <Button
                   className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
+                  onMouseEnter={() => prefetchRoute("/login")}
+                  onFocus={() => prefetchRoute("/login")}
                   onClick={() => navigate("/login")}
                   aria-describedby="trial-terms"
                 >
@@ -534,6 +543,8 @@ export function LandingPage() {
             <div className="flex justify-center gap-4">
               <Button
                 className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-lg hover:bg-linear-text-secondary transition-colors"
+                onMouseEnter={() => prefetchRoute("/login")}
+                onFocus={() => prefetchRoute("/login")}
                 onClick={() => navigate("/login")}
               >
                 Try free for 3 days
@@ -541,6 +552,8 @@ export function LandingPage() {
               <Button
                 variant="ghost"
                 className="border border-linear-border text-linear-text-secondary hover:bg-linear-border/50 hover:text-linear-text px-8 py-4 text-base rounded-lg transition-all"
+                onMouseEnter={() => prefetchRoute("/login")}
+                onFocus={() => prefetchRoute("/login")}
                 onClick={() => navigate("/login")}
               >
                 View demo
@@ -566,13 +579,31 @@ export function LandingPage() {
             </p>
           </div>
           <div className="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-8">
-            <Button variant="ghost" onClick={() => navigate("/privacy")} className="text-linear-text-secondary hover:text-linear-text text-sm">
+            <Button
+              variant="ghost"
+              onMouseEnter={() => prefetchRoute("/privacy")}
+              onFocus={() => prefetchRoute("/privacy")}
+              onClick={() => navigate("/privacy")}
+              className="text-linear-text-secondary hover:text-linear-text text-sm"
+            >
               Privacy Policy
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/terms")} className="text-linear-text-secondary hover:text-linear-text text-sm">
+            <Button
+              variant="ghost"
+              onMouseEnter={() => prefetchRoute("/terms")}
+              onFocus={() => prefetchRoute("/terms")}
+              onClick={() => navigate("/terms")}
+              className="text-linear-text-secondary hover:text-linear-text text-sm"
+            >
               Terms of Service
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/changelog")} className="text-linear-text-secondary hover:text-linear-text text-sm">
+            <Button
+              variant="ghost"
+              onMouseEnter={() => prefetchRoute("/changelog")}
+              onFocus={() => prefetchRoute("/changelog")}
+              onClick={() => navigate("/changelog")}
+              className="text-linear-text-secondary hover:text-linear-text text-sm"
+            >
               Changelog
             </Button>
             <Button

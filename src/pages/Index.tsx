@@ -5,6 +5,7 @@ import { useResponsive } from "@/hooks/use-responsive";
 import { useAuth } from "@/contexts/AuthContext";
 import { Capacitor } from "@capacitor/core";
 import { useSwipeNavigation } from "@/hooks/use-swipe-navigation";
+import { prefetchRoute } from "@/lib/prefetch";
 
 const Index = () => {
   const { isMobile } = useResponsive();
@@ -12,6 +13,11 @@ const Index = () => {
   const navigate = useNavigate();
   const [isRedirecting, setIsRedirecting] = useState(false);
   const [forceRedirect, setForceRedirect] = useState(false);
+
+  // Prefetch login page to speed up navigation
+  useEffect(() => {
+    prefetchRoute("/login");
+  }, []);
 
   // Add swipe navigation to go to login
   useSwipeNavigation({
