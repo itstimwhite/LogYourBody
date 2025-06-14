@@ -40,9 +40,17 @@ const Login = () => {
   const [showSMSLogin, setShowSMSLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  // Add swipe navigation to go back to home/index
+  // Add swipe navigation - iOS goes to splash, web goes to home
   useSwipeNavigation({
-    onSwipeRight: () => navigate("/"),
+    onSwipeRight: () => {
+      if (isNativeiOS()) {
+        // Clear the splash session flag so users can see splash again
+        sessionStorage.removeItem("hasShownSplash");
+        navigate("/splash");
+      } else {
+        navigate("/");
+      }
+    },
     threshold: 100,
   });
   const showEmailAuth = shouldShowEmailAuth();
@@ -232,9 +240,17 @@ const Login = () => {
       <div className="flex items-center justify-between p-6">
         <Button
           variant="ghost"
-          onMouseEnter={() => prefetchRoute("/")}
-          onFocus={() => prefetchRoute("/")}
-          onClick={() => navigate("/")}
+          onMouseEnter={() => prefetchRoute(isNativeiOS() ? "/splash" : "/")}
+          onFocus={() => prefetchRoute(isNativeiOS() ? "/splash" : "/")}
+          onClick={() => {
+            if (isNativeiOS()) {
+              // Clear the splash session flag so users can see splash again
+              sessionStorage.removeItem("hasShownSplash");
+              navigate("/splash");
+            } else {
+              navigate("/");
+            }
+          }}
           className="text-linear-text-secondary hover:text-linear-text"
         >
           ← Back

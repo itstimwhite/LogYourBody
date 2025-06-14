@@ -160,16 +160,13 @@ export function LandingPage() {
                 LogYourBody
               </div>
               <div className="hidden md:flex items-center space-x-6">
-                <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Product</button>
                 <FeaturesFlyout onFeatureClick={handleFeatureClick} />
-                <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Resources</button>
                 <button
                   className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors"
                   onClick={() => scrollToSection('pricing')}
                 >
                   Pricing
                 </button>
-                <button className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors">Contact</button>
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
