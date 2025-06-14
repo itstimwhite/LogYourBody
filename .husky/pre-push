@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Auto-version before push
+echo "🔄 Running auto-versioning..."
+node scripts/version-manager.cjs --skip-tag
+
+# The tag will be created by the GitHub Action to avoid conflicts

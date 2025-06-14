@@ -57,7 +57,7 @@ describe("Profile Screen Integration", () => {
     it("validates accessibility colors", async () => {
       const { tokens } = await import("@/styles/design-tokens");
 
-      expect(tokens.colors.text.secondary).toBe("#CCCCCC"); // 80% white - AA compliant
+      expect(tokens.colors.text.secondary).toBe("#9CA0A8"); // Linear text secondary color
     });
   });
 

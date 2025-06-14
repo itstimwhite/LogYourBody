@@ -108,3 +108,10 @@ app/
 ```
 
 This structure provides a clean separation of concerns between UI components, routes, and application logic.
+
+## Database Migration Command
+
+To push migrations to the remote Supabase database, use:
+```bash
+npx supabase db push --password 64wTTeAkFEngydjf
+```

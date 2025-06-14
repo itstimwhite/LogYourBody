@@ -163,8 +163,8 @@ describe("WeightLoggingScreen", () => {
       expect(screen.getByText("15.0%")).toBeInTheDocument();
     });
 
-    // Adjust slider
-    const slider = screen.getByRole("slider");
+    // Adjust slider - find the range input
+    const slider = screen.getByDisplayValue("15"); // Default body fat is 15
     fireEvent.change(slider, { target: { value: "20" } });
 
     await waitFor(() => {
@@ -184,13 +184,28 @@ describe("WeightLoggingScreen", () => {
     );
 
     // Navigate to method step
-    await user.click(screen.getByRole("button", { name: /continue/i })); // Weight
-    await user.click(screen.getByRole("button", { name: /continue/i })); // Body fat
-
+    await user.click(screen.getByRole("button", { name: /continue/i })); // Weight -> Body fat
+    
+    // Wait for body fat step to fully render
     await waitFor(() => {
-      expect(screen.getByText("Digital Scale")).toBeInTheDocument();
-      expect(screen.getByText("DEXA Scan")).toBeInTheDocument();
+      expect(screen.getByText("Step 2 of 4")).toBeInTheDocument();
+      expect(screen.getByText("Body fat percentage?")).toBeInTheDocument();
     });
+    
+    await user.click(screen.getByRole("button", { name: /continue/i })); // Body fat -> Method
+
+    // Wait for method step to fully render with method buttons
+    await waitFor(() => {
+      expect(screen.getByText("Step 3 of 4")).toBeInTheDocument();
+      expect(screen.getByText("How did you measure?")).toBeInTheDocument();
+      // Check for the method selection buttons
+      expect(screen.getByText("Smart Scale")).toBeInTheDocument();
+    }, { timeout: 5000 });
+    
+    // Now verify all methods are shown
+    expect(screen.getByText("DEXA Scan")).toBeInTheDocument();
+    expect(screen.getByText("Calipers")).toBeInTheDocument();
+    expect(screen.getByText("Visual Estimate")).toBeInTheDocument();
 
     // Select DEXA method
     await user.click(screen.getByText("DEXA Scan"));
@@ -198,6 +213,7 @@ describe("WeightLoggingScreen", () => {
 
     // Should show confirmation with selected method
     await waitFor(() => {
+      expect(screen.getByText("Step 4 of 4")).toBeInTheDocument();
       expect(screen.getByText("DEXA Scan")).toBeInTheDocument();
     });
   });
@@ -217,23 +233,32 @@ describe("WeightLoggingScreen", () => {
     await user.type(weightInput, "175");
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
-    // Adjust body fat
+    // Wait for body fat step to fully render
     await waitFor(() => {
-      const slider = screen.getByRole("slider");
-      fireEvent.change(slider, { target: { value: "18" } });
+      expect(screen.getByText("Step 2 of 4")).toBeInTheDocument();
+      expect(screen.getByText("Body fat percentage?")).toBeInTheDocument();
     });
+    
+    // Adjust body fat - find the range input
+    const slider = screen.getByDisplayValue("15"); // Default body fat is 15
+    fireEvent.change(slider, { target: { value: "18" } });
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
-    // Select method
+    // Wait for method step to fully render
     await waitFor(() => {
-      expect(screen.getByText("Digital Scale")).toBeInTheDocument();
-    });
+      expect(screen.getByText("Step 3 of 4")).toBeInTheDocument();
+      expect(screen.getByText("How did you measure?")).toBeInTheDocument();
+    }, { timeout: 5000 });
+    
+    // Smart Scale should be selected by default (it's 'scale' method)
     await user.click(screen.getByRole("button", { name: /continue/i }));
 
-    // Save measurement
+    // Wait for review step
     await waitFor(() => {
+      expect(screen.getByText("Step 4 of 4")).toBeInTheDocument();
       expect(screen.getByText("Save Measurement")).toBeInTheDocument();
     });
+    
     await user.click(screen.getByRole("button", { name: /save measurement/i }));
 
     // Should call onSave with correct data

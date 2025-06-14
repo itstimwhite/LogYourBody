@@ -104,8 +104,10 @@ describe("AttributeRow", () => {
         />,
       );
 
-      const ageElement = screen.getByText("Age").closest("div");
-      expect(ageElement).toHaveClass("opacity-0");
+      // The parent container of the Age attribute should have opacity-0
+      const ageLabel = screen.getByText("Age");
+      const ageContainer = ageLabel.parentElement?.parentElement;
+      expect(ageContainer).toHaveClass("opacity-0");
     });
 
     it("calculates age from birthDate when available", () => {

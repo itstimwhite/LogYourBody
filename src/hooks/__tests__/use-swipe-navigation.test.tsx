@@ -98,11 +98,18 @@ describe("useSwipeNavigation", () => {
   });
 
   it("should not trigger swipe if movement is below threshold", () => {
+    // Mock Date.now to control timing for velocity calculation
+    const startTime = Date.now();
+    vi.spyOn(Date, "now")
+      .mockReturnValueOnce(startTime)
+      .mockReturnValueOnce(startTime + 1000); // 1 second duration for slow swipe
+
     const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
+        minVelocity: 0.3, // Default min velocity
       }),
     );
     cleanup = unmount;
@@ -129,8 +136,11 @@ describe("useSwipeNavigation", () => {
     document.dispatchEvent(touchStartEvent);
     document.dispatchEvent(touchEndEvent);
 
+    // 50px in 1000ms = 0.05 px/ms velocity (below 0.3 px/ms minimum)
     expect(mockOnSwipeLeft).not.toHaveBeenCalled();
     expect(mockOnSwipeRight).not.toHaveBeenCalled();
+
+    vi.restoreAllMocks();
   });
 
   it("should not trigger swipe if vertical movement is dominant", () => {
@@ -263,6 +273,12 @@ describe("useSwipeNavigation", () => {
   });
 
   it("should respect minimum velocity for fast swipes", () => {
+    // First mock for touchstart, second for touchend
+    const startTime = Date.now();
+    vi.spyOn(Date, "now")
+      .mockReturnValueOnce(startTime) // touchstart
+      .mockReturnValueOnce(startTime + 100); // touchend (100ms duration)
+
     const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
@@ -274,8 +290,6 @@ describe("useSwipeNavigation", () => {
     cleanup = unmount;
 
     // Simulate fast swipe with small distance but high velocity
-    const startTime = Date.now();
-
     const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
@@ -284,12 +298,6 @@ describe("useSwipeNavigation", () => {
         } as Touch,
       ],
     });
-
-    // Mock fast swipe (100px in 100ms = 1 px/ms velocity)
-    vi
-      .spyOn(Date, "now")
-      .mockReturnValueOnce(startTime)
-      .mockReturnValueOnce(startTime + 100);
 
     const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
@@ -303,6 +311,7 @@ describe("useSwipeNavigation", () => {
     document.dispatchEvent(touchStartEvent);
     document.dispatchEvent(touchEndEvent);
 
+    // 100px in 100ms = 1 px/ms velocity (above 0.5 px/ms minimum)
     expect(mockOnSwipeLeft).toHaveBeenCalledTimes(1);
     expect(mockOnSwipeRight).not.toHaveBeenCalled();
 
@@ -310,6 +319,12 @@ describe("useSwipeNavigation", () => {
   });
 
   it("should handle conflicting element selectors correctly", () => {
+    // Mock Date.now for velocity calculation
+    const startTime = Date.now();
+    vi.spyOn(Date, "now")
+      .mockReturnValueOnce(startTime)
+      .mockReturnValueOnce(startTime + 100);
+
     // Create conflicting elements
     const sliderElement = document.createElement("input");
     sliderElement.type = "range";
@@ -330,20 +345,22 @@ describe("useSwipeNavigation", () => {
     const touchStartEvent = new TouchEvent("touchstart", {
       changedTouches: [
         {
-          screenX: 200, // Not from edge
+          screenX: 200, // Not from edge (edge threshold is 50px by default)
           screenY: 200,
         } as Touch,
       ],
       target: sliderElement,
+      bubbles: true,
     });
 
     const touchEndEvent = new TouchEvent("touchend", {
       changedTouches: [
         {
-          screenX: 50,
+          screenX: 50, // 150px swipe left
           screenY: 200,
         } as Touch,
       ],
+      bubbles: true,
     });
 
     document.dispatchEvent(touchStartEvent);
@@ -354,5 +371,6 @@ describe("useSwipeNavigation", () => {
 
     // Clean up
     document.body.removeChild(sliderElement);
+    vi.restoreAllMocks();
   });
 });

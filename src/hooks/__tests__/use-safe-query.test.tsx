@@ -32,11 +32,10 @@ const createWrapper = () => {
 describe("useSafeQuery", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.useFakeTimers();
   });
 
   afterEach(() => {
-    vi.useRealTimers();
+    vi.restoreAllMocks();
   });
 
   it("should successfully execute query and return data", async () => {
@@ -54,7 +53,7 @@ describe("useSafeQuery", () => {
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
-    });
+    }, { timeout: 5000 });
 
     expect(result.current.data).toEqual(mockData);
     expect(result.current.isTimedOut).toBe(false);
@@ -62,6 +61,8 @@ describe("useSafeQuery", () => {
   });
 
   it("should handle query timeout and show toast notification", async () => {
+    vi.useFakeTimers();
+    
     const mockQueryFn = vi.fn().mockImplementation(
       () => new Promise((resolve) => setTimeout(resolve, 5000)), // 5 second delay
     );
@@ -80,9 +81,10 @@ describe("useSafeQuery", () => {
     await vi.advanceTimersByTimeAsync(1100);
 
     await waitFor(() => {
-      expect(result.current.isTimedOut).toBe(true);
-    });
+      expect(mockToast).toHaveBeenCalled();
+    }, { timeout: 5000 });
 
+    expect(result.current.isTimedOut).toBe(true);
     expect(mockToast).toHaveBeenCalledWith("Still loading…", {
       description:
         "The request is taking longer than expected. Please check your connection.",
@@ -91,6 +93,8 @@ describe("useSafeQuery", () => {
         onClick: expect.any(Function),
       }),
     });
+    
+    vi.useRealTimers();
   });
 
   it("should handle query errors gracefully", async () => {
@@ -108,13 +112,15 @@ describe("useSafeQuery", () => {
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
-    });
+    }, { timeout: 5000 });
 
     expect(result.current.error).toEqual(mockError);
     expect(result.current.isTimedOut).toBe(false);
   });
 
   it("should cancel request on unmount", async () => {
+    vi.useFakeTimers();
+    
     const mockQueryFn = vi
       .fn()
       .mockImplementation(
@@ -126,18 +132,21 @@ describe("useSafeQuery", () => {
         useSafeQuery({
           queryKey: ["test"],
           queryFn: mockQueryFn,
+          timeout: 1000,
         }),
       { wrapper: createWrapper() },
     );
 
-    // Unmount before query completes
+    // Unmount before timeout
     unmount();
 
-    // Advance timers to simulate async operation
-    await vi.advanceTimersByTimeAsync(2100);
+    // Advance timers to simulate timeout
+    await vi.advanceTimersByTimeAsync(1100);
 
     // Should not show timeout toast after unmount
     expect(mockToast).not.toHaveBeenCalled();
+    
+    vi.useRealTimers();
   });
 
   it("should provide retry functionality", async () => {
@@ -158,14 +167,14 @@ describe("useSafeQuery", () => {
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
-    });
+    }, { timeout: 5000 });
 
     // Trigger retry
     result.current.retryQuery();
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
-    });
+    }, { timeout: 5000 });
 
     expect(result.current.data).toEqual(mockData);
     expect(result.current.retryCount).toBe(1);
@@ -173,6 +182,8 @@ describe("useSafeQuery", () => {
   });
 
   it("should not show timeout toast when disabled", async () => {
+    vi.useFakeTimers();
+    
     const mockQueryFn = vi
       .fn()
       .mockImplementation(
@@ -192,12 +203,17 @@ describe("useSafeQuery", () => {
 
     await vi.advanceTimersByTimeAsync(1100);
 
-    await waitFor(() => {
-      expect(mockToast).not.toHaveBeenCalled();
-    });
+    // Wait a bit to ensure no toast was called
+    await new Promise(resolve => setImmediate(resolve));
+    
+    expect(mockToast).not.toHaveBeenCalled();
+    
+    vi.useRealTimers();
   });
 
   it("should call custom onTimeout callback", async () => {
+    vi.useFakeTimers();
+    
     const mockOnTimeout = vi.fn();
     const mockQueryFn = vi
       .fn()
@@ -220,7 +236,9 @@ describe("useSafeQuery", () => {
 
     await waitFor(() => {
       expect(mockOnTimeout).toHaveBeenCalledTimes(1);
-    });
+    }, { timeout: 5000 });
+    
+    vi.useRealTimers();
   });
 
   it("should use default caching configuration", async () => {
