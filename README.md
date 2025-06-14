@@ -214,6 +214,8 @@ See [REVENUECAT_SETUP.md](./REVENUECAT_SETUP.md) and [REVENUECAT_IMPORT_GUIDE.md
 
 ### Unit Tests
 
+Unit tests are written with [Vitest](https://vitest.dev/).
+
 ```bash
 npm test
 ```
