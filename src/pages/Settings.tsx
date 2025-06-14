@@ -26,6 +26,7 @@ import { RevenueCatDebug } from "@/components/RevenueCatDebug";
 import { HealthKitSyncButton } from "@/components/HealthKitSyncButton";
 import { HealthKitDebug } from "@/components/HealthKitDebug";
 import { AuthGuard } from "@/components/AuthGuard";
+import { isNativeiOS } from "@/lib/platform";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSupabaseBodyMetrics } from "@/hooks/use-supabase-body-metrics";
 import { useSupabaseSubscription } from "@/hooks/use-supabase-subscription";
@@ -63,6 +64,9 @@ const Settings = () => {
   const [editEmail, setEditEmail] = useState(user?.email || "");
   const [editPassword, setEditPassword] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [faceIdLock, setFaceIdLock] = useState(
+    localStorage.getItem("faceid_lock_enabled") === "true",
+  );
 
   // Update form states when user data loads
   useEffect(() => {
@@ -106,6 +110,15 @@ const Settings = () => {
       }
     } else {
       setNotificationsEnabled(false);
+    }
+  };
+
+  const handleFaceIdLockToggle = (checked: boolean) => {
+    setFaceIdLock(checked);
+    if (checked) {
+      localStorage.setItem("faceid_lock_enabled", "true");
+    } else {
+      localStorage.removeItem("faceid_lock_enabled");
     }
   };
 
@@ -486,6 +499,17 @@ const Settings = () => {
                 Security
               </h2>
               <BiometricSetup />
+              {isNativeiOS() && (
+                <div className="-mx-2 mt-4 flex items-center justify-between rounded px-2 py-4 hover:bg-secondary/20">
+                  <div className="text-base font-medium text-foreground">
+                    Require Face ID on Launch
+                  </div>
+                  <Switch
+                    checked={faceIdLock}
+                    onCheckedChange={handleFaceIdLockToggle}
+                  />
+                </div>
+              )}
             </div>
 
             {/* Database Status Section */}
