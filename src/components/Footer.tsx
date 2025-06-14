@@ -29,7 +29,7 @@ export function Footer() {
     {
       title: "Company",
       links: [
-        { label: "About", action: () => {}, disabled: true },
+        { label: "About", action: () => handleLinkClick("/about") },
         { label: "Privacy Policy", action: () => handleLinkClick("/privacy") },
         { label: "Terms of Service", action: () => handleLinkClick("/terms") },
         { label: "Security", action: () => {}, disabled: true },
