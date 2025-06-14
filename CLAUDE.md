@@ -13,7 +13,7 @@ The Fusion Starter is a modern, production-ready template for building full-stac
 
 ## Routing System
 
-The routing system is powered by React Router 7:
+The routing system is powered by React Router 6:
 
 - `src/pages/Index.tsx` represents the home page.
 - Routes are defined in `src/App.tsx` using the `react-router-dom` import
