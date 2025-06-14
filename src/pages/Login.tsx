@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { SMSLogin } from "@/components/SMSLogin";
-import { Smartphone } from "lucide-react";
+import { Smartphone, Eye, EyeOff } from "lucide-react";
 import {
   shouldShowEmailAuth,
   shouldShowGoogleSignIn,
@@ -37,6 +37,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showSMSLogin, setShowSMSLogin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Add swipe navigation to go back to home/index
   useSwipeNavigation({
@@ -300,19 +301,33 @@ const Login = () => {
                   />
                 </div>
 
-                <div>
+                <div className="relative">
                   <Label htmlFor="password" className="sr-only">
                     Password
                   </Label>
                   <Input
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     placeholder="Password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-12 border-border bg-secondary text-base text-foreground placeholder:text-muted-foreground"
+                    className="h-12 border-border bg-secondary pr-12 text-base text-foreground placeholder:text-muted-foreground"
                   />
+                  {/* Show password toggle - only on desktop */}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 hidden -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground md:block"
+                    tabIndex={-1}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-5 w-5" />
+                    ) : (
+                      <Eye className="h-5 w-5" />
+                    )}
+                  </button>
                 </div>
 
                 <Button
