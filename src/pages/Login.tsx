@@ -281,7 +281,7 @@ const Login = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      className="h-12 border-linear-border bg-linear-card text-base text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple rounded-lg"
+                      className="h-12 border border-linear-border bg-linear-card text-base text-linear-text placeholder:text-linear-text-tertiary rounded-lg transition-all focus:border-linear-purple focus:outline-none focus:ring-2 focus:ring-linear-purple/20"
                     />
                   </div>
                 )}
@@ -297,7 +297,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-12 border-linear-border bg-linear-card text-base text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple rounded-lg"
+                    className="h-12 border border-linear-border bg-linear-card text-base text-linear-text placeholder:text-linear-text-tertiary rounded-lg transition-all focus:border-linear-purple focus:outline-none focus:ring-2 focus:ring-linear-purple/20"
                   />
                 </div>
 
@@ -312,7 +312,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-12 border-linear-border bg-linear-card pr-12 text-base text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple rounded-lg"
+                    className="h-12 border border-linear-border bg-linear-card pr-12 text-base text-linear-text placeholder:text-linear-text-tertiary rounded-lg transition-all focus:border-linear-purple focus:outline-none focus:ring-2 focus:ring-linear-purple/20"
                   />
                   {/* Show password toggle - only on desktop */}
                   <button

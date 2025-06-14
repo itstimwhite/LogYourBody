@@ -160,7 +160,7 @@ export function LandingPage() {
               <Button
                 onClick={() => navigate("/login")}
                 aria-label="Start your 3-day free trial"
-                className="bg-linear-text text-linear-bg text-sm font-medium px-5 py-2 rounded-lg hover:bg-linear-text/90 transition-colors"
+                className="bg-linear-text text-linear-bg text-sm font-medium px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
               >
                 Sign up
               </Button>
@@ -191,7 +191,7 @@ export function LandingPage() {
               </p>
               <div className="flex items-center justify-center gap-4">
                 <Button
-                  className="bg-linear-text text-linear-bg px-6 py-3 text-sm font-medium rounded-lg hover:bg-linear-text/90 transition-colors"
+                  className="bg-linear-text text-linear-bg px-6 py-3 text-sm font-medium rounded-lg hover:bg-linear-text-secondary transition-colors"
                   onClick={() => navigate("/login")}
                 >
                   Try free for 3 days
@@ -425,7 +425,7 @@ export function LandingPage() {
                   ))}
                 </ul>
                 <Button
-                  className="w-full bg-linear-text text-linear-bg hover:bg-linear-text/90 focus:ring-2 focus:ring-linear-text/20"
+                  className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
                   onClick={() => navigate("/login")}
                   aria-describedby="trial-terms"
                 >
@@ -455,14 +455,14 @@ export function LandingPage() {
             </p>
             <div className="flex justify-center gap-4">
               <Button
-                className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-lg hover:bg-linear-text/90 transition-colors"
+                className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-lg hover:bg-linear-text-secondary transition-colors"
                 onClick={() => navigate("/login")}
               >
                 Try free for 3 days
               </Button>
               <Button
                 variant="ghost"
-                className="text-linear-text-secondary hover:text-linear-text px-8 py-4 text-base"
+                className="border border-linear-border text-linear-text-secondary hover:bg-linear-border/50 hover:text-linear-text px-8 py-4 text-base rounded-lg transition-all"
                 onClick={() => navigate("/login")}
               >
                 View demo
