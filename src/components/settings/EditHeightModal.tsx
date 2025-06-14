@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { tw, settingsTokens } from "@/styles/settings-design";
 import { SettingModal, ModalActions } from "./SettingModal";
-import { HeightPickerWheel } from "./PickerWheel";
+import { HeightWheelPicker } from "@/components/ui/wheel-picker";
 
 interface EditHeightModalProps {
   isOpen: boolean;
@@ -102,7 +102,7 @@ export const EditHeightModal = React.memo<EditHeightModalProps>(
 
           {/* Height picker */}
           <div className="space-y-4">
-            <HeightPickerWheel
+            <HeightWheelPicker
               heightInCm={selectedHeight}
               units={units}
               onHeightChange={setSelectedHeight}
