@@ -21,7 +21,10 @@
 2. Copy the "Public Key" for Web platform
    - ⚠️ **IMPORTANT**: Use the PUBLIC key (starts with `public_` or `appl_`), NOT the secret key (starts with `sk_`)
    - The secret key is for server-side use only and will cause "Invalid API Key" errors on client
-3. Add to your environment variables as `VITE_REVENUECAT_PUBLIC_KEY`
+3. Add to your environment variables:
+   - `VITE_REVENUECAT_WEB_KEY` (for web/Stripe)
+   - `VITE_REVENUECAT_IOS_KEY` (for iOS apps)
+   - Optionally, `VITE_REVENUECAT_PUBLIC_KEY` for legacy support
 
 ## 3. Connect Stripe Products to RevenueCat
 
