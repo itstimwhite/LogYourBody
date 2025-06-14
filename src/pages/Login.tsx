@@ -367,19 +367,17 @@ const Login = () => {
 
             {/* Social Login Buttons */}
             <div className="space-y-3">
-              {/* SMS Login Button - temporarily hidden */}
-              {false && (
-                <Button
+              {/* SMS Login Button */}
+              <Button
                   type="button"
                   variant="outline"
                   onClick={() => setShowSMSLogin(true)}
                   disabled={loading}
                   className="h-12 w-full border-linear-border bg-linear-card font-medium text-linear-text hover:bg-linear-border/50 rounded-lg transition-colors"
                 >
-                  <Smartphone className="mr-3 h-5 w-5" />
-                  Continue with SMS
-                </Button>
-              )}
+                <Smartphone className="mr-3 h-5 w-5" />
+                Continue with SMS
+              </Button>
 
               {/* Google Sign In - Web only */}
               {showGoogleSignIn && (
