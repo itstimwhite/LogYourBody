@@ -1,76 +1,155 @@
 import React from "react";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { VersionDisplay } from "@/components/VersionDisplay";
 import { prefetchRoute } from "@/lib/prefetch";
+import { Github, Twitter, Mail, ExternalLink } from "lucide-react";
 
 export function Footer() {
   const navigate = useNavigate();
 
+  const handleLinkClick = (path: string) => {
+    navigate(path);
+  };
+
+  const handleExternalLink = (url: string) => {
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const footerSections = [
+    {
+      title: "Product",
+      links: [
+        { label: "Features", action: () => {}, disabled: true },
+        { label: "Pricing", action: () => handleLinkClick("/login") },
+        { label: "Changelog", action: () => handleLinkClick("/changelog") },
+        { label: "Download", action: () => {}, disabled: true },
+        { label: "API", action: () => {}, disabled: true },
+      ]
+    },
+    {
+      title: "Company",
+      links: [
+        { label: "About", action: () => {}, disabled: true },
+        { label: "Privacy Policy", action: () => handleLinkClick("/privacy") },
+        { label: "Terms of Service", action: () => handleLinkClick("/terms") },
+        { label: "Security", action: () => {}, disabled: true },
+        { label: "Contact", action: () => handleExternalLink("mailto:support@logyourbody.com") },
+      ]
+    },
+    {
+      title: "Resources",
+      links: [
+        { label: "Blog", action: () => {}, disabled: true },
+        { label: "Community", action: () => {}, disabled: true },
+        { label: "Support", action: () => handleExternalLink("mailto:support@logyourbody.com") },
+        { label: "Documentation", action: () => {}, disabled: true },
+        { label: "Status", action: () => {}, disabled: true },
+      ]
+    },
+    {
+      title: "Developers",
+      links: [
+        { label: "GitHub", action: () => handleExternalLink("https://github.com/itstimwhite/LogYourBody") },
+        { label: "API Docs", action: () => {}, disabled: true },
+        { label: "SDKs", action: () => {}, disabled: true },
+        { label: "Webhooks", action: () => {}, disabled: true },
+        { label: "Open Source", action: () => handleExternalLink("https://github.com/itstimwhite/LogYourBody") },
+      ]
+    }
+  ];
+
   return (
-    <footer className="border-t border-linear-border py-12 font-inter" role="contentinfo">
-      <div className="container mx-auto px-4 sm:px-6 text-center">
-        <div className="mb-10">
-          <h3 className="mb-4 text-3xl font-bold text-linear-text">LogYourBody</h3>
-          <p className="mx-auto max-w-xl text-linear-text-secondary">
-            Professional body composition tracking for fitness enthusiasts and health professionals.
-          </p>
+    <footer className="border-t border-linear-border bg-linear-bg font-inter" role="contentinfo">
+      <div className="container mx-auto px-4 sm:px-6 py-16">
+        {/* Main Footer Content */}
+        <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">
+          {/* Brand Column */}
+          <div className="col-span-2 lg:col-span-1">
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold text-linear-text mb-3">LogYourBody</h3>
+              <p className="text-sm text-linear-text-secondary leading-relaxed mb-6">
+                Track real progress. Not just weight.
+              </p>
+              
+              {/* Social Links */}
+              <div className="flex gap-4">
+                <button
+                  onClick={() => handleExternalLink("https://github.com/itstimwhite/LogYourBody")}
+                  className="text-linear-text-tertiary hover:text-linear-text transition-colors p-1"
+                  aria-label="GitHub"
+                >
+                  <Github className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => handleExternalLink("https://twitter.com/logyourbody")}
+                  className="text-linear-text-tertiary hover:text-linear-text transition-colors p-1"
+                  aria-label="Twitter"
+                >
+                  <Twitter className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => handleExternalLink("mailto:support@logyourbody.com")}
+                  className="text-linear-text-tertiary hover:text-linear-text transition-colors p-1"
+                  aria-label="Email"
+                >
+                  <Mail className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Link Columns */}
+          {footerSections.map((section) => (
+            <div key={section.title} className="flex flex-col">
+              <h4 className="text-sm font-medium text-linear-text mb-4 tracking-wide">
+                {section.title}
+              </h4>
+              <div className="flex flex-col gap-3">
+                {section.links.map((link) => (
+                  <button
+                    key={link.label}
+                    onClick={link.action}
+                    disabled={link.disabled}
+                    className={`text-left text-sm transition-colors ${
+                      link.disabled 
+                        ? "text-linear-text-tertiary cursor-not-allowed opacity-50" 
+                        : "text-linear-text-secondary hover:text-linear-text cursor-pointer"
+                    }`}
+                  >
+                    {link.label}
+                    {link.label === "GitHub" || link.label === "Open Source" ? (
+                      <ExternalLink className="inline ml-1 h-3 w-3" />
+                    ) : null}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
 
-        <div className="mb-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-          <Button
-            className="bg-linear-purple text-linear-bg px-8 py-4 text-base font-medium rounded-lg hover:bg-linear-purple/90 transition-colors"
-            onMouseEnter={() => prefetchRoute("/login")}
-            onFocus={() => prefetchRoute("/login")}
-            onClick={() => navigate("/login")}
-          >
-            Start Free Trial
-          </Button>
-          <p className="text-sm text-linear-text-tertiary">No credit card required</p>
-        </div>
-
-        <div className="mb-8 flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-8">
-          <Button
-            variant="ghost"
-            onMouseEnter={() => prefetchRoute("/privacy")}
-            onFocus={() => prefetchRoute("/privacy")}
-            onClick={() => navigate("/privacy")}
-            className="text-linear-text-secondary hover:text-linear-text text-sm"
-          >
-            Privacy Policy
-          </Button>
-          <Button
-            variant="ghost"
-            onMouseEnter={() => prefetchRoute("/terms")}
-            onFocus={() => prefetchRoute("/terms")}
-            onClick={() => navigate("/terms")}
-            className="text-linear-text-secondary hover:text-linear-text text-sm"
-          >
-            Terms of Service
-          </Button>
-          <Button
-            variant="ghost"
-            onMouseEnter={() => prefetchRoute("/changelog")}
-            onFocus={() => prefetchRoute("/changelog")}
-            onClick={() => navigate("/changelog")}
-            className="text-linear-text-secondary hover:text-linear-text text-sm"
-          >
-            Changelog
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => window.open("mailto:support@logyourbody.com")}
-            className="text-linear-text-secondary hover:text-linear-text text-sm"
-          >
-            Contact Support
-          </Button>
-        </div>
-
-        <div className="flex flex-col items-center gap-4">
-          <VersionDisplay />
-          <p className="text-sm text-linear-text-tertiary">
-            © {import.meta.env.VITE_BUILD_YEAR} LogYourBody. All rights reserved.
-          </p>
+        {/* Bottom Section */}
+        <div className="border-t border-linear-border mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <p className="text-sm text-linear-text-tertiary">
+              © {import.meta.env.VITE_BUILD_YEAR} LogYourBody. All rights reserved.
+            </p>
+            <VersionDisplay />
+          </div>
+          
+          {/* CTA */}
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-linear-text-secondary hidden sm:block">
+              Track what really matters
+            </span>
+            <button
+              onClick={() => handleLinkClick("/login")}
+              onMouseEnter={() => prefetchRoute("/login")}
+              onFocus={() => prefetchRoute("/login")}
+              className="bg-linear-text text-linear-bg px-6 py-2 text-sm font-medium rounded-lg hover:bg-linear-text/90 transition-colors"
+            >
+              Start Free Trial
+            </button>
+          </div>
         </div>
       </div>
     </footer>
