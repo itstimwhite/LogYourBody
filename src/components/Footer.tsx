@@ -40,7 +40,7 @@ export function Footer() {
     {
       title: "Resources",
       links: [
-        { label: "Blog", action: () => {}, disabled: true },
+        { label: "Blog", action: () => handleLinkClick("/blog") },
         { label: "Community", action: () => {}, disabled: true },
         { label: "Support", action: () => handleExternalLink("mailto:support@logyourbody.com") },
         { label: "Documentation", action: () => {}, disabled: true },
