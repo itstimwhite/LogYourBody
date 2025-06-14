@@ -12,28 +12,28 @@ Object.defineProperty(window, "innerWidth", {
 describe("useSwipeNavigation", () => {
   let mockOnSwipeLeft: vi.Mock;
   let mockOnSwipeRight: vi.Mock;
+  let cleanup: (() => void) | undefined;
 
   beforeEach(() => {
     mockOnSwipeLeft = vi.fn();
     mockOnSwipeRight = vi.fn();
     vi.clearAllMocks();
+    cleanup = undefined;
   });
 
   afterEach(() => {
-    // Clean up event listeners
-    document.removeEventListener("touchstart", vi.fn());
-    document.removeEventListener("touchmove", vi.fn());
-    document.removeEventListener("touchend", vi.fn());
+    cleanup?.();
   });
 
   it("should trigger onSwipeLeft for left swipe gesture", () => {
-    renderHook(() =>
+    const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
       }),
     );
+    cleanup = unmount;
 
     // Simulate left swipe (start right, move left)
     const touchStartEvent = new TouchEvent("touchstart", {
@@ -62,13 +62,14 @@ describe("useSwipeNavigation", () => {
   });
 
   it("should trigger onSwipeRight for right swipe gesture", () => {
-    renderHook(() =>
+    const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
       }),
     );
+    cleanup = unmount;
 
     // Simulate right swipe (start left, move right)
     const touchStartEvent = new TouchEvent("touchstart", {
@@ -97,13 +98,14 @@ describe("useSwipeNavigation", () => {
   });
 
   it("should not trigger swipe if movement is below threshold", () => {
-    renderHook(() =>
+    const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
       }),
     );
+    cleanup = unmount;
 
     // Simulate small movement (below threshold)
     const touchStartEvent = new TouchEvent("touchstart", {
@@ -132,13 +134,14 @@ describe("useSwipeNavigation", () => {
   });
 
   it("should not trigger swipe if vertical movement is dominant", () => {
-    renderHook(() =>
+    const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
         threshold: 100,
       }),
     );
+    cleanup = unmount;
 
     // Simulate move event with dominant vertical movement
     const touchStartEvent = new TouchEvent("touchstart", {
@@ -177,7 +180,7 @@ describe("useSwipeNavigation", () => {
   });
 
   it("should not trigger swipe when disabled", () => {
-    renderHook(() =>
+    const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
@@ -185,6 +188,7 @@ describe("useSwipeNavigation", () => {
         disabled: true,
       }),
     );
+    cleanup = unmount;
 
     // Simulate valid left swipe
     const touchStartEvent = new TouchEvent("touchstart", {
@@ -218,7 +222,7 @@ describe("useSwipeNavigation", () => {
     mockElement.setAttribute("data-slider", "true");
     document.body.appendChild(mockElement);
 
-    renderHook(() =>
+    const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
@@ -226,6 +230,7 @@ describe("useSwipeNavigation", () => {
         edgeThreshold: 50,
       }),
     );
+    cleanup = unmount;
 
     // Simulate edge swipe (within 50px of edge)
     const touchStartEvent = new TouchEvent("touchstart", {
@@ -258,7 +263,7 @@ describe("useSwipeNavigation", () => {
   });
 
   it("should respect minimum velocity for fast swipes", () => {
-    renderHook(() =>
+    const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
@@ -266,6 +271,7 @@ describe("useSwipeNavigation", () => {
         minVelocity: 0.5, // 0.5 px/ms
       }),
     );
+    cleanup = unmount;
 
     // Simulate fast swipe with small distance but high velocity
     const startTime = Date.now();
@@ -310,7 +316,7 @@ describe("useSwipeNavigation", () => {
     sliderElement.className = "range-slider";
     document.body.appendChild(sliderElement);
 
-    renderHook(() =>
+    const { unmount } = renderHook(() =>
       useSwipeNavigation({
         onSwipeLeft: mockOnSwipeLeft,
         onSwipeRight: mockOnSwipeRight,
@@ -318,6 +324,7 @@ describe("useSwipeNavigation", () => {
         conflictSelectors: ['input[type="range"]', ".range-slider"],
       }),
     );
+    cleanup = unmount;
 
     // Simulate swipe on conflicting element (not from edge)
     const touchStartEvent = new TouchEvent("touchstart", {
