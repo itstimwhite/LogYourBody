@@ -181,43 +181,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const syncEmailSubscriptions = async (user: User) => {
-    if (!isSupabaseConfigured || !supabase || !user.email) {
-      console.log("Skipping email subscription sync");
-      return;
-    }
-
-    try {
-      console.log("Syncing email subscriptions for:", user.email);
-
-      const { error } = await supabase
-        .from("email_subscriptions")
-        .update({
-          user_id: user.id,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("email", user.email.toLowerCase())
-        .is("user_id", null);
-
-      if (error) {
-        // Don't log table missing errors as errors - they're expected
-        if (
-          error.message.includes(
-            'relation "public.email_subscriptions" does not exist',
-          )
-        ) {
-          console.log("Email subscriptions table not found - skipping sync");
-        } else {
-          console.error("Error syncing email subscriptions:", error);
-        }
-      } else {
-        console.log("Email subscriptions synced successfully");
-      }
-    } catch (err) {
-      console.warn(
-        "Failed to sync email subscriptions (table may not exist):",
-        err,
-      );
-    }
+    // Email subscription sync removed - not needed for this app
+    // The 'subscriptions' table handles trial/payment subscriptions
+    return;
   };
 
   const createUserProfile = async (user: User) => {
