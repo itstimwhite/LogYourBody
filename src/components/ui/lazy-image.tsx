@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
-import placeholderSrc from "/placeholder.svg?preset=optimized&src";
-import placeholderSrcSet from "/placeholder.svg?preset=optimized&srcset";
 
 interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
@@ -18,7 +16,7 @@ export const LazyImage = React.memo(function LazyImage({
   alt,
   srcSet,
   sizes,
-  placeholder = placeholderSrc,
+  placeholder = "/placeholder.svg",
   className,
   fallback,
   ...props
@@ -63,10 +61,9 @@ export const LazyImage = React.memo(function LazyImage({
   return (
     <div ref={imgRef} className={cn("relative overflow-hidden", className)}>
       {/* Placeholder */}
-      {!isLoaded && (
+      {!isLoaded && placeholder && (
         <img
           src={placeholder}
-          srcSet={placeholderSrcSet}
           alt=""
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
