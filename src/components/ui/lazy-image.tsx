@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import placeholderSrc from "/placeholder.svg?preset=optimized&src";
+import placeholderSrcSet from "/placeholder.svg?preset=optimized&srcset";
 
 interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   src: string;
   alt: string;
+  srcSet?: string;
+  sizes?: string;
   placeholder?: string;
   className?: string;
   fallback?: React.ReactNode;
@@ -12,7 +16,9 @@ interface LazyImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
 export const LazyImage = React.memo(function LazyImage({
   src,
   alt,
-  placeholder = "/placeholder.svg",
+  srcSet,
+  sizes,
+  placeholder = placeholderSrc,
   className,
   fallback,
   ...props
@@ -60,6 +66,7 @@ export const LazyImage = React.memo(function LazyImage({
       {!isLoaded && (
         <img
           src={placeholder}
+          srcSet={placeholderSrcSet}
           alt=""
           className={cn(
             "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
@@ -78,6 +85,8 @@ export const LazyImage = React.memo(function LazyImage({
       {isInView && (
         <img
           src={src}
+          srcSet={srcSet}
+          sizes={sizes}
           alt={alt}
           onLoad={handleLoad}
           onError={handleError}
