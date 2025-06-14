@@ -50,6 +50,15 @@ VITE_SUPABASE_ANON_KEY=your_anon_key_here
 - `npm run supabase:migrate` - Push migrations to remote
 - `npm run supabase:generate-types` - Generate TypeScript types
 
+## 5. Create Storage Bucket for Progress Photos
+
+1. Open **Storage** in Supabase Studio
+2. Create a bucket named `progress-photos`
+3. Set it to public so the app can display images
+4. Run `npm run supabase:migrate` to apply migrations
+
+The app uploads progress photos to this bucket and stores the URL in `body_metrics`.
+
 This will create:
 
 - `profiles` table for user information
@@ -59,7 +68,7 @@ This will create:
 - Row Level Security (RLS) policies
 - Indexes for performance
 
-## 5. Configure Authentication Providers
+## 6. Configure Authentication Providers
 
 ### Google OAuth (Optional)
 
@@ -73,7 +82,7 @@ This will create:
 2. Enable Apple provider
 3. Add your Apple OAuth credentials
 
-## 6. Test the Integration
+## 7. Test the Integration
 
 1. Start your development server: `npm run dev`
 2. Try creating a new account
@@ -110,4 +119,5 @@ This will create:
 1. Configure RevenueCat for subscription payments
 2. Set up push notifications
 3. Add file upload for profile images
-4. Configure backup and monitoring
+4. Enable progress photo uploads
+5. Configure backup and monitoring

@@ -15,6 +15,7 @@ export interface BodyMetrics {
   weight: number; // in kg
   bodyFatPercentage: number;
   method: MeasurementMethod;
+  photoUrl?: string;
   leanBodyMass?: number; // calculated
   ffmi?: number; // calculated
 }

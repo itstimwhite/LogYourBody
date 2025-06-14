@@ -37,8 +37,14 @@ function calculateLeanBodyMass(
 ): number {
   // Validate inputs
   if (!weight || weight <= 0 || isNaN(weight)) return 0;
-  if (!bodyFatPercentage || bodyFatPercentage < 0 || bodyFatPercentage > 100 || isNaN(bodyFatPercentage)) return weight;
-  
+  if (
+    !bodyFatPercentage ||
+    bodyFatPercentage < 0 ||
+    bodyFatPercentage > 100 ||
+    isNaN(bodyFatPercentage)
+  )
+    return weight;
+
   return weight * (1 - bodyFatPercentage / 100);
 }
 
@@ -46,13 +52,13 @@ function calculateFFMI(leanBodyMass: number, heightCm: number): number {
   // Validate inputs to prevent NaN
   if (!leanBodyMass || leanBodyMass <= 0 || isNaN(leanBodyMass)) return 0;
   if (!heightCm || heightCm <= 0 || isNaN(heightCm)) return 0;
-  
+
   const heightM = heightCm / 100;
   const ffmi = leanBodyMass / (heightM * heightM);
-  
+
   // Validate result
   if (isNaN(ffmi) || !isFinite(ffmi)) return 0;
-  
+
   return ffmi;
 }
 
@@ -122,6 +128,7 @@ export function useSupabaseBodyMetrics() {
     const processedData = (data || []).map((item) => ({
       ...item,
       date: new Date(item.date),
+      photoUrl: item.photo_url ?? undefined,
     }));
 
     return processedData;
@@ -222,6 +229,7 @@ export function useSupabaseBodyMetrics() {
             weight: newMetric.weight,
             body_fat_percentage: newMetric.bodyFatPercentage,
             method: newMetric.method,
+            photo_url: newMetric.photoUrl ?? null,
           })
           .select()
           .single();
@@ -317,7 +325,8 @@ export function useSupabaseBodyMetrics() {
   const getFormattedWeight = useCallback(
     (weightKg: number) => {
       if (!settings) return "0 kg";
-      if (!weightKg || weightKg <= 0 || isNaN(weightKg)) return settings.units === "metric" ? "0 kg" : "0 lbs";
+      if (!weightKg || weightKg <= 0 || isNaN(weightKg))
+        return settings.units === "metric" ? "0 kg" : "0 lbs";
 
       if (settings.units === "metric") {
         return `${Math.round(weightKg * 10) / 10} kg`;
@@ -345,7 +354,8 @@ export function useSupabaseBodyMetrics() {
   const getFormattedLeanBodyMass = useCallback(
     (lbmKg: number) => {
       if (!settings) return "0 kg";
-      if (!lbmKg || lbmKg <= 0 || isNaN(lbmKg)) return settings.units === "metric" ? "0 kg" : "0 lbs";
+      if (!lbmKg || lbmKg <= 0 || isNaN(lbmKg))
+        return settings.units === "metric" ? "0 kg" : "0 lbs";
 
       if (settings.units === "metric") {
         return `${Math.round(lbmKg * 10) / 10} kg`;

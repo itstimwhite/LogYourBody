@@ -171,6 +171,7 @@ const Dashboard = () => {
     bodyFatPercentage: number;
     method: any;
     date: Date;
+    photoUrl?: string;
   }) => {
     // Convert weight to kg for storage based on current units
     let weightInKg = data.weight;
@@ -242,7 +243,7 @@ const Dashboard = () => {
 
   return (
     <TrialGuard>
-      <div className="flex h-screen flex-col overflow-hidden bg-linear-bg text-linear-text font-inter md:min-h-screen md:overflow-auto">
+      <div className="flex h-screen flex-col overflow-hidden bg-linear-bg font-inter text-linear-text md:min-h-screen md:overflow-auto">
         {/* Email confirmation banner */}
         <div className="px-4 pt-4 md:px-6">
           <EmailConfirmationBanner />
@@ -263,7 +264,7 @@ const Dashboard = () => {
                 size="icon"
                 variant="ghost"
                 onClick={() => navigate("/healthkit-test")}
-                className="text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
+                className="text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
                 title="HealthKit Testing (Development)"
               >
                 <Heart className="h-4 w-4" />
@@ -279,7 +280,7 @@ const Dashboard = () => {
                   setShowPremiumWeightLog(true);
                 }
               }}
-              className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
+              className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
             >
               <Plus className="h-4 w-4" />
             </Button>
@@ -287,7 +288,7 @@ const Dashboard = () => {
               size="icon"
               variant="ghost"
               onClick={() => navigate("/settings")}
-              className="h-10 w-10 text-linear-text-secondary hover:text-linear-text hover:bg-linear-border/50 transition-colors"
+              className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
             >
               <Settings className="h-4 w-4" />
             </Button>
@@ -297,7 +298,7 @@ const Dashboard = () => {
         {/* Main Content - Refactored with TabView */}
         <div className="flex min-h-0 flex-1 flex-col md:flex-row">
           {/* Avatar/Photo Section with Tabs - Increased height on mobile, 2/3 on desktop */}
-          <div className="relative min-h-0 flex-[1.5] md:flex-1 md:w-2/3">
+          <div className="relative min-h-0 flex-[1.5] md:w-2/3 md:flex-1">
             <TabView
               tabs={createProfileTabs(
                 <Suspense fallback={<AvatarLoader />}>
@@ -342,7 +343,7 @@ const Dashboard = () => {
                     setShowPremiumWeightLog(true);
                   }
                 }}
-                className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm hover:bg-linear-card hover:text-linear-text transition-colors"
+                className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm transition-colors hover:bg-linear-card hover:text-linear-text"
               >
                 <Plus className="h-4 w-4" />
               </Button>
@@ -350,7 +351,7 @@ const Dashboard = () => {
                 size="icon"
                 variant="ghost"
                 onClick={() => navigate("/settings")}
-                className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm hover:bg-linear-card hover:text-linear-text transition-colors"
+                className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm transition-colors hover:bg-linear-card hover:text-linear-text"
               >
                 <Settings className="h-4 w-4" />
               </Button>
