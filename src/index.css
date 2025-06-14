@@ -60,9 +60,9 @@
     html,
     body,
     #root {
-      height: 100svh;
-      height: 100dvh; /* Dynamic viewport height for mobile browsers */
-      overflow: hidden;
+      min-height: 100svh;
+      min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+      overflow-x: hidden; /* allow vertical scrolling */
     }
   }
 
