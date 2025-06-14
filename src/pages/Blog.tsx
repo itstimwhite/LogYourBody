@@ -310,8 +310,7 @@ const Blog = () => {
                 </div>
               </Card>
             </div>
-          </div>
-        </section>
+          </section>
         )}
 
         {/* Blog Posts Grid */}

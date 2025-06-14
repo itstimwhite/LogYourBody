@@ -14,8 +14,8 @@ interface RouteGuardProps {
 
 export function RouteGuard({
   children,
-  redirectTimeout = 10000, // Increased to 10 seconds
-  fallbackRoute = "/", // Changed to home instead of dashboard
+  redirectTimeout = 30000, // Increased to 30 seconds to be much more lenient
+  fallbackRoute = "/",
 }: RouteGuardProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,7 +25,18 @@ export function RouteGuard({
   const loadingStartTime = useRef(Date.now());
   const { hideSplashScreen } = useSplashScreen();
 
+  // Only enable aggressive monitoring on protected routes or known problematic paths
+  const isProtectedOrProblematicRoute = location.pathname.startsWith('/dashboard') || 
+                                       location.pathname.startsWith('/settings') || 
+                                       location.pathname === '/login';
+
   useEffect(() => {
+    // Only apply aggressive monitoring to protected/problematic routes
+    if (!isProtectedOrProblematicRoute) {
+      setIsLoading(false);
+      return;
+    }
+
     // Reset loading state on route change
     setIsLoading(true);
     setShowTimeout(false);
@@ -89,10 +100,15 @@ export function RouteGuard({
       }
       clearTimeout(loadingCleanup);
     };
-  }, [location.pathname, navigate, redirectTimeout, fallbackRoute]);
+  }, [location.pathname, navigate, redirectTimeout, fallbackRoute, isProtectedOrProblematicRoute]);
 
-  // Detect potential redirect loops
+  // Detect potential redirect loops - but only on protected routes
   useEffect(() => {
+    // Skip redirect loop detection for public routes
+    if (!isProtectedOrProblematicRoute) {
+      return;
+    }
+
     // Skip redirect loop detection during OAuth flows
     const urlParams = new URLSearchParams(window.location.search);
     const hasOAuthParams =
@@ -159,7 +175,7 @@ export function RouteGuard({
 
     // Store updated history
     sessionStorage.setItem(redirectLoopKey, JSON.stringify(redirectHistory));
-  }, [location.pathname, navigate]);
+  }, [location.pathname, navigate, isProtectedOrProblematicRoute]);
 
   return (
     <>
