@@ -84,8 +84,7 @@ END $$;
 SELECT 
     schemaname,
     tablename,
-    rowsecurity as rls_enabled,
-    forcerowsecurity as rls_forced
+    rowsecurity as rls_enabled
 FROM pg_tables
 WHERE schemaname = 'public'
 AND tablename IN ('profiles', 'user_settings', 'subscriptions');
