@@ -138,7 +138,7 @@ export const onboardingTokens = {
 
 // Tailwind class mappings for consistent styling
 export const onboardingClasses = {
-  container: "min-h-screen flex flex-col bg-background",
+  container: "min-h-svh flex flex-col bg-background",
   safeArea: "flex-1 flex flex-col px-6 pt-safe pb-safe",
 
   progress: {

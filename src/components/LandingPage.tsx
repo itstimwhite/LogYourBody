@@ -120,7 +120,7 @@ export function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-linear-bg font-inter">
+    <div className="min-h-svh bg-linear-bg font-inter">
       {/* Skip Links */}
       <div className="sr-only z-50 focus:not-sr-only focus:absolute focus:left-4 focus:top-4">
         <button

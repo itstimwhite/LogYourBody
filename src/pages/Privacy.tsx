@@ -7,7 +7,7 @@ const Privacy = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-svh bg-background text-foreground">
       {/* Header */}
       <div className="flex items-center gap-4 border-b border-border px-6 py-4">
         <Button

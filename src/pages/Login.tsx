@@ -82,7 +82,7 @@ const Login = () => {
   // Show loading while checking authentication
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-bg">
+      <div className="flex min-h-svh items-center justify-center bg-linear-bg">
         <div className="text-center">
           <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent"></div>
           <p className="text-linear-text-secondary">Loading...</p>
@@ -213,7 +213,7 @@ const Login = () => {
   // Show SMS login interface
   if (showSMSLogin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-linear-bg p-6 font-inter">
+      <div className="flex min-h-svh items-center justify-center bg-linear-bg p-6 font-inter">
         <SMSLogin
           onBack={() => setShowSMSLogin(false)}
           onSuccess={() => {
@@ -226,7 +226,7 @@ const Login = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-linear-bg font-inter">
+    <div className="flex min-h-svh flex-col bg-linear-bg font-inter">
       {/* Header with Back Navigation */}
       <div className="flex items-center justify-between p-6">
         <Button
