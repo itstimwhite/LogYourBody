@@ -1,86 +1,107 @@
 # LogYourBody Core Values
 
-These values define who we are, how we work, and what we stand for. They guide every product decision, feature development, and interaction with our community.
+These values define who we are, how we work, and what we stand for. They guide every product decision, feature development, and interaction with our community. Refined through a YCombinator lens to focus on building something people desperately want.
 
-## 🎯 Be So Good They Can't Ignore You
+## 🎯 Obsess Over User Outcomes, Not Features
 
-We don't compete on marketing budgets or flashy features. We compete on substance. Every feature we ship, every metric we track, and every user experience we craft must be undeniably excellent. Quality is our differentiator.
+We don't measure success by features shipped or users acquired. We measure success by users who achieve real body composition changes. Every line of code must move users closer to their goals.
 
-**In Practice:**
-- Ship features that work flawlessly, not features that look good in demos
-- Prioritize user outcomes over feature count
-- Build tools so intuitive that documentation becomes optional
-- Create experiences that users genuinely love, not just tolerate
-
-## 🔥 Be Sexy
-
-Health and fitness should be inspiring, not clinical. We make body composition tracking feel modern, engaging, and aspirational. Good design isn't decoration—it's how we make complex data accessible and motivating.
+**Why This Matters:**
+Most fitness apps optimize for engagement metrics that don't correlate with results. We optimize for actual progress.
 
 **In Practice:**
-- Beautiful interfaces that make data visualization exciting
-- Smooth animations and interactions that feel premium
-- Copy that's confident, direct, and human
-- Visual design that stands out in a sea of boring health apps
+- Track user success metrics: body fat reduction, lean mass gains, goal achievement
+- Ship only features that directly improve user outcomes
+- Remove any feature that doesn't help users get results
+- Build tools so effective that users can't imagine life without them
 
-## 📊 Evidence-Based Solutions Over Vanity Metrics
+## 🔥 Be Undeniably Better
 
-We track what actually matters for body composition, not what feels good to see. Weight alone is misleading. We focus on body fat percentage, FFMI, lean mass changes, and other metrics that tell the real story of fitness progress.
+We don't compete on marketing or pricing. We compete by being so much better that switching to a competitor feels like downgrading. Quality is our only sustainable moat.
 
-**In Practice:**
-- Scientific accuracy in all calculations and methodologies
-- Clear explanations of why metrics matter and what they mean
-- No fake "motivation" through meaningless streaks or badges
-- Honest feedback, even when progress isn't linear
-
-## ⚡ Simplicity in Complexity
-
-Body composition analysis is inherently complex, but using our app shouldn't be. We hide the complexity behind elegant interfaces that make professional-grade tracking feel effortless.
+**Why This Matters:**
+In a crowded market, the only way to win long-term is to be genuinely superior.
 
 **In Practice:**
-- 30-second logging experiences for complete body metrics
-- Smart defaults that work for 90% of users
-- Progressive disclosure—show basics first, details when needed
-- Remove friction from the most common user flows
+- DEXA-scan accuracy from phone measurements
+- 30-second logging for complete body composition data
+- Visual design that makes users feel proud to use our app
+- Features that work flawlessly, not just impressively
 
-## 🔒 Privacy by Design
+## 📊 Science Over Stories
 
-Your body data is deeply personal. We collect only what's necessary, encrypt everything, and give you complete control. Privacy isn't a feature we add—it's how we build.
+We base decisions on evidence, not feelings. Our metrics, methodologies, and recommendations must be scientifically sound, even when the truth is uncomfortable.
 
-**In Practice:**
-- End-to-end encryption for all personal health data
-- Transparent data usage policies in plain English
-- Easy data export and deletion options
-- Never selling user data to third parties
-
-## 🎯 Precision Over Perception
-
-We measure reality, not feelings. Our goal is to provide the most accurate picture of body composition changes possible, even if that means showing plateaus or temporary setbacks.
+**Why This Matters:**
+Users trust us with deeply personal health data. We must earn that trust through accuracy.
 
 **In Practice:**
-- Multiple measurement methods (Navy, 3-site, 7-site) for accuracy
-- Clear margin of error communication
-- Trend analysis over daily fluctuations
-- Education about what realistic progress looks like
+- Use only validated measurement methods (Navy, 3-site, 7-site calipers)
+- Show realistic progress timelines, not motivational fiction
+- Honest about measurement limitations and error margins
+- No vanity metrics or fake motivation
 
-## 🚀 Ship Fast, Learn Faster
+## ⚡ Eliminate Friction Ruthlessly
 
-We believe in rapid iteration guided by user feedback and data. Perfect is the enemy of good, but good enough isn't good enough. We ship quickly, measure relentlessly, and improve continuously.
+Complex science should feel simple. Every interaction should feel obvious, fast, and rewarding. If users need documentation, we've failed.
 
-**In Practice:**
-- Weekly release cycles for new features and improvements
-- A/B testing for major UI changes
-- Direct user feedback channels built into the product
-- Transparent changelog showing what we're building and why
-
-## 🎓 Education Over Selling
-
-We succeed when our users succeed. That means teaching them not just how to use our app, but how body composition actually works, what realistic timelines look like, and how to interpret their data.
+**Why This Matters:**
+Consistency beats perfection. Tools must be so easy that users never skip a day.
 
 **In Practice:**
-- Educational content built into the app experience
-- Transparent about limitations and realistic expectations
-- Help users understand the "why" behind metrics
-- Focus on long-term behavior change, not quick fixes
+- Complete body metrics in under 30 seconds
+- Smart defaults for 90% of users
+- Progressive disclosure—complexity available but hidden
+- Remove every unnecessary tap, swipe, or decision
+
+## 🔒 Privacy as Competitive Advantage
+
+Users' body data is deeply personal. We make privacy our differentiator by building trust through transparency and control.
+
+**Why This Matters:**
+Health data breaches destroy lives. Privacy builds unshakeable user loyalty.
+
+**In Practice:**
+- End-to-end encryption by default
+- Users own their data—export and delete anytime
+- Clear, jargon-free privacy policies
+- Never monetize user data
+
+## 🚀 Move Fast Without Breaking Users
+
+We ship rapidly but never compromise user experience. Speed of iteration drives competitive advantage, but user trust is irreplaceable once broken.
+
+**Why This Matters:**
+YC companies win through speed, but health apps must be reliable.
+
+**In Practice:**
+- Weekly feature releases with thorough testing
+- Real user feedback drives product decisions
+- Transparent about what we're building and why
+- Break our own code, never break user workflows
+
+---
+
+## How These Values Drive Growth
+
+### Product Market Fit
+- **Obsess Over User Outcomes** ensures we solve real problems
+- **Science Over Stories** builds trust in a skeptical market
+- **Eliminate Friction** enables daily habit formation
+
+### Sustainable Competitive Advantage
+- **Be Undeniably Better** creates switching costs
+- **Privacy as Competitive Advantage** differentiates in a crowded market
+- **Move Fast Without Breaking Users** enables rapid iteration while maintaining quality
+
+### Market Expansion
+- Users who achieve real results become evangelical advocates
+- Scientific accuracy builds credibility with fitness professionals
+- Privacy-first approach attracts health-conscious users
+
+---
+
+*These aren't aspirational—they're operational. They help us make decisions, prioritize features, and stay focused on what actually matters: helping people achieve real body composition changes through tools they love using.*
 
 ---
 

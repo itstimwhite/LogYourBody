@@ -34,44 +34,34 @@ const About = () => {
 
   const values = [
     {
-      icon: Award,
-      title: "Be So Good They Can't Ignore You",
-      description: "We don't compete on marketing budgets. We compete on substance. Every feature must be undeniably excellent.",
+      icon: Target,
+      title: "Obsess Over User Outcomes",
+      description: "We measure success by users who achieve real body composition changes. Every feature must move users closer to their goals.",
     },
     {
-      icon: Flame,
-      title: "Be Sexy",
-      description: "Health tracking should be inspiring, not clinical. Beautiful design makes complex data accessible and motivating.",
+      icon: Award,
+      title: "Be Undeniably Better",
+      description: "We compete by being so superior that switching feels like downgrading. Quality is our only sustainable moat.",
     },
     {
       icon: BarChart3,
-      title: "Evidence-Based Solutions",
-      description: "We track what actually matters for body composition, not vanity metrics. Real data drives real progress.",
+      title: "Science Over Stories",
+      description: "Evidence-based decisions, not feelings. Scientific accuracy even when the truth is uncomfortable.",
     },
     {
       icon: Zap,
-      title: "Simplicity in Complexity",
-      description: "Professional-grade analysis hidden behind elegant interfaces. 30-second logging for complete body metrics.",
+      title: "Eliminate Friction Ruthlessly",
+      description: "Complex science should feel simple. Complete body metrics in under 30 seconds, every time.",
     },
     {
       icon: Shield,
-      title: "Privacy by Design",
-      description: "Your body data is deeply personal. End-to-end encryption, complete control, and transparent policies.",
-    },
-    {
-      icon: Target,
-      title: "Precision Over Perception",
-      description: "We measure reality, not feelings. Accurate body composition tracking, even when progress isn't linear.",
+      title: "Privacy as Competitive Advantage",
+      description: "Your body data is deeply personal. We make privacy our differentiator through transparency and control.",
     },
     {
       icon: Rocket,
-      title: "Ship Fast, Learn Faster",
-      description: "Rapid iteration guided by user feedback. Perfect is the enemy of good, but good enough isn't good enough.",
-    },
-    {
-      icon: GraduationCap,
-      title: "Education Over Selling",
-      description: "We succeed when our users succeed. Teaching how body composition works, not just selling features.",
+      title: "Move Fast Without Breaking Users",
+      description: "Rapid iteration drives competitive advantage, but user trust is irreplaceable once broken.",
     },
   ];
 
@@ -163,20 +153,20 @@ const About = () => {
                   Our Mission
                 </Badge>
                 <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text">
-                  Evidence over vanity metrics
+                  Built for outcomes, not engagement
                 </h2>
                 <div className="space-y-6 text-lg text-linear-text-secondary">
                   <p>
-                    Most fitness apps are built to make you feel good, not get results. They track steps, 
-                    calories burned, and weight—metrics that tell you almost nothing about real body composition changes.
+                    Most fitness apps optimize for daily active users, not actual results. They're built to keep you 
+                    engaged, not help you achieve real body composition changes.
                   </p>
                   <p>
-                    We track what actually matters: body fat percentage, lean mass, and FFMI. The same metrics 
-                    used by professional bodybuilders and sports scientists, but made simple enough for daily use.
+                    We obsess over user outcomes. Every feature must help you lose fat, gain muscle, or understand 
+                    your body better. We track body fat percentage, lean mass, and FFMI—the metrics that actually matter.
                   </p>
                   <p>
-                    Our tools are beautiful because complex data should be inspiring, not intimidating. 
-                    And they're accurate because we believe in measuring reality, not perception.
+                    DEXA-scan accuracy from your phone. Scientific precision made simple. We compete by being 
+                    undeniably better, not by spending more on ads.
                   </p>
                 </div>
               </div>
@@ -238,7 +228,7 @@ const About = () => {
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {values.map((value, index) => {
                 const IconComponent = value.icon;
                 return (
