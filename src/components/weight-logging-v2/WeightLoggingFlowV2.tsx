@@ -30,7 +30,7 @@ interface WeightLoggingFlowV2Props {
     weight: WeightData;
     bodyFat: BodyFatData;
     method: MethodData;
-    photo?: string;
+    photo?: File;
   }) => void;
   onCancel: () => void;
   initialData?: {
@@ -47,8 +47,8 @@ interface WeightLoggingFlowContentProps extends WeightLoggingFlowV2Props {
   setBodyFatData: (data: BodyFatData) => void;
   methodData: MethodData;
   setMethodData: (data: MethodData) => void;
-  photoData?: string;
-  setPhotoData: (data: string | undefined) => void;
+  photoData?: File;
+  setPhotoData: (data: File | undefined) => void;
 }
 
 function WeightLoggingFlowContent({
@@ -64,7 +64,8 @@ function WeightLoggingFlowContent({
   photoData,
   setPhotoData,
 }: WeightLoggingFlowContentProps) {
-  const { currentStep, canGoNext, goNext, goBack, goToStep, progress } = useStepper();
+  const { currentStep, canGoNext, goNext, goBack, goToStep, progress } =
+    useStepper();
 
   // Form data is now passed from parent
 
@@ -80,16 +81,16 @@ function WeightLoggingFlowContent({
   const handleAddPhoto = async () => {
     try {
       // Create file input element
-      const input = document.createElement('input');
-      input.type = 'file';
-      input.accept = 'image/*';
-      input.capture = 'user'; // Use front camera on mobile
-      
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.capture = "user"; // Use front camera on mobile
+
       // Handle file selection
       input.onchange = async (event) => {
         const file = (event.target as HTMLInputElement).files?.[0];
         if (!file) return;
-        
+
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
           toast({
@@ -99,36 +100,20 @@ function WeightLoggingFlowContent({
           });
           return;
         }
-        
-        // Convert to base64
-        const reader = new FileReader();
-        reader.onload = () => {
-          const base64 = reader.result as string;
-          setPhotoData(base64);
-          
-          // Track photo addition
-          weightAnalytics.trackPhotoAdded({
-            file_size_kb: Math.round(file.size / 1024),
-            file_type: file.type,
-          });
-          
-          toast({
-            title: "Photo added",
-            description: "Your progress photo has been attached",
-          });
-        };
-        
-        reader.onerror = () => {
-          toast({
-            title: "Error",
-            description: "Failed to process photo",
-            variant: "destructive",
-          });
-        };
-        
-        reader.readAsDataURL(file);
+
+        setPhotoData(file);
+
+        weightAnalytics.trackPhotoAdded({
+          file_size_kb: Math.round(file.size / 1024),
+          file_type: file.type,
+        });
+
+        toast({
+          title: "Photo added",
+          description: "Your progress photo has been attached",
+        });
       };
-      
+
       // Trigger file picker
       input.click();
     } catch (error) {
@@ -140,7 +125,6 @@ function WeightLoggingFlowContent({
       });
     }
   };
-
 
   const renderStep = () => {
     switch (currentStep) {
@@ -158,7 +142,6 @@ function WeightLoggingFlowContent({
             method={methodData}
             onEditStep={handleEditStep}
             onAddPhoto={handleAddPhoto}
-            photoData={photoData}
           />
         );
       default:
@@ -167,119 +150,119 @@ function WeightLoggingFlowContent({
   };
 
   return (
-      <div className="flex h-full flex-col bg-linear-bg font-inter">
-        {/* Header with Progress */}
-        <div className="pt-safe-top flex-shrink-0 px-6">
-          {/* Navigation */}
-          <div className="flex h-14 items-center justify-between">
-            <button
-              onClick={currentStep === 0 ? onCancel : goBack}
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-border/30 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
-              aria-label={currentStep === 0 ? "Cancel" : "Go back"}
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
+    <div className="flex h-full flex-col bg-linear-bg font-inter">
+      {/* Header with Progress */}
+      <div className="flex-shrink-0 px-6 pt-safe-top">
+        {/* Navigation */}
+        <div className="flex h-14 items-center justify-between">
+          <button
+            onClick={currentStep === 0 ? onCancel : goBack}
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-border/30 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
+            aria-label={currentStep === 0 ? "Cancel" : "Go back"}
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </button>
 
-            <div className="text-center">
-              <div className="text-sm font-medium text-linear-text-secondary">
-                Step {currentStep + 1} of {totalSteps}
-              </div>
-              <div className="text-lg font-semibold text-linear-text">
-                {stepTitles[currentStep]}
-              </div>
+          <div className="text-center">
+            <div className="text-sm font-medium text-linear-text-secondary">
+              Step {currentStep + 1} of {totalSteps}
             </div>
-
-            <div className="flex h-10 w-10 items-center justify-center">
-              <div className="text-sm font-medium text-linear-text-secondary">
-                {Math.round(progress)}%
-              </div>
+            <div className="text-lg font-semibold text-linear-text">
+              {stepTitles[currentStep]}
             </div>
           </div>
 
-          {/* Progress Bar */}
-          <div className="mb-6 mt-4">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-linear-border">
-              <motion.div
-                className="h-full rounded-full bg-linear-purple"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
-              />
+          <div className="flex h-10 w-10 items-center justify-center">
+            <div className="text-sm font-medium text-linear-text-secondary">
+              {Math.round(progress)}%
             </div>
           </div>
         </div>
 
-        {/* Step Content */}
-        <div className="flex-1 overflow-hidden">
-          <div className="pb-safe-bottom h-full overflow-y-auto px-6">
-            <React.Suspense
-              fallback={
-                <div className="flex h-full items-center justify-center">
-                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent" />
-                </div>
-              }
-            >
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentStep}
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.25, type: "spring", damping: 20 }}
-                  className="h-full text-linear-text"
-                >
-                  {renderStep()}
-                </motion.div>
-              </AnimatePresence>
-            </React.Suspense>
-          </div>
-        </div>
-
-        {/* Footer Actions */}
-        <div className="flex-shrink-0 px-6 pb-6 pt-4">
-          <div className="flex gap-3">
-            {/* Back Button (hidden on first step) */}
-            {currentStep > 0 && (
-              <motion.button
-                onClick={goBack}
-                className="h-14 flex-1 rounded-xl border border-linear-border bg-linear-card font-medium text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.2 }}
-              >
-                Back
-              </motion.button>
-            )}
-
-            {/* Next/Complete Button */}
-            <motion.button
-              onClick={goNext}
-              disabled={!canGoNext}
-              className={cn(
-                "flex h-14 items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200",
-                currentStep === 0 ? "flex-1" : "flex-[2]",
-                canGoNext
-                  ? "bg-linear-text text-linear-bg hover:bg-linear-text/90"
-                  : "cursor-not-allowed bg-linear-card border border-linear-border text-linear-text-tertiary",
-              )}
-              whileTap={canGoNext ? { scale: 0.98 } : {}}
-            >
-              {currentStep === totalSteps - 1 ? (
-                <>
-                  <Check className="h-5 w-5" />
-                  Save Entry
-                </>
-              ) : (
-                <>
-                  Next
-                  <ArrowRight className="h-5 w-5" />
-                </>
-              )}
-            </motion.button>
+        {/* Progress Bar */}
+        <div className="mb-6 mt-4">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-linear-border">
+            <motion.div
+              className="h-full rounded-full bg-linear-purple"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress}%` }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+            />
           </div>
         </div>
       </div>
+
+      {/* Step Content */}
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto px-6 pb-safe-bottom">
+          <React.Suspense
+            fallback={
+              <div className="flex h-full items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent" />
+              </div>
+            }
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25, type: "spring", damping: 20 }}
+                className="h-full text-linear-text"
+              >
+                {renderStep()}
+              </motion.div>
+            </AnimatePresence>
+          </React.Suspense>
+        </div>
+      </div>
+
+      {/* Footer Actions */}
+      <div className="flex-shrink-0 px-6 pb-6 pt-4">
+        <div className="flex gap-3">
+          {/* Back Button (hidden on first step) */}
+          {currentStep > 0 && (
+            <motion.button
+              onClick={goBack}
+              className="h-14 flex-1 rounded-xl border border-linear-border bg-linear-card font-medium text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+            >
+              Back
+            </motion.button>
+          )}
+
+          {/* Next/Complete Button */}
+          <motion.button
+            onClick={goNext}
+            disabled={!canGoNext}
+            className={cn(
+              "flex h-14 items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200",
+              currentStep === 0 ? "flex-1" : "flex-[2]",
+              canGoNext
+                ? "bg-linear-text text-linear-bg hover:bg-linear-text/90"
+                : "cursor-not-allowed border border-linear-border bg-linear-card text-linear-text-tertiary",
+            )}
+            whileTap={canGoNext ? { scale: 0.98 } : {}}
+          >
+            {currentStep === totalSteps - 1 ? (
+              <>
+                <Check className="h-5 w-5" />
+                Save Entry
+              </>
+            ) : (
+              <>
+                Next
+                <ArrowRight className="h-5 w-5" />
+              </>
+            )}
+          </motion.button>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -294,8 +277,8 @@ export function WeightLoggingFlowV2(props: WeightLoggingFlowV2Props) {
   const [methodData, setMethodData] = useState<MethodData>(
     props.initialData?.method || { value: "scale", label: "Digital Scale" },
   );
-  const [photoData, setPhotoData] = useState<string | undefined>();
-  
+  const [photoData, setPhotoData] = useState<File | undefined>();
+
   const handleComplete = async () => {
     // Track completion analytics
     weightAnalytics.completeFlow({
@@ -314,14 +297,10 @@ export function WeightLoggingFlowV2(props: WeightLoggingFlowV2Props) {
       photo: photoData,
     });
   };
-  
+
   return (
-    <StepperProvider
-      totalSteps={4}
-      initialStep={0}
-      onComplete={handleComplete}
-    >
-      <WeightLoggingFlowContent 
+    <StepperProvider totalSteps={4} initialStep={0} onComplete={handleComplete}>
+      <WeightLoggingFlowContent
         {...props}
         weightData={weightData}
         setWeightData={setWeightData}

@@ -83,6 +83,7 @@ export interface Database {
           weight: number;
           body_fat_percentage: number;
           method: "dexa" | "scale" | "calipers" | "visual";
+          photo_url?: string;
           created_at: string;
         };
         Insert: {
@@ -91,12 +92,14 @@ export interface Database {
           weight: number;
           body_fat_percentage: number;
           method: "dexa" | "scale" | "calipers" | "visual";
+          photo_url?: string;
         };
         Update: {
           date?: string;
           weight?: number;
           body_fat_percentage?: number;
           method?: "dexa" | "scale" | "calipers" | "visual";
+          photo_url?: string;
         };
       };
       subscriptions: {
