@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Haptics, ImpactStyle } from "@capacitor/haptics";
 import { Capacitor } from "@capacitor/core";
+import { RadioGroup } from "@headlessui/react";
 import {
   Scale,
   Scan,
@@ -63,7 +64,9 @@ const methodOptions = [
 
 export function MethodStep({ value, onChange }: MethodStepProps) {
   const { setCanGoNext, goNext } = useStepper();
-  const [selectedMethod, setSelectedMethod] = useState<string>(value.value);
+  const [selectedMethod, setSelectedMethod] = useState<typeof methodOptions[0]>(
+    methodOptions.find(opt => opt.value === value.value) || methodOptions[0]
+  );
   const [hasInteracted, setHasInteracted] = useState(false);
 
   const isNative = Capacitor.isNativePlatform();
@@ -75,32 +78,27 @@ export function MethodStep({ value, onChange }: MethodStepProps) {
   // Validate and update parent whenever selection changes
   useEffect(() => {
     if (selectedMethod) {
-      const selectedOption = methodOptions.find(
-        (opt) => opt.value === selectedMethod,
-      );
-      if (selectedOption) {
-        const methodData: MethodData = {
-          value: selectedOption.value,
-          label: selectedOption.label,
-        };
+      const methodData: MethodData = {
+        value: selectedMethod.value,
+        label: selectedMethod.label,
+      };
 
-        try {
-          methodSchema.parse(methodData);
-          onChange(methodData);
-          setCanGoNext(true);
-        } catch {
-          setCanGoNext(false);
-        }
+      try {
+        methodSchema.parse(methodData);
+        onChange(methodData);
+        setCanGoNext(true);
+      } catch {
+        setCanGoNext(false);
       }
     }
   }, [selectedMethod, onChange, setCanGoNext]);
 
-  const handleMethodSelect = async (methodValue: string) => {
+  const handleMethodSelect = async (method: typeof methodOptions[0]) => {
     if (isNative) {
       await Haptics.impact({ style: ImpactStyle.Medium });
     }
 
-    setSelectedMethod(methodValue);
+    setSelectedMethod(method);
     setHasInteracted(true);
 
     // Track analytics
@@ -108,7 +106,7 @@ export function MethodStep({ value, onChange }: MethodStepProps) {
       step_number: 3,
       step_name: "method",
       interaction_type: "tap",
-      value: methodValue,
+      value: method.value,
     });
 
     // Auto-advance after selection with slight delay for feedback
@@ -147,84 +145,97 @@ export function MethodStep({ value, onChange }: MethodStepProps) {
 
       {/* Method Grid */}
       <motion.div
-        className="grid grid-cols-2 gap-4"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.25 }}
       >
-        {methodOptions.map((option, index) => {
-          const IconComponent = option.icon;
-          const isSelected = selectedMethod === option.value;
-
-          return (
-            <motion.button
-              key={option.value}
-              onClick={() => handleMethodSelect(option.value)}
-              className={cn(
-                "relative rounded-2xl border-2 p-6 transition-all duration-200",
-                "flex flex-col items-center gap-3 text-center",
-                "min-h-[120px] focus:outline-none focus:ring-4 focus:ring-primary/20",
-                isSelected
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-transparent bg-secondary/20 text-foreground hover:border-border hover:bg-secondary/30",
-              )}
-              whileTap={{ scale: 0.98 }}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05, duration: 0.25 }}
-              aria-label={`Select ${option.label} measurement method`}
-            >
-              {/* Selection Indicator */}
-              {isSelected && (
-                <motion.div
-                  className="absolute right-2 top-2"
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.1, duration: 0.2 }}
+        <RadioGroup value={selectedMethod} onChange={handleMethodSelect}>
+          <RadioGroup.Label className="sr-only">
+            Choose measurement method
+          </RadioGroup.Label>
+          <div className="grid grid-cols-2 gap-4">
+            {methodOptions.map((option, index) => {
+              const IconComponent = option.icon;
+              
+              return (
+                <RadioGroup.Option
+                  key={option.value}
+                  value={option}
+                  className={({ active, checked }) =>
+                    cn(
+                      "relative rounded-2xl border-2 p-6 transition-all duration-200",
+                      "flex flex-col items-center gap-3 text-center cursor-pointer",
+                      "min-h-[120px] focus:outline-none focus:ring-4 focus:ring-primary/20",
+                      checked
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "border-transparent bg-secondary/20 text-foreground hover:border-border hover:bg-secondary/30",
+                      active && "ring-4 ring-primary/20"
+                    )
+                  }
                 >
-                  <CheckCircle className="h-5 w-5" />
-                </motion.div>
-              )}
+                  {({ checked }) => (
+                    <motion.div
+                      className="flex flex-col items-center gap-3 w-full"
+                      whileTap={{ scale: 0.98 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.05, duration: 0.25 }}
+                    >
+                      {/* Selection Indicator */}
+                      {checked && (
+                        <motion.div
+                          className="absolute right-2 top-2"
+                          initial={{ scale: 0, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          transition={{ delay: 0.1, duration: 0.2 }}
+                        >
+                          <CheckCircle className="h-5 w-5" />
+                        </motion.div>
+                      )}
 
-              {/* Icon */}
-              <div
-                className={cn(
-                  "flex h-12 w-12 items-center justify-center rounded-2xl",
-                  isSelected ? "bg-primary-foreground/20" : "bg-primary/10",
-                )}
-              >
-                <IconComponent
-                  className={cn(
-                    "h-6 w-6",
-                    isSelected ? "text-primary-foreground" : "text-primary",
-                  )}
-                />
-              </div>
+                      {/* Icon */}
+                      <div
+                        className={cn(
+                          "flex h-12 w-12 items-center justify-center rounded-2xl",
+                          checked ? "bg-primary-foreground/20" : "bg-primary/10",
+                        )}
+                      >
+                        <IconComponent
+                          className={cn(
+                            "h-6 w-6",
+                            checked ? "text-primary-foreground" : "text-primary",
+                          )}
+                        />
+                      </div>
 
-              {/* Label */}
-              <div>
-                <div
-                  className={cn(
-                    "mb-1 text-sm font-semibold",
-                    isSelected ? "text-primary-foreground" : "text-foreground",
+                      {/* Label */}
+                      <div>
+                        <div
+                          className={cn(
+                            "mb-1 text-sm font-semibold",
+                            checked ? "text-primary-foreground" : "text-foreground",
+                          )}
+                        >
+                          {option.label}
+                        </div>
+                        <div
+                          className={cn(
+                            "text-xs opacity-80",
+                            checked
+                              ? "text-primary-foreground"
+                              : "text-muted-foreground",
+                          )}
+                        >
+                          {option.description}
+                        </div>
+                      </div>
+                    </motion.div>
                   )}
-                >
-                  {option.label}
-                </div>
-                <div
-                  className={cn(
-                    "text-xs opacity-80",
-                    isSelected
-                      ? "text-primary-foreground"
-                      : "text-muted-foreground",
-                  )}
-                >
-                  {option.description}
-                </div>
-              </div>
-            </motion.button>
-          );
-        })}
+                </RadioGroup.Option>
+              );
+            })}
+          </div>
+        </RadioGroup>
       </motion.div>
 
       {/* Helper Text */}

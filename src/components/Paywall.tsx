@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { RadioGroup } from "@headlessui/react";
 import {
   Check,
   Crown,
@@ -208,67 +209,80 @@ export function Paywall({
           </div>
 
           {/* Plans */}
-          <div className="space-y-4">
-            {/* Annual Plan */}
-            <div
-              onClick={() => setSelectedPlan("yearly")}
-              className={cn(
-                "relative cursor-pointer rounded-lg border-2 p-4 transition-all",
-                selectedPlan === "yearly"
-                  ? "border-primary bg-primary/5"
-                  : "border-border bg-secondary/30",
-              )}
-            >
-              {selectedPlan === "yearly" && (
-                <Badge className="absolute -top-2 right-4 bg-primary text-xs text-primary-foreground">
-                  Save 42% with Annual
-                </Badge>
-              )}
+          <RadioGroup value={selectedPlan} onChange={setSelectedPlan}>
+            <RadioGroup.Label className="sr-only">
+              Choose subscription plan
+            </RadioGroup.Label>
+            <div className="space-y-4">
+              {/* Annual Plan */}
+              <RadioGroup.Option value="yearly">
+                {({ checked, active }) => (
+                  <div
+                    className={cn(
+                      "relative cursor-pointer rounded-lg border-2 p-4 transition-all",
+                      checked
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-secondary/30",
+                      active && "ring-2 ring-primary/50"
+                    )}
+                  >
+                    {checked && (
+                      <Badge className="absolute -top-2 right-4 bg-primary text-xs text-primary-foreground">
+                        Save 42% with Annual
+                      </Badge>
+                    )}
 
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xl font-semibold text-foreground">
-                    Annual
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xl font-semibold text-foreground">
+                          Annual
+                        </div>
+                        <div className="text-muted-foreground">
+                          $69.99 billed yearly
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xl font-bold text-foreground">
+                          $5.83/mo
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-muted-foreground">
-                    $69.99 billed yearly
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-foreground">
-                    $5.83/mo
-                  </div>
-                </div>
-              </div>
-            </div>
+                )}
+              </RadioGroup.Option>
 
-            {/* Monthly Plan */}
-            <div
-              onClick={() => setSelectedPlan("monthly")}
-              className={cn(
-                "relative cursor-pointer rounded-lg border-2 p-4 transition-all",
-                selectedPlan === "monthly"
-                  ? "border-primary bg-primary/5"
-                  : "border-border bg-secondary/30",
-              )}
-            >
-              <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xl font-semibold text-foreground">
-                    Monthly
+              {/* Monthly Plan */}
+              <RadioGroup.Option value="monthly">
+                {({ checked, active }) => (
+                  <div
+                    className={cn(
+                      "relative cursor-pointer rounded-lg border-2 p-4 transition-all",
+                      checked
+                        ? "border-primary bg-primary/5"
+                        : "border-border bg-secondary/30",
+                      active && "ring-2 ring-primary/50"
+                    )}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="text-xl font-semibold text-foreground">
+                          Monthly
+                        </div>
+                        <div className="text-muted-foreground">
+                          $9.99 billed monthly
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-xl font-bold text-foreground">
+                          $9.99/mo
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-muted-foreground">
-                    $9.99 billed monthly
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xl font-bold text-foreground">
-                    $9.99/mo
-                  </div>
-                </div>
-              </div>
+                )}
+              </RadioGroup.Option>
             </div>
-          </div>
+          </RadioGroup>
         </div>
       </div>
 
