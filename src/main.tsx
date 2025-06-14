@@ -5,6 +5,7 @@ import {
   setupBrowserExtensionErrorHandler,
   logBrowserEnvironment,
 } from "./lib/browser-compat";
+import { Capacitor } from "@capacitor/core";
 
 // Setup browser extension error handling - defer to avoid blocking
 setTimeout(() => {
@@ -16,8 +17,8 @@ setTimeout(() => {
   }
 }, 0);
 
-// Register service worker for PWA functionality - defer to avoid blocking
-if ("serviceWorker" in navigator) {
+// Register service worker for PWA functionality on web only - defer to avoid blocking
+if ("serviceWorker" in navigator && !Capacitor.isNativePlatform()) {
   // Use requestIdleCallback to defer SW registration
   const registerSW = () => {
     navigator.serviceWorker
