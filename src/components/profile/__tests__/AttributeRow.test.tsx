@@ -104,9 +104,9 @@ describe("AttributeRow", () => {
         />,
       );
 
-      // The parent container of the Age attribute should have opacity-0
+      // The immediate parent container of the Age attribute should have opacity-0
       const ageLabel = screen.getByText("Age");
-      const ageContainer = ageLabel.parentElement?.parentElement;
+      const ageContainer = ageLabel.parentElement;
       expect(ageContainer).toHaveClass("opacity-0");
     });
 

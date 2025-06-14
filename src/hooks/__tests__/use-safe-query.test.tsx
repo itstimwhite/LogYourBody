@@ -29,6 +29,22 @@ const createWrapper = () => {
   );
 };
 
+// Test wrapper that allows retries
+const createRetryWrapper = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: 3, // Allow retries for retry tests
+        gcTime: 0, // Disable cache for tests
+      },
+    },
+  });
+
+  return ({ children }: { children: React.ReactNode }) => (
+    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+  );
+};
+
 describe("useSafeQuery", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -61,8 +77,6 @@ describe("useSafeQuery", () => {
   });
 
   it("should handle query timeout and show toast notification", async () => {
-    vi.useFakeTimers();
-    
     const mockQueryFn = vi.fn().mockImplementation(
       () => new Promise((resolve) => setTimeout(resolve, 5000)), // 5 second delay
     );
@@ -72,19 +86,15 @@ describe("useSafeQuery", () => {
         useSafeQuery({
           queryKey: ["test"],
           queryFn: mockQueryFn,
-          timeout: 1000, // 1 second timeout
+          timeout: 100, // Short timeout for test
         }),
       { wrapper: createWrapper() },
     );
 
-    // Fast-forward past timeout
-    await vi.advanceTimersByTimeAsync(1100);
-
     await waitFor(() => {
-      expect(mockToast).toHaveBeenCalled();
-    }, { timeout: 5000 });
+      expect(result.current.isTimedOut).toBe(true);
+    }, { timeout: 2000 });
 
-    expect(result.current.isTimedOut).toBe(true);
     expect(mockToast).toHaveBeenCalledWith("Still loading…", {
       description:
         "The request is taking longer than expected. Please check your connection.",
@@ -93,8 +103,6 @@ describe("useSafeQuery", () => {
         onClick: expect.any(Function),
       }),
     });
-    
-    vi.useRealTimers();
   });
 
   it("should handle query errors gracefully", async () => {
@@ -106,21 +114,20 @@ describe("useSafeQuery", () => {
         useSafeQuery({
           queryKey: ["test"],
           queryFn: mockQueryFn,
+          retry: false, // Explicitly disable retry for this test
         }),
       { wrapper: createWrapper() },
     );
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
-    }, { timeout: 5000 });
+    }, { timeout: 2000 });
 
     expect(result.current.error).toEqual(mockError);
     expect(result.current.isTimedOut).toBe(false);
   });
 
   it("should cancel request on unmount", async () => {
-    vi.useFakeTimers();
-    
     const mockQueryFn = vi
       .fn()
       .mockImplementation(
@@ -132,7 +139,7 @@ describe("useSafeQuery", () => {
         useSafeQuery({
           queryKey: ["test"],
           queryFn: mockQueryFn,
-          timeout: 1000,
+          timeout: 100,
         }),
       { wrapper: createWrapper() },
     );
@@ -140,13 +147,11 @@ describe("useSafeQuery", () => {
     // Unmount before timeout
     unmount();
 
-    // Advance timers to simulate timeout
-    await vi.advanceTimersByTimeAsync(1100);
+    // Wait a bit to ensure no toast was called
+    await new Promise(resolve => setTimeout(resolve, 200));
 
     // Should not show timeout toast after unmount
     expect(mockToast).not.toHaveBeenCalled();
-    
-    vi.useRealTimers();
   });
 
   it("should provide retry functionality", async () => {
@@ -161,20 +166,21 @@ describe("useSafeQuery", () => {
         useSafeQuery({
           queryKey: ["test"],
           queryFn: mockQueryFn,
+          retry: false, // Disable automatic retry, we'll use manual retry
         }),
       { wrapper: createWrapper() },
     );
 
     await waitFor(() => {
       expect(result.current.isError).toBe(true);
-    }, { timeout: 5000 });
+    }, { timeout: 2000 });
 
     // Trigger retry
     result.current.retryQuery();
 
     await waitFor(() => {
       expect(result.current.isSuccess).toBe(true);
-    }, { timeout: 5000 });
+    }, { timeout: 2000 });
 
     expect(result.current.data).toEqual(mockData);
     expect(result.current.retryCount).toBe(1);
@@ -182,8 +188,6 @@ describe("useSafeQuery", () => {
   });
 
   it("should not show timeout toast when disabled", async () => {
-    vi.useFakeTimers();
-    
     const mockQueryFn = vi
       .fn()
       .mockImplementation(
@@ -195,25 +199,19 @@ describe("useSafeQuery", () => {
         useSafeQuery({
           queryKey: ["test"],
           queryFn: mockQueryFn,
-          timeout: 1000,
+          timeout: 100,
           showTimeoutToast: false,
         }),
       { wrapper: createWrapper() },
     );
 
-    await vi.advanceTimersByTimeAsync(1100);
-
-    // Wait a bit to ensure no toast was called
-    await new Promise(resolve => setImmediate(resolve));
+    // Wait longer than timeout
+    await new Promise(resolve => setTimeout(resolve, 200));
     
     expect(mockToast).not.toHaveBeenCalled();
-    
-    vi.useRealTimers();
   });
 
   it("should call custom onTimeout callback", async () => {
-    vi.useFakeTimers();
-    
     const mockOnTimeout = vi.fn();
     const mockQueryFn = vi
       .fn()
@@ -226,19 +224,15 @@ describe("useSafeQuery", () => {
         useSafeQuery({
           queryKey: ["test"],
           queryFn: mockQueryFn,
-          timeout: 1000,
+          timeout: 100,
           onTimeout: mockOnTimeout,
         }),
       { wrapper: createWrapper() },
     );
 
-    await vi.advanceTimersByTimeAsync(1100);
-
     await waitFor(() => {
       expect(mockOnTimeout).toHaveBeenCalledTimes(1);
-    }, { timeout: 5000 });
-    
-    vi.useRealTimers();
+    }, { timeout: 2000 });
   });
 
   it("should use default caching configuration", async () => {
