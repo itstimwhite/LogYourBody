@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LogYourBody Documentation</title>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'linear-purple': '#5E6AD2',
+              'linear-bg': '#0A0B0D',
+              'linear-card': '#111113',
+              'linear-border': '#1F2023',
+              'linear-text': '#F7F8F8',
+              'linear-text-secondary': '#9CA0A8'
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+  </head>
+  <body class="min-h-screen bg-linear-bg text-linear-text antialiased">
+    <div class="max-w-6xl mx-auto px-4 py-8">
+      <header class="mb-12">
+        <h1 class="text-4xl font-bold text-linear-purple">LogYourBody Documentation</h1>
+        <p class="mt-2 text-linear-text-secondary">Official guides and references for the LogYourBody project.</p>
+      </header>
+      <div class="lg:flex lg:space-x-8">
+        <aside class="lg:w-1/4 border-l border-linear-border pl-4 mb-8 lg:mb-0">
+          <nav class="space-y-2">
+            <a href="#introduction" class="block text-linear-text-secondary hover:text-linear-purple">Introduction</a>
+            <a href="#installation" class="block text-linear-text-secondary hover:text-linear-purple">Installation</a>
+            <a href="#usage" class="block text-linear-text-secondary hover:text-linear-purple">Usage</a>
+            <a href="#features" class="block text-linear-text-secondary hover:text-linear-purple">Features</a>
+          </nav>
+        </aside>
+        <main class="prose prose-invert max-w-none lg:flex-1">
+          <section id="introduction">
+            <h2>Introduction</h2>
+            <p>LogYourBody is a modern body composition tracking application built with React, TypeScript, and Supabase. This documentation provides an overview of setup, usage, and key features.</p>
+          </section>
+          <section id="installation">
+            <h2>Installation</h2>
+            <ol>
+              <li>Clone the repository.</li>
+              <li>Install dependencies with <code>npm install</code>.</li>
+              <li>Copy <code>.env.example</code> to <code>.env</code> and fill in your environment variables.</li>
+              <li>Run <code>npm run dev</code> to start the development server.</li>
+            </ol>
+          </section>
+          <section id="usage">
+            <h2>Usage</h2>
+            <p>Once the development server is running, open <code>http://localhost:5173</code> to view the app. Use your Supabase credentials to sign in and start logging your body metrics.</p>
+          </section>
+          <section id="features">
+            <h2>Features</h2>
+            <ul>
+              <li>Body composition tracking with interactive charts.</li>
+              <li>Subscription-based premium analytics and unlimited storage.</li>
+              <li>Responsive design with offline support.</li>
+              <li>Secure authentication powered by Supabase.</li>
+            </ul>
+          </section>
+        </main>
+      </div>
+    </div>
+  </body>
+</html>
