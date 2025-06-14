@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
+import imagePresets, { hdPreset } from "vite-plugin-image-presets";
 import path from "path";
 import { readFileSync } from "fs";
 
@@ -115,6 +116,15 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react(),
+    imagePresets({
+      optimized: hdPreset({
+        widths: [320, 640, 960],
+        formats: {
+          webp: { quality: 70 },
+          png: { quality: 80 },
+        },
+      }),
+    }),
 
     // Bundle analyzer (only in analyze mode)
     ...(mode === "analyze"

@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { LazyImage } from "@/components/ui/lazy-image";
+import { buildSrcSet } from "@/utils/image-helpers";
 
 interface AvatarSilhouetteProps {
   gender: "male" | "female";
@@ -148,6 +149,8 @@ export const AvatarSilhouette = React.memo(function AvatarSilhouette({
         {showPhoto && profileImage ? (
           <LazyImage
             src={profileImage}
+            srcSet={buildSrcSet(profileImage, 400)}
+            sizes="(min-width: 768px) 400px, 100vw"
             alt="Profile"
             className="max-h-full max-w-full rounded-lg object-contain"
           />

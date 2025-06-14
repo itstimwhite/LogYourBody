@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { tw, getAnimation } from "@/styles/design-tokens";
 import { LazyImage } from "@/components/ui/lazy-image";
+import { buildSrcSet } from "@/utils/image-helpers";
 import {
   getAvatarUrlFromMetrics,
   getFallbackAvatarUrl,
@@ -87,6 +88,8 @@ export const AvatarDisplay = React.memo<AvatarDisplayProps>(
               >
                 <LazyImage
                   src={profileImage}
+                  srcSet={buildSrcSet(profileImage, 400)}
+                  sizes="(min-width: 768px) 400px, 100vw"
                   alt={`Profile photo showing current body composition`}
                   className="max-h-full max-w-full rounded-lg object-contain shadow-lg"
                 />
@@ -102,6 +105,8 @@ export const AvatarDisplay = React.memo<AvatarDisplayProps>(
               >
                 <LazyImage
                   src={avatarError ? fallbackUrl : avatarUrl}
+                  srcSet={buildSrcSet(avatarError ? fallbackUrl : avatarUrl, 256)}
+                  sizes="(min-width: 768px) 256px, 40vw"
                   alt={`${gender} body composition wireframe showing ${(bodyFatPercentage || 0).toFixed(1)}% body fat`}
                   className="h-full w-full object-contain"
                   onError={handleAvatarError}
