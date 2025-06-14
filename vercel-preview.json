@@ -1,0 +1,14 @@
+{
+  "extends": "./vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "preview": true
+    }
+  },
+  "buildCommand": "npm run build",
+  "functions": {
+    "api/**/*.js": {
+      "includeFiles": "**"
+    }
+  }
+}

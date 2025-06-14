@@ -1,6 +1,6 @@
 {
   "name": "logyourbody",
-  "version": "2025.06.33",
+  "version": "2025.06.34",
   "description": "A modern body composition tracking application built with React and TypeScript",
   "author": "Tim White <tim@timwhite.dev>",
   "license": "MIT",
@@ -27,7 +27,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run test && npm run typecheck && vite build",
+    "build:prod": "vite build",
     "test": "vitest --run",
     "test:watch": "vitest",
     "format.fix": "prettier --write .",
