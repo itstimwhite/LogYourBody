@@ -183,9 +183,7 @@ export function LandingPage() {
                 id="hero-heading"
                 className="mb-6 text-6xl font-bold tracking-tight text-linear-text md:text-7xl"
               >
-                The fitness tracker that
-                <br />
-                actually tracks progress
+                Illuminate your gains
               </h1>
               <p className="mx-auto mb-12 max-w-2xl text-lg text-linear-text-secondary">
                 Track body fat, muscle mass, and FFMI. Not just weight.
@@ -317,12 +315,12 @@ export function LandingPage() {
         </section>
 
         {/* Pricing Section */}
-        <section className="theme-dark prose container mx-auto px-6 py-20">
+        <section className="container mx-auto px-6 py-20">
           <div className="mb-16 text-center">
-            <h2 className="mb-4 text-mercury-white">
+            <h2 className="mb-4 text-5xl font-bold tracking-tight text-linear-text">
               Less than your protein powder
             </h2>
-            <p className="text-xl text-mercury-white/80">
+            <p className="text-xl text-linear-text-secondary">
               3 days free. Then $5.83/month. Cancel anytime.
             </p>
           </div>
@@ -337,7 +335,7 @@ export function LandingPage() {
               Choose billing frequency
             </span>
             <span
-              className={`text-lg font-medium ${!isAnnual ? "text-mercury-white" : "text-mercury-white/50"}`}
+              className={`text-lg font-medium ${!isAnnual ? "text-linear-text" : "text-linear-text-tertiary"}`}
               id="monthly-label"
             >
               Monthly
@@ -345,12 +343,12 @@ export function LandingPage() {
             <Switch
               checked={isAnnual}
               onCheckedChange={setIsAnnual}
-              className="focus:ring-4 focus:ring-magic-blue/50 data-[state=checked]:bg-magic-blue"
+              className="focus:ring-2 focus:ring-linear-purple/50 data-[state=checked]:bg-linear-purple"
               aria-labelledby="monthly-label annual-label"
               aria-describedby="billing-savings"
             />
             <span
-              className={`text-lg font-medium ${isAnnual ? "text-mercury-white" : "text-mercury-white/50"}`}
+              className={`text-lg font-medium ${isAnnual ? "text-linear-text" : "text-linear-text-tertiary"}`}
               id="annual-label"
             >
               Annual
@@ -369,43 +367,43 @@ export function LandingPage() {
           {/* Single Pricing Card */}
           <div className="not-prose mx-auto max-w-md">
             <Card
-              className="relative border-mercury-white/10 bg-nordic-gray/50 backdrop-blur-sm shadow-xl ring-2 ring-magic-blue focus-within:ring-4 focus-within:ring-magic-blue/50"
+              className="relative border-linear-border bg-linear-card shadow-xl ring-1 ring-linear-border focus-within:ring-2 focus-within:ring-linear-purple/50"
               role="region"
               aria-labelledby="pricing-title"
               aria-describedby="pricing-description"
             >
               <Badge
-                className="absolute -top-3 left-1/2 -translate-x-1/2 transform bg-magic-blue text-mercury-white"
+                className="absolute -top-3 left-1/2 -translate-x-1/2 transform bg-linear-purple text-white"
                 role="status"
               >
                 3-Day Free Trial
               </Badge>
               <CardHeader className="text-center">
-                <CardTitle id="pricing-title" className="text-2xl text-mercury-white">
+                <CardTitle id="pricing-title" className="text-2xl text-linear-text">
                   Full Access
                 </CardTitle>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-magic-blue transition-all duration-300 ease-in-out">
+                  <span className="text-4xl font-bold text-linear-text transition-all duration-300 ease-in-out">
                     <span className="sr-only">Price: </span>${currentPlan.price}
                   </span>
-                  <span className="text-mercury-white/70 transition-all duration-300 ease-in-out">
+                  <span className="text-linear-text-secondary transition-all duration-300 ease-in-out">
                     /{currentPlan.period}
                   </span>
                 </div>
                 {isAnnual && (
                   <div className="mt-2 transition-all duration-300 ease-in-out">
-                    <span className="text-sm text-mercury-white/60">
+                    <span className="text-sm text-linear-text-tertiary">
                       ${pricing.annual.monthlyEquivalent}/month when billed
                       annually
                     </span>
-                    <div className="text-sm font-medium text-green-400">
+                    <div className="text-sm font-medium text-green-500">
                       Save ${pricing.annual.savings} vs monthly billing
                     </div>
                   </div>
                 )}
                 <CardDescription
                   id="pricing-description"
-                  className="mt-4 text-base text-mercury-white/70"
+                  className="mt-4 text-base text-linear-text-secondary"
                 >
                   Everything you need to track real progress
                 </CardDescription>
@@ -415,19 +413,19 @@ export function LandingPage() {
                   {features.map((feature, index) => (
                     <li
                       key={index}
-                      className="flex items-center text-mercury-white"
+                      className="flex items-center text-linear-text"
                       role="listitem"
                     >
                       <Check
-                        className="mr-3 h-5 w-5 text-magic-blue"
+                        className="mr-3 h-5 w-5 text-linear-purple"
                         aria-hidden="true"
                       />
-                      <span>{feature}</span>
+                      <span className="text-sm">{feature}</span>
                     </li>
                   ))}
                 </ul>
                 <Button
-                  className="w-full bg-magic-blue text-mercury-white hover:bg-magic-blue/90 focus:ring-4 focus:ring-magic-blue/50"
+                  className="w-full bg-linear-text text-linear-bg hover:bg-linear-text/90 focus:ring-2 focus:ring-linear-text/20"
                   onClick={() => navigate("/login")}
                   aria-describedby="trial-terms"
                 >
@@ -435,7 +433,7 @@ export function LandingPage() {
                 </Button>
                 <p
                   id="trial-terms"
-                  className="mt-3 text-center text-xs text-mercury-white/60"
+                  className="mt-3 text-center text-xs text-linear-text-tertiary"
                 >
                   No credit card required • Cancel anytime
                 </p>
@@ -478,38 +476,38 @@ export function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="theme-dark border-t border-mercury-white/10 py-12 font-inter" role="contentinfo">
+      <footer className="border-t border-linear-border py-12 font-inter" role="contentinfo">
         <div className="container mx-auto px-6 text-center">
           <div className="mb-8">
-            <h3 className="mb-4 text-2xl font-bold text-magic-blue">
+            <h3 className="mb-4 text-2xl font-bold text-linear-text">
               LogYourBody
             </h3>
-            <p className="mx-auto max-w-md text-mercury-white/70">
+            <p className="mx-auto max-w-md text-linear-text-secondary">
               Professional body composition tracking for fitness enthusiasts and
               health professionals.
             </p>
           </div>
           <div className="mb-8 flex justify-center space-x-8">
-            <Button variant="ghost" onClick={() => navigate("/privacy")} className="text-mercury-white hover:bg-mercury-white/10 hover:text-magic-blue">
+            <Button variant="ghost" onClick={() => navigate("/privacy")} className="text-linear-text-secondary hover:text-linear-text">
               Privacy Policy
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/terms")} className="text-mercury-white hover:bg-mercury-white/10 hover:text-magic-blue">
+            <Button variant="ghost" onClick={() => navigate("/terms")} className="text-linear-text-secondary hover:text-linear-text">
               Terms of Service
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/changelog")} className="text-mercury-white hover:bg-mercury-white/10 hover:text-magic-blue">
+            <Button variant="ghost" onClick={() => navigate("/changelog")} className="text-linear-text-secondary hover:text-linear-text">
               Changelog
             </Button>
             <Button
               variant="ghost"
               onClick={() => window.open("mailto:support@logyourbody.com")}
-              className="text-mercury-white hover:bg-mercury-white/10 hover:text-magic-blue"
+              className="text-linear-text-secondary hover:text-linear-text"
             >
               Contact Support
             </Button>
           </div>
           <div className="flex flex-col items-center gap-4">
             <VersionDisplay />
-            <p className="text-sm text-mercury-white/60">
+            <p className="text-sm text-linear-text-tertiary">
               © 2024 LogYourBody. All rights reserved.
             </p>
           </div>

@@ -82,10 +82,10 @@ const Login = () => {
   // Show loading while checking authentication
   if (authLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex min-h-screen items-center justify-center bg-linear-bg">
         <div className="text-center">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-          <p className="text-muted-foreground">Loading...</p>
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-linear-purple border-t-transparent"></div>
+          <p className="text-linear-text-secondary">Loading...</p>
         </div>
       </div>
     );
@@ -213,7 +213,7 @@ const Login = () => {
   // Show SMS login interface
   if (showSMSLogin) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background p-6 text-foreground">
+      <div className="flex min-h-screen items-center justify-center bg-linear-bg p-6 font-inter">
         <SMSLogin
           onBack={() => setShowSMSLogin(false)}
           onSuccess={() => {
@@ -226,13 +226,13 @@ const Login = () => {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="flex min-h-screen flex-col bg-linear-bg font-inter">
       {/* Header with Back Navigation */}
       <div className="flex items-center justify-between p-6">
         <Button
           variant="ghost"
           onClick={() => navigate("/")}
-          className="text-muted-foreground hover:text-foreground"
+          className="text-linear-text-secondary hover:text-linear-text"
         >
           ← Back
         </Button>
@@ -243,11 +243,11 @@ const Login = () => {
         <div className="mb-12 text-center">
           {/* Logo */}
           <div className="mb-8">
-            <h1 className="font-inter text-4xl font-bold tracking-tight">
+            <h1 className="text-4xl font-bold tracking-tight text-linear-text">
               LogYourBody
             </h1>
-            <p className="mt-3 text-lg font-medium text-muted-foreground">
-              Track your body composition with precision
+            <p className="mt-3 text-lg text-linear-text-secondary">
+              Track real progress. Not just weight.
             </p>
           </div>
 
@@ -255,11 +255,11 @@ const Login = () => {
           <div className="mx-auto w-full max-w-sm space-y-4">
             {error && (
               <div
-                className={`rounded-md p-3 text-center text-sm ${
+                className={`rounded-lg p-3 text-center text-sm ${
                   error.includes("Account created!") ||
                   error.includes("Please sign in with your existing account")
-                    ? "border border-blue-200 bg-blue-50 text-blue-700"
-                    : "bg-destructive/10 text-destructive"
+                    ? "border border-linear-purple/30 bg-linear-purple/10 text-linear-purple"
+                    : "border border-red-500/30 bg-red-500/10 text-red-500"
                 }`}
               >
                 {error}
@@ -281,7 +281,7 @@ const Login = () => {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       required
-                      className="h-12 border-border bg-secondary text-base text-foreground placeholder:text-muted-foreground"
+                      className="h-12 border-linear-border bg-linear-card text-base text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple rounded-lg"
                     />
                   </div>
                 )}
@@ -297,7 +297,7 @@ const Login = () => {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-12 border-border bg-secondary text-base text-foreground placeholder:text-muted-foreground"
+                    className="h-12 border-linear-border bg-linear-card text-base text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple rounded-lg"
                   />
                 </div>
 
@@ -312,13 +312,13 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
-                    className="h-12 border-border bg-secondary pr-12 text-base text-foreground placeholder:text-muted-foreground"
+                    className="h-12 border-linear-border bg-linear-card pr-12 text-base text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple rounded-lg"
                   />
                   {/* Show password toggle - only on desktop */}
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 hidden -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground md:block"
+                    className="absolute right-3 top-1/2 hidden -translate-y-1/2 text-linear-text-tertiary transition-colors hover:text-linear-text md:block"
                     tabIndex={-1}
                     aria-label={showPassword ? "Hide password" : "Show password"}
                   >
@@ -333,7 +333,7 @@ const Login = () => {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="font-inter h-12 w-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
+                  className="h-12 w-full bg-linear-text text-base font-medium text-linear-bg hover:bg-linear-text/90 rounded-lg transition-colors"
                 >
                   {loading
                     ? "Please wait..."
@@ -348,10 +348,10 @@ const Login = () => {
             {(showEmailAuth || showGoogleSignIn) && (
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
+                  <span className="w-full border-t border-linear-border" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
+                  <span className="bg-linear-bg px-2 text-linear-text-tertiary">
                     Or continue with
                   </span>
                 </div>
@@ -367,7 +367,7 @@ const Login = () => {
                   variant="outline"
                   onClick={() => setShowSMSLogin(true)}
                   disabled={loading}
-                  className="h-12 w-full border-border bg-secondary font-medium text-foreground hover:bg-muted"
+                  className="h-12 w-full border-linear-border bg-linear-card font-medium text-linear-text hover:bg-linear-border/50 rounded-lg transition-colors"
                 >
                   <Smartphone className="mr-3 h-5 w-5" />
                   Continue with SMS
@@ -381,7 +381,7 @@ const Login = () => {
                   variant="outline"
                   onClick={handleGoogleSignIn}
                   disabled={loading}
-                  className="h-12 w-full border-border bg-secondary font-medium text-foreground hover:bg-muted"
+                  className="h-12 w-full border-linear-border bg-linear-card font-medium text-linear-text hover:bg-linear-border/50 rounded-lg transition-colors"
                 >
                   <svg
                     className="mr-3 h-5 w-5"
@@ -403,7 +403,7 @@ const Login = () => {
                 variant="outline"
                 onClick={handleAppleSignIn}
                 disabled={loading || appleLoading}
-                className="h-12 w-full border-border bg-secondary font-medium text-foreground hover:bg-muted"
+                className="h-12 w-full border-linear-border bg-linear-card font-medium text-linear-text hover:bg-linear-border/50 rounded-lg transition-colors"
               >
                 <svg
                   className="mr-3 h-5 w-5"
@@ -425,7 +425,7 @@ const Login = () => {
                   type="button"
                   variant="ghost"
                   onClick={() => setIsLogin(!isLogin)}
-                  className="text-sm text-muted-foreground hover:text-foreground"
+                  className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors"
                 >
                   {isLogin
                     ? "Don't have an account? Sign up"
@@ -439,18 +439,18 @@ const Login = () => {
 
       {/* Footer */}
       <div className="p-6 text-center">
-        <p className="text-sm font-medium text-muted-foreground">
+        <p className="text-sm text-linear-text-tertiary">
           By continuing, you agree to our{" "}
           <button
             onClick={() => navigate("/terms")}
-            className="text-primary hover:underline"
+            className="text-linear-purple hover:underline"
           >
             Terms of Service
           </button>{" "}
           and{" "}
           <button
             onClick={() => navigate("/privacy")}
-            className="text-primary hover:underline"
+            className="text-linear-purple hover:underline"
           >
             Privacy Policy
           </button>
@@ -458,7 +458,7 @@ const Login = () => {
         <div className="mt-4 flex justify-center gap-4">
           <button
             onClick={() => navigate("/changelog")}
-            className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="text-sm text-linear-text-tertiary transition-colors hover:text-linear-text"
           >
             Changelog
           </button>

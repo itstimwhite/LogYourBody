@@ -52,18 +52,9 @@ const Splash = () => {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-hidden bg-black">
-      {/* Background with gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black via-gray-900 to-black" />
-
-      {/* Subtle grid pattern overlay */}
-      <div
-        className="absolute inset-0 opacity-5"
-        style={{
-          backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.3) 1px, transparent 0)`,
-          backgroundSize: "50px 50px",
-        }}
-      />
+    <div className="relative h-screen w-full overflow-hidden bg-linear-bg font-inter">
+      {/* Background with subtle gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-linear-bg via-[#0F1012] to-linear-bg" />
 
       {/* Main content container */}
       <div className="relative z-10 flex h-full flex-col">
@@ -93,11 +84,11 @@ const Splash = () => {
                   }}
                   className="mb-6"
                 >
-                  <div className="text-8xl font-black leading-none tracking-tighter text-white sm:text-9xl">
-                    LYB
+                  <div className="text-8xl font-bold leading-none tracking-tight text-linear-text sm:text-9xl">
+                    LogYourBody
                   </div>
-                  <div className="mt-2 text-sm font-medium uppercase tracking-[0.3em] text-white/60">
-                    UNLOCK YOUR POTENTIAL
+                  <div className="mt-4 text-sm font-medium text-linear-text-secondary">
+                    TRACK REAL PROGRESS
                   </div>
                 </motion.div>
 
@@ -106,9 +97,11 @@ const Splash = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.5, duration: 0.6 }}
-                  className="mb-8 text-3xl font-bold leading-tight tracking-[-0.01em] text-white sm:text-4xl"
+                  className="mb-8 text-3xl font-semibold leading-tight tracking-tight text-linear-text sm:text-4xl"
                 >
-                  Track your body with precision.
+                  The fitness tracker that
+                  <br />
+                  actually tracks progress
                 </motion.h2>
 
                 {/* Feature highlights */}
@@ -116,19 +109,19 @@ const Splash = () => {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.7, duration: 0.6 }}
-                  className="mb-12 flex flex-wrap justify-center gap-6 text-sm text-white/70"
+                  className="mb-12 flex flex-wrap justify-center gap-6 text-sm text-linear-text-secondary"
                 >
                   <div className="flex items-center gap-2">
-                    <div className="h-1 w-1 rounded-full bg-white/50" />
-                    <span>Precision tracking</span>
+                    <div className="h-1 w-1 rounded-full bg-linear-purple" />
+                    <span>Body Fat %</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="h-1 w-1 rounded-full bg-white/50" />
-                    <span>Smart insights</span>
+                    <div className="h-1 w-1 rounded-full bg-linear-purple" />
+                    <span>FFMI Tracking</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="h-1 w-1 rounded-full bg-white/50" />
-                    <span>Effortless monitoring</span>
+                    <div className="h-1 w-1 rounded-full bg-linear-purple" />
+                    <span>Progress Photos</span>
                   </div>
                 </motion.div>
               </div>
@@ -144,18 +137,18 @@ const Splash = () => {
                   {/* Primary CTA - Sign Up */}
                   <Button
                     onClick={handleSignUp}
-                    className="h-14 rounded-full bg-white text-lg font-semibold tracking-wide text-black shadow-lg transition-all duration-300 hover:scale-[1.02] hover:bg-white/90 active:scale-[0.98]"
+                    className="h-14 rounded-lg bg-linear-text text-base font-medium text-linear-bg transition-all duration-200 hover:bg-linear-text/90"
                   >
-                    Get Started
+                    Try free for 3 days
                   </Button>
 
                   {/* Secondary CTA - Login */}
                   <Button
                     onClick={handleLogin}
-                    variant="outline"
-                    className="h-14 rounded-full border-white/30 bg-transparent text-lg font-medium tracking-wide text-white transition-all duration-300 hover:scale-[1.02] hover:border-white/50 hover:bg-white/10 active:scale-[0.98]"
+                    variant="ghost"
+                    className="h-14 rounded-lg border border-linear-border text-base font-medium text-linear-text transition-all duration-200 hover:bg-linear-border/50"
                   >
-                    Sign In
+                    I already have an account
                   </Button>
                 </div>
 
@@ -166,12 +159,12 @@ const Splash = () => {
                   transition={{ delay: 1.2, duration: 0.5 }}
                   className="mt-8 flex justify-center"
                 >
-                  <div className="h-1 w-20 overflow-hidden rounded-full bg-white/20">
+                  <div className="h-1 w-20 overflow-hidden rounded-full bg-linear-border">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: "100%" }}
                       transition={{ delay: 1.5, duration: 6, ease: "linear" }}
-                      className="h-full rounded-full bg-white/60"
+                      className="h-full rounded-full bg-linear-purple"
                     />
                   </div>
                 </motion.div>
@@ -182,7 +175,7 @@ const Splash = () => {
       </div>
 
       {/* Ambient light effect */}
-      <div className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-white/5 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 transform rounded-full bg-linear-purple/10 blur-3xl" />
     </div>
   );
 };
