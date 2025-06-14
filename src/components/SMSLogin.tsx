@@ -2,13 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { ArrowLeft, MessageSquare, Shield, Smartphone } from "lucide-react";
 import { useSMSAuth } from "@/hooks/use-sms-auth";
 import { cn } from "@/lib/utils";
@@ -130,179 +123,159 @@ export const SMSLogin = React.memo(function SMSLogin({
 
   return (
     <div className={cn("mx-auto w-full max-w-md", className)}>
-      {/* Header */}
-      <div className="mb-8">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onBack}
-          className="-ml-2 mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back
-        </Button>
-
-        <div className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-            {step === "phone" ? (
-              <Smartphone className="h-8 w-8 text-primary" />
-            ) : (
-              <MessageSquare className="h-8 w-8 text-primary" />
-            )}
-          </div>
-
-          <h1 className="mb-2 text-2xl font-bold text-foreground">
-            {step === "phone" ? "Sign in with SMS" : "Enter verification code"}
-          </h1>
-
-          <p className="text-muted-foreground">
-            {step === "phone"
-              ? "We'll send you a secure code to verify your phone number"
-              : `We sent a 6-digit code to ${formatPhoneDisplay(phoneNumber)}`}
-          </p>
-        </div>
-      </div>
+      {/* Back button */}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onBack}
+        className="-ml-2 mb-6"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Back
+      </Button>
 
       {/* Phone Number Step */}
       {step === "phone" && (
-        <Card className="border-border">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Shield className="h-5 w-5 text-primary" />
-              Phone Number
-            </CardTitle>
-            <CardDescription>
-              Enter your mobile phone number to receive a verification code
-            </CardDescription>
-          </CardHeader>
+        <div className="space-y-6">
+          {/* Icon and title */}
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+              <Smartphone className="h-7 w-7 text-primary" />
+            </div>
+            <h1 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
+              Sign in with SMS
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              We'll send you a secure code to verify your phone number
+            </p>
+          </div>
 
-          <CardContent>
-            <form onSubmit={handlePhoneSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 555 123 4567"
-                  value={phoneNumber}
-                  onChange={(e) =>
-                    setPhoneNumber(new AsYouType("US").input(e.target.value))
-                  }
-                  className="h-12 text-lg"
-                  autoComplete="tel"
-                  autoFocus
-                />
+          <form onSubmit={handlePhoneSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-sm font-medium">
+                Phone Number
+              </Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="+1 555 123 4567"
+                value={phoneNumber}
+                onChange={(e) =>
+                  setPhoneNumber(new AsYouType("US").input(e.target.value))
+                }
+                className="h-12 text-base"
+                autoComplete="tel"
+                autoFocus
+              />
+            </div>
+
+            {error && (
+              <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
+                {error}
               </div>
+            )}
 
-              {error && (
-                <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
-                  {error}
+            <Button
+              type="submit"
+              className="h-12 w-full text-base font-medium"
+              disabled={isLoading || !isPhoneValid}
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                  Sending code...
                 </div>
+              ) : (
+                "Send verification code"
               )}
-
-              <Button
-                type="submit"
-                className="h-12 w-full text-base"
-                disabled={isLoading || !isPhoneValid}
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
-                    Sending code...
-                  </div>
-                ) : (
-                  "Send verification code"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+            </Button>
+          </form>
+        </div>
       )}
 
       {/* Verification Step */}
       {step === "verification" && (
-        <Card className="border-border">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <MessageSquare className="h-5 w-5 text-primary" />
-              Verification Code
-            </CardTitle>
-            <CardDescription>
-              Enter the 6-digit code sent to your phone
-            </CardDescription>
-          </CardHeader>
+        <div className="space-y-6">
+          {/* Icon and title */}
+          <div className="text-center">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10">
+              <MessageSquare className="h-7 w-7 text-primary" />
+            </div>
+            <h1 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">
+              Enter verification code
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              We sent a 6-digit code to {formatPhoneDisplay(phoneNumber)}
+            </p>
+          </div>
 
-          <CardContent>
-            <form onSubmit={handleCodeSubmit} className="space-y-6">
-              {/* Code Input Grid */}
-              <div className="flex justify-center gap-2">
-                {Array.from({ length: 6 }, (_, index) => (
-                  <Input
-                    key={index}
-                    ref={(el) => (codeInputRefs.current[index] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={verificationCode[index] || ""}
-                    onChange={(e) => handleCodeInput(index, e.target.value)}
-                    onKeyDown={(e) => handleCodeKeyDown(index, e)}
-                    className="h-12 w-12 text-center font-mono text-lg"
-                    autoComplete="one-time-code"
-                    autoFocus={index === 0}
-                  />
-                ))}
+          <form onSubmit={handleCodeSubmit} className="space-y-6">
+            {/* Code Input Grid */}
+            <div className="flex justify-center gap-2">
+              {Array.from({ length: 6 }, (_, index) => (
+                <Input
+                  key={index}
+                  ref={(el) => (codeInputRefs.current[index] = el)}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={verificationCode[index] || ""}
+                  onChange={(e) => handleCodeInput(index, e.target.value)}
+                  onKeyDown={(e) => handleCodeKeyDown(index, e)}
+                  className="h-12 w-12 text-center font-mono text-lg"
+                  autoComplete="one-time-code"
+                  autoFocus={index === 0}
+                />
+              ))}
+            </div>
+
+            {error && (
+              <div className="rounded-lg bg-destructive/10 p-3 text-center text-sm text-destructive">
+                {error}
               </div>
+            )}
 
-              {error && (
-                <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-center text-sm text-destructive">
-                  {error}
+            <Button
+              type="submit"
+              className="h-12 w-full text-base font-medium"
+              disabled={isLoading || verificationCode.length !== 6}
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
+                  Verifying...
                 </div>
+              ) : (
+                "Verify code"
               )}
+            </Button>
 
+            {/* Resend Code */}
+            <div className="text-center">
+              <p className="mb-2 text-sm text-muted-foreground">
+                Didn't receive the code?
+              </p>
               <Button
-                type="submit"
-                className="h-12 w-full text-base"
-                disabled={isLoading || verificationCode.length !== 6}
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={handleResend}
+                disabled={resendCountdown > 0 || isLoading}
+                className="text-primary hover:text-primary/80"
               >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
-                    Verifying...
-                  </div>
-                ) : (
-                  "Verify code"
-                )}
+                {resendCountdown > 0
+                  ? `Resend in ${resendCountdown}s`
+                  : "Resend code"}
               </Button>
-
-              {/* Resend Code */}
-              <div className="text-center">
-                <p className="mb-2 text-sm text-muted-foreground">
-                  Didn't receive the code?
-                </p>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleResend}
-                  disabled={resendCountdown > 0 || isLoading}
-                  className="text-primary hover:text-primary/80"
-                >
-                  {resendCountdown > 0
-                    ? `Resend in ${resendCountdown}s`
-                    : "Resend code"}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
+            </div>
+          </form>
+        </div>
       )}
 
       {/* Security Notice */}
-      <div className="mt-6 text-center">
-        <p className="text-xs text-muted-foreground">
-          <Shield className="mr-1 inline h-3 w-3" />
-          Your phone number is encrypted and secure
-        </p>
+      <div className="mt-8 flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
+        <Shield className="h-3 w-3" />
+        <span>Your phone number is encrypted and secure</span>
       </div>
     </div>
   );
