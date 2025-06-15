@@ -59,21 +59,21 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
             </div>
           </div>
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <Link href="/login">
+            <Link href="/about">
               <Button
                 variant="ghost"
-                aria-label="Sign in to your account"
+                aria-label="Learn more about LogYourBody"
                 className="text-sm text-linear-text-secondary hover:text-linear-text hidden sm:block"
               >
-                Log in
+                Learn More
               </Button>
             </Link>
-            <Link href="/login">
+            <Link href="/">
               <Button
-                aria-label="Start your 3-day free trial"
+                aria-label="Coming soon"
                 className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
               >
-                Sign up
+                Coming Soon
               </Button>
             </Link>
           </div>
