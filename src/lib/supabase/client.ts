@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
+const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
 
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
@@ -30,14 +30,14 @@ export function validateSupabaseKeys() {
   
   const validation = {
     url: {
-      exists: !!url,
-      valid: url ? url.startsWith('https://') && url.includes('supabase') : false,
+      exists: !!url && url !== 'https://placeholder.supabase.co',
+      valid: url ? url.startsWith('https://') && url.includes('supabase') && !url.includes('placeholder') : false,
       value: url || 'missing'
     },
     anonKey: {
-      exists: !!anonKey,
-      valid: anonKey ? anonKey.length > 100 : false, // Supabase keys are typically long
-      value: anonKey ? `${anonKey.substring(0, 20)}...` : 'missing'
+      exists: !!anonKey && anonKey !== 'placeholder-key',
+      valid: anonKey ? anonKey.length > 100 && anonKey !== 'placeholder-key' : false, // Supabase keys are typically long
+      value: anonKey && anonKey !== 'placeholder-key' ? `${anonKey.substring(0, 20)}...` : 'missing'
     }
   }
   
@@ -46,6 +46,16 @@ export function validateSupabaseKeys() {
 
 // Test connection to Supabase
 export async function testSupabaseConnection() {
+  // Check if we have valid credentials first
+  const validation = validateSupabaseKeys()
+  if (!validation.url.valid || !validation.anonKey.valid) {
+    return {
+      success: false,
+      error: 'Invalid or missing Supabase credentials',
+      details: 'Please check environment variables'
+    }
+  }
+
   try {
     const { error } = await supabase.from('_').select('*').limit(1)
     
