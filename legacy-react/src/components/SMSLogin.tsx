@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { PhoneInput } from "@/components/PhoneInput";
 import { ArrowLeft, MessageSquare, Shield, Smartphone } from "lucide-react";
 import { useSMSAuth } from "@/hooks/use-sms-auth";
 import { cn } from "@/lib/utils";
-import { AsYouType, parsePhoneNumberFromString } from "libphonenumber-js";
+import { AsYouType } from "libphonenumber-js";
 
 interface SMSLoginProps {
   onBack: () => void;
@@ -33,7 +33,7 @@ export const SMSLogin = React.memo(function SMSLogin({
 
   const [resendCountdown, setResendCountdown] = useState(0);
   const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const isPhoneValid = !!parsePhoneNumberFromString(phoneNumber, "US")?.isValid();
+  const [isPhoneValid, setIsPhoneValid] = useState(false);
 
   // Auto-paste functionality for verification codes
   useEffect(() => {
@@ -151,23 +151,13 @@ export const SMSLogin = React.memo(function SMSLogin({
           </div>
 
           <form onSubmit={handlePhoneSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="phone" className="text-sm font-medium">
-                Phone Number
-              </Label>
-              <Input
-                id="phone"
-                type="tel"
-                placeholder="+1 555 123 4567"
-                value={phoneNumber}
-                onChange={(e) =>
-                  setPhoneNumber(new AsYouType("US").input(e.target.value))
-                }
-                className="h-12 text-base"
-                autoComplete="tel"
-                autoFocus
-              />
-            </div>
+            <PhoneInput
+              value={phoneNumber}
+              onChange={setPhoneNumber}
+              onValidChange={(valid) => {
+                setIsPhoneValid(valid);
+              }}
+            />
 
             {error && (
               <div className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">
