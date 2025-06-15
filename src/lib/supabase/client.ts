@@ -47,7 +47,7 @@ export function validateSupabaseKeys() {
 // Test connection to Supabase
 export async function testSupabaseConnection() {
   try {
-    const { data, error } = await supabase.from('_').select('*').limit(1)
+    const { error } = await supabase.from('_').select('*').limit(1)
     
     if (error) {
       return {
