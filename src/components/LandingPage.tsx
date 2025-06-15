@@ -150,21 +150,21 @@ export function LandingPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/login">
+              <Link href="/about">
                 <Button
                   variant="ghost"
-                  aria-label="Sign in to your account"
+                  aria-label="Learn more"
                   className="text-sm text-linear-text-secondary hover:text-linear-text hidden sm:block"
                 >
-                  Log in
+                  About
                 </Button>
               </Link>
-              <Link href="/login">
+              <Link href="/blog">
                 <Button
-                  aria-label="Start your 3-day free trial"
+                  aria-label="Read our blog"
                   className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
                 >
-                  Sign up
+                  Blog
                 </Button>
               </Link>
             </div>
@@ -232,11 +232,11 @@ export function LandingPage() {
                 {/* Bottom horizontal bar of F - CTAs and social proof */}
                 <div className="space-y-6">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/login">
+                    <Link href="/about">
                       <Button
                         className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
                       >
-                        Start free trial
+                        Learn More
                       </Button>
                     </Link>
                     <button
@@ -681,11 +681,11 @@ export function LandingPage() {
                       Download the app or sign up on the web. Your account works everywhere from day one.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Link href="/login">
+                      <Link href="#">
                         <Button
                           className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary transition-colors"
                         >
-                          Start Free Trial
+                          Coming Soon
                         </Button>
                       </Link>
                       <Button
@@ -814,12 +814,12 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/login">
+                <Link href="#">
                   <Button
                     className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
                     aria-describedby="trial-terms"
                   >
-                    Start Free Trial
+                    Coming Soon
                   </Button>
                 </Link>
                 <p
@@ -857,11 +857,11 @@ export function LandingPage() {
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-                <Link href="/login">
+                <Link href="#">
                   <Button
                     className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
                   >
-                    Start free trial
+                    Coming Soon
                   </Button>
                 </Link>
                 <Link href="/about">
