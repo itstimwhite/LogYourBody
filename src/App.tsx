@@ -65,6 +65,7 @@ const HealthKitTest = React.lazy(() => import("./pages/HealthKitTest"));
 const Epic = React.lazy(() => import("./pages/Epic"));
 const Blog = React.lazy(() => import("./pages/Blog"));
 const Mobile = React.lazy(() => import("./pages/Mobile"));
+const NoBullshitMetrics = React.lazy(() => import("./pages/NoBullshitMetrics"));
 const AdminDashboard = React.lazy(() => import("./pages/AdminDashboard"));
 const NotFound = React.lazy(() => import("./pages/NotFound"));
 
@@ -112,6 +113,7 @@ const publicRoutes = [
   { path: "/blog", element: <Blog /> },
   { path: "/blog/:slug", element: <Blog /> },
   { path: "/mobile", element: <Mobile /> },
+  { path: "/no-bullshit-metrics", element: <NoBullshitMetrics /> },
   { path: "/epic", element: <Epic /> },
   { path: "/test-auth", element: <TestAuth /> },
 ];

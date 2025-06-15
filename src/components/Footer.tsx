@@ -22,6 +22,7 @@ export function Footer() {
         { label: "Features", action: () => {}, disabled: true },
         { label: "Pricing", action: () => handleLinkClick("/login") },
         { label: "Changelog", action: () => handleLinkClick("/changelog") },
+        { label: "No Bullshit Metrics", action: () => handleLinkClick("/no-bullshit-metrics") },
         { label: "Download", action: () => {}, disabled: true },
         { label: "API", action: () => {}, disabled: true },
       ]
