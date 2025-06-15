@@ -19,6 +19,8 @@ import {
 import { createClient } from '@/lib/supabase/client'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { LogEntryModal } from '@/components/LogEntryModal'
+import { BodyMetric } from '@/lib/types/database'
 import Link from 'next/link'
 
 interface UserProfile {
@@ -30,16 +32,6 @@ interface UserProfile {
   gender?: 'male' | 'female'
 }
 
-interface BodyMetric {
-  id: string
-  date: string
-  weight: number
-  body_fat_percentage?: number
-  muscle_mass?: number
-  bone_mass?: number
-  water_percentage?: number
-}
-
 export default function DashboardPage() {
   const router = useRouter()
   const supabase = createClient()
@@ -48,6 +40,7 @@ export default function DashboardPage() {
   const [metrics, setMetrics] = useState<BodyMetric[]>([])
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('overview')
+  const [showLogModal, setShowLogModal] = useState(false)
 
   useEffect(() => {
     const loadDashboardData = async () => {
@@ -75,21 +68,31 @@ export default function DashboardPage() {
         const mockMetrics: BodyMetric[] = [
           {
             id: '1',
+            user_id: authUser.id,
             date: new Date().toISOString().split('T')[0],
             weight: 180,
             body_fat_percentage: 15.2,
+            method: 'scale' as const,
             muscle_mass: 145,
             bone_mass: 7.8,
             water_percentage: 62.5,
+            photo_url: null,
+            step_count: null,
+            created_at: new Date().toISOString(),
           },
           {
             id: '2',
+            user_id: authUser.id,
             date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
             weight: 181,
             body_fat_percentage: 15.8,
+            method: 'scale' as const,
             muscle_mass: 144,
             bone_mass: 7.7,
             water_percentage: 62.1,
+            photo_url: null,
+            step_count: null,
+            created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
           },
         ]
 
@@ -208,6 +211,7 @@ export default function DashboardPage() {
               </Button>
             </Link>
             <Button
+              onClick={() => setShowLogModal(true)}
               className="bg-linear-text text-linear-bg px-6 py-2 rounded-xl hover:bg-linear-text-secondary transition-all duration-200"
             >
               <Plus className="h-4 w-4 mr-2" />
@@ -367,7 +371,10 @@ export default function DashboardPage() {
                     <p className="text-linear-text-secondary mb-4">
                       No entries yet. Start tracking your progress!
                     </p>
-                    <Button className="bg-linear-text text-linear-bg">
+                    <Button 
+                      onClick={() => setShowLogModal(true)}
+                      className="bg-linear-text text-linear-bg"
+                    >
                       <Plus className="h-4 w-4 mr-2" />
                       Log First Entry
                     </Button>
@@ -441,6 +448,7 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
           <Button
+            onClick={() => setShowLogModal(true)}
             className="bg-linear-text text-linear-bg px-6 py-4 rounded-xl hover:bg-linear-text-secondary transition-all duration-200 h-auto"
           >
             <Plus className="h-5 w-5 mr-3" />
@@ -466,6 +474,18 @@ export default function DashboardPage() {
       </main>
 
       <Footer />
+
+      {/* Log Entry Modal */}
+      {user && (
+        <LogEntryModal
+          open={showLogModal}
+          onOpenChange={setShowLogModal}
+          userId={user.id}
+          onSuccess={(newMetric) => {
+            setMetrics(prev => [newMetric, ...prev])
+          }}
+        />
+      )}
     </div>
   )
 }
