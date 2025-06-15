@@ -1,6 +1,51 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@config '../tailwind.config.ts';
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+/* Typography Utilities */
+@utility prose {
+  & h1 {
+    @apply text-[62px] font-extrabold leading-[72px];
+  }
+
+  & h2 {
+    @apply text-4xl font-bold leading-10;
+  }
+
+  & h3 {
+    @apply text-2xl font-semibold leading-8;
+  }
+
+  & p {
+    @apply text-base leading-6 text-text-secondary;
+  }
+}
+
+/* Section Themes */
+@utility theme-dark {
+  @apply bg-nordic-gray text-mercury-white;
+}
+@utility theme-light {
+  @apply bg-mercury-white text-nordic-gray;
+}
 
 @layer base {
   :root {
@@ -235,35 +280,5 @@
     background: hsl(var(--primary));
     border-radius: 6px;
     height: 12px;
-  }
-}
-
-/* Typography Utilities */
-@layer components {
-  .prose h1 {
-    @apply text-[62px] font-extrabold leading-[72px];
-  }
-
-  .prose h2 {
-    @apply text-4xl font-bold leading-10;
-  }
-
-  .prose h3 {
-    @apply text-2xl font-semibold leading-8;
-  }
-
-  .prose p {
-    @apply text-base leading-6 text-text-secondary;
-  }
-}
-
-/* Section Themes */
-@layer components {
-  .theme-dark {
-    @apply bg-nordic-gray text-mercury-white;
-  }
-
-  .theme-light {
-    @apply bg-mercury-white text-nordic-gray;
   }
 }
