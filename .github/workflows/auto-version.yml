@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - preview
     paths-ignore:
       - 'package.json'
       - 'CHANGELOG.md'
@@ -37,5 +38,5 @@ jobs:
 
       - name: Push changes
         run: |
-          git push origin main
+          git push origin ${{ github.ref_name }}
           git push origin --tags
