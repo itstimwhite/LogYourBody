@@ -150,9 +150,7 @@ jobs:
             --base preview \
             --head dev \
             --title "🚀 Auto-merge: dev → preview" \
-            --body-file pr-body.md \
-            --label "automated" \
-            --label "dev-to-preview")
+            --body-file pr-body.md)
           
           PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
           echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
@@ -242,9 +240,7 @@ jobs:
             --base main \
             --head preview \
             --title "🚀 Release: preview → main" \
-            --body-file pr-body.md \
-            --label "release" \
-            --label "preview-to-main")
+            --body-file pr-body.md)
           
           PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
           echo "✅ Created PR #$PR_NUMBER - Manual approval required"
