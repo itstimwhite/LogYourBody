@@ -125,12 +125,8 @@ jobs:
         if: steps.check-pr.outputs.count == '0'
         id: create-pr
         run: |
-          PR_URL=$(gh pr create \
-            --base preview \
-            --head dev \
-            --title "🚀 Auto-merge: dev → preview" \
-            --body "## Automated Pull Request
-            
+          PR_BODY="## Automated Pull Request
+
 This PR was automatically created after successful tests on the \`dev\` branch.
 
 ### ✅ All Checks Passed
@@ -146,7 +142,13 @@ View commit history for detailed changes.
 This PR will be automatically merged if all checks continue to pass.
 
 ---
-*This is an automated pull request created by GitHub Actions.*" \
+*This is an automated pull request created by GitHub Actions.*"
+          
+          PR_URL=$(gh pr create \
+            --base preview \
+            --head dev \
+            --title "🚀 Auto-merge: dev → preview" \
+            --body "$PR_BODY" \
             --label "automated" \
             --label "dev-to-preview")
           
@@ -207,12 +209,8 @@ This PR will be automatically merged if all checks continue to pass.
       - name: Create Pull Request
         if: steps.check-pr.outputs.count == '0'
         run: |
-          PR_URL=$(gh pr create \
-            --base main \
-            --head preview \
-            --title "🚀 Release: preview → main" \
-            --body "## Release Pull Request
-            
+          PR_BODY="## Release Pull Request
+
 This PR was automatically created after successful tests on the \`preview\` branch.
 
 ### ✅ All Checks Passed
@@ -234,7 +232,13 @@ This PR requires manual review and approval before merging to production.
 - [ ] Security implications reviewed
 
 ---
-*This is an automated pull request created by GitHub Actions.*" \
+*This is an automated pull request created by GitHub Actions.*"
+          
+          PR_URL=$(gh pr create \
+            --base main \
+            --head preview \
+            --title "🚀 Release: preview → main" \
+            --body "$PR_BODY" \
             --label "release" \
             --label "preview-to-main")
           
