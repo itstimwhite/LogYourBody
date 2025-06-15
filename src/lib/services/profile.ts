@@ -1,5 +1,42 @@
-import { createClient } from '../supabase/client'
-import { UserProfile, UserSettings, BodyMetric } from '../types/database'
+import { createClient } from '../../utils/supabase/client'
+
+// Type definitions
+export interface UserProfile {
+  id: string
+  email: string
+  name?: string | null
+  gender: 'male' | 'female'
+  birthday?: string | null
+  height: number
+  profile_image_url?: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface UserSettings {
+  user_id: string
+  units: 'imperial' | 'metric'
+  health_kit_sync_enabled: boolean
+  google_fit_sync_enabled: boolean
+  notifications_enabled: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface BodyMetric {
+  id: string
+  user_id: string
+  date: string
+  weight: number
+  body_fat_percentage: number
+  method: 'dexa' | 'scale' | 'calipers' | 'visual'
+  photo_url?: string | null
+  muscle_mass?: number | null
+  bone_mass?: number | null
+  water_percentage?: number | null
+  step_count?: number | null
+  created_at: string
+}
 
 export class ProfileService {
   private supabase = createClient()

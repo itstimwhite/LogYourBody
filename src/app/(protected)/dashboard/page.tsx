@@ -16,11 +16,11 @@ import {
   Ruler,
   Target,
 } from 'lucide-react'
-import { createClient } from '../../../lib/supabase/client'
+import { createClient } from '../../../utils/supabase/client'
 import { Header } from '../../../components/Header'
 import { Footer } from '../../../components/Footer'
 import { LogEntryModal } from '../../../components/LogEntryModal'
-import { BodyMetric } from '../../../lib/types/database'
+import type { BodyMetric } from '../../../lib/services/profile'
 import Link from 'next/link'
 
 interface UserProfile {

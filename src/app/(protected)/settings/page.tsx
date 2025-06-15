@@ -14,7 +14,7 @@ import {
 } from '../../../components/ui/dialog'
 import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 import { ArrowLeft, Edit, LogOut, User, Calendar, Ruler, Mail, Lock, Settings as SettingsIcon } from 'lucide-react'
-import { createClient } from '../../../lib/supabase/client'
+import { createClient } from '../../../utils/supabase/client'
 import { Header } from '../../../components/Header'
 import { Footer } from '../../../components/Footer'
 
