@@ -9,6 +9,11 @@ on:
 env:
   NODE_VERSION: '20'
 
+# Prevent multiple CI runs on the same branch
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+
 jobs:
   test-and-build:
     name: Test & Build
@@ -98,6 +103,10 @@ jobs:
       github.event_name == 'push' &&
       github.actor != 'github-actions[bot]'
     steps:
+      # Give Vercel a moment to register the deployment
+      - name: Initial delay for Vercel
+        run: sleep 15
+        
       - name: Wait for Vercel Preview
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
         id: waitForVercel
@@ -105,15 +114,30 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 600
           check_interval: 10
+        continue-on-error: true
           
       - name: Check deployment status
         run: |
-          echo "Vercel deployment status: ${{ steps.waitForVercel.outputs.url }}"
-          if [ -z "${{ steps.waitForVercel.outputs.url }}" ]; then
-            echo "❌ Vercel deployment failed or timed out"
+          echo "Vercel deployment check completed"
+          echo "URL output: '${{ steps.waitForVercel.outputs.url }}'"
+          echo "Outcome: ${{ steps.waitForVercel.outcome }}"
+          
+          if [ "${{ steps.waitForVercel.outcome }}" != "success" ]; then
+            echo "❌ Vercel deployment check failed"
+            echo "This could be due to:"
+            echo "  - Deployment failure"
+            echo "  - Timeout (>10 minutes)"
+            echo "  - Configuration issues"
             exit 1
           fi
+          
+          if [ -z "${{ steps.waitForVercel.outputs.url }}" ]; then
+            echo "❌ No deployment URL received from Vercel"
+            exit 1
+          fi
+          
           echo "✅ Vercel deployment successful"
+          echo "🔗 Preview URL: ${{ steps.waitForVercel.outputs.url }}"
 
   # Create PR from dev to preview after successful build
   create-pr-to-preview:
@@ -213,6 +237,10 @@ jobs:
       github.event_name == 'push' &&
       github.actor != 'github-actions[bot]'
     steps:
+      # Give Vercel a moment to register the deployment
+      - name: Initial delay for Vercel
+        run: sleep 15
+        
       - name: Wait for Vercel Preview
         uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
         id: waitForVercel
@@ -220,15 +248,30 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           max_timeout: 600
           check_interval: 10
+        continue-on-error: true
           
       - name: Check deployment status
         run: |
-          echo "Vercel deployment status: ${{ steps.waitForVercel.outputs.url }}"
-          if [ -z "${{ steps.waitForVercel.outputs.url }}" ]; then
-            echo "❌ Vercel deployment failed or timed out"
+          echo "Vercel deployment check completed"
+          echo "URL output: '${{ steps.waitForVercel.outputs.url }}'"
+          echo "Outcome: ${{ steps.waitForVercel.outcome }}"
+          
+          if [ "${{ steps.waitForVercel.outcome }}" != "success" ]; then
+            echo "❌ Vercel deployment check failed"
+            echo "This could be due to:"
+            echo "  - Deployment failure"
+            echo "  - Timeout (>10 minutes)"
+            echo "  - Configuration issues"
             exit 1
           fi
+          
+          if [ -z "${{ steps.waitForVercel.outputs.url }}" ]; then
+            echo "❌ No deployment URL received from Vercel"
+            exit 1
+          fi
+          
           echo "✅ Vercel deployment successful"
+          echo "🔗 Preview URL: ${{ steps.waitForVercel.outputs.url }}"
 
   # Create PR from preview to main (requires manual approval)
   create-pr-to-main:
