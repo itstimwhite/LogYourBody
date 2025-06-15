@@ -9,12 +9,17 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
 export function getSupabaseEnvironment() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   
-  if (url.includes('localhost') || url.includes('127.0.0.1')) {
-    return 'local'
-  } else if (url.includes('staging') || url.includes('preview')) {
-    return 'staging'
-  } else if (url.includes('prod') || url.includes('production')) {
+  // Map known project IDs to environments
+  if (url.includes('blhpuaqbbczzhsshumof')) {
+    return 'development'
+  } else if (url.includes('qyftepmygbumnultlqzm')) {
+    return 'preview'
+  } else if (url.includes('przjeunffnkjzxpykvjn')) {
     return 'production'
+  } else if (url.includes('0fab5338-b5f2-48af-a596-591bb5b0a51c')) {
+    return 'vercel-auto' // Vercel's auto-provisioned database
+  } else if (url.includes('localhost') || url.includes('127.0.0.1')) {
+    return 'local'
   } else {
     return 'unknown'
   }
