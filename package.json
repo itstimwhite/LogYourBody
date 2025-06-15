@@ -6,7 +6,9 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "echo 'No tests specified yet' && exit 0",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
