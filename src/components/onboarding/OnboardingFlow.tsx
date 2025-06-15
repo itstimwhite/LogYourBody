@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { OnboardingName } from "./OnboardingName";
 import { OnboardingGender } from "./OnboardingGender";
 import { OnboardingBirthday } from "./OnboardingBirthday";
@@ -9,6 +9,7 @@ import { OnboardingHealthKit } from "./OnboardingHealthKit";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { isNativeiOS } from "@/lib/platform";
+import { StepperNavigation, StepperActions } from "@/components/ui/responsive-flow-wrapper";
 
 interface OnboardingFlowProps {
   onComplete: () => void;
