@@ -89,42 +89,48 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Create Pull Request
+      - name: Create Pull Request via GitHub CLI
         if: steps.check-pr.outputs.count == '0'
-        id: cpr
-        uses: peter-evans/create-pull-request@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: dev
-          base: preview
-          title: '🚀 Auto-merge: dev → preview'
-          body: |
-            ## Automated Pull Request
-            
-            This PR was automatically created after successful tests on the `dev` branch.
-            
-            ### ✅ All Checks Passed
-            - Tests: ✅ Passed
-            - Build: ✅ Successful
-            - Type checking: ✅ Passed
-            - Linting: ✅ Passed
-            
-            ### 📋 Changes
-            View commit history for detailed changes.
-            
-            ### 🤖 Auto-merge
-            This PR will be automatically merged if all checks continue to pass.
-            
-            ---
-            *This is an automated pull request created by GitHub Actions.*
-          labels: |
-            automated
-            dev-to-preview
-            
-      - name: Enable Auto-merge on New PR
-        if: steps.check-pr.outputs.count == '0' && steps.cpr.outputs.pull-request-operation == 'created'
+        id: create-pr
         run: |
-          gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-number }}"
+          # Create PR using GitHub CLI
+          PR_URL=$(gh pr create \
+            --base preview \
+            --head dev \
+            --title "🚀 Auto-merge: dev → preview" \
+            --body "## Automated Pull Request
+            
+This PR was automatically created after successful tests on the \`dev\` branch.
+
+### ✅ All Checks Passed
+- Tests: ✅ Passed
+- Build: ✅ Successful
+- Type checking: ✅ Passed
+- Linting: ✅ Passed
+
+### 📋 Changes
+View commit history for detailed changes.
+
+### 🤖 Auto-merge
+This PR will be automatically merged if all checks continue to pass.
+
+---
+*This is an automated pull request created by GitHub Actions.*" \
+            --label "automated" \
+            --label "dev-to-preview")
+          
+          # Extract PR number from URL
+          PR_NUMBER=$(echo "$PR_URL" | grep -oE '[0-9]+$')
+          echo "pr-number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          echo "✅ Created PR #$PR_NUMBER"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Enable Auto-merge on New PR
+        if: steps.check-pr.outputs.count == '0' && steps.create-pr.outputs.pr-number != ''
+        run: |
+          gh pr merge --auto --merge "${{ steps.create-pr.outputs.pr-number }}"
+          echo "✅ Enabled auto-merge for PR #${{ steps.create-pr.outputs.pr-number }}"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
