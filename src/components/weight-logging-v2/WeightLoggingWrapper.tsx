@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { WeightLoggingFlowV2 } from "./WeightLoggingFlowV2";
 import {
   type WeightData,
@@ -6,30 +6,35 @@ import {
   type MethodData,
 } from "@/schemas/weight-logging";
 import { ResponsiveFlowWrapper } from "@/components/ui/responsive-flow-wrapper";
+import { useBodyMetrics } from "@/hooks/use-body-metrics";
+import { toast } from "@/hooks/use-toast";
+import { Button } from "@/components/ui/button";
+import { Scale } from "lucide-react";
+
+interface InitialData {
+  weight?: WeightData;
+  bodyFat?: BodyFatData;
+  method?: MethodData;
+}
 
 interface WeightLoggingWrapperProps {
-  show: boolean;
-  onClose: () => void;
-  onSave: (data: {
-    weight: number;
-    bodyFatPercentage: number;
-    method: any;
-    date: Date;
+  onSave?: (data: {
+    weight: WeightData;
+    bodyFat: BodyFatData;
+    method: MethodData;
     photoUrl?: string;
-  }) => void;
-  units: "metric" | "imperial";
-  initialWeight?: number;
-  initialBodyFat?: number;
+  }) => void | Promise<void>;
+  trigger?: React.ReactNode;
+  initialData?: InitialData;
 }
 
 export function WeightLoggingWrapper({
-  show,
-  onClose,
   onSave,
-  units,
-  initialWeight,
-  initialBodyFat,
+  trigger,
+  initialData,
 }: WeightLoggingWrapperProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const { saveEntry, isLoading } = useBodyMetrics();
 
   const handleComplete = async (data: {
     weight: WeightData;
@@ -37,47 +42,74 @@ export function WeightLoggingWrapper({
     method: MethodData;
     photoUrl?: string;
   }) => {
-    onSave({
-      weight: data.weight.value,
-      bodyFatPercentage: data.bodyFat.value,
-      method: {
-        value: data.method.value,
-        label: data.method.label,
-      },
-      date: new Date(),
-      photoUrl: data.photoUrl,
-    });
-    onClose();
+    try {
+      // Format data for saveEntry (database format)
+      const dbData = {
+        weight: data.weight.value,
+        weight_unit: data.weight.unit,
+        body_fat_percentage: data.bodyFat.value,
+        measurement_method: data.method.value,
+        photo_url: data.photoUrl,
+      };
+
+      // Use custom onSave if provided (pass raw data)
+      if (onSave) {
+        await onSave(data);
+      }
+      
+      // Always call saveEntry for database persistence
+      await saveEntry(dbData);
+
+      toast({
+        title: "Entry saved",
+        description: "Your weight has been logged successfully",
+      });
+
+      setIsOpen(false);
+    } catch (error) {
+      console.error("Error saving weight data:", error);
+      toast({
+        title: "Error saving entry",
+        description: error instanceof Error ? error.message : "Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
-  // Prepare initial data for the flow
-  const initialData = {
-    weight: initialWeight
-      ? {
-          value: initialWeight,
-          unit: units === "imperial" ? ("lbs" as const) : ("kg" as const),
-        }
-      : undefined,
-    bodyFat: initialBodyFat
-      ? {
-          value: initialBodyFat,
-        }
-      : undefined,
-    method: undefined,
+  const handleCancel = () => {
+    setIsOpen(false);
   };
 
   return (
-    <ResponsiveFlowWrapper
-      isOpen={show}
-      onClose={onClose}
-      showCloseButton={false} // WeightLoggingFlowV2 has its own close button
-      className="overflow-hidden"
-    >
-      <WeightLoggingFlowV2
-        onComplete={handleComplete}
-        onCancel={onClose}
-        initialData={initialData}
-      />
-    </ResponsiveFlowWrapper>
+    <>
+      {/* Trigger Button */}
+      {trigger ? (
+        <div onClick={() => setIsOpen(true)}>{trigger}</div>
+      ) : (
+        <Button
+          onClick={() => setIsOpen(true)}
+          className="gap-2"
+          variant="default"
+        >
+          <Scale className="h-4 w-4" />
+          Log Weight
+        </Button>
+      )}
+
+      {/* Flow Modal/Sheet */}
+      <ResponsiveFlowWrapper
+        isOpen={isOpen}
+        onClose={handleCancel}
+        showCloseButton={true}
+        className="overflow-hidden"
+      >
+        <WeightLoggingFlowV2
+          onComplete={handleComplete}
+          onCancel={handleCancel}
+          initialData={initialData}
+          isLoading={isLoading}
+        />
+      </ResponsiveFlowWrapper>
+    </>
   );
 }

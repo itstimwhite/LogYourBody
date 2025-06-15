@@ -263,28 +263,36 @@ export function StepperActions({
           ) : (
             isTestEnv ? (
               <button {...buttonProps}>
+                {currentStep === totalSteps - 1 ? (
+                  <>
+                    <Check className="h-5 w-5" />
+                    {completeLabel}
+                  </>
+                ) : (
+                  <>
+                    {nextLabel}
+                    <ArrowRight className="h-5 w-5" />
+                  </>
+                )}
+              </button>
             ) : (
               <motion.button
                 {...buttonProps}
                 whileTap={canGoNext ? { scale: 0.98 } : {}}
               >
-            )}
-              {currentStep === totalSteps - 1 ? (
-                <>
-                  <Check className="h-5 w-5" />
-                  {completeLabel}
-                </>
-              ) : (
-                <>
-                  {nextLabel}
-                  <ArrowRight className="h-5 w-5" />
-                </>
-              )}
-{isTestEnv ? (
-              </button>
-            ) : (
+                {currentStep === totalSteps - 1 ? (
+                  <>
+                    <Check className="h-5 w-5" />
+                    {completeLabel}
+                  </>
+                ) : (
+                  <>
+                    {nextLabel}
+                    <ArrowRight className="h-5 w-5" />
+                  </>
+                )}
               </motion.button>
-            )}
+            )
           );
         })()}
       </div>
