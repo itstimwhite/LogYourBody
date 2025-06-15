@@ -127,7 +127,7 @@ jobs:
         run: |
           PR_BODY="## Automated Pull Request
 
-This PR was automatically created after successful tests on the \`dev\` branch.
+This PR was automatically created after successful tests on the dev branch.
 
 ### ✅ All Checks Passed
 - Tests: ✅ Passed
@@ -211,7 +211,7 @@ This PR will be automatically merged if all checks continue to pass.
         run: |
           PR_BODY="## Release Pull Request
 
-This PR was automatically created after successful tests on the \`preview\` branch.
+This PR was automatically created after successful tests on the preview branch.
 
 ### ✅ All Checks Passed
 - Tests: ✅ Passed
