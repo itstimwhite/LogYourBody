@@ -162,7 +162,7 @@ export function StepTrackerSection() {
                 <div className="grid grid-cols-7 gap-2">
                   {weekData.map((day, index) => (
                     <motion.div
-                      key={day.day}
+                      key={index}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       viewport={{ once: true }}

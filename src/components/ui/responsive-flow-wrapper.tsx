@@ -260,38 +260,22 @@ export function StepperActions({
               )}
             </button>
           ) : (
-            isTestEnv ? (
-              <button {...buttonProps}>
-                {currentStep === totalSteps - 1 ? (
-                  <>
-                    <Check className="h-5 w-5" />
-                    {completeLabel}
-                  </>
-                ) : (
-                  <>
-                    {nextLabel}
-                    <ArrowRight className="h-5 w-5" />
-                  </>
-                )}
-              </button>
-            ) : (
-              <motion.button
-                {...buttonProps}
-                whileTap={canGoNext ? { scale: 0.98 } : {}}
-              >
-                {currentStep === totalSteps - 1 ? (
-                  <>
-                    <Check className="h-5 w-5" />
-                    {completeLabel}
-                  </>
-                ) : (
-                  <>
-                    {nextLabel}
-                    <ArrowRight className="h-5 w-5" />
-                  </>
-                )}
-              </motion.button>
-            )
+            <motion.button
+              {...buttonProps}
+              whileTap={canGoNext ? { scale: 0.98 } : {}}
+            >
+              {currentStep === totalSteps - 1 ? (
+                <>
+                  <Check className="h-5 w-5" />
+                  {completeLabel}
+                </>
+              ) : (
+                <>
+                  {nextLabel}
+                  <ArrowRight className="h-5 w-5" />
+                </>
+              )}
+            </motion.button>
           );
         })()}
       </div>
@@ -301,3 +285,5 @@ export function StepperActions({
 
 // Re-export components from ArrowLeft, ArrowRight, Check
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+
+export { ArrowLeft, ArrowRight, Check };
