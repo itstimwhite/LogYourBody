@@ -103,7 +103,22 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Create Pull Request
+      - name: Check for existing PR
+        id: check-pr
+        run: |
+          PR_COUNT=$(gh pr list --base preview --head dev --state open --json number --jq '. | length')
+          echo "count=$PR_COUNT" >> $GITHUB_OUTPUT
+          
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "Existing PR found from dev to preview"
+            PR_NUMBER=$(gh pr list --base preview --head dev --state open --json number --jq '.[0].number')
+            echo "number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create or Update Pull Request
+        if: steps.check-pr.outputs.count == '0'
         id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
@@ -134,10 +149,18 @@ jobs:
             automated
             dev-to-preview
             
-      - name: Enable Auto-merge
-        if: steps.cpr.outputs.pull-request-operation == 'created'
+      - name: Enable Auto-merge on New PR
+        if: steps.check-pr.outputs.count == '0' && steps.cpr.outputs.pull-request-operation == 'created'
         run: |
           gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Update Existing PR
+        if: steps.check-pr.outputs.count != '0'
+        run: |
+          echo "PR #${{ steps.check-pr.outputs.number }} already exists from dev to preview"
+          gh pr comment ${{ steps.check-pr.outputs.number }} --body "🔄 Updated with latest changes from dev branch"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -158,7 +181,22 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           
+      - name: Check for existing PR
+        id: check-pr
+        run: |
+          PR_COUNT=$(gh pr list --base main --head preview --state open --json number --jq '. | length')
+          echo "count=$PR_COUNT" >> $GITHUB_OUTPUT
+          
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "Existing PR found from preview to main"
+            PR_NUMBER=$(gh pr list --base main --head preview --state open --json number --jq '.[0].number')
+            echo "number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
       - name: Create Pull Request
+        if: steps.check-pr.outputs.count == '0'
         id: cpr
         uses: peter-evans/create-pull-request@v5
         with:
@@ -189,6 +227,14 @@ jobs:
             automated
             preview-to-main
             release
+            
+      - name: Update Existing PR
+        if: steps.check-pr.outputs.count != '0'
+        run: |
+          echo "PR #${{ steps.check-pr.outputs.number }} already exists from preview to main"
+          gh pr comment ${{ steps.check-pr.outputs.number }} --body "🔄 Updated with latest changes from preview branch"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Auto-merge Dependabot PRs if tests pass
   auto-merge-dependabot:
