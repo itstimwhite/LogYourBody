@@ -102,6 +102,14 @@ export function RouteGuard({
     };
   }, [location.pathname, navigate, redirectTimeout, fallbackRoute, isProtectedOrProblematicRoute]);
 
+  // Clear the timeout once the page has finished loading
+  useEffect(() => {
+    if (!isLoading && timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  }, [isLoading]);
+
   // Detect potential redirect loops - but only on protected routes
   useEffect(() => {
     // Skip redirect loop detection for public routes
