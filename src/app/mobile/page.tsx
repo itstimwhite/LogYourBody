@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -153,9 +154,11 @@ export default function MobilePage() {
                 
                 {showQR && (
                   <div className="mt-6 inline-block p-6 bg-white rounded-2xl shadow-xl">
-                    <img
+                    <Image
                       src={generateQRCode()}
                       alt="Download QR Code"
+                      width={128}
+                      height={128}
                       className="w-32 h-32 mx-auto"
                     />
                     <p className="text-xs text-gray-600 mt-2">Scan with your camera</p>
