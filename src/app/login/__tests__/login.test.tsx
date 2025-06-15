@@ -10,10 +10,13 @@ const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>
 
 // Mock the router
 const mockPush = jest.fn()
+const mockReplace = jest.fn()
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
+    replace: mockReplace,
   }),
+  useSearchParams: () => new URLSearchParams(),
 }))
 
 describe('LoginPage', () => {

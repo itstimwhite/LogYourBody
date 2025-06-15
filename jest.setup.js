@@ -15,7 +15,8 @@ jest.mock('next/navigation', () => ({
     return '/'
   },
   useSearchParams() {
-    return new URLSearchParams()
+    const searchParams = new URLSearchParams()
+    return searchParams
   },
 }))
 
