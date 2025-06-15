@@ -1,4 +1,7 @@
+'use client'
+
 import React, { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -18,21 +21,17 @@ import {
   Clock,
   Check,
   ArrowRight,
-  Calendar,
   Monitor,
   Tablet,
   Zap,
   Download,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import Footer from "@/components/Footer";
-import LandingTimelineDemo from "@/components/LandingTimelineDemo";
-import { prefetchRoute } from "@/lib/prefetch";
-import { StepTrackerSection } from "./StepTrackerModule";
-import { FeaturesFlyout } from "./FeaturesFlyout";
+import { Footer } from "@/components/Footer";
+import { LandingTimelineDemo } from "@/components/LandingTimelineDemo";
+import { StepTrackerSection } from "@/components/StepTrackerModule";
+import { FeaturesFlyout } from "@/components/FeaturesFlyout";
 
 export function LandingPage() {
-  const navigate = useNavigate();
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
 
   const slugify = (text: string) =>
@@ -92,29 +91,6 @@ export function LandingPage() {
     },
   ];
 
-  const testimonials = [
-    {
-      name: "Sarah C.",
-      role: "Lost 15% body fat",
-      content:
-        "Finally saw I was gaining muscle while losing fat. The scale alone would've discouraged me.",
-      rating: 5,
-    },
-    {
-      name: "Mike R.",
-      role: "Personal Trainer",
-      content:
-        "I use this with all my clients. They actually stick to logging because it's so fast.",
-      rating: 5,
-    },
-    {
-      name: "Dr. Emily W.",
-      role: "Sports Medicine",
-      content:
-        "The FFMI tracking alone makes this worth it. My athletes can see their genetic potential.",
-      rating: 5,
-    },
-  ];
 
   const currentPlan = isAnnual ? pricing.annual : pricing.monthly;
 
@@ -174,25 +150,23 @@ export function LandingPage() {
               </div>
             </div>
             <div className="flex items-center space-x-2 sm:space-x-4">
-              <Button
-                variant="ghost"
-                onMouseEnter={() => prefetchRoute("/login")}
-                onFocus={() => prefetchRoute("/login")}
-                onClick={() => navigate("/login")}
-                aria-label="Sign in to your account"
-                className="text-sm text-linear-text-secondary hover:text-linear-text hidden sm:block"
-              >
-                Log in
-              </Button>
-              <Button
-                onMouseEnter={() => prefetchRoute("/login")}
-                onFocus={() => prefetchRoute("/login")}
-                onClick={() => navigate("/login")}
-                aria-label="Start your 3-day free trial"
-                className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
-              >
-                Sign up
-              </Button>
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  aria-label="Sign in to your account"
+                  className="text-sm text-linear-text-secondary hover:text-linear-text hidden sm:block"
+                >
+                  Log in
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button
+                  aria-label="Start your 3-day free trial"
+                  className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
+                >
+                  Sign up
+                </Button>
+              </Link>
             </div>
           </nav>
         </div>
@@ -258,14 +232,13 @@ export function LandingPage() {
                 {/* Bottom horizontal bar of F - CTAs and social proof */}
                 <div className="space-y-6">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Button
-                      className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
-                      onMouseEnter={() => prefetchRoute("/login")}
-                      onFocus={() => prefetchRoute("/login")}
-                      onClick={() => navigate("/login")}
-                    >
-                      Start free trial
-                    </Button>
+                    <Link href="/login">
+                      <Button
+                        className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
+                      >
+                        Start free trial
+                      </Button>
+                    </Link>
                     <button
                       className="flex items-center justify-center gap-2 text-base text-linear-text-secondary hover:text-linear-text transition-colors group"
                       aria-label="View live demo"
@@ -401,7 +374,7 @@ export function LandingPage() {
                 </div>
                 <h3 className="mb-3 text-lg font-semibold text-linear-text">Advanced Analytics</h3>
                 <p className="text-sm text-linear-text-secondary leading-relaxed">
-                  See what's really changing. Track body fat percentage, FFMI, and lean mass with scientific precision.
+                  See what&apos;s really changing. Track body fat percentage, FFMI, and lean mass with scientific precision.
                 </p>
               </div>
               
@@ -493,7 +466,7 @@ export function LandingPage() {
                   Game-changing feature
                 </Badge>
                 <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-linear-text">
-                  Your body's time machine
+                  Your body&apos;s time machine
                 </h2>
                 <p className="mb-8 text-lg sm:text-xl text-linear-text-secondary">
                   Slide through time. See exactly how you looked on any date. 
@@ -524,7 +497,7 @@ export function LandingPage() {
                         Visual proof
                       </h3>
                       <p className="text-linear-text-secondary">
-                        Every data point paired with your progress photo. No more guessing if you've changed.
+                        Every data point paired with your progress photo. No more guessing if you&apos;ve changed.
                       </p>
                     </div>
                   </div>
@@ -577,7 +550,7 @@ export function LandingPage() {
                   </span>
                 </h2>
                 <p className="mx-auto max-w-2xl text-lg text-linear-text-secondary">
-                  Whether you're at home, in the gym, or traveling, LogYourBody works seamlessly 
+                  Whether you&apos;re at home, in the gym, or traveling, LogYourBody works seamlessly 
                   across all your devices with real-time sync.
                 </p>
               </div>
@@ -708,14 +681,13 @@ export function LandingPage() {
                       Download the app or sign up on the web. Your account works everywhere from day one.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Button
-                        onClick={() => navigate("/login")}
-                        onMouseEnter={() => prefetchRoute("/login")}
-                        onFocus={() => prefetchRoute("/login")}
-                        className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary transition-colors"
-                      >
-                        Start Free Trial
-                      </Button>
+                      <Link href="/login">
+                        <Button
+                          className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary transition-colors"
+                        >
+                          Start Free Trial
+                        </Button>
+                      </Link>
                       <Button
                         variant="outline"
                         className="border-linear-border text-linear-text-secondary hover:bg-linear-border/30 hover:text-linear-text"
@@ -842,15 +814,14 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Button
-                  className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
-                  onMouseEnter={() => prefetchRoute("/login")}
-                  onFocus={() => prefetchRoute("/login")}
-                  onClick={() => navigate("/login")}
-                  aria-describedby="trial-terms"
-                >
-                  Start Free Trial
-                </Button>
+                <Link href="/login">
+                  <Button
+                    className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
+                    aria-describedby="trial-terms"
+                  >
+                    Start Free Trial
+                  </Button>
+                </Link>
                 <p
                   id="trial-terms"
                   className="mt-3 text-center text-xs text-linear-text-tertiary"
@@ -881,28 +852,26 @@ export function LandingPage() {
                 </span>
               </h2>
               <p className="mx-auto mb-12 max-w-2xl text-lg sm:text-xl text-linear-text-secondary leading-relaxed">
-                Join 10,000+ people who've discovered the difference accurate body composition tracking makes.
+                Join 10,000+ people who&apos;ve discovered the difference accurate body composition tracking makes.
                 Stop guessing, start measuring.
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-                <Button
-                  className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
-                  onMouseEnter={() => prefetchRoute("/login")}
-                  onFocus={() => prefetchRoute("/login")}
-                  onClick={() => navigate("/login")}
-                >
-                  Start free trial
-                </Button>
-                <Button
-                  variant="ghost"
-                  className="border border-linear-border/50 text-linear-text-secondary hover:bg-linear-border/30 hover:text-linear-text px-8 py-4 text-base rounded-xl transition-all backdrop-blur-sm"
-                  onClick={() => navigate("/about")}
-                  onMouseEnter={() => prefetchRoute("/about")}
-                  onFocus={() => prefetchRoute("/about")}
-                >
-                  Learn more
-                </Button>
+                <Link href="/login">
+                  <Button
+                    className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
+                  >
+                    Start free trial
+                  </Button>
+                </Link>
+                <Link href="/about">
+                  <Button
+                    variant="ghost"
+                    className="border border-linear-border/50 text-linear-text-secondary hover:bg-linear-border/30 hover:text-linear-text px-8 py-4 text-base rounded-xl transition-all backdrop-blur-sm"
+                  >
+                    Learn more
+                  </Button>
+                </Link>
               </div>
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-linear-text-tertiary">

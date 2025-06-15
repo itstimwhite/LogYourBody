@@ -1,0 +1,16 @@
+feat: Complete codebase reorganization - Next.js to root, React to legacy
+
+Major structural changes:
+- Move Next.js app from /next-app/ to repository root
+- Move original React app to /legacy-react/ folder  
+- Update package.json name to 'logyourbody'
+- Update all config files for new structure
+- Clean up temporary files from React troubleshooting
+- Preserve all original functionality and assets
+
+The Next.js app is now the primary application while the React app
+is safely preserved for reference and potential rollback.
+
+🤖 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>

@@ -27,7 +27,6 @@ export function ResponsiveFlowWrapper({
 }: ResponsiveFlowWrapperProps) {
   const { isMobile, isTablet } = useResponsive();
   const isFullscreen = isMobile || (fullscreenOnTablet && isTablet);
-  const isTestEnv = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
 
   // Prevent body scroll when modal is open
   useEffect(() => {

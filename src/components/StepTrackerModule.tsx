@@ -67,7 +67,7 @@ export function StepTrackerSection() {
             transition={{ delay: 0.2 }}
             className="mx-auto max-w-2xl text-lg text-linear-text-secondary sm:text-xl"
           >
-            Steps aren't just numbers. They're energy, recovery, and progress. 
+            Steps aren&apos;t just numbers. They&apos;re energy, recovery, and progress. 
             See how daily movement impacts your body composition.
           </motion.p>
         </div>
@@ -87,7 +87,7 @@ export function StepTrackerSection() {
             <div className="relative">
               {/* Today's progress */}
               <div className="mb-8 text-center">
-                <div className="mb-2 text-sm font-medium text-linear-text-tertiary">Today's Progress</div>
+                <div className="mb-2 text-sm font-medium text-linear-text-tertiary">Today&apos;s Progress</div>
                 <div className="mb-4 flex items-baseline justify-center gap-2">
                   <AnimatePresence mode="wait">
                     <motion.span

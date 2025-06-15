@@ -24,7 +24,6 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   const [startScrollTop, setStartScrollTop] = useState(0);
 
   const containerHeight = itemHeight * visibleItems;
-  const totalHeight = items.length * itemHeight;
   const centerOffset = Math.floor(visibleItems / 2) * itemHeight;
 
   // Scroll to selected item

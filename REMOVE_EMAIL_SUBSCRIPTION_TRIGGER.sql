@@ -1,8 +1,4 @@
--- Remove the email subscription trigger that's causing auth failures
--- This trigger is trying to update a table that doesn't exist
-
--- 1. Drop the problematic trigger
-DROP TRIGGER IF EXISTS sync_user_email_subscriptions_trigger ON auth.users;
+-- FILE_REMOVED_DURING_CLEANUP
 
 -- 2. Drop the function
 DROP FUNCTION IF EXISTS sync_user_email_subscriptions();

@@ -1,13 +1,4 @@
-# Auth System Fix Summary
-
-## Root Cause
-The authentication was failing because a database trigger `sync_user_email_subscriptions_trigger` was trying to update a non-existent table `email_subscriptions`. This caused the auth transaction to abort with the error "Database error creating new user".
-
-## Solution Applied
-
-1. **Removed the problematic trigger** (`REMOVE_EMAIL_SUBSCRIPTION_TRIGGER.sql`)
-   - Dropped `sync_user_email_subscriptions_trigger` 
-   - Dropped `sync_user_email_subscriptions()` function
+FILE_REMOVED_DURING_CLEANUP
 
 2. **Fixed the code** 
    - Removed `syncEmailSubscriptions` from AuthContext.tsx

@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import { Popover, Transition } from '@headlessui/react';
-import { ChevronDown, BarChart3, TrendingUp, Camera, Smartphone, Shield, Clock, Activity, Calendar, Zap } from 'lucide-react';
+import { ChevronDown, BarChart3, TrendingUp, Camera, Smartphone, Shield, Clock, Activity, Calendar } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
@@ -106,7 +106,6 @@ export function FeaturesFlyout({ onFeatureClick }: FeaturesFlyoutProps) {
           </Popover.Button>
 
           <Transition
-            as={Fragment}
             enter="transition ease-out duration-200"
             enterFrom="opacity-0 translate-y-1"
             enterTo="opacity-100 translate-y-0"
