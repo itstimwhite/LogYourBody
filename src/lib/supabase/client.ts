@@ -1,9 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
+import { SUPABASE_URL, SUPABASE_ANON_KEY, IS_SUPABASE_CONFIGURED, supabaseConfig } from './config'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co'
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
-
-export const supabase = createClient(supabaseUrl, supabaseKey)
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 // Environment detection helpers
 export function getSupabaseEnvironment() {
@@ -30,19 +28,16 @@ export function getVercelEnvironment() {
 }
 
 export function validateSupabaseKeys() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  
   const validation = {
     url: {
-      exists: !!url && url !== 'https://placeholder.supabase.co',
-      valid: url ? url.startsWith('https://') && url.includes('supabase') && !url.includes('placeholder') : false,
-      value: url || 'missing'
+      exists: IS_SUPABASE_CONFIGURED,
+      valid: IS_SUPABASE_CONFIGURED,
+      value: supabaseConfig.url || 'missing'
     },
     anonKey: {
-      exists: !!anonKey && anonKey !== 'placeholder-key',
-      valid: anonKey ? anonKey.length > 100 && anonKey !== 'placeholder-key' : false, // Supabase keys are typically long
-      value: anonKey && anonKey !== 'placeholder-key' ? `${anonKey.substring(0, 20)}...` : 'missing'
+      exists: IS_SUPABASE_CONFIGURED,
+      valid: IS_SUPABASE_CONFIGURED,
+      value: supabaseConfig.anonKey ? `${supabaseConfig.anonKey.substring(0, 20)}...` : 'missing'
     }
   }
   
