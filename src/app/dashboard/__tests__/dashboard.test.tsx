@@ -54,7 +54,9 @@ describe('DashboardPage', () => {
 
     render(<DashboardPage />)
 
-    expect(screen.getByRole('status')).toBeInTheDocument() // Loading spinner
+    // Check for loading spinner by class
+    const loadingElement = screen.getByLabelText(/loading/i)
+    expect(loadingElement).toBeInTheDocument()
   })
 
   it('should display dashboard content when authenticated', () => {

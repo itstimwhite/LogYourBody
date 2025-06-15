@@ -101,13 +101,12 @@ describe('LoginPage', () => {
     // Switch to sign up tab
     await user.click(screen.getByRole('tab', { name: 'Sign Up' }))
 
-    // Find the email and password inputs in the signup form
-    const emailInputs = screen.getAllByLabelText('Email')
-    const passwordInputs = screen.getAllByLabelText('Password')
+    // Find the email and password inputs (they will be different after tab switch)
+    const emailInput = screen.getByLabelText('Email')
+    const passwordInput = screen.getByLabelText('Password')
     
-    // The second set of inputs should be for signup
-    await user.type(emailInputs[1], 'newuser@example.com')
-    await user.type(passwordInputs[1], 'password123')
+    await user.type(emailInput, 'newuser@example.com')
+    await user.type(passwordInput, 'password123')
     await user.click(screen.getByRole('button', { name: 'Sign Up' }))
 
     await waitFor(() => {
@@ -125,11 +124,11 @@ describe('LoginPage', () => {
     // Switch to sign up tab
     await user.click(screen.getByRole('tab', { name: 'Sign Up' }))
 
-    const emailInputs = screen.getAllByLabelText('Email')
-    const passwordInputs = screen.getAllByLabelText('Password')
+    const emailInput = screen.getByLabelText('Email')
+    const passwordInput = screen.getByLabelText('Password')
     
-    await user.type(emailInputs[1], 'existing@example.com')
-    await user.type(passwordInputs[1], 'password123')
+    await user.type(emailInput, 'existing@example.com')
+    await user.type(passwordInput, 'password123')
     await user.click(screen.getByRole('button', { name: 'Sign Up' }))
 
     await waitFor(() => {
@@ -185,8 +184,7 @@ describe('LoginPage', () => {
     // Switch to sign up tab
     await user.click(screen.getByRole('tab', { name: 'Sign Up' }))
 
-    const passwordInputs = screen.getAllByLabelText('Password')
-    const passwordInput = passwordInputs[1] // Sign up password input
+    const passwordInput = screen.getByLabelText('Password')
 
     // Check that it has minLength attribute
     expect(passwordInput).toHaveAttribute('minLength', '6')
