@@ -1,6 +1,6 @@
 {
   "name": "logyourbody",
-  "version": "2025.06.16",
+  "version": "2025.06.17",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
