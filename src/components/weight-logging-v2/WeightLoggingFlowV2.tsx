@@ -37,6 +37,7 @@ interface WeightLoggingFlowV2Props {
     bodyFat?: BodyFatData;
     method?: MethodData;
   };
+  isLoading?: boolean;
 }
 
 interface WeightLoggingFlowContentProps extends WeightLoggingFlowV2Props {
