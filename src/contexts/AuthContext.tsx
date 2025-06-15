@@ -147,8 +147,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
           console.log("User signed in, creating profile...");
           try {
             await createUserProfile(session.user);
-            await syncEmailSubscriptions(session.user);
-            console.log("Profile creation and email sync completed");
+            console.log("Profile creation completed");
           } catch (error) {
             console.error("Profile creation failed:", error);
             // Don't block login if profile creation fails
@@ -180,11 +179,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     };
   }, []);
 
-  const syncEmailSubscriptions = async (user: User) => {
-    // Email subscription sync removed - not needed for this app
-    // The 'subscriptions' table handles trial/payment subscriptions
-    return;
-  };
 
   const createUserProfile = async (user: User) => {
     if (!isSupabaseConfigured || !supabase) {
@@ -489,7 +483,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         console.log("Web signup - attempting auto-signin for unconfirmed user");
 
         try {
-          const { data: signInData, error: signInError } =
+          const { error: signInError } =
             await supabase.auth.signInWithPassword({
               email,
               password,
@@ -554,7 +548,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
     // Check platform and set appropriate redirect URL
     const isNative = window.location.protocol === "capacitor:";
-    let redirectUrl;
+    let redirectUrl: string;
 
     if (isNative) {
       // Native app should redirect to production domain
