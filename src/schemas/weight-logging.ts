@@ -92,7 +92,7 @@ export const weightUtils = {
       weight,
       weight.unit === "lbs" ? "kg" : "lbs",
     );
-    return `≈ ${converted.value} ${converted.unit}`;
+    return `≈ ${converted.value.toFixed(1)} ${converted.unit}`;
   },
 };
 

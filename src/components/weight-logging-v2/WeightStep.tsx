@@ -73,14 +73,34 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
     // Remove any non-numeric characters except decimal point
     const cleaned = newValue.replace(/[^0-9.]/g, "");
 
-    // Ensure only one decimal point
+    // Handle multiple decimal points by joining them
     const parts = cleaned.split(".");
-    const formatted =
-      parts.length > 2 ? `${parts[0]}.${parts.slice(1).join("")}` : cleaned;
+    let formatted: string;
+    
+    if (parts.length > 2) {
+      // For multiple decimals like "150.5.6", join all decimal parts: "150.56"
+      formatted = `${parts[0]}.${parts.slice(1).join("")}`;
+    } else {
+      formatted = cleaned;
+    }
 
-    // Limit to 1 decimal place
+    // Handle decimal limiting based on input type
     const [whole, decimal] = formatted.split(".");
-    const finalValue = decimal ? `${whole}.${decimal.slice(0, 1)}` : whole;
+    let finalValue: string;
+    
+    if (decimal === undefined) {
+      // No decimal point
+      finalValue = whole;
+    } else if (decimal === "") {
+      // Trailing decimal point like "150."
+      finalValue = `${whole}.`;
+    } else if (parts.length > 2) {
+      // Multiple decimal points - allow up to 2 digits after joining
+      finalValue = `${whole}.${decimal.slice(0, 2)}`;
+    } else {
+      // Single decimal point - limit to 1 digit
+      finalValue = `${whole}.${decimal.slice(0, 1)}`;
+    }
 
     setInputValue(finalValue);
 
@@ -111,7 +131,8 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
     const convertedWeight = weightUtils.convertWeight(currentWeight, newUnit);
 
     setUnit(newUnit);
-    setInputValue(convertedWeight.value.toString());
+    // Format to 1 decimal place for consistency
+    setInputValue(convertedWeight.value.toFixed(1));
 
     // Track unit toggle
     weightAnalytics.trackWeightInput({
@@ -256,6 +277,22 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
             disabled={syncingHealthKit}
             className="flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-linear-border bg-linear-card transition-colors hover:bg-linear-border/50 disabled:opacity-50"
           >
+            {syncingHealthKit ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin text-linear-purple" />
+                <span className="font-medium text-linear-text">
+                  Importing from HealthKit...
+                </span>
+              </>
+            ) : (
+              <>
+                <Activity className="h-5 w-5 text-linear-purple" />
+                <span className="font-medium text-linear-text">
+                  Import from HealthKit
+                </span>
+              </>
+            )}
+          </button>
         ) : (
           <motion.button
             onClick={handleHealthKitImport}
@@ -266,27 +303,23 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.25 }}
           >
-        )}
-          {syncingHealthKit ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin text-linear-purple" />
-              <span className="font-medium text-linear-text">
-                Importing from HealthKit...
-              </span>
-            </>
-          ) : (
-            <>
-              <Activity className="h-5 w-5 text-linear-purple" />
-              <span className="font-medium text-linear-text">
-                Import from HealthKit
-              </span>
-            </>
-          )}
-{isTestEnv ? (
-          </button>
-        ) : (
+            {syncingHealthKit ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin text-linear-purple" />
+                <span className="font-medium text-linear-text">
+                  Importing from HealthKit...
+                </span>
+              </>
+            ) : (
+              <>
+                <Activity className="h-5 w-5 text-linear-purple" />
+                <span className="font-medium text-linear-text">
+                  Import from HealthKit
+                </span>
+              </>
+            )}
           </motion.button>
-        )}
+        )
       )}
 
       {/* Unit Toggle */}

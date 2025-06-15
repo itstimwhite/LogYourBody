@@ -44,14 +44,17 @@ describe("ReviewStep", () => {
     it("displays all measurement values correctly", () => {
       renderWithStepper(<ReviewStep {...defaultProps} />);
       
-      // Weight with 1 decimal place
-      expect(screen.getByText("150.5 lbs")).toBeInTheDocument();
+      // Weight with 1 decimal place (appears in multiple places)
+      const weightElements = screen.getAllByText("150.5 lbs");
+      expect(weightElements.length).toBeGreaterThan(0);
       
-      // Body fat with 1 decimal place
-      expect(screen.getByText("18.5%")).toBeInTheDocument();
+      // Body fat with 1 decimal place (appears in multiple places)
+      const bodyFatElements = screen.getAllByText("18.5%");
+      expect(bodyFatElements.length).toBeGreaterThan(0);
       
-      // Method
-      expect(screen.getByText("Digital Scale")).toBeInTheDocument();
+      // Method (appears in multiple places)
+      const methodElements = screen.getAllByText("Digital Scale");
+      expect(methodElements.length).toBeGreaterThan(0);
     });
 
     it("shows review header with icon", () => {
