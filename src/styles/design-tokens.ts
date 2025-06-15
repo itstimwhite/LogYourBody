@@ -153,6 +153,7 @@ export const tokens = {
 // Utility functions for design tokens
 export const getTypographyStyle = (tokenPath: string) => {
   const pathParts = tokenPath.split(".");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let value: any = tokens.typography;
 
   for (const part of pathParts) {
@@ -168,6 +169,7 @@ export const getSpacing = (tokenName: keyof typeof tokens.spacing) => {
 
 export const getColor = (tokenPath: string) => {
   const pathParts = tokenPath.split(".");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let value: any = tokens.colors;
 
   for (const part of pathParts) {

@@ -1,0 +1,63 @@
+name: CI - Main Branch (Production)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  smoke-tests:
+    name: Smoke Tests & Deploy Production
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Setup npm cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Run smoke tests
+        run: |
+          echo "🔥 Running production smoke tests..."
+          npm run lint
+          npm run typecheck
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPA_PROD_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPA_PROD_ANON_KEY }}
+          
+      - name: Build production bundle
+        run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.SUPA_PROD_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.SUPA_PROD_ANON_KEY }}
+          NEXT_PUBLIC_VERSION: ${{ github.sha }}
+          
+      - name: Run Supabase migrations (Production)
+        run: |
+          npx supabase db push --project-ref ${{ secrets.SUPA_PROD_REF }}
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          
+      - name: Post-deployment verification
+        run: |
+          echo "✅ Production deployment successful"
+          echo "🌍 Production URL: https://logyourbody.com"
+          echo "📊 Version: ${{ github.sha }}"

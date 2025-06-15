@@ -79,21 +79,21 @@ export function StepHeader({
   );
 }
 
-interface QuickPresetsProps {
-  presets: Array<{ label: string; value: any }>;
-  selectedValue: any;
-  onSelect: (value: any) => void;
-  formatLabel?: (preset: any) => string;
+interface QuickPresetsProps<T = unknown> {
+  presets: Array<{ label: string; value: T }>;
+  selectedValue: T;
+  onSelect: (value: T) => void;
+  formatLabel?: (preset: { label: string; value: T }) => string;
   className?: string;
 }
 
-export function QuickPresets({
+export function QuickPresets<T = unknown>({
   presets,
   selectedValue,
   onSelect,
   formatLabel = (preset) => preset.label,
   className,
-}: QuickPresetsProps) {
+}: QuickPresetsProps<T>) {
   const isTestEnv = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
   
   const content = (

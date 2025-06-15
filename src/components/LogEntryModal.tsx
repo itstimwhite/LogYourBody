@@ -1,259 +1,283 @@
-import React, { useState } from "react";
+'use client'
+
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { MeasurementMethod, MEASUREMENT_METHODS } from "@/types/bodymetrics";
-import { useHealthKit } from "@/hooks/use-healthkit";
-import { isNativeiOS } from "@/lib/platform";
-import { Activity, Loader2 } from "lucide-react";
+  DialogFooter,
+} from './ui/dialog'
+import { Calendar, Loader2, X } from 'lucide-react'
+import { profileService, type BodyMetric } from '@/lib/services/profile'
 
 interface LogEntryModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onSave: (data: {
-    weight: number;
-    bodyFatPercentage: number;
-    method: MeasurementMethod;
-    date: Date;
-  }) => void;
-  units: "imperial" | "metric";
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  userId: string
+  onSuccess?: (metric: BodyMetric) => void
 }
 
-export function LogEntryModal({
-  open,
-  onOpenChange,
-  onSave,
-  units,
-}: LogEntryModalProps) {
-  const [weight, setWeight] = useState<string>("");
-  const [bodyFatPercentage, setBodyFatPercentage] = useState<number[]>([15]);
-  const [method, setMethod] = useState<MeasurementMethod>("scale");
-  const [syncingHealthKit, setSyncingHealthKit] = useState(false);
+export function LogEntryModal({ open, onOpenChange, userId, onSuccess }: LogEntryModalProps) {
+  const router = useRouter()
+  
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  
+  // Form state
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0])
+  const [weight, setWeight] = useState('')
+  const [bodyFat, setBodyFat] = useState('')
+  const [method, setMethod] = useState<'dexa' | 'scale' | 'calipers' | 'visual'>('scale')
+  const [muscleMass, setMuscleMass] = useState('')
+  const [boneMass, setBoneMass] = useState('')
+  const [waterPercentage, setWaterPercentage] = useState('')
 
-  const healthKit = useHealthKit();
+  const resetForm = () => {
+    setDate(new Date().toISOString().split('T')[0])
+    setWeight('')
+    setBodyFat('')
+    setMethod('scale')
+    setMuscleMass('')
+    setBoneMass('')
+    setWaterPercentage('')
+    setError('')
+  }
 
-  const handleSave = () => {
-    const weightNum = parseFloat(weight);
-    if (isNaN(weightNum) || weightNum <= 0) {
-      return; // Add proper validation in real app
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setLoading(true)
+    setError('')
+
+    try {
+      if (!weight || !bodyFat) {
+        setError('Weight and body fat percentage are required')
+        return
+      }
+
+      const weightNum = parseFloat(weight)
+      const bodyFatNum = parseFloat(bodyFat)
+
+      if (isNaN(weightNum) || isNaN(bodyFatNum)) {
+        setError('Please enter valid numbers for weight and body fat')
+        return
+      }
+
+      if (bodyFatNum < 1 || bodyFatNum > 50) {
+        setError('Body fat percentage must be between 1% and 50%')
+        return
+      }
+
+      const metricData: Omit<BodyMetric, 'id' | 'created_at'> = {
+        user_id: userId,
+        date,
+        weight: weightNum,
+        body_fat_percentage: bodyFatNum,
+        method,
+        muscle_mass: muscleMass ? parseFloat(muscleMass) : null,
+        bone_mass: boneMass ? parseFloat(boneMass) : null,
+        water_percentage: waterPercentage ? parseFloat(waterPercentage) : null,
+        photo_url: null,
+        step_count: null,
+      }
+
+      const result = await profileService.createBodyMetric(metricData)
+
+      if (result) {
+        resetForm()
+        onOpenChange(false)
+        onSuccess?.(result)
+        router.refresh() // Refresh to show new data
+      } else {
+        setError('Failed to save entry. Please try again.')
+      }
+    } catch (err) {
+      console.error('Error saving metric:', err)
+      setError('An unexpected error occurred. Please try again.')
+    } finally {
+      setLoading(false)
     }
-
-    onSave({
-      weight: weightNum,
-      bodyFatPercentage: bodyFatPercentage[0],
-      method,
-      date: new Date(),
-    });
-
-    // Reset form
-    setWeight("");
-    setBodyFatPercentage([15]);
-    setMethod("scale");
-    onOpenChange(false);
-  };
+  }
 
   const handleClose = () => {
-    // Reset form on close
-    setWeight("");
-    setBodyFatPercentage([15]);
-    setMethod("scale");
-    onOpenChange(false);
-  };
-
-  const handleHealthKitImport = async () => {
-    if (!isNativeiOS() || !healthKit.isAvailable) {
-      return;
+    if (!loading) {
+      resetForm()
+      onOpenChange(false)
     }
-
-    setSyncingHealthKit(true);
-    try {
-      // Request permissions if not already authorized
-      if (!healthKit.isAuthorized) {
-        const granted = await healthKit.requestPermissions();
-        if (!granted) {
-          console.warn("HealthKit permissions not granted");
-          return;
-        }
-      }
-
-      // Get the latest weight data from HealthKit
-      const healthData = await healthKit.getHealthData();
-      if (healthData && healthData.weight) {
-        // Convert weight to the appropriate units for display
-        let displayWeight = healthData.weight;
-        if (units === "imperial") {
-          displayWeight = Math.round(healthData.weight * 2.20462 * 10) / 10; // kg to lbs
-        }
-
-        // Import data and immediately save with HealthKit method
-        onSave({
-          weight: healthData.weight, // Always save as kg internally
-          bodyFatPercentage: bodyFatPercentage[0],
-          method: "healthkit", // Automatically set method
-          date: new Date(),
-        });
-
-        // Reset form and close modal
-        setWeight("");
-        setBodyFatPercentage([15]);
-        setMethod("scale");
-        onOpenChange(false);
-
-        console.log(
-          "HealthKit data imported:",
-          displayWeight,
-          units === "imperial" ? "lbs" : "kg",
-        );
-      } else {
-        console.warn("No weight data found in HealthKit");
-      }
-    } catch (error) {
-      console.error("Error importing HealthKit data:", error);
-    } finally {
-      setSyncingHealthKit(false);
-    }
-  };
+  }
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-md border-border bg-background text-foreground">
+      <DialogContent className="max-w-md border-linear-border bg-linear-card text-linear-text">
         <DialogHeader>
-          <DialogTitle className="text-xl font-semibold tracking-tight text-foreground">
-            Log New Measurement
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-xl font-semibold">
+              Log Body Metrics
+            </DialogTitle>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleClose}
+              disabled={loading}
+              className="h-8 w-8 text-linear-text-secondary hover:text-linear-text"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* HealthKit Import Section - only show on iOS with HealthKit */}
-          {isNativeiOS() && healthKit.isAvailable && (
-            <div className="space-y-3">
-              <Label className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-                Import from HealthKit
-              </Label>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleHealthKitImport}
-                disabled={syncingHealthKit}
-                className="h-12 w-full border-border bg-secondary text-foreground hover:bg-muted"
-              >
-                {syncingHealthKit ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Importing from HealthKit...
-                  </>
-                ) : (
-                  <>
-                    <Activity className="mr-2 h-4 w-4" />
-                    Import from HealthKit
-                  </>
-                )}
-              </Button>
-
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-border" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or enter manually
-                  </span>
-                </div>
-              </div>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {error && (
+            <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-center text-sm text-red-500">
+              {error}
             </div>
           )}
 
-          {/* Manual Weight Input */}
-          <div className="space-y-3">
-            <Label
-              htmlFor="weight"
-              className="text-sm font-medium uppercase tracking-wide text-muted-foreground"
-            >
-              Weight ({units === "metric" ? "kg" : "lbs"})
+          {/* Date */}
+          <div className="space-y-2">
+            <Label htmlFor="date" className="flex items-center gap-2">
+              <Calendar className="h-4 w-4" />
+              Date
             </Label>
+            <Input
+              id="date"
+              type="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              max={new Date().toISOString().split('T')[0]}
+              required
+              className="border-linear-border bg-linear-bg text-linear-text"
+            />
+          </div>
+
+          {/* Weight */}
+          <div className="space-y-2">
+            <Label htmlFor="weight">Weight (lbs) *</Label>
             <Input
               id="weight"
               type="number"
-              placeholder="Enter weight"
+              step="0.1"
+              min="50"
+              max="500"
               value={weight}
               onChange={(e) => setWeight(e.target.value)}
-              className="h-12 border-border bg-secondary text-base text-foreground placeholder:text-muted-foreground"
+              placeholder="e.g. 180.5"
+              required
+              className="border-linear-border bg-linear-bg text-linear-text"
             />
           </div>
 
-          {/* Body Fat Percentage Slider */}
-          <div className="space-y-4">
-            <Label className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-              Body Fat: {bodyFatPercentage[0].toFixed(1)}%
-            </Label>
-            <Slider
-              value={bodyFatPercentage}
-              onValueChange={setBodyFatPercentage}
-              max={50}
-              min={3}
-              step={0.1}
-              className="w-full"
+          {/* Body Fat */}
+          <div className="space-y-2">
+            <Label htmlFor="bodyFat">Body Fat Percentage (%) *</Label>
+            <Input
+              id="bodyFat"
+              type="number"
+              step="0.1"
+              min="1"
+              max="50"
+              value={bodyFat}
+              onChange={(e) => setBodyFat(e.target.value)}
+              placeholder="e.g. 15.2"
+              required
+              className="border-linear-border bg-linear-bg text-linear-text"
             />
-            <div className="flex justify-between text-xs font-medium text-muted-foreground">
-              <span>3%</span>
-              <span>50%</span>
-            </div>
           </div>
 
-          {/* Measurement Method */}
-          <div className="space-y-3">
-            <Label className="text-sm font-medium uppercase tracking-wide text-muted-foreground">
-              Method
-            </Label>
-            <Select
-              value={method}
-              onValueChange={(value: MeasurementMethod) => setMethod(value)}
-            >
-              <SelectTrigger className="h-12 border-border bg-secondary text-foreground">
+          {/* Method */}
+          <div className="space-y-2">
+            <Label htmlFor="method">Measurement Method</Label>
+            <Select value={method} onValueChange={(value) => setMethod(value as typeof method)}>
+              <SelectTrigger className="border-linear-border bg-linear-bg text-linear-text">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="border-border bg-background">
-                {Object.entries(MEASUREMENT_METHODS)
-                  .filter(([key]) => key !== "healthkit") // Exclude HealthKit from user selection
-                  .map(([key, label]) => (
-                    <SelectItem
-                      key={key}
-                      value={key}
-                      className="text-foreground hover:bg-muted"
-                    >
-                      {label}
-                    </SelectItem>
-                  ))}
+              <SelectContent className="border-linear-border bg-linear-card">
+                <SelectItem value="scale">Smart Scale</SelectItem>
+                <SelectItem value="dexa">DEXA Scan</SelectItem>
+                <SelectItem value="calipers">Body Fat Calipers</SelectItem>
+                <SelectItem value="visual">Visual Estimation</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </div>
 
-        {/* Save Button */}
-        <div className="pt-4">
-          <Button
-            onClick={handleSave}
-            className="h-12 w-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
-            disabled={!weight || parseFloat(weight) <= 0}
-          >
-            Save Measurement
-          </Button>
-        </div>
+          {/* Optional fields */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="muscleMass">Muscle Mass (lbs)</Label>
+              <Input
+                id="muscleMass"
+                type="number"
+                step="0.1"
+                min="0"
+                value={muscleMass}
+                onChange={(e) => setMuscleMass(e.target.value)}
+                placeholder="Optional"
+                className="border-linear-border bg-linear-bg text-linear-text"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="boneMass">Bone Mass (lbs)</Label>
+              <Input
+                id="boneMass"
+                type="number"
+                step="0.1"
+                min="0"
+                value={boneMass}
+                onChange={(e) => setBoneMass(e.target.value)}
+                placeholder="Optional"
+                className="border-linear-border bg-linear-bg text-linear-text"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="waterPercentage">Water Percentage (%)</Label>
+            <Input
+              id="waterPercentage"
+              type="number"
+              step="0.1"
+              min="0"
+              max="100"
+              value={waterPercentage}
+              onChange={(e) => setWaterPercentage(e.target.value)}
+              placeholder="Optional"
+              className="border-linear-border bg-linear-bg text-linear-text"
+            />
+          </div>
+
+          <DialogFooter className="gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleClose}
+              disabled={loading}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-linear-text text-linear-bg hover:bg-linear-text/90"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                'Save Entry'
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

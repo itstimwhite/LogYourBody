@@ -306,6 +306,7 @@ export const getSpacing = (size: keyof typeof settingsTokens.spacing) => {
 
 export const getColor = (path: string) => {
   const pathParts = path.split(".");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let value: any = settingsTokens.colors;
 
   for (const part of pathParts) {
@@ -317,6 +318,7 @@ export const getColor = (path: string) => {
 
 export const getTypography = (path: string) => {
   const pathParts = path.split(".");
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let value: any = settingsTokens.typography;
 
   for (const part of pathParts) {

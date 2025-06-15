@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Slider } from "@/components/ui/slider";
+import { Slider } from "./ui/slider";
 import { Calendar } from "lucide-react";
 
 interface DemoEntry {
