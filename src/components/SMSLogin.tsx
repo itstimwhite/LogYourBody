@@ -1,11 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PhoneNumberInput } from "@/components/ui/phone-input";
 import { Label } from "@/components/ui/label";
 import { ArrowLeft, MessageSquare, Shield, Smartphone } from "lucide-react";
 import { useSMSAuth } from "@/hooks/use-sms-auth";
 import { cn } from "@/lib/utils";
-import { AsYouType, parsePhoneNumberFromString } from "libphonenumber-js";
+import {
+  isValidPhoneNumber,
+  formatPhoneNumberIntl,
+} from "react-phone-number-input";
 
 interface SMSLoginProps {
   onBack: () => void;
@@ -33,7 +37,7 @@ export const SMSLogin = React.memo(function SMSLogin({
 
   const [resendCountdown, setResendCountdown] = useState(0);
   const codeInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const isPhoneValid = !!parsePhoneNumberFromString(phoneNumber, "US")?.isValid();
+  const isPhoneValid = phoneNumber ? isValidPhoneNumber(phoneNumber) : false;
 
   // Auto-paste functionality for verification codes
   useEffect(() => {
@@ -64,9 +68,8 @@ export const SMSLogin = React.memo(function SMSLogin({
   }, [resendCountdown]);
 
   const formatPhoneDisplay = (phone: string) => {
-    const parsed = parsePhoneNumberFromString(phone, "US");
-    if (parsed) {
-      return parsed.formatInternational();
+    if (phone && isValidPhoneNumber(phone)) {
+      return formatPhoneNumberIntl(phone);
     }
     return phone;
   };
@@ -124,12 +127,7 @@ export const SMSLogin = React.memo(function SMSLogin({
   return (
     <div className={cn("mx-auto w-full max-w-md", className)}>
       {/* Back button */}
-      <Button
-        variant="ghost"
-        size="sm"
-        onClick={onBack}
-        className="-ml-2 mb-6"
-      >
+      <Button variant="ghost" size="sm" onClick={onBack} className="-ml-2 mb-6">
         <ArrowLeft className="mr-2 h-4 w-4" />
         Back
       </Button>
@@ -155,17 +153,12 @@ export const SMSLogin = React.memo(function SMSLogin({
               <Label htmlFor="phone" className="text-sm font-medium">
                 Phone Number
               </Label>
-              <Input
+              <PhoneNumberInput
                 id="phone"
-                type="tel"
-                placeholder="+1 555 123 4567"
                 value={phoneNumber}
-                onChange={(e) =>
-                  setPhoneNumber(new AsYouType("US").input(e.target.value))
-                }
-                className="h-12 text-base"
-                autoComplete="tel"
-                autoFocus
+                onChange={(val) => setPhoneNumber(val || "")}
+                defaultCountry="US"
+                className="text-base"
               />
             </div>
 

@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { parsePhoneNumberFromString } from "libphonenumber-js";
+import { isValidPhoneNumber } from "react-phone-number-input";
 
 interface UseSMSAuthReturn {
   isLoading: boolean;
@@ -27,11 +27,10 @@ export function useSMSAuth(): UseSMSAuthReturn {
   const [error, setError] = useState<string | null>(null);
 
   const formatPhoneNumber = useCallback((phone: string): string | null => {
-    const parsed = parsePhoneNumberFromString(phone, "US");
-    if (!parsed || !parsed.isValid()) {
+    if (!phone || !isValidPhoneNumber(phone)) {
       return null;
     }
-    return parsed.number; // E.164 format
+    return phone; // Already in E.164 format from the input component
   }, []);
 
   const sendSMSCode = useCallback(async (): Promise<boolean> => {
