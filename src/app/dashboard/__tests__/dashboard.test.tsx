@@ -3,6 +3,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import DashboardPage from '../page'
 import { useAuth } from '@/contexts/AuthContext'
+import type { User, Session } from '@supabase/supabase-js'
 
 // Mock the auth context
 jest.mock('@/contexts/AuthContext')
@@ -61,8 +62,8 @@ describe('DashboardPage', () => {
 
   it('should display dashboard content when authenticated', () => {
     mockUseAuth.mockReturnValue({
-      user: { id: '123', email: 'test@example.com' } as any,
-      session: { access_token: 'token' } as any,
+      user: { id: '123', email: 'test@example.com' } as User,
+      session: { access_token: 'token' } as Session,
       loading: false,
       signIn: jest.fn(),
       signUp: jest.fn(),
@@ -91,8 +92,8 @@ describe('DashboardPage', () => {
   it('should handle sign out', async () => {
     const user = userEvent.setup()
     mockUseAuth.mockReturnValue({
-      user: { id: '123', email: 'test@example.com' } as any,
-      session: { access_token: 'token' } as any,
+      user: { id: '123', email: 'test@example.com' } as User,
+      session: { access_token: 'token' } as Session,
       loading: false,
       signIn: jest.fn(),
       signUp: jest.fn(),
@@ -109,8 +110,8 @@ describe('DashboardPage', () => {
 
   it('should display placeholder data for stats', () => {
     mockUseAuth.mockReturnValue({
-      user: { id: '123', email: 'test@example.com' } as any,
-      session: { access_token: 'token' } as any,
+      user: { id: '123', email: 'test@example.com' } as User,
+      session: { access_token: 'token' } as Session,
       loading: false,
       signIn: jest.fn(),
       signUp: jest.fn(),
@@ -129,8 +130,8 @@ describe('DashboardPage', () => {
 
   it('should list upcoming features', () => {
     mockUseAuth.mockReturnValue({
-      user: { id: '123', email: 'test@example.com' } as any,
-      session: { access_token: 'token' } as any,
+      user: { id: '123', email: 'test@example.com' } as User,
+      session: { access_token: 'token' } as Session,
       loading: false,
       signIn: jest.fn(),
       signUp: jest.fn(),
@@ -156,8 +157,8 @@ describe('DashboardPage', () => {
 
   it('should render Start Logging button', () => {
     mockUseAuth.mockReturnValue({
-      user: { id: '123', email: 'test@example.com' } as any,
-      session: { access_token: 'token' } as any,
+      user: { id: '123', email: 'test@example.com' } as User,
+      session: { access_token: 'token' } as Session,
       loading: false,
       signIn: jest.fn(),
       signUp: jest.fn(),

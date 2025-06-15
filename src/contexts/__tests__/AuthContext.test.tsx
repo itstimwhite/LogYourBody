@@ -101,7 +101,7 @@ describe('AuthContext', () => {
       error: mockError,
     })
 
-    let signInResult: any
+    let signInResult: { error: Error | null }
     function SignInTest() {
       const { signIn } = useAuth()
       return (
@@ -136,7 +136,7 @@ describe('AuthContext', () => {
       error: null,
     })
 
-    let signUpResult: any
+    let signUpResult: { error: Error | null }
     function SignUpTest() {
       const { signUp } = useAuth()
       return (
@@ -200,7 +200,7 @@ describe('AuthContext', () => {
       error: null,
     })
 
-    let oauthResult: any
+    let oauthResult: { error: Error | null }
     function OAuthTest() {
       const { signInWithProvider } = useAuth()
       return (
