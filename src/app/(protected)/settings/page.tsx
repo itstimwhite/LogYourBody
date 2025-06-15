@@ -2,21 +2,21 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Switch } from '@/components/ui/switch'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Button } from '../../../components/ui/button'
+import { Switch } from '../../../components/ui/switch'
+import { Input } from '../../../components/ui/input'
+import { Label } from '../../../components/ui/label'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+} from '../../../components/ui/dialog'
+import { Tabs, TabsList, TabsTrigger } from '../../../components/ui/tabs'
 import { ArrowLeft, Edit, LogOut, User, Calendar, Ruler, Mail, Lock, Settings as SettingsIcon } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
+import { createClient } from '../../../lib/supabase/client'
+import { Header } from '../../../components/Header'
+import { Footer } from '../../../components/Footer'
 
 interface User {
   id: string

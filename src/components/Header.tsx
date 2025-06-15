@@ -2,8 +2,8 @@
 
 import React from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { FeaturesFlyout } from "@/components/FeaturesFlyout";
+import { Button } from "./ui/button";
+import { FeaturesFlyout } from "./FeaturesFlyout";
 
 interface HeaderProps {
   onFeatureClick?: (featureId: string) => void;

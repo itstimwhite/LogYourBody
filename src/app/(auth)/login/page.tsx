@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '../../../lib/supabase/server'
 import { LoginForm } from './login-form'
-import { VersionDisplay } from '@/components/VersionDisplay'
+import { VersionDisplay } from '../../../components/VersionDisplay'
 import Link from 'next/link'
 import { Metadata } from 'next'
 

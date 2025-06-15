@@ -1,9 +1,9 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
+import { Button } from '../../components/ui/button'
+import { Badge } from '../../components/ui/badge'
+import { Header } from '../../components/Header'
+import { Footer } from '../../components/Footer'
 import {
   BarChart3,
   Camera,

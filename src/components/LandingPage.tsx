@@ -2,16 +2,16 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
+import { Button } from "./ui/button";
+import { Badge } from "./ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
+} from "./ui/card";
+import { Switch } from "./ui/switch";
 import {
   BarChart3,
   Camera,
@@ -26,10 +26,10 @@ import {
   Zap,
   Download,
 } from "lucide-react";
-import { Footer } from "@/components/Footer";
-import { LandingTimelineDemo } from "@/components/LandingTimelineDemo";
-import { StepTrackerSection } from "@/components/StepTrackerModule";
-import { FeaturesFlyout } from "@/components/FeaturesFlyout";
+import { Footer } from "./Footer";
+import { LandingTimelineDemo } from "./LandingTimelineDemo";
+import { StepTrackerSection } from "./StepTrackerModule";
+import { FeaturesFlyout } from "./FeaturesFlyout";
 
 export function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings

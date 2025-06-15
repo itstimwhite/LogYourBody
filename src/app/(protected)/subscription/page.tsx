@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import { Button } from '../../../components/ui/button'
+import { Badge } from '../../../components/ui/badge'
 import {
   ArrowLeft,
   Crown,
@@ -12,8 +12,8 @@ import {
   AlertCircle,
   Check,
 } from 'lucide-react'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
+import { Header } from '../../../components/Header'
+import { Footer } from '../../../components/Footer'
 
 interface SubscriptionInfo {
   status: 'trial' | 'active' | 'expired' | 'cancelled'

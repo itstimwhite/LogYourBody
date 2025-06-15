@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useResponsive } from "@/hooks/use-responsive";
+import { cn } from "../../lib/utils";
+import { useResponsive } from "../../hooks/use-responsive";
 import { Dialog, DialogContent, DialogPortal, DialogOverlay, DialogTitle, DialogDescription } from "./dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 

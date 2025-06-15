@@ -1,12 +1,12 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import { VersionDisplay } from "@/components/VersionDisplay";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
+import { Button } from "../../components/ui/button";
+import { Badge } from "../../components/ui/badge";
+import { Input } from "../../components/ui/input";
+import { VersionDisplay } from "../../components/VersionDisplay";
+import { Header } from "../../components/Header";
+import { Footer } from "../../components/Footer";
 import {
   ArrowLeft,
   GitCommit,

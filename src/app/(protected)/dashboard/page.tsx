@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Button } from '../../../components/ui/button'
+import { Card, CardContent } from '../../../components/ui/card'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../../../components/ui/tabs'
 import {
   Plus,
   Settings,
@@ -16,11 +16,11 @@ import {
   Ruler,
   Target,
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
-import { LogEntryModal } from '@/components/LogEntryModal'
-import { BodyMetric } from '@/lib/types/database'
+import { createClient } from '../../../lib/supabase/client'
+import { Header } from '../../../components/Header'
+import { Footer } from '../../../components/Footer'
+import { LogEntryModal } from '../../../components/LogEntryModal'
+import { BodyMetric } from '../../../lib/types/database'
 import Link from 'next/link'
 
 interface UserProfile {

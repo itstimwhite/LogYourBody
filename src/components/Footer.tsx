@@ -1,8 +1,8 @@
 import React from "react";
 import Link from "next/link";
 import { Github, Twitter, Mail, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { VersionDisplay } from "@/components/VersionDisplay";
+import { Button } from "./ui/button";
+import { VersionDisplay } from "./VersionDisplay";
 
 type FooterLink = {
   label: string;

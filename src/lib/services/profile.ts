@@ -1,5 +1,5 @@
-import { createClient } from '@/lib/supabase/client'
-import { UserProfile, UserSettings, BodyMetric } from '@/lib/types/database'
+import { createClient } from '../supabase/client'
+import { UserProfile, UserSettings, BodyMetric } from '../types/database'
 
 export class ProfileService {
   private supabase = createClient()

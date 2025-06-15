@@ -2,20 +2,20 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Button } from './ui/button'
+import { Input } from './ui/input'
+import { Label } from './ui/label'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from '@/components/ui/dialog'
+} from './ui/dialog'
 import { Calendar, Loader2, X } from 'lucide-react'
-import { profileService } from '@/lib/services/profile'
-import { BodyMetric } from '@/lib/types/database'
+import { profileService } from '../lib/services/profile'
+import { BodyMetric } from '../lib/types/database'
 
 interface LogEntryModalProps {
   open: boolean

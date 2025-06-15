@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useMemo } from "react";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "./ui/badge";
 
 interface VersionDisplayProps {
   className?: string;

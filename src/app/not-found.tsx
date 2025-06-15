@@ -1,9 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { Header } from '@/components/Header'
-import { Footer } from '@/components/Footer'
+import { Button } from '../components/ui/button'
+import { Header } from '../components/Header'
+import { Footer } from '../components/Footer'
 import { Search, Home, ArrowLeft } from 'lucide-react'
 
 export default function NotFound() {

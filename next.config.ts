@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
   // Enable static export for Capacitor when needed
@@ -21,15 +20,6 @@ const nextConfig: NextConfig = {
   
   // Use relative paths for Capacitor
   assetPrefix: process.env.BUILD_TARGET === 'capacitor' ? './' : undefined,
-  
-  // Webpack configuration for module resolution
-  webpack: (config) => {
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      '@': path.join(__dirname, 'src'),
-    }
-    return config
-  },
   
   // Experimental features
   experimental: {

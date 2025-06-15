@@ -1,9 +1,9 @@
-import { getAllSlugs, getPostBySlug, getAllPosts } from '@/lib/blog';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
+import { getAllSlugs, getPostBySlug, getAllPosts } from '../../../lib/blog';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/card';
+import { Header } from '../../../components/Header';
+import { Footer } from '../../../components/Footer';
 import Link from 'next/link';
 import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
 import { Metadata } from 'next';
