@@ -1,6 +1,7 @@
 ## [2025.06.34] - 2025-06-15
 
 ### 🎉 Features
+- feat: upgrade TailwindCSS to v4
 - feat: restore PR labels now that they exist in the repository
 - feat: consolidate CI workflows and add Dependabot configuration
 - feat: simplify to static-only deployment
