@@ -3,7 +3,7 @@ import { Header } from '../Header'
 
 // Mock FeaturesFlyout
 jest.mock('../FeaturesFlyout', () => ({
-  FeaturesFlyout: ({ onFeatureClick }: any) => (
+  FeaturesFlyout: ({ onFeatureClick }: { onFeatureClick?: (featureId: string) => void }) => (
     <div data-testid="features-flyout" onClick={() => onFeatureClick?.('test')}>
       Features
     </div>

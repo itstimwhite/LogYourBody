@@ -15,7 +15,7 @@ jest.mock('../StepTrackerModule', () => ({
 }))
 
 jest.mock('../FeaturesFlyout', () => ({
-  FeaturesFlyout: ({ onFeatureClick }: any) => (
+  FeaturesFlyout: ({ onFeatureClick }: { onFeatureClick?: (featureId: string) => void }) => (
     <div data-testid="features-flyout" onClick={() => onFeatureClick?.('test')}>
       Features
     </div>
