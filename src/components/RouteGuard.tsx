@@ -25,9 +25,9 @@ export function RouteGuard({
   const loadingStartTime = useRef(Date.now());
   const { hideSplashScreen } = useSplashScreen();
 
-  // Only enable aggressive monitoring on protected routes or known problematic paths
+  // Only enable aggressive monitoring on specific problematic paths
+  // Remove /settings from aggressive monitoring to prevent redirects while changing settings
   const isProtectedOrProblematicRoute = location.pathname.startsWith('/dashboard') || 
-                                       location.pathname.startsWith('/settings') || 
                                        location.pathname === '/login';
 
   useEffect(() => {

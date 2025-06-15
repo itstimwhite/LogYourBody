@@ -1,8 +1,5 @@
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
-import { cn } from "@/lib/utils";
 import { StepperProvider, useStepper } from "@/contexts/StepperContext";
 import {
   type WeightData,
@@ -11,6 +8,7 @@ import {
 } from "@/schemas/weight-logging";
 import { weightAnalytics } from "@/utils/weight-analytics";
 import { PhotoCapture } from "@/components/PhotoCapture";
+import { StepperNavigation, StepperActions } from "@/components/ui/responsive-flow-wrapper";
 
 // Lazy load steps for better performance
 const WeightStep = React.lazy(() =>
@@ -127,45 +125,14 @@ function WeightLoggingFlowContent({
       />
 
       {/* Header with Progress */}
-      <div className="flex-shrink-0 px-6 pt-safe-top">
-        {/* Navigation */}
-        <div className="flex h-14 items-center justify-between">
-          <button
-            onClick={currentStep === 0 ? onCancel : goBack}
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-border/30 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
-            aria-label={currentStep === 0 ? "Cancel" : "Go back"}
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </button>
-
-          <div className="text-center">
-            <div className="text-sm font-medium text-linear-text-secondary">
-              Step {currentStep + 1} of {totalSteps}
-            </div>
-            <div className="text-lg font-semibold text-linear-text">
-              {stepTitles[currentStep]}
-            </div>
-          </div>
-
-          <div className="flex h-10 w-10 items-center justify-center">
-            <div className="text-sm font-medium text-linear-text-secondary">
-              {Math.round(progress)}%
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mb-6 mt-4">
-          <div className="h-2 w-full overflow-hidden rounded-full bg-linear-border">
-            <motion.div
-              className="h-full rounded-full bg-linear-purple"
-              initial={{ width: 0 }}
-              animate={{ width: `${progress}%` }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-            />
-          </div>
-        </div>
-      </div>
+      <StepperNavigation
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        stepTitles={stepTitles}
+        progress={progress}
+        onBack={goBack}
+        onCancel={onCancel}
+      />
 
       {/* Step Content */}
       <div className="flex-1 overflow-hidden">
@@ -194,49 +161,13 @@ function WeightLoggingFlowContent({
       </div>
 
       {/* Footer Actions */}
-      <div className="flex-shrink-0 px-6 pb-6 pt-4">
-        <div className="flex gap-3">
-          {/* Back Button (hidden on first step) */}
-          {currentStep > 0 && (
-            <motion.button
-              onClick={goBack}
-              className="h-14 flex-1 rounded-xl border border-linear-border bg-linear-card font-medium text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-            >
-              Back
-            </motion.button>
-          )}
-
-          {/* Next/Complete Button */}
-          <motion.button
-            onClick={goNext}
-            disabled={!canGoNext}
-            className={cn(
-              "flex h-14 items-center justify-center gap-2 rounded-xl font-medium transition-all duration-200",
-              currentStep === 0 ? "flex-1" : "flex-[2]",
-              canGoNext
-                ? "bg-linear-text text-linear-bg hover:bg-linear-text/90"
-                : "cursor-not-allowed border border-linear-border bg-linear-card text-linear-text-tertiary",
-            )}
-            whileTap={canGoNext ? { scale: 0.98 } : {}}
-          >
-            {currentStep === totalSteps - 1 ? (
-              <>
-                <Check className="h-5 w-5" />
-                Save Entry
-              </>
-            ) : (
-              <>
-                Next
-                <ArrowRight className="h-5 w-5" />
-              </>
-            )}
-          </motion.button>
-        </div>
-      </div>
+      <StepperActions
+        currentStep={currentStep}
+        totalSteps={totalSteps}
+        canGoNext={canGoNext}
+        onBack={goBack}
+        onNext={goNext}
+      />
     </div>
   );
 }
