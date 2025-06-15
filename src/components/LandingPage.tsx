@@ -30,6 +30,7 @@ import { Footer } from "./Footer";
 import { LandingTimelineDemo } from "./LandingTimelineDemo";
 import { StepTrackerSection } from "./StepTrackerModule";
 import { FeaturesFlyout } from "./FeaturesFlyout";
+import { DatabaseStatus } from "./DatabaseStatus";
 
 export function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
@@ -174,6 +175,10 @@ export function LandingPage() {
 
       {/* Main Content */}
       <main id="main-content" tabIndex={-1}>
+        {/* Database Status - Development Only */}
+        <div className="container mx-auto px-4 sm:px-6 pt-4">
+          <DatabaseStatus />
+        </div>
         {/* Hero Section - F-Layout */}
         <section
           className="relative py-16 md:py-24 overflow-hidden min-h-svh flex items-center"
