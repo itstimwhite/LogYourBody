@@ -408,6 +408,6 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
           ))}
         </div>
       </motion.div>
-    </motion.div>
+    </StepContainer>
   );
 }
