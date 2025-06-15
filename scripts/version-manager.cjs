@@ -163,7 +163,9 @@ class VersionManager {
 
   createGitTag(version, message) {
     try {
-      execSync(`git tag -a v${version} -m "${message}"`, { encoding: 'utf8' });
+      // Escape double quotes in the message to prevent shell issues
+      const escapedMessage = message.replace(/"/g, '\\"');
+      execSync(`git tag -a v${version} -m "${escapedMessage}"`, { encoding: 'utf8' });
       console.log(`✅ Created git tag: v${version}`);
     } catch (error) {
       console.error('❌ Failed to create git tag:', error.message);

@@ -1,3 +1,5342 @@
+## [2025.06.33] - 2025-06-15
+
+### 🎉 Features
+- feat: restore PR labels now that they exist in the repository
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: remove non-existent labels from PR creation
+- fix: use heredoc for PR body to fix YAML multiline string syntax
+- fix: remove deprecated husky shebang lines from pre-push hook
+- fix: remove backticks from PR body strings to fix YAML syntax
+- fix: use npm install instead of npm ci (no package-lock.json)
+- fix: correct YAML syntax for multiline PR body strings
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- chore: bump version to 2025.06.25
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.32] - 2025-06-15
+
+### 🎉 Features
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: remove non-existent labels from PR creation
+- fix: use heredoc for PR body to fix YAML multiline string syntax
+- fix: remove deprecated husky shebang lines from pre-push hook
+- fix: remove backticks from PR body strings to fix YAML syntax
+- fix: use npm install instead of npm ci (no package-lock.json)
+- fix: correct YAML syntax for multiline PR body strings
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- chore: bump version to 2025.06.25
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.31] - 2025-06-15
+
+### 🎉 Features
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: use heredoc for PR body to fix YAML multiline string syntax
+- fix: remove deprecated husky shebang lines from pre-push hook
+- fix: remove backticks from PR body strings to fix YAML syntax
+- fix: use npm install instead of npm ci (no package-lock.json)
+- fix: correct YAML syntax for multiline PR body strings
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- chore: bump version to 2025.06.25
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.30] - 2025-06-15
+
+### 🎉 Features
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: remove backticks from PR body strings to fix YAML syntax
+- fix: use npm install instead of npm ci (no package-lock.json)
+- fix: correct YAML syntax for multiline PR body strings
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- chore: bump version to 2025.06.25
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.29] - 2025-06-15
+
+### 🎉 Features
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: remove backticks from PR body strings to fix YAML syntax
+- fix: use npm install instead of npm ci (no package-lock.json)
+- fix: correct YAML syntax for multiline PR body strings
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- chore: bump version to 2025.06.25
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.28] - 2025-06-15
+
+### 🎉 Features
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: remove backticks from PR body strings to fix YAML syntax
+- fix: use npm install instead of npm ci (no package-lock.json)
+- fix: correct YAML syntax for multiline PR body strings
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- chore: bump version to 2025.06.25
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.27] - 2025-06-15
+
+### 🎉 Features
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: use npm install instead of npm ci (no package-lock.json)
+- fix: correct YAML syntax for multiline PR body strings
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.26
+- chore: bump version to 2025.06.25
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.26] - 2025-06-15
+
+### 🎉 Features
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: correct YAML syntax for multiline PR body strings
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.25
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.25] - 2025-06-15
+
+### 🎉 Features
+- feat: consolidate CI workflows and add Dependabot configuration
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.24] - 2025-06-15
+
+### 🎉 Features
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: use GitHub CLI for PR creation to prevent branch reversion
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.23] - 2025-06-15
+
+### 🎉 Features
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.22] - 2025-06-15
+
+### 🎉 Features
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: replace direct push with PR-based sync to preview branch
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
+## [2025.06.21] - 2025-06-15
+
+### 🎉 Features
+- feat: simplify to static-only deployment
+- feat: implement body metrics logging with modal interface
+- feat: implement database types and profile service
+- feat: complete Next.js migration cleanup and optimizations
+- feat: add GitHub workflows and finalize Next.js migration setup
+- feat: Complete codebase reorganization - Next.js to root, React to legacy
+- feat: sync Vercel environment variables with database branches
+- feat: configure Supabase database branches for multi-environment setup
+- feat: add comprehensive Supabase multi-environment setup
+- feat: implement comprehensive dev->preview->main workflow
+- feat: add comprehensive tests for weight-logging-v2 components
+- feat: add explicit build command with tests to vercel.json
+- feat: add responsive image optimization
+- feat: show splash for installed PWA
+- feat: add step tracker module
+- feat: enable progress photo uploads
+- feat: add route prefetching for faster navigation
+
+### 🐛 Bug Fixes
+- fix: escape double quotes in git tag messages to prevent shell errors
+- fix: re-enable Supabase after fixing module imports
+- fix: add Node 22 version specification for Vercel
+- fix: temporarily disable Supabase to debug Vercel deployment
+- fix: change moduleResolution to node for better Vercel compatibility
+- fix: replace all @ alias imports with relative imports for Vercel compatibility
+- fix: add webpack alias configuration for module resolution on Vercel
+- fix: add baseUrl to tsconfig.json for Vercel build compatibility
+- fix: update GitHub Actions workflows to use correct build command
+- fix: resolve motion component warnings and improve test reliability
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: resolve WeightStep component syntax error
+- fix: HealthKit import weight validation and prevent unwanted redirects
+- fix: restore scroll on mobile
+- fix: prevent login refresh loop on timeout
+
+### 🔧 Other Changes
+- chore: bump version to 2025.06.20
+- merge: dev -> preview (static-only deployment)
+- chore: bump version to 2025.06.19
+- merge: dev -> preview (Next.js migration complete)
+- chore: bump version to 2025.06.18
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- chore: bump version to 2025.06.15
+- chore: Fix Next.js migration issues
+- chore: bump version to 2025.06.14
+- refactor: completely rebuild Supabase integration following official Next.js docs
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- docs: add Vercel environment variable migration guide for Next.js
+- chore: bump version to 2025.06.9
+- chore: remove deprecated @supabase/auth-helpers-nextjs package
+- chore: bump version to 2025.06.8
+- chore: bump version to 2025.06.7
+- chore: bump version to 2025.06.6
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.06.52
+- chore: bump version to 2025.06.51
+- chore: bump version to 2025.06.50
+- Fix authentication issues across web and iOS
+- chore: bump version to 2025.06.49
+- Fix all failing tests in weight logging components
+- chore: bump version to 2025.06.49
+- chore: bump version to 2025.06.48
+- Fix test failures and improve component stability
+- chore: bump version to 2025.06.47
+- chore: bump version to 2025.06.46
+- docs: add comprehensive environment setup completion summary
+- chore: bump version to 2025.06.45
+- chore: bump version to 2025.06.44
+- chore: bump version to 2025.06.43
+- chore: bump version to 2025.06.42
+- chore: bump version to 2025.06.41
+- Merge preview into main: Add comprehensive tests for weight-logging-v2 components
+- chore: bump version to 2025.06.40
+- Merge dev into preview - resolve conflicts
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- chore: bump version to 2025.06.39
+- chore: bump version to 2025.06.38
+- chore: bump version to 2025.06.37
+- Merge branch 'dev' into preview
+- chore: bump version to 2025.06.36
+- chore: bump version to 2025.06.35
+- chore: bump version to 2025.06.35
+- Merge dev into preview
+- chore: bump version to 2025.06.34
+- chore: bump version to 2025.06.33
+- Add test and typecheck to build process for preview branch
+- Remove 'All rights reserved' from copyright notice
+- chore: bump version to 2025.06.33
+- chore: bump version to 2025.06.32
+- chore: bump version to 2025.06.31
+- chore: bump version to 2025.06.30
+- chore: bump version to 2025.06.29
+- chore: bump version to 2025.06.28
+- chore: bump version to 2025.06.27
+- chore: bump version to 2025.06.26
+- Improve SMS login design - remove unnecessary boxing
+- chore: bump version to 2025.06.25
+- 📱 Build iOS app with body fat safety validation
+- chore: bump version to 2025.06.24
+- ⚠️ Add body fat percentage safety validation
+- chore: bump version to 2025.06.23
+- 📱 Rebuild iOS app with HealthKit onboarding and UX fixes
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- 🔧 Fix UX issues and add HealthKit onboarding
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Clean up auth debugging files and restore original system
+- Remove email_subscriptions references causing auth failure
+- Fix auth error: Create missing email_subscriptions table
+- Add comprehensive auth debugging tools
+- Add comprehensive auth diagnostics
+- chore: bump version to 2025.06.17
+- chore: bump version to 2025.06.16
+- Add simple auth workaround for Supabase ownership error
+- Add fix for Supabase auth 500 error
+- chore: bump version to 2025.06.15
+- Add Supabase auth debugging tools
+- Add nuclear auth fix and config check scripts
+- Add final auth fix with SECURITY DEFINER
+- Add auth debugging scripts to isolate registration issue
+- Add simplified auth diagnostic and immediate fix scripts
+- Add auth diagnostic and RLS fix scripts
+- chore: bump version to 2025.06.14
+- Add admin dashboard route for ARR tracking
+- chore: bump version to 2025.06.13
+- chore: bump version to 2025.06.12
+- 🚨 URGENT AUTH FIX + 📊 Admin Dashboard for 10k MRR Goal
+- 📝 Add new blog posts and fix test failures
+- 🧹 Clean up unused SQL debug files and temporary directories
+- 🔧 Fix blog JSX build error
+- chore: bump version to 2025.06.11
+- 🔧 Fix redirects + mobile landing page + database seeding
+- chore: bump version to 2025.06.10
+- 📝 Add comprehensive blog system with evidence-based content
+- chore: bump version to 2025.06.9
+- 🔧 Fix PostgreSQL syntax error in auth fix script
+- chore: bump version to 2025.06.8
+- 🚫 Hide PWA install prompt for logged out users
+- chore: bump version to 2025.06.7
+- ✨ Add admin dashboard at /epic + white landing icons
+- 🚀 Refine core values through YCombinator lens
+- chore: bump version to 2025.06.6
+- 📖 Create comprehensive core values and update About page
+- chore: bump version to 2025.06.5
+- 💼 Update careers page to show no open positions
+- chore: bump version to 2025.06.4
+- 🔗 Add status page link to footer
+- chore: bump version to 2025.06.3
+- 🚨 CRITICAL: Complete fix for user registration failure
+- chore: bump version to 2025.06.2
+- ✨ Add comprehensive cross-platform section to landing page
+- chore: bump version to 2025.06.1
+- ♻️ Remove AI references from About page
+- chore: bump version to 2025.06.0
+- chore: bump version to 2025.07.01
+- ✨ Add comprehensive security reporting and careers pages
+- chore: bump version to 2025.06.31
+- 🎯 Implement F-layout pattern for above-the-fold hero section
+- chore: bump version to 2025.06.30
+- ✨ Redesign landing page with Linear-inspired aesthetics
+- chore: bump version to 2025.06.29
+- ✨ Create comprehensive About page for LogYourBody
+- chore: bump version to 2025.06.28
+- ✨ Redesign footer with YCombinator format and Linear aesthetics
+- chore: bump version to 2025.06.27
+- ♿ Improve accessibility with Headless UI implementations
+- chore: bump version to 2025.06.26
+- 🔧 Clean up header navigation and fix iOS swipe back
+- chore: bump version to 2025.06.25
+- 🔧 Fix lazy image placeholder and force fix database user creation
+- chore: bump version to 2025.06.24
+- chore: bump version to 2025.06.23
+- chore: bump version to 2025.06.22
+- chore: bump version to 2025.06.21
+- chore: bump version to 2025.06.20
+- chore: bump version to 2025.06.19
+- chore: bump version to 2025.06.18
+- Merge remote-tracking branch 'origin/codex/improve-footer-module-design'
+- Merge remote-tracking branch 'origin/codex/improve-first-contentful-paint-score'
+- chore: bump version to 2025.06.17
+- ✨ Add Linear-inspired features flyout menu and fix database user creation
+- chore: bump version to 2025.06.16
+- Improve FCP by preloading fonts
+- 🔧 Fix missing image optimization dependencies and SVG data URL
+- chore: bump version to 2025.06.15
+- 🐛 Fix user creation for all auth methods (email, SMS, social)
+- chore: bump version to 2025.06.14
+- chore: bump version to 2025.06.13
+- ✨ Add progress photo upload feature with Supabase storage
+- chore: bump version to 2025.06.12
+- chore: bump version to 2025.06.11
+- chore: bump version to 2025.06.10
+- chore: bump version to 2025.06.9
+- Merge branch 'yjd4he-codex/add-face-id-requirement-for-ios-users' - Add Face ID lock option for iOS
+- chore: bump version to 2025.06.8
+- Merge branch 'codex/show-pwa-splash-screen-for-logged-in-users' - Show splash screen for installed PWA
+- chore: bump version to 2025.06.7
+- Merge branch 'codex/review-ios-flow-for-bugs-and-ux-improvements' - Enable SMS auth for iOS
+- chore: bump version to 2025.06.6
+- Merge branch 'codex/add-lazy-loading-and-image-optimization' - Add responsive image optimization
+- Add reusable footer with CTA
+- chore: bump version to 2025.06.5
+- chore: bump version to 2025.06.4
+- chore: bump version to 2025.06.3
+- chore: bump version to 2025.06.2
+- chore: bump version to 2025.06.1
+- Merge branch 'codex/implement-photo-upload-interface-with-heic-support'
+- Merge branch 'codex/identify-inefficiencies-in-component-structure'
+- Merge branch 'codex/fix-sms-input-for-phone-number-format'
+- Merge codex/create-step-counter-module-for-landing-page into main
+- Merge branch 'codex/add-features-drop-down-menu-to-header'
+- Merge codex/add-face-id-requirement-for-ios-users into main
+- chore: set up automated calendar-based semantic versioning
+- Improve phone number input and validation
+- Add features dropdown and anchor sections
+- Add test auth page for debugging authentication issues
+- Merge PR: Update RevenueCat documentation and debug improvements
+- Merge PR: Add route prefetching for faster navigation
+- Merge PR: Add step count support to dashboard
+- Merge PR: Add global error boundary for better error handling
+- Merge PR: Allow null email in profiles table
+- Merge PR: Use dynamic viewport units for better mobile UX
+- Merge PR: Fix loading timeout error on login screen
+- Merge PR: Fix Apple HealthKit permission request issue
+- Merge pull request #23 from itstimwhite/codex/add-body-slider-demo-for-weight-loss
+- Add interactive timeline demo to landing page
+- Allow null email in profiles
+- refactor: unify picker components
+- Merge pull request #20 from itstimwhite/codex/fix-homepage-loading-issues-on-mobile-and-desktop
+- Merge pull request #19 from itstimwhite/codex/analyze-and-optimize-vite-setup
+- Merge pull request #15 from itstimwhite/codex/analyze-app-capabilities-and-vendors-for-privacy-coverage
+- ⚡ Optimize Vite build and dev setup
+- Merge pull request #11 from itstimwhite/codex/add-vitest-for-unit-testing
+- feat(dashboard): display step count
+- docs: update RevenueCat env vars
+- Update privacy and terms for third-party services
+- Add Face ID lock option for iOS
+- Add Face ID lock option for iOS
+- chore: add vitest config
+- fix healthkit permissions
+- 🔧 Enable SMS signup in Supabase configuration
+- Add global error boundary
+- ✨ Enable SMS authentication on iOS
+- 🐛 Fix weak password error handling
+- Use dynamic viewport units
+- Merge PR: Improve test cleanup in swipe navigation tests
+- Enable SMS auth
+- Merge PR: Improve changelog page accessibility
+- Merge PR: Fix WebAuthn credential ID encoding
+- Merge PR: Update React Router documentation from 7 to 6
+- use base64urlToBuffer for credential id
+- refactor: update changelog page for accessibility
+- test: clean up swipe navigation listeners
+- docs: update routing section to React Router 6
+- ✨ Add dynamic copyright year at build time
+- Merge PR: migrate jest to vitest mocks
+- 🐛 Fix Apple Sign In 500 error with improved error handling
+- test: migrate jest to vitest mocks
+- 🎨 Fix landing page layout and centering issues
+- 🐛 Fix missing Calendar import in LandingPage
+- ✨ Add time machine feature section to landing page
+- 🎨 Update UI to match Linear design system
+- 🎨 Fix button hover states and input focus styles
+- 🎨 Update splash and auth screens to match new Linear-inspired design
+- ✨ Optimize landing page copywriting for conversions
+- 🎨 Convert landing page to full dark theme
+- ✨ Apply new design system to landing page
+- 🎨 Add custom theme utilities to Tailwind config
+- ✨ Add password visibility toggle for desktop signup
+- 🐛 Fix profile loading timeout on web
+- 🎨 Redesign app icons with premium aesthetics
+- 🐛 Fix iOS app icon configuration
+- ✨ Add swipe navigation for log entries and photo capture
+- 🐛 Fix navigation issues and optimize mobile layout
+- 🐛 Fix infinite re-renders and improve iOS UX
+- 🐛 Fix infinite redirect loop on iOS after authentication
+- 🎨 Fix body metrics calculations and improve responsive UI
+- ✨ Enable Google Sign In and add version display to auth screens
+- 🔧 Fix Google OAuth redirect to homepage issue
+- 🔧 Fix Vercel deployment: configure build environment variables
+- ✨ Configure Prettier with Tailwind plugin and generate SVG avatars
+- 🔧 Fix web OAuth redirects and Apple Sign In issues
+- 🧪 Temporarily bypass payments & fix database issues for iOS testing
+- ⚡ Optimize avatar system: 3,600 → 20 files (99.7% size reduction)
+- 🎨 Complete avatar system with 3,600 pre-rendered wireframes
+- 🎨 Update web favicons to match iOS app icon
+- 🚀 Fix iOS startup issues: splash screen, RevenueCat keys, and navigation flow
+- 🔒 Add vercel-local.json to .gitignore for security
+- 🔧 Fix auth timeout hangs & improve web signup UX
+- 🐞 iOS: fix native build redirect hang (disable SW, tighten splash logic, add fallback)
+- ✨ Enhance RevenueCat validation & testing infrastructure
+- ✨ Navigation & Loading v2 – swipe, caching, timeout, and SW fixes
+- Add integration tests for profile screen v2
+- ✨ Profile screen v2 – stats alignment & timeline fix
+- Fix weight logging Next button and HealthKit display issues
+- Refactor weight logging with premium 4-step flow
+- Create premium weight logging screen with 2025 mobile UX standards
+- Redesign onboarding with premium 2025 mobile UX standards
+- Fix mobile onboarding UX and profile loading issues
+- Add native Apple Sign In integration for iOS
+- Enhance duplicate email handling in sign up flow
+- Fix sign up flow hanging issue and improve error handling
+- Implement comprehensive HealthKit sync functionality
+- Add RevenueCat integration testing components
+- Fix Apple Sign In redirect loop on desktop
+- Skip HealthKit setup on non-iOS platforms to prevent delays
+- Fix profile loading timeout and service worker dev issues
+- Fix Settings scrolling and optimize mobile spacing
+- Optimize mobile dashboard for full-screen experience
+- Implement comprehensive mobile dashboard redesign
+- Update iOS HealthKit entitlements
+- Fix iOS scheme name in Capacitor config
+- Implement enhanced UI/UX improvements and HealthKit onboarding
+- Fix Chrome desktop authentication issues and add browser extension error filtering
+- Add weight prompt for new users to improve onboarding experience
+- Add comprehensive SMS login with mobile-optimized UX and Vercel deployment configuration
+- Add comprehensive performance optimizations for faster loading and better UX
+- Add comprehensive HealthKit integration and modern onboarding
+- Add Capacitor iOS app setup
+- Temporarily disable Google authentication
+- Enhance PWA install prompt for mobile browsers
+- Fix OAuth login redirect loop - ensure authenticated users go to dashboard
+- Add OAuth redirect URL debugging for Apple and Google auth
+- Remove obsolete supabase-migration.sql file
+- Fix user registration 404 error and apply database migrations
+- Enhance changelog with email subscriptions and clean Tailwind UI design
+- Add comprehensive changelog page with automatic git commit integration
+- Fix Settings page mobile blank screen issue
+- Implement comprehensive PWA version management and cache handling
+- Fix biometric authentication implementation
+- Fix PWA configuration and add missing icon files
+- Add comprehensive GitHub documentation and project setup
+- Add RevenueCat subscription system with Stripe integration
+- Add Supabase CLI integration and migration management
+- Implement comprehensive accessibility improvements and update logo
+- Remove View Demo button from landing page hero section
+- Simplify pricing section with single plan and billing toggle
+- Add responsive desktop landing page with professional design
+- Implement mandatory profile setup before dashboard access
+- Fix production authentication with environment fallbacks
+- Fix authentication security vulnerability
+- Add complete PWA functionality with offline support
+- Fix paywall showing on first login by auto-starting trials
+- Refactor App.tsx routing and auth system improvements
+- completionId: cgen-4421cbbf680140a3b3bc2e22787f2fe0
+- bash
+- Add SEO optimization for 404 page
+- view_path
+- Merge branch 'main' of https://github.com/itstimwhite/LogYourBody into ai_main_a0fedf24556e
+- Fix Paywall component with correct title changes from diff
+- Update Paywall title text to match diff changes
+- Update Need Help button to link to support email
+- Clean up and optimize splash screen for proper viewport fitting and responsive spacing
+- Update subscription plans with new annual pricing
+- Update splash screen to match the reference image styling exactly
+- Update Index page to redirect to splash screen
+- Create splash screen component with full-screen background and prominent text/button
+- Remove duplicate signOut and startTrial functions
+- Make Supabase integration optional with fallback for missing environment variables
+- Fix Settings page syntax by properly wrapping in AuthGuard
+- Update Settings page to use Supabase integration
+- Update Index page to use Supabase authentication
+- bash
+- view_path
+- Add formatted lean body mass function to useBodyMetrics hook
+- Fix MetricsPanel component with proper syntax and horizontal user info
+- view_path
+- Fix updateUser function to actually update user state
+- Fix biological sex toggle functionality to properly update gender
+- Update Settings page with better tab visibility, inline biological sex, and editable email/password
+- Create editable Settings page with interactive controls
+- Create subscription types for RevenueCat integration
+- Change "Log Your Body" to "LogYourBody" in Index page
+- Change app name to "Log Your Body" and remove icon
+- Replace Facebook sign-in with Apple sign-in
+- Fix useBodyMetrics hook with proper unit conversion and settings
+- Update types to include unit preferences
+- Fix index.css with complete refined styling
+- Update index.css with refined color scheme inspired by sleep app
+- Create TypeScript types for BodyMetrics app
+- Initial commit
+
+
 ## [2025.06.20] - 2025-06-15
 
 ### 🎉 Features
