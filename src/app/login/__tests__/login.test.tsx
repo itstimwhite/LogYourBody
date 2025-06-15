@@ -189,4 +189,16 @@ describe('LoginPage', () => {
     // Check that it has minLength attribute
     expect(passwordInput).toHaveAttribute('minLength', '6')
   })
+
+  it('shows domain suggestions as the user types an email', async () => {
+    const user = userEvent.setup()
+    render(<LoginPage />)
+
+    const emailInput = screen.getByLabelText('Email')
+
+    await user.type(emailInput, 'user@gm')
+
+    expect(screen.getByRole('listbox')).toBeInTheDocument()
+    expect(screen.getByText('user@gmail.com')).toBeInTheDocument()
+  })
 })
