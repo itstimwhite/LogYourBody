@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import { Button } from '../../components/ui/button'
-import { Badge } from '../../components/ui/badge'
-import { Card, CardContent } from '../../components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Smartphone,
   Download,
@@ -20,8 +20,8 @@ import {
   Clock,
   ExternalLink,
 } from 'lucide-react'
-import { Header } from '../../components/Header'
-import { Footer } from '../../components/Footer'
+import { Header } from '@/components/Header'
+import { Footer } from '@/components/Footer'
 import Link from 'next/link'
 
 export default function MobilePage() {

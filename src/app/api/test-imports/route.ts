@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createClient as createBrowserClient } from '../../../utils/supabase/client'
-import { createClient as createServerClient } from '../../../utils/supabase/server'
+import { createClient as createBrowserClient } from '@/utils/supabase/client'
+import { createClient as createServerClient } from '@/utils/supabase/server'
 
 export async function GET() {
   try {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Popover, Transition } from '@headlessui/react';
 import { ChevronDown, BarChart3, TrendingUp, Camera, Smartphone, Shield, Clock, Activity, Calendar } from 'lucide-react';
-import { cn } from '../lib/utils';
+import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
 
 interface Feature {

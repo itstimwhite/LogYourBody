@@ -14,7 +14,7 @@ import {
   DialogFooter,
 } from './ui/dialog'
 import { Calendar, Loader2, X } from 'lucide-react'
-import { profileService, type BodyMetric } from '../lib/services/profile'
+import { profileService, type BodyMetric } from '@/lib/services/profile'
 
 interface LogEntryModalProps {
   open: boolean

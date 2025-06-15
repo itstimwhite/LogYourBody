@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
-import { createClient } from '../../../utils/supabase/server'
+import { createClient } from '@/utils/supabase/server'
 import { LoginForm } from './login-form'
-import { VersionDisplay } from '../../../components/VersionDisplay'
+import { VersionDisplay } from '@/components/VersionDisplay'
 import Link from 'next/link'
 import { Metadata } from 'next'
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 }
 
 export default async function LoginPage() {
-  const supabase = createClient()
+  const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {

@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 import Link from 'next/link'
-import { Button } from '../../components/ui/button'
-import { Footer } from '../../components/Footer'
+import { Button } from '@/components/ui/button'
+import { Footer } from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: 'Terms of Service - LogYourBody',

@@ -1,48 +1,5 @@
 {
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
   "framework": "nextjs",
-  "installCommand": "npm install",
-  "devCommand": "npm run dev",
-  "env": {
-    "NEXT_PUBLIC_VERSION": "2025.06.50",
-    "NEXT_PUBLIC_BUILD_HASH": "dev"
-  },
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_VERSION": "2025.06.50",
-      "NEXT_PUBLIC_BUILD_HASH": "dev"
-    }
-  },
-  "functions": {
-    "app/api/**/*.ts": {
-      "maxDuration": 30
-    }
-  },
-  "redirects": [
-    {
-      "source": "/login",
-      "destination": "/login",
-      "permanent": false
-    }
-  ],
-  "headers": [
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Access-Control-Allow-Origin",
-          "value": "*"
-        },
-        {
-          "key": "Access-Control-Allow-Methods",
-          "value": "GET, POST, PUT, DELETE, OPTIONS"
-        },
-        {
-          "key": "Access-Control-Allow-Headers",
-          "value": "Content-Type, Authorization"
-        }
-      ]
-    }
-  ]
+  "buildCommand": "npm run build",
+  "installCommand": "npm install"
 }
