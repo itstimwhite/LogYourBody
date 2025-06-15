@@ -1,0 +1,215 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, preview, main]
+  pull_request:
+    branches: [dev, preview, main]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  test-and-build:
+    name: Test & Build
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for versioning
+          token: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+            
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run linting
+        run: npm run lint
+        
+      - name: Run type checking
+        run: npm run typecheck
+        
+      - name: Run tests
+        run: npm test
+        
+      - name: Build application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_VERSION: ${{ github.sha }}
+
+  # Auto-versioning on successful push to branches
+  auto-version:
+    name: Auto Version
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/preview' || github.ref == 'refs/heads/main')
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          
+      - name: Configure Git
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+      - name: Run version bump
+        run: |
+          node scripts/version-manager.cjs
+          
+      - name: Push changes
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
+          git push --tags
+
+  # Auto-merge from dev to preview after successful tests
+  create-pr-to-preview:
+    name: Auto PR to Preview
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: dev
+          base: preview
+          title: '🚀 Auto-merge: dev → preview'
+          body: |
+            ## Automated Pull Request
+            
+            This PR was automatically created after successful tests on the `dev` branch.
+            
+            ### ✅ All Checks Passed
+            - Tests: ✅ Passed
+            - Build: ✅ Successful
+            - Type checking: ✅ Passed
+            - Linting: ✅ Passed
+            
+            ### 📋 Changes
+            View commit history for detailed changes.
+            
+            ### 🤖 Auto-merge
+            This PR will be automatically merged if all checks continue to pass.
+            
+            ---
+            *This is an automated pull request created by GitHub Actions.*
+          labels: |
+            automated
+            dev-to-preview
+            
+      - name: Enable Auto-merge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        run: |
+          gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Auto-merge from preview to main after successful tests
+  create-pr-to-main:
+    name: Auto PR to Main
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.ref == 'refs/heads/preview' && github.event_name == 'push'
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: preview
+          base: main
+          title: '🚀 Release: preview → main'
+          body: |
+            ## Release Pull Request
+            
+            This PR was automatically created after successful tests on the `preview` branch.
+            
+            ### ✅ All Checks Passed
+            - Tests: ✅ Passed
+            - Build: ✅ Successful
+            - Type checking: ✅ Passed
+            - Linting: ✅ Passed
+            
+            ### 📋 Release Notes
+            View commit history for detailed changes.
+            
+            ### ⚠️ Manual Review Required
+            This PR requires manual review and approval before merging to production.
+            
+            ---
+            *This is an automated pull request created by GitHub Actions.*
+          labels: |
+            automated
+            preview-to-main
+            release
+
+  # Auto-merge Dependabot PRs if tests pass
+  auto-merge-dependabot:
+    name: Auto-merge Dependabot
+    runs-on: ubuntu-latest
+    needs: test-and-build
+    if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Dependabot metadata
+        id: metadata
+        uses: dependabot/fetch-metadata@v2
+        with:
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
+          
+      - name: Auto-merge Dependabot PRs for minor/patch updates
+        if: steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch'
+        run: gh pr merge --auto --merge "$PR_URL"
+        env:
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
