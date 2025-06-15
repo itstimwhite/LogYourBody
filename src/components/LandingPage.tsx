@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import {
@@ -34,6 +35,7 @@ import { SupabaseStatusBanner } from "./SupabaseStatusBanner";
 
 export function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
+  const { user, signOut } = useAuth();
 
   const slugify = (text: string) =>
     text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -163,14 +165,42 @@ export function LandingPage() {
                   About
                 </Button>
               </Link>
-              <Link href="/blog">
-                <Button
-                  aria-label="Read our blog"
-                  className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
-                >
-                  Blog
-                </Button>
-              </Link>
+              {user ? (
+                <>
+                  <Link href="/dashboard">
+                    <Button
+                      variant="ghost"
+                      className="text-sm text-linear-text-secondary hover:text-linear-text"
+                    >
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button
+                    onClick={signOut}
+                    className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
+                  >
+                    Sign Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button
+                      variant="ghost"
+                      className="text-sm text-linear-text-secondary hover:text-linear-text"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/login">
+                    <Button
+                      className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
+                    >
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           </nav>
         </div>
