@@ -1,14 +1,11 @@
 import React from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { WeightLoggingFlowV2 } from "./WeightLoggingFlowV2";
 import {
   type WeightData,
   type BodyFatData,
   type MethodData,
 } from "@/schemas/weight-logging";
-import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/lib/supabase";
-import heic2any from "heic2any";
+import { ResponsiveFlowWrapper } from "@/components/ui/responsive-flow-wrapper";
 
 interface WeightLoggingWrapperProps {
   show: boolean;
@@ -33,7 +30,6 @@ export function WeightLoggingWrapper({
   initialWeight,
   initialBodyFat,
 }: WeightLoggingWrapperProps) {
-  const { user } = useAuth();
 
   const handleComplete = async (data: {
     weight: WeightData;
@@ -71,22 +67,17 @@ export function WeightLoggingWrapper({
   };
 
   return (
-    <AnimatePresence>
-      {show && (
-        <motion.div
-          className="fixed inset-0 z-50 bg-background"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <WeightLoggingFlowV2
-            onComplete={handleComplete}
-            onCancel={onClose}
-            initialData={initialData}
-          />
-        </motion.div>
-      )}
-    </AnimatePresence>
+    <ResponsiveFlowWrapper
+      isOpen={show}
+      onClose={onClose}
+      showCloseButton={false} // WeightLoggingFlowV2 has its own close button
+      className="overflow-hidden"
+    >
+      <WeightLoggingFlowV2
+        onComplete={handleComplete}
+        onCancel={onClose}
+        initialData={initialData}
+      />
+    </ResponsiveFlowWrapper>
   );
 }

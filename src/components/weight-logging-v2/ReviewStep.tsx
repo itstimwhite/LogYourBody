@@ -68,7 +68,7 @@ export function ReviewStep({
     {
       icon: Scale,
       label: "Weight",
-      value: `${weight.value} ${weight.unit}`,
+      value: `${weight.value.toFixed(1)} ${weight.unit}`,
       subtitle: weightHelper,
       step: 0,
     },
@@ -249,7 +249,7 @@ export function ReviewStep({
           </div>
           <div className="text-foreground">
             <span className="text-lg font-semibold">
-              {weight.value} {weight.unit}
+              {weight.value.toFixed(1)} {weight.unit}
             </span>
             <span className="mx-2 text-muted-foreground">•</span>
             <span className="text-lg font-semibold">

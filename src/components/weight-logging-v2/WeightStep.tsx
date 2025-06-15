@@ -14,6 +14,7 @@ import { weightAnalytics, analyticsUtils } from "@/utils/weight-analytics";
 import { useHealthKit } from "@/hooks/use-healthkit";
 import { isNativeiOS } from "@/lib/platform";
 import { toast } from "@/hooks/use-toast";
+import { StepContainer, StepHeader, QuickPresets, FormField } from "@/components/ui/step-container";
 
 interface WeightStepProps {
   value: WeightData;
@@ -160,9 +161,16 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
           unit: "kg",
         };
         const convertedWeight = weightUtils.convertWeight(healthWeight, unit);
-
-        setInputValue(convertedWeight.value.toString());
+        
+        // Round to 1 decimal place and convert to string
+        const roundedValue = Math.round(convertedWeight.value * 10) / 10;
+        setInputValue(roundedValue.toString());
         setHasInteracted(true);
+        
+        // Manually trigger validation for HealthKit import
+        const validatedData: WeightData = { value: roundedValue, unit };
+        onChange(validatedData);
+        setCanGoNext(true);
 
         // Track HealthKit usage
         weightAnalytics.trackWeightInput({
@@ -179,7 +187,7 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
 
         toast({
           title: "Weight Imported",
-          description: `${convertedWeight.value} ${convertedWeight.unit} from HealthKit`,
+          description: `${roundedValue} ${unit} from HealthKit`,
         });
       } else {
         toast({
@@ -231,32 +239,13 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
   const isValid = currentValue >= 30 && currentValue <= 700;
 
   return (
-    <motion.div
-      className="space-y-8"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.25, type: "spring", damping: 20 }}
-    >
+    <StepContainer>
       {/* Header */}
-      <div className="space-y-4 text-center">
-        <motion.div
-          className="mx-auto flex h-20 w-20 items-center justify-center rounded-3xl bg-linear-purple/10"
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          <Scale className="h-10 w-10 text-linear-purple" />
-        </motion.div>
-
-        <div>
-          <h1 className="mb-2 text-3xl font-bold text-linear-text">
-            What's your weight?
-          </h1>
-          <p className="text-lg text-linear-text-secondary">
-            Enter your current weight measurement
-          </p>
-        </div>
-      </div>
+      <StepHeader
+        icon={<Scale />}
+        title="What's your weight?"
+        subtitle="Enter your current weight measurement"
+      />
 
       {/* HealthKit Import */}
       {showHealthKit && (

@@ -37,6 +37,11 @@ export interface WeightAnalyticsEvents {
     used_presets: boolean;
   };
 
+  photo_added: {
+    photo_url: string;
+    step_name?: string;
+  };
+
   validation_error: {
     step_name: string;
     field: string;
@@ -149,6 +154,11 @@ class WeightAnalytics {
     params: WeightAnalyticsEvents["accessibility_interaction"],
   ) {
     this.track("accessibility_interaction", params);
+  }
+
+  // Track photo added
+  trackPhotoAdded(params: WeightAnalyticsEvents["photo_added"]) {
+    this.track("photo_added", params);
   }
 
   // Generic track method - replace with your analytics provider
