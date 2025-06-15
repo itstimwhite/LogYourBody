@@ -1,4 +1,5 @@
 // Blog utilities for loading and parsing markdown posts
+import 'server-only';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
