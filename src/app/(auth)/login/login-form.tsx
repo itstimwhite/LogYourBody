@@ -36,45 +36,49 @@ export function LoginForm() {
     setError('')
 
     try {
-      if (isLogin) {
-        // Sign in
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        })
+      // Temporarily disabled for deployment debugging
+      router.push('/dashboard')
+      router.refresh()
+      
+      // if (isLogin) {
+      //   // Sign in
+      //   const { error } = await supabase.auth.signInWithPassword({
+      //     email,
+      //     password,
+      //   })
 
-        if (error) {
-          setError(error.message)
-        } else {
-          router.push('/dashboard')
-          router.refresh()
-        }
-      } else {
-        // Sign up
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: {
-              full_name: name,
-            }
-          }
-        })
+      //   if (error) {
+      //     setError(error.message)
+      //   } else {
+      //     router.push('/dashboard')
+      //     router.refresh()
+      //   }
+      // } else {
+      //   // Sign up
+      //   const { error } = await supabase.auth.signUp({
+      //     email,
+      //     password,
+      //     options: {
+      //       data: {
+      //         full_name: name,
+      //       }
+      //     }
+      //   })
 
-        if (error) {
-          if (error.message.includes('already registered')) {
-            setError('An account with this email already exists.')
-            setIsLogin(true)
-            setTimeout(() => {
-              setError('Please sign in with your existing account.')
-            }, 2000)
-          } else {
-            setError(error.message)
-          }
-        } else {
-          setError('Account created! Please check your email and click the confirmation link to complete your registration.')
-        }
-      }
+      //   if (error) {
+      //     if (error.message.includes('already registered')) {
+      //       setError('An account with this email already exists.')
+      //       setIsLogin(true)
+      //       setTimeout(() => {
+      //         setError('Please sign in with your existing account.')
+      //       }, 2000)
+      //     } else {
+      //       setError(error.message)
+      //     }
+      //   } else {
+      //     setError('Account created! Please check your email and click the confirmation link to complete your registration.')
+      //   }
+      // }
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message)

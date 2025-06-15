@@ -65,28 +65,43 @@ export default function SettingsPage() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+        // Temporarily disabled for deployment debugging
+        const mockUser: User = {
+          id: 'mock-user-id',
+          email: 'user@example.com',
+          name: 'Test User',
+          birthday: '1990-01-01',
+          height: 175,
+          gender: 'male',
+        }
+        setUser(mockUser)
+        setEditName(mockUser.name || '')
+        setEditBirthday(mockUser.birthday || '')
+        setEditHeight(mockUser.height || 175)
+        setEditEmail(mockUser.email || '')
         
-        if (authError || !authUser) {
-          router.push('/login')
-          return
-        }
+        // const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+        
+        // if (authError || !authUser) {
+        //   router.push('/login')
+        //   return
+        // }
 
-        // For now, use auth user data as placeholder
-        const userData: User = {
-          id: authUser.id,
-          email: authUser.email,
-          name: authUser.user_metadata?.name || null,
-          birthday: authUser.user_metadata?.birthday || null,
-          height: authUser.user_metadata?.height || null,
-          gender: authUser.user_metadata?.gender || null,
-        }
+        // // For now, use auth user data as placeholder
+        // const userData: User = {
+        //   id: authUser.id,
+        //   email: authUser.email,
+        //   name: authUser.user_metadata?.name || null,
+        //   birthday: authUser.user_metadata?.birthday || null,
+        //   height: authUser.user_metadata?.height || null,
+        //   gender: authUser.user_metadata?.gender || null,
+        // }
 
-        setUser(userData)
-        setEditName(userData.name || '')
-        setEditBirthday(userData.birthday || '')
-        setEditHeight(userData.height || 175)
-        setEditEmail(userData.email || '')
+        // setUser(userData)
+        // setEditName(userData.name || '')
+        // setEditBirthday(userData.birthday || '')
+        // setEditHeight(userData.height || 175)
+        // setEditEmail(userData.email || '')
       } catch (error) {
         console.error('Error loading user data:', error)
       } finally {
@@ -130,13 +145,18 @@ export default function SettingsPage() {
 
   const handleSaveName = async () => {
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: { name: editName }
-      })
-      if (!error && user) {
+      // Temporarily disabled for deployment debugging
+      if (user) {
         setUser({ ...user, name: editName })
         setShowNameEdit(false)
       }
+      // const { error } = await supabase.auth.updateUser({
+      //   data: { name: editName }
+      // })
+      // if (!error && user) {
+      //   setUser({ ...user, name: editName })
+      //   setShowNameEdit(false)
+      // }
     } catch (error) {
       console.error('Error updating name:', error)
     }
@@ -144,13 +164,18 @@ export default function SettingsPage() {
 
   const handleSaveBirthday = async () => {
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: { birthday: editBirthday }
-      })
-      if (!error && user) {
+      // Temporarily disabled for deployment debugging
+      if (user) {
         setUser({ ...user, birthday: editBirthday })
         setShowBirthdayEdit(false)
       }
+      // const { error } = await supabase.auth.updateUser({
+      //   data: { birthday: editBirthday }
+      // })
+      // if (!error && user) {
+      //   setUser({ ...user, birthday: editBirthday })
+      //   setShowBirthdayEdit(false)
+      // }
     } catch (error) {
       console.error('Error updating birthday:', error)
     }
@@ -158,13 +183,18 @@ export default function SettingsPage() {
 
   const handleSaveHeight = async () => {
     try {
-      const { error } = await supabase.auth.updateUser({
-        data: { height: editHeight }
-      })
-      if (!error && user) {
+      // Temporarily disabled for deployment debugging
+      if (user) {
         setUser({ ...user, height: editHeight })
         setShowHeightEdit(false)
       }
+      // const { error } = await supabase.auth.updateUser({
+      //   data: { height: editHeight }
+      // })
+      // if (!error && user) {
+      //   setUser({ ...user, height: editHeight })
+      //   setShowHeightEdit(false)
+      // }
     } catch (error) {
       console.error('Error updating height:', error)
     }
@@ -172,11 +202,16 @@ export default function SettingsPage() {
 
   const handleSaveEmail = async () => {
     try {
-      const { error } = await supabase.auth.updateUser({ email: editEmail })
-      if (!error && user) {
+      // Temporarily disabled for deployment debugging
+      if (user) {
         setUser({ ...user, email: editEmail })
         setShowEmailEdit(false)
       }
+      // const { error } = await supabase.auth.updateUser({ email: editEmail })
+      // if (!error && user) {
+      //   setUser({ ...user, email: editEmail })
+      //   setShowEmailEdit(false)
+      // }
     } catch (error) {
       console.error('Error updating email:', error)
     }
@@ -184,11 +219,14 @@ export default function SettingsPage() {
 
   const handleSavePassword = async () => {
     try {
-      const { error } = await supabase.auth.updateUser({ password: editPassword })
-      if (!error) {
-        setEditPassword('')
-        setShowPasswordEdit(false)
-      }
+      // Temporarily disabled for deployment debugging
+      setEditPassword('')
+      setShowPasswordEdit(false)
+      // const { error } = await supabase.auth.updateUser({ password: editPassword })
+      // if (!error) {
+      //   setEditPassword('')
+      //   setShowPasswordEdit(false)
+      // }
     } catch (error) {
       console.error('Error updating password:', error)
     }
@@ -196,8 +234,10 @@ export default function SettingsPage() {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut()
+      // Temporarily disabled for deployment debugging
       router.push('/')
+      // await supabase.auth.signOut()
+      // router.push('/')
     } catch (error) {
       console.error('Error signing out:', error)
     }

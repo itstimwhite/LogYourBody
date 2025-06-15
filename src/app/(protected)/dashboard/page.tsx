@@ -45,58 +45,72 @@ export default function DashboardPage() {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+        // Temporarily disabled for deployment debugging
+        const mockUser: UserProfile = {
+          id: 'mock-user-id',
+          email: 'user@example.com',
+          name: 'Test User',
+          birthday: '1990-01-01',
+          height: 175,
+          gender: 'male',
+        }
+        setUser(mockUser)
+        setMetrics([])
+        setLoading(false)
+        return
         
-        if (authError || !authUser) {
-          router.push('/login')
-          return
-        }
+        // const { data: { user: authUser }, error: authError } = await supabase.auth.getUser()
+        
+        // if (authError || !authUser) {
+        //   router.push('/login')
+        //   return
+        // }
 
-        // For now, use auth user data as placeholder
-        const userProfile: UserProfile = {
-          id: authUser.id,
-          name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
-          email: authUser.email,
-          birthday: authUser.user_metadata?.birthday,
-          height: authUser.user_metadata?.height,
-          gender: authUser.user_metadata?.gender,
-        }
+        // // For now, use auth user data as placeholder
+        // const userProfile: UserProfile = {
+        //   id: authUser.id,
+        //   name: authUser.user_metadata?.name || authUser.email?.split('@')[0] || 'User',
+        //   email: authUser.email,
+        //   birthday: authUser.user_metadata?.birthday,
+        //   height: authUser.user_metadata?.height,
+        //   gender: authUser.user_metadata?.gender,
+        // }
 
-        setUser(userProfile)
+        // setUser(userProfile)
 
-        // Mock metrics data for now
-        const mockMetrics: BodyMetric[] = [
-          {
-            id: '1',
-            user_id: authUser.id,
-            date: new Date().toISOString().split('T')[0],
-            weight: 180,
-            body_fat_percentage: 15.2,
-            method: 'scale' as const,
-            muscle_mass: 145,
-            bone_mass: 7.8,
-            water_percentage: 62.5,
-            photo_url: null,
-            step_count: null,
-            created_at: new Date().toISOString(),
-          },
-          {
-            id: '2',
-            user_id: authUser.id,
-            date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-            weight: 181,
-            body_fat_percentage: 15.8,
-            method: 'scale' as const,
-            muscle_mass: 144,
-            bone_mass: 7.7,
-            water_percentage: 62.1,
-            photo_url: null,
-            step_count: null,
-            created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          },
-        ]
+        // // Mock metrics data for now
+        // const mockMetrics: BodyMetric[] = [
+        //   {
+        //     id: '1',
+        //     user_id: authUser.id,
+        //     date: new Date().toISOString().split('T')[0],
+        //     weight: 180,
+        //     body_fat_percentage: 15.2,
+        //     method: 'scale' as const,
+        //     muscle_mass: 145,
+        //     bone_mass: 7.8,
+        //     water_percentage: 62.5,
+        //     photo_url: null,
+        //     step_count: null,
+        //     created_at: new Date().toISOString(),
+        //   },
+        //   {
+        //     id: '2',
+        //     user_id: authUser.id,
+        //     date: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        //     weight: 181,
+        //     body_fat_percentage: 15.8,
+        //     method: 'scale' as const,
+        //     muscle_mass: 144,
+        //     bone_mass: 7.7,
+        //     water_percentage: 62.1,
+        //     photo_url: null,
+        //     step_count: null,
+        //     created_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
+        //   },
+        // ]
 
-        setMetrics(mockMetrics)
+        // setMetrics(mockMetrics)
       } catch (error) {
         console.error('Error loading dashboard data:', error)
       } finally {

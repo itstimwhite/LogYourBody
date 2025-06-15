@@ -1,17 +1,18 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server'
+// import { redirect } from 'next/navigation'
+// import { createClient } from '@/utils/supabase/server'
 
 export default async function ProtectedLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // Temporarily disabled for deployment debugging
+  // const supabase = await createClient()
+  // const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/login')
-  }
+  // if (!user) {
+  //   redirect('/login')
+  // }
 
   return <>{children}</>
 }

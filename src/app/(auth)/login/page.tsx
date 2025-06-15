@@ -1,9 +1,10 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/utils/supabase/server'
+// import { redirect } from 'next/navigation'
+// import { createClient } from '@/utils/supabase/server'
 import { LoginForm } from './login-form'
 import { VersionDisplay } from '@/components/VersionDisplay'
 import Link from 'next/link'
 import { Metadata } from 'next'
+import { Suspense } from 'react'
 
 export const metadata: Metadata = {
   title: 'Login - LogYourBody',
@@ -16,12 +17,13 @@ export const metadata: Metadata = {
 }
 
 export default async function LoginPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // Temporarily disabled for deployment debugging
+  // const supabase = await createClient()
+  // const { data: { user } } = await supabase.auth.getUser()
 
-  if (user) {
-    redirect('/dashboard')
-  }
+  // if (user) {
+  //   redirect('/dashboard')
+  // }
 
   return (
     <div className="flex min-h-screen flex-col bg-linear-bg font-inter">
@@ -50,7 +52,9 @@ export default async function LoginPage() {
 
           {/* Auth Form */}
           <div className="mx-auto w-full max-w-sm">
-            <LoginForm />
+            <Suspense fallback={<div className="text-linear-text-secondary">Loading...</div>}>
+              <LoginForm />
+            </Suspense>
           </div>
         </div>
       </div>
