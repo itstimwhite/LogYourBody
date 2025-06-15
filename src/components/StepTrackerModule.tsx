@@ -161,7 +161,7 @@ export function StepTrackerSection() {
                 
                 <div className="grid grid-cols-7 gap-2">
                   {weekData.map((day, index) => (
-                    <motion.div
+                    <motion.button
                       key={day.day}
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -173,6 +173,8 @@ export function StepTrackerSection() {
                           : "hover:bg-linear-border/30"
                       }`}
                       onClick={() => setActiveDay(index)}
+                      aria-pressed={index === activeDay}
+                      aria-label={`Show data for day ${day.day}`}
                     >
                       <div className="mb-2 text-xs font-medium text-linear-text-tertiary">{day.day}</div>
                       <div className="mb-3 h-24 relative">
@@ -189,7 +191,7 @@ export function StepTrackerSection() {
                       <div className="text-xs font-semibold text-linear-text">
                         {day.steps > 0 ? `${(day.steps / 1000).toFixed(1)}k` : "—"}
                       </div>
-                    </motion.div>
+                    </motion.button>
                   ))}
                 </div>
               </div>

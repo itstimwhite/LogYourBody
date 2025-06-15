@@ -252,6 +252,7 @@ export function LandingPage() {
                     <button
                       className="flex items-center justify-center gap-2 text-base text-linear-text-secondary hover:text-linear-text transition-colors group"
                       aria-label="View live demo"
+                      onClick={() => scrollToSection('timeline-feature')}
                     >
                       See it in action
                       <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
