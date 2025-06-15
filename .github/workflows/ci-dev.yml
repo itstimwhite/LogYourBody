@@ -59,11 +59,14 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-  sync-to-preview:
-    name: Sync to Preview Branch
+  create-pr-to-preview:
+    name: Auto PR to Preview
     runs-on: ubuntu-latest
     needs: test-and-build
     if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    permissions:
+      contents: write
+      pull-requests: write
     
     steps:
       - name: Checkout code
@@ -72,16 +75,63 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Configure Git
+      - name: Check for existing PR
+        id: check-pr
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+          PR_COUNT=$(gh pr list --base preview --head dev --state open --json number --jq '. | length')
+          echo "count=$PR_COUNT" >> $GITHUB_OUTPUT
           
-      - name: Sync dev to preview
+          if [ "$PR_COUNT" -gt 0 ]; then
+            echo "Existing PR found from dev to preview"
+            PR_NUMBER=$(gh pr list --base preview --head dev --state open --json number --jq '.[0].number')
+            echo "number=$PR_NUMBER" >> $GITHUB_OUTPUT
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Create Pull Request
+        if: steps.check-pr.outputs.count == '0'
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: dev
+          base: preview
+          title: '🚀 Auto-merge: dev → preview'
+          body: |
+            ## Automated Pull Request
+            
+            This PR was automatically created after successful tests on the `dev` branch.
+            
+            ### ✅ All Checks Passed
+            - Tests: ✅ Passed
+            - Build: ✅ Successful
+            - Type checking: ✅ Passed
+            - Linting: ✅ Passed
+            
+            ### 📋 Changes
+            View commit history for detailed changes.
+            
+            ### 🤖 Auto-merge
+            This PR will be automatically merged if all checks continue to pass.
+            
+            ---
+            *This is an automated pull request created by GitHub Actions.*
+          labels: |
+            automated
+            dev-to-preview
+            
+      - name: Enable Auto-merge on New PR
+        if: steps.check-pr.outputs.count == '0' && steps.cpr.outputs.pull-request-operation == 'created'
         run: |
-          git checkout preview || git checkout -b preview
-          git merge --ff-only dev || {
-            echo "❌ Fast-forward merge failed. Manual intervention required."
-            exit 1
-          }
-          git push origin preview
+          gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Update Existing PR
+        if: steps.check-pr.outputs.count != '0'
+        run: |
+          echo "PR #${{ steps.check-pr.outputs.number }} already exists from dev to preview"
+          gh pr comment ${{ steps.check-pr.outputs.number }} --body "🔄 Updated with latest changes from dev branch"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
