@@ -106,7 +106,7 @@ export default function DashboardPage() {
           <CardContent>
             <div className="space-y-4">
               <p className="text-gray-600">
-                You're successfully logged in! This dashboard will soon include:
+                You&apos;re successfully logged in! This dashboard will soon include:
               </p>
               <ul className="list-disc list-inside space-y-2 text-gray-600">
                 <li>Daily weight tracking</li>
