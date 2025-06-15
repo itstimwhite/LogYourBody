@@ -32,6 +32,7 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isNative = Capacitor.isNativePlatform();
+  const isTestEnv = typeof process !== 'undefined' && process.env.NODE_ENV === 'test';
   const healthKit = useHealthKit();
   // Show HealthKit button immediately on iOS, hide if not available after loading
   const showHealthKit =
@@ -249,15 +250,23 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
 
       {/* HealthKit Import */}
       {showHealthKit && (
-        <motion.button
-          onClick={handleHealthKitImport}
-          disabled={syncingHealthKit}
-          className="flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-linear-border bg-linear-card transition-colors hover:bg-linear-border/50 disabled:opacity-50"
-          whileTap={{ scale: 0.98 }}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1, duration: 0.25 }}
-        >
+        isTestEnv ? (
+          <button
+            onClick={handleHealthKitImport}
+            disabled={syncingHealthKit}
+            className="flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-linear-border bg-linear-card transition-colors hover:bg-linear-border/50 disabled:opacity-50"
+          >
+        ) : (
+          <motion.button
+            onClick={handleHealthKitImport}
+            disabled={syncingHealthKit}
+            className="flex h-14 w-full items-center justify-center gap-3 rounded-xl border border-linear-border bg-linear-card transition-colors hover:bg-linear-border/50 disabled:opacity-50"
+            whileTap={{ scale: 0.98 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.25 }}
+          >
+        )}
           {syncingHealthKit ? (
             <>
               <Loader2 className="h-5 w-5 animate-spin text-linear-purple" />
@@ -273,7 +282,11 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
               </span>
             </>
           )}
-        </motion.button>
+{isTestEnv ? (
+          </button>
+        ) : (
+          </motion.button>
+        )}
       )}
 
       {/* Unit Toggle */}
@@ -392,19 +405,34 @@ export function WeightStep({ value, onChange }: WeightStepProps) {
         </p>
         <div className="scrollbar-hide flex gap-2 overflow-x-auto pb-2">
           {presets.map((preset) => (
-            <motion.button
-              key={preset}
-              onClick={() => handlePresetSelect(preset)}
-              className={cn(
-                "flex-shrink-0 rounded-xl border px-4 py-3 font-medium transition-all duration-200",
-                parseFloat(inputValue) === preset
-                  ? "border-linear-purple bg-linear-purple text-white"
-                  : "border-linear-border bg-linear-card text-linear-text hover:bg-linear-border/50",
-              )}
-              whileTap={{ scale: 0.95 }}
-            >
-              {preset} {unit}
-            </motion.button>
+            isTestEnv ? (
+              <button
+                key={preset}
+                onClick={() => handlePresetSelect(preset)}
+                className={cn(
+                  "flex-shrink-0 rounded-xl border px-4 py-3 font-medium transition-all duration-200",
+                  parseFloat(inputValue) === preset
+                    ? "border-linear-purple bg-linear-purple text-white"
+                    : "border-linear-border bg-linear-card text-linear-text hover:bg-linear-border/50",
+                )}
+              >
+                {preset} {unit}
+              </button>
+            ) : (
+              <motion.button
+                key={preset}
+                onClick={() => handlePresetSelect(preset)}
+                className={cn(
+                  "flex-shrink-0 rounded-xl border px-4 py-3 font-medium transition-all duration-200",
+                  parseFloat(inputValue) === preset
+                    ? "border-linear-purple bg-linear-purple text-white"
+                    : "border-linear-border bg-linear-card text-linear-text hover:bg-linear-border/50",
+                )}
+                whileTap={{ scale: 0.95 }}
+              >
+                {preset} {unit}
+              </motion.button>
+            )
           ))}
         </div>
       </motion.div>

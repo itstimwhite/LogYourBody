@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { WeightLoggingFlowV2 } from "../WeightLoggingFlowV2";
 
@@ -36,8 +36,11 @@ vi.mock("../WeightStep", () => ({
     <div data-testid="weight-step">
       <input
         type="number"
-        value={value.value}
-        onChange={(e) => onChange({ value: parseFloat(e.target.value), unit: value.unit })}
+        value={value.value || 0}
+        onChange={(e) => {
+          const newValue = parseFloat(e.target.value) || 0;
+          onChange({ value: newValue, unit: value.unit });
+        }}
         aria-label="Weight"
       />
       <button onClick={() => onChange({ value: 150, unit: "lbs" })}>Set 150 lbs</button>
@@ -95,10 +98,12 @@ describe("WeightLoggingFlowV2", () => {
   });
 
   describe("Flow Navigation", () => {
-    it("starts at the weight step", () => {
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+    it("starts at the weight step", async () => {
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       expect(screen.getByTestId("weight-step")).toBeInTheDocument();
       expect(screen.queryByTestId("bodyfat-step")).not.toBeInTheDocument();
@@ -106,9 +111,11 @@ describe("WeightLoggingFlowV2", () => {
 
     it("navigates through all steps in order", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Step 1: Weight
       expect(screen.getByTestId("weight-step")).toBeInTheDocument();
@@ -137,9 +144,11 @@ describe("WeightLoggingFlowV2", () => {
 
     it("allows going back to previous steps", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Go to body fat step
       await user.click(screen.getByText("Set 150 lbs"));
@@ -159,9 +168,11 @@ describe("WeightLoggingFlowV2", () => {
 
     it("calls onCancel when cancel is clicked", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       await user.click(screen.getByRole("button", { name: /cancel/i }));
       
@@ -172,9 +183,11 @@ describe("WeightLoggingFlowV2", () => {
   describe("Progress Indicator", () => {
     it("shows progress through steps", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Check initial progress
       expect(screen.getByText("Weight")).toBeInTheDocument();
@@ -190,10 +203,12 @@ describe("WeightLoggingFlowV2", () => {
       });
     });
 
-    it("shows progress bar", () => {
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+    it("shows progress bar", async () => {
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       const progressBar = screen.getByRole("progressbar");
       expect(progressBar).toBeInTheDocument();
@@ -204,9 +219,11 @@ describe("WeightLoggingFlowV2", () => {
   describe("Data Persistence", () => {
     it("preserves data when navigating between steps", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Enter weight
       const weightInput = screen.getByLabelText("Weight");
@@ -241,20 +258,22 @@ describe("WeightLoggingFlowV2", () => {
       });
     });
 
-    it("uses initial data when provided", () => {
+    it("uses initial data when provided", async () => {
       const initialData = {
         weight: { value: 180, unit: "lbs" as const },
         bodyFat: { value: 25 },
         method: { value: "navy", label: "Navy Method" },
       };
       
-      render(
-        <WeightLoggingFlowV2
-          onComplete={mockOnComplete}
-          onCancel={mockOnCancel}
-          initialData={initialData}
-        />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2
+            onComplete={mockOnComplete}
+            onCancel={mockOnCancel}
+            initialData={initialData}
+          />
+        );
+      });
       
       const weightInput = screen.getByLabelText("Weight");
       expect(weightInput).toHaveValue(180);
@@ -264,9 +283,11 @@ describe("WeightLoggingFlowV2", () => {
   describe("Review Step Editing", () => {
     it("allows editing from review step", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Navigate to review
       await user.click(screen.getByText("Set 150 lbs"));
@@ -294,9 +315,11 @@ describe("WeightLoggingFlowV2", () => {
   describe("Photo Addition", () => {
     it("opens photo capture when add photo is clicked", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Navigate to review
       await user.click(screen.getByText("Set 150 lbs"));
@@ -322,9 +345,11 @@ describe("WeightLoggingFlowV2", () => {
       const user = userEvent.setup();
       const { weightAnalytics } = await import("@/utils/weight-analytics");
       
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Navigate to review and add photo
       await user.click(screen.getByText("Set 150 lbs"));
@@ -353,9 +378,11 @@ describe("WeightLoggingFlowV2", () => {
   describe("Completion", () => {
     it("calls onComplete with all data when finished", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Fill all steps
       await user.click(screen.getByText("Set 150 lbs"));
@@ -385,9 +412,11 @@ describe("WeightLoggingFlowV2", () => {
       const user = userEvent.setup();
       const { weightAnalytics } = await import("@/utils/weight-analytics");
       
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Complete flow
       await user.click(screen.getByText("Set 150 lbs"));
@@ -417,10 +446,12 @@ describe("WeightLoggingFlowV2", () => {
   });
 
   describe("Button States", () => {
-    it("disables next button when step is invalid", () => {
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+    it("disables next button when step is invalid", async () => {
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Initially, with no weight entered, next should be disabled
       const nextButton = screen.getByRole("button", { name: /next/i });
@@ -429,9 +460,11 @@ describe("WeightLoggingFlowV2", () => {
 
     it("enables next button when step is valid", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Enter valid weight
       await user.click(screen.getByText("Set 150 lbs"));
@@ -442,9 +475,11 @@ describe("WeightLoggingFlowV2", () => {
 
     it("shows 'Save' on last step instead of 'Next'", async () => {
       const user = userEvent.setup();
-      render(
-        <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
-      );
+      await act(async () => {
+        render(
+          <WeightLoggingFlowV2 onComplete={mockOnComplete} onCancel={mockOnCancel} />
+        );
+      });
       
       // Navigate to last step
       await user.click(screen.getByText("Set 150 lbs"));

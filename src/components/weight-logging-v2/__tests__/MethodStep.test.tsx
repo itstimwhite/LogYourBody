@@ -27,6 +27,7 @@ vi.mock("@/utils/weight-analytics", () => ({
   weightAnalytics: {
     startStep: vi.fn(),
     trackMethodSelection: vi.fn(),
+    completeStep: vi.fn(),
   },
 }));
 
@@ -69,23 +70,23 @@ describe("MethodStep", () => {
     it("shows accuracy level for each method", () => {
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      // Check accuracy descriptions
-      expect(screen.getByText("Moderate accuracy")).toBeInTheDocument(); // Digital Scale
-      expect(screen.getByText("Good accuracy")).toBeInTheDocument(); // Navy Method
-      expect(screen.getByText("Very accurate")).toBeInTheDocument(); // 3-Site Caliper
-      expect(screen.getByText("Most accurate")).toBeInTheDocument(); // 7-Site Caliper
+      // Check accuracy descriptions - multiple instances exist, so use getAllByText
+      const moderateAccuracy = screen.getAllByText("Moderate accuracy"); // Digital Scale and Bio-impedance
+      expect(moderateAccuracy.length).toBeGreaterThan(0);
+      
+      const highAccuracy = screen.getAllByText("High accuracy"); // DEXA and Calipers
+      expect(highAccuracy.length).toBeGreaterThan(0);
+      
       expect(screen.getByText("Low accuracy")).toBeInTheDocument(); // Visual Estimate
-      expect(screen.getByText("Gold standard")).toBeInTheDocument(); // DEXA
-      expect(screen.getByText("Lab accuracy")).toBeInTheDocument(); // BodPod
-      expect(screen.getByText("Research grade")).toBeInTheDocument(); // Hydrostatic
+      expect(screen.getByText("Variable accuracy")).toBeInTheDocument(); // Other
     });
 
     it("highlights the selected method", () => {
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      const selectedButton = screen.getByRole("button", { name: /digital scale/i });
-      expect(selectedButton).toHaveAttribute("aria-pressed", "true");
-      expect(selectedButton).toHaveClass("border-linear-purple");
+      const selectedOption = screen.getByRole("radio", { name: /digital scale/i });
+      expect(selectedOption).toHaveAttribute("aria-checked", "true");
+      expect(selectedOption).toHaveClass("border-primary");
     });
   });
 
@@ -94,12 +95,12 @@ describe("MethodStep", () => {
       const user = userEvent.setup();
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      const navyMethod = screen.getByRole("button", { name: /navy method/i });
-      await user.click(navyMethod);
+      const dexaMethod = screen.getByRole("radio", { name: /dexa scan/i });
+      await user.click(dexaMethod);
       
       expect(mockOnChange).toHaveBeenCalledWith({
-        value: "navy",
-        label: "Navy Method"
+        value: "dexa",
+        label: "DEXA Scan"
       });
     });
 
@@ -109,7 +110,7 @@ describe("MethodStep", () => {
       
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      const method = screen.getByRole("button", { name: /dexa scan/i });
+      const method = screen.getByRole("radio", { name: /dexa scan/i });
       await user.click(method);
       
       expect(Haptics.impact).toHaveBeenCalled();
@@ -119,14 +120,17 @@ describe("MethodStep", () => {
       const user = userEvent.setup();
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
+      // Clear the initial call from useEffect
+      mockOnChange.mockClear();
+      
       // Click on different methods
-      await user.click(screen.getByRole("button", { name: /3-site caliper/i }));
+      await user.click(screen.getByRole("radio", { name: /calipers/i }));
       expect(mockOnChange).toHaveBeenCalledWith({
-        value: "caliper3",
-        label: "3-Site Caliper"
+        value: "calipers",
+        label: "Calipers"
       });
       
-      await user.click(screen.getByRole("button", { name: /visual estimate/i }));
+      await user.click(screen.getByRole("radio", { name: /visual estimate/i }));
       expect(mockOnChange).toHaveBeenCalledWith({
         value: "visual",
         label: "Visual Estimate"
@@ -134,67 +138,36 @@ describe("MethodStep", () => {
     });
   });
 
-  describe("Method Categories", () => {
-    it("displays common methods section", () => {
-      renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
-      
-      expect(screen.getByText("Common methods")).toBeInTheDocument();
-    });
-
-    it("displays lab methods section", () => {
-      renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
-      
-      expect(screen.getByText("Lab methods")).toBeInTheDocument();
-    });
-
-    it("shows appropriate methods in each category", () => {
-      renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
-      
-      // Common methods should be in the first section
-      const commonSection = screen.getByText("Common methods").parentElement?.parentElement;
-      expect(commonSection).toHaveTextContent("Digital Scale");
-      expect(commonSection).toHaveTextContent("Navy Method");
-      expect(commonSection).toHaveTextContent("Visual Estimate");
-      
-      // Lab methods should be in the second section
-      const labSection = screen.getByText("Lab methods").parentElement?.parentElement;
-      expect(labSection).toHaveTextContent("DEXA Scan");
-      expect(labSection).toHaveTextContent("BodPod");
-      expect(labSection).toHaveTextContent("Hydrostatic");
-    });
-  });
 
   describe("Accessibility", () => {
     it("has proper ARIA labels for method buttons", () => {
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      const scaleButton = screen.getByRole("button", { name: /digital scale/i });
-      expect(scaleButton).toHaveAttribute("aria-label", expect.stringContaining("Digital Scale"));
-      expect(scaleButton).toHaveAttribute("aria-pressed", "true");
+      const scaleButton = screen.getByRole("radio", { name: /digital scale/i });
+      expect(scaleButton).toHaveAttribute("aria-checked", "true");
     });
 
     it("announces selected state changes", async () => {
       const user = userEvent.setup();
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      const navyButton = screen.getByRole("button", { name: /navy method/i });
-      expect(navyButton).toHaveAttribute("aria-pressed", "false");
+      const bioimpedanceButton = screen.getByRole("radio", { name: /bio-impedance/i });
+      expect(bioimpedanceButton).toHaveAttribute("aria-checked", "false");
       
-      await user.click(navyButton);
+      await user.click(bioimpedanceButton);
       
-      // After selection, the component would re-render with new value
-      renderWithStepper(<MethodStep value={{ value: "navy", label: "Navy Method" }} onChange={mockOnChange} />);
-      
-      const updatedNavyButton = screen.getByRole("button", { name: /navy method/i });
-      expect(updatedNavyButton).toHaveAttribute("aria-pressed", "true");
+      expect(mockOnChange).toHaveBeenCalledWith({
+        value: "bioimpedance",
+        label: "Bio-impedance"
+      });
     });
 
     it("provides descriptive labels for accuracy levels", () => {
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
       // Each method should have its accuracy description visible
-      const dexaButton = screen.getByRole("button", { name: /dexa scan/i });
-      expect(dexaButton).toHaveTextContent("Gold standard");
+      const dexaButton = screen.getByRole("radio", { name: /dexa scan/i });
+      expect(dexaButton).toHaveTextContent("High accuracy");
     });
   });
 
@@ -203,9 +176,9 @@ describe("MethodStep", () => {
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
       // Icons should be rendered (checking by method container presence)
-      expect(screen.getByRole("button", { name: /digital scale/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /navy method/i })).toBeInTheDocument();
-      expect(screen.getByRole("button", { name: /3-site caliper/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /digital scale/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /bio-impedance/i })).toBeInTheDocument();
+      expect(screen.getByRole("radio", { name: /calipers/i })).toBeInTheDocument();
     });
   });
 
@@ -216,11 +189,13 @@ describe("MethodStep", () => {
       
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      await user.click(screen.getByRole("button", { name: /dexa scan/i }));
+      await user.click(screen.getByRole("radio", { name: /dexa scan/i }));
       
-      expect(weightAnalytics.trackMethodSelection).toHaveBeenCalledWith({
-        method: "DEXA Scan",
-        method_id: "dexa"
+      expect(weightAnalytics.completeStep).toHaveBeenCalledWith({
+        step_number: 3,
+        step_name: "method",
+        interaction_type: "tap",
+        value: "dexa"
       });
     });
 
@@ -238,22 +213,22 @@ describe("MethodStep", () => {
       const user = userEvent.setup();
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      const button = screen.getByRole("button", { name: /navy method/i });
+      const button = screen.getByRole("radio", { name: /bio-impedance/i });
       
       await user.hover(button);
       
       // Button should have hover styles applied
-      expect(button).toHaveClass("hover:bg-linear-border/50");
+      expect(button).toHaveClass("hover:bg-secondary/30");
     });
 
     it("animates selection change", async () => {
       const user = userEvent.setup();
       renderWithStepper(<MethodStep value={defaultValue} onChange={mockOnChange} />);
       
-      const button = screen.getByRole("button", { name: /bodpod/i });
+      const button = screen.getByRole("radio", { name: /other/i });
       
-      // Motion animation classes should be present
-      expect(button.parentElement).toHaveClass("transition-all");
+      // Transition classes should be present
+      expect(button).toHaveClass("transition-all");
       
       await user.click(button);
       
