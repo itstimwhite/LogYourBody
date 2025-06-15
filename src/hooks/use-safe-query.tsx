@@ -44,8 +44,9 @@ export function useSafeQuery<T>({
     abortControllerRef.current = new AbortController();
     const signal = abortControllerRef.current.signal;
 
+    let timeoutId: NodeJS.Timeout;
     const timeoutPromise = new Promise<never>((_, reject) => {
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setState((prev) => ({ ...prev, isTimedOut: true }));
         if (onTimeout) onTimeout();
         if (showTimeoutToast) {
@@ -70,7 +71,7 @@ export function useSafeQuery<T>({
         reject(new Error("Query timeout"));
       }, timeout);
 
-      // Clear timeout if request completes or is aborted
+      // Clear timeout if request is aborted
       signal.addEventListener("abort", () => {
         clearTimeout(timeoutId);
         reject(new Error("Query aborted"));
@@ -82,9 +83,11 @@ export function useSafeQuery<T>({
     try {
       // Race between data fetch and timeout
       const result = await Promise.race([dataPromise, timeoutPromise]);
+      clearTimeout(timeoutId);
       setState((prev) => ({ ...prev, isTimedOut: false }));
       return result;
     } catch (error) {
+      clearTimeout(timeoutId);
       if (error instanceof Error && error.message === "Query timeout") {
         if (retryOnTimeout) {
           // Don't throw on timeout if retry is enabled - let React Query handle retries
