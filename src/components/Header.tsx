@@ -11,6 +11,8 @@ interface HeaderProps {
 }
 
 export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
+  const isProduction = process.env.NODE_ENV === 'production';
+  
   const scrollToSection = (id: string) => {
     const el = document.getElementById(id);
     if (el) {
@@ -68,14 +70,23 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
                 Learn More
               </Button>
             </Link>
-            <Link href="/">
+            {isProduction ? (
               <Button
                 aria-label="Coming soon"
                 className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
               >
                 Coming Soon
               </Button>
-            </Link>
+            ) : (
+              <Link href="/login">
+                <Button
+                  aria-label="Sign in to LogYourBody"
+                  className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
+                >
+                  Sign in
+                </Button>
+              </Link>
+            )}
           </div>
         </nav>
       </div>

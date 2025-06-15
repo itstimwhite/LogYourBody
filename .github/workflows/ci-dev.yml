@@ -59,11 +59,14 @@ jobs:
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-  sync-to-preview:
-    name: Sync to Preview Branch
+  create-pr-to-preview:
+    name: Create PR to Preview
     runs-on: ubuntu-latest
     needs: test-and-build
     if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+    permissions:
+      contents: write
+      pull-requests: write
     
     steps:
       - name: Checkout code
@@ -72,16 +75,40 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
           
-      - name: Configure Git
+      - name: Create Pull Request
+        id: cpr
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: dev
+          base: preview
+          title: '🚀 Auto-merge: dev → preview'
+          body: |
+            ## Automated Pull Request
+            
+            This PR was automatically created after successful tests on the `dev` branch.
+            
+            ### ✅ All Checks Passed
+            - Tests: ✅ Passed
+            - Build: ✅ Successful
+            - Type checking: ✅ Passed
+            - Linting: ✅ Passed
+            
+            ### 📋 Changes
+            View commit history for detailed changes.
+            
+            ### 🤖 Auto-merge
+            This PR will be automatically merged if all checks continue to pass.
+            
+            ---
+            *This is an automated pull request created by GitHub Actions.*
+          labels: |
+            automated
+            dev-to-preview
+            
+      - name: Enable Auto-merge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-      - name: Sync dev to preview
-        run: |
-          git checkout preview || git checkout -b preview
-          git merge --ff-only dev || {
-            echo "❌ Fast-forward merge failed. Manual intervention required."
-            exit 1
-          }
-          git push origin preview
+          gh pr merge --auto --merge "${{ steps.cpr.outputs.pull-request-number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -33,6 +33,7 @@ import { FeaturesFlyout } from "./FeaturesFlyout";
 
 export function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
+  const isProduction = process.env.NODE_ENV === 'production';
 
   const slugify = (text: string) =>
     text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -123,6 +124,7 @@ export function LandingPage() {
         <button
           className="rounded bg-linear-purple px-4 py-2 text-linear-text focus:ring-2 focus:ring-linear-purple/50"
           onClick={() => document.getElementById("main-content")?.focus()}
+          aria-label="Skip to main content"
         >
           Skip to main content
         </button>
@@ -232,13 +234,21 @@ export function LandingPage() {
                 {/* Bottom horizontal bar of F - CTAs and social proof */}
                 <div className="space-y-6">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/about">
+                    {isProduction ? (
                       <Button
                         className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
                       >
-                        Learn More
+                        Coming Soon
                       </Button>
-                    </Link>
+                    ) : (
+                      <Link href="/login">
+                        <Button
+                          className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
+                        >
+                          Start free trial
+                        </Button>
+                      </Link>
+                    )}
                     <button
                       className="flex items-center justify-center gap-2 text-base text-linear-text-secondary hover:text-linear-text transition-colors group"
                       aria-label="View live demo"
@@ -681,13 +691,21 @@ export function LandingPage() {
                       Download the app or sign up on the web. Your account works everywhere from day one.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Link href="#">
+                      {isProduction ? (
                         <Button
                           className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary transition-colors"
                         >
                           Coming Soon
                         </Button>
-                      </Link>
+                      ) : (
+                        <Link href="/login">
+                          <Button
+                            className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary transition-colors"
+                          >
+                            Sign up now
+                          </Button>
+                        </Link>
+                      )}
                       <Button
                         variant="outline"
                         className="border-linear-border text-linear-text-secondary hover:bg-linear-border/30 hover:text-linear-text"
@@ -814,14 +832,23 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="#">
+                {isProduction ? (
                   <Button
                     className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
                     aria-describedby="trial-terms"
                   >
                     Coming Soon
                   </Button>
-                </Link>
+                ) : (
+                  <Link href="/login">
+                    <Button
+                      className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
+                      aria-describedby="trial-terms"
+                    >
+                      Start free trial
+                    </Button>
+                  </Link>
+                )}
                 <p
                   id="trial-terms"
                   className="mt-3 text-center text-xs text-linear-text-tertiary"
@@ -857,13 +884,21 @@ export function LandingPage() {
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-                <Link href="#">
+                {isProduction ? (
                   <Button
                     className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
                   >
                     Coming Soon
                   </Button>
-                </Link>
+                ) : (
+                  <Link href="/login">
+                    <Button
+                      className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
+                    >
+                      Start tracking now
+                    </Button>
+                  </Link>
+                )}
                 <Link href="/about">
                   <Button
                     variant="ghost"
