@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react'
 import { User, Session } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase/client'
+import { supabase, validateSupabaseKeys } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
 interface AuthContextType {
@@ -24,10 +24,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
 
   useEffect(() => {
+    // Check if we have valid Supabase credentials
+    const validation = validateSupabaseKeys()
+    if (!validation.url.valid || !validation.anonKey.valid) {
+      console.warn('Supabase credentials not configured')
+      setLoading(false)
+      return
+    }
+
     // Check active sessions and sets the user
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       setUser(session?.user ?? null)
+      setLoading(false)
+    }).catch((error) => {
+      console.error('Failed to get session:', error)
       setLoading(false)
     })
 
@@ -42,6 +53,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   const signIn = async (email: string, password: string) => {
+    const validation = validateSupabaseKeys()
+    if (!validation.url.valid || !validation.anonKey.valid) {
+      return { error: new Error('Authentication service not configured') }
+    }
+
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -58,6 +74,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string) => {
+    const validation = validateSupabaseKeys()
+    if (!validation.url.valid || !validation.anonKey.valid) {
+      return { error: new Error('Authentication service not configured') }
+    }
+
     try {
       const { error } = await supabase.auth.signUp({
         email,
@@ -81,6 +102,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signInWithProvider = async (provider: 'google' | 'apple') => {
+    const validation = validateSupabaseKeys()
+    if (!validation.url.valid || !validation.anonKey.valid) {
+      return { error: new Error('Authentication service not configured') }
+    }
+
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
