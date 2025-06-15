@@ -14,21 +14,21 @@ echo "  - Preview (preview branch)"
 echo "  - Production (main branch - current database)"
 echo ""
 
-# Check if supabase CLI is installed
-if ! command -v supabase &> /dev/null; then
-    echo "❌ Supabase CLI not found. Please install it first:"
-    echo "   npm install -g supabase"
+# Check if supabase CLI is available via npx
+if ! npx supabase --version &> /dev/null; then
+    echo "❌ Supabase CLI not available. Please install supabase package:"
+    echo "   npm install supabase"
     exit 1
 fi
 
-echo "✅ Supabase CLI found"
+echo "✅ Supabase CLI found (using npx)"
 echo ""
 
 # Login to Supabase (if not already logged in)
 echo "🔐 Logging into Supabase..."
-if ! supabase projects list &> /dev/null; then
+if ! npx supabase projects list &> /dev/null; then
     echo "Please log in to Supabase:"
-    supabase login
+    npx supabase login
 else
     echo "✅ Already logged in to Supabase"
 fi
@@ -36,7 +36,7 @@ echo ""
 
 # Show current projects
 echo "📋 Your current Supabase projects:"
-supabase projects list
+npx supabase projects list
 echo ""
 
 # Get project refs for new environments
@@ -51,17 +51,17 @@ echo ""
 
 if [ ! -z "$DEV_REF" ] && [ ! -z "$DEV_PASSWORD" ]; then
     echo "🔄 Linking to development database..."
-    supabase link --project-ref $DEV_REF
+    npx supabase link --project-ref $DEV_REF
     
     echo "🔄 Pushing migrations to development database..."
-    supabase db push --password $DEV_PASSWORD
+    npx supabase db push --password $DEV_PASSWORD
     
     echo "✅ Development database setup complete"
     
     # Get the development keys
     echo "🔑 Fetching development API keys..."
-    DEV_ANON_KEY=$(supabase projects api-keys --project-ref $DEV_REF | grep "anon" | awk '{print $2}')
-    DEV_SERVICE_KEY=$(supabase projects api-keys --project-ref $DEV_REF | grep "service_role" | awk '{print $2}')
+    DEV_ANON_KEY=$(npx supabase projects api-keys --project-ref $DEV_REF | grep "anon" | awk '{print $2}')
+    DEV_SERVICE_KEY=$(npx supabase projects api-keys --project-ref $DEV_REF | grep "service_role" | awk '{print $2}')
     
     echo "Development URL: https://$DEV_REF.supabase.co"
     echo "Development Anon Key: $DEV_ANON_KEY"
@@ -79,17 +79,17 @@ echo ""
 
 if [ ! -z "$PREVIEW_REF" ] && [ ! -z "$PREVIEW_PASSWORD" ]; then
     echo "🔄 Linking to preview database..."
-    supabase link --project-ref $PREVIEW_REF
+    npx supabase link --project-ref $PREVIEW_REF
     
     echo "🔄 Pushing migrations to preview database..."
-    supabase db push --password $PREVIEW_PASSWORD
+    npx supabase db push --password $PREVIEW_PASSWORD
     
     echo "✅ Preview database setup complete"
     
     # Get the preview keys
     echo "🔑 Fetching preview API keys..."
-    PREVIEW_ANON_KEY=$(supabase projects api-keys --project-ref $PREVIEW_REF | grep "anon" | awk '{print $2}')
-    PREVIEW_SERVICE_KEY=$(supabase projects api-keys --project-ref $PREVIEW_REF | grep "service_role" | awk '{print $2}')
+    PREVIEW_ANON_KEY=$(npx supabase projects api-keys --project-ref $PREVIEW_REF | grep "anon" | awk '{print $2}')
+    PREVIEW_SERVICE_KEY=$(npx supabase projects api-keys --project-ref $PREVIEW_REF | grep "service_role" | awk '{print $2}')
     
     echo "Preview URL: https://$PREVIEW_REF.supabase.co"
     echo "Preview Anon Key: $PREVIEW_ANON_KEY"
@@ -172,9 +172,9 @@ echo "   - .env.backup"
 echo "   - .env.local.backup"
 echo ""
 echo "🔗 Useful Commands:"
-echo "   - View projects: supabase projects list"
-echo "   - Switch database: supabase link --project-ref [ref]"
-echo "   - Push migrations: supabase db push"
-echo "   - Reset database: supabase db reset"
+echo "   - View projects: npx supabase projects list"
+echo "   - Switch database: npx supabase link --project-ref [ref]"
+echo "   - Push migrations: npx supabase db push"
+echo "   - Reset database: npx supabase db reset"
 echo ""
 echo "📖 See SUPABASE_MULTI_ENV_SETUP.md for detailed documentation"

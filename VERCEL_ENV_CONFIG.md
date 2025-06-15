@@ -9,7 +9,7 @@ Once you have your three Supabase databases set up, configure Vercel to use the 
 **Vercel Dashboard → Project → Settings → Environment Variables → Production**
 
 ```env
-VITE_SUPABASE_URL=https://przjeunffnkjzxpykvjn.supabase.co
+VITE_SUPABASE_URL=https://0fab5338-b5f2-48af-a596-591bb5b0a51c.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByempldW5mZm5ranp4cHlrdmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTI1NDYsImV4cCI6MjA2NDk4ODU0Nn0.jZyohfzoydZKaSH_q0Tu4VqEbyFDdf-8i0kSm-YzB8w
 VITE_REVENUECAT_IOS_KEY=appl_dJsnXzyTgEAsntJQjOxeOvOnoXP
 VITE_REVENUECAT_WEB_KEY=strp_kPUxxTPVLFHFRUapUTafrHwSMAE
@@ -21,8 +21,8 @@ VITE_REVENUECAT_PUBLIC_KEY=appl_dJsnXzyTgEAsntJQjOxeOvOnoXP
 **Vercel Dashboard → Project → Settings → Environment Variables → Preview**
 
 ```env
-VITE_SUPABASE_URL=https://[PREVIEW-REF].supabase.co
-VITE_SUPABASE_ANON_KEY=[PREVIEW-ANON-KEY]
+VITE_SUPABASE_URL=https://170c7ac4-6923-4c10-b560-55d3f97e1370.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByempldW5mZm5ranp4cHlrdmpuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk0MTI1NDYsImV4cCI6MjA2NDk4ODU0Nn0.jZyohfzoydZKaSH_q0Tu4VqEbyFDdf-8i0kSm-YzB8w
 VITE_REVENUECAT_IOS_KEY=appl_dJsnXzyTgEAsntJQjOxeOvOnoXP
 VITE_REVENUECAT_WEB_KEY=strp_kPUxxTPVLFHFRUapUTafrHwSMAE
 VITE_REVENUECAT_PUBLIC_KEY=appl_dJsnXzyTgEAsntJQjOxeOvOnoXP
@@ -33,8 +33,8 @@ VITE_REVENUECAT_PUBLIC_KEY=appl_dJsnXzyTgEAsntJQjOxeOvOnoXP
 **Vercel Dashboard → Project → Settings → Environment Variables → Development**
 
 ```env
-VITE_SUPABASE_URL=https://[DEV-REF].supabase.co
-VITE_SUPABASE_ANON_KEY=[DEV-ANON-KEY]
+VITE_SUPABASE_URL=https://378a4e19-4a7d-4c2d-9f54-a28537a0e1a8.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InByempldW5mZm5ranp4cHlrdmpuIiwicm9sZUQiOiJhbm9uIiwiaWF0IjoxNzQ5NDEyNTQ2LCJleHAiOjIwNjQ5ODg1NDZ9.jZyohfzoydZKaSH_q0Tu4VqEbyFDdf-8i0kSm-YzB8w
 VITE_REVENUECAT_IOS_KEY=appl_dJsnXzyTgEAsntJQjOxeOvOnoXP
 VITE_REVENUECAT_WEB_KEY=strp_kPUxxTPVLFHFRUapUTafrHwSMAE
 VITE_REVENUECAT_PUBLIC_KEY=appl_dJsnXzyTgEAsntJQjOxeOvOnoXP
