@@ -1,10 +1,3 @@
 {
-  "framework": "nextjs",
-  "buildCommand": "echo 'Build skipped - using prebuilt artifacts from GitHub Actions'",
-  "installCommand": "echo 'Install skipped - using prebuilt artifacts from GitHub Actions'",
-  "functions": {
-    "src/app/api/debug/route.ts": {
-      "maxDuration": 10
-    }
-  }
+  "framework": "nextjs"
 }
