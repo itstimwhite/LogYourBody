@@ -48,6 +48,12 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
+          # Link to Vercel project
+          vercel link --yes --token=$VERCEL_TOKEN
+          
+          # Pull environment variables
+          vercel env pull .env.production.local --token=$VERCEL_TOKEN
+          
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             vercel deploy --prod --token=$VERCEL_TOKEN --yes
           else
