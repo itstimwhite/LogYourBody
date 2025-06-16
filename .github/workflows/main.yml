@@ -48,10 +48,17 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
+          # Pull Vercel environment information
+          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
+          
+          # Build project for Vercel
+          vercel build --prod --token=$VERCEL_TOKEN
+          
+          # Deploy prebuilt project
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            vercel deploy --prod --token=$VERCEL_TOKEN --yes
+            vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --yes
           else
-            vercel deploy --token=$VERCEL_TOKEN --yes
+            vercel deploy --prebuilt --token=$VERCEL_TOKEN --yes
           fi
 
   # Database migrations - only when migration files change
