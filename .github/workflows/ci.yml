@@ -78,9 +78,32 @@ jobs:
         if: github.event_name == 'push'
         id: deploy
         run: |
-          DEPLOYMENT_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
-          echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
-          echo "✅ Deployed to: $DEPLOYMENT_URL"
+          echo "Deploying prebuilt artifacts to Vercel..."
+          
+          # Deploy and capture output
+          if vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} > deploy.output 2>&1; then
+            DEPLOYMENT_URL=$(cat deploy.output | tail -1)
+            echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+            echo "✅ Deployment initiated: $DEPLOYMENT_URL"
+            
+            # Get deployment details using Vercel CLI
+            echo "Checking deployment status..."
+            DEPLOYMENT_STATE=$(vercel inspect $DEPLOYMENT_URL --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null | grep -E "^\s*state:" | awk '{print $2}' || echo "UNKNOWN")
+            
+            if [[ "$DEPLOYMENT_STATE" == "READY" ]] || [[ "$DEPLOYMENT_STATE" == "QUEUED" ]] || [[ "$DEPLOYMENT_STATE" == "BUILDING" ]]; then
+              echo "✅ Deployment state: $DEPLOYMENT_STATE"
+              echo "✅ Preview URL: $DEPLOYMENT_URL"
+            else
+              echo "⚠️ Unexpected deployment state: $DEPLOYMENT_STATE"
+              echo "Full deployment output:"
+              cat deploy.output
+            fi
+          else
+            echo "❌ Deployment command failed"
+            echo "Error output:"
+            cat deploy.output
+            exit 1
+          fi
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
