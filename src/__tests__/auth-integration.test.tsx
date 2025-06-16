@@ -57,6 +57,14 @@ describe('Authentication Integration Tests', () => {
         },
         error: null
       })
+      // Mock sign in after signup
+      mockSignIn.mockResolvedValue({
+        data: {
+          user: { id: '123', email: 'test@example.com' },
+          session: { access_token: 'token', user: { id: '123', email: 'test@example.com' } }
+        },
+        error: null
+      })
 
       render(
         <AuthProvider>
@@ -83,8 +91,8 @@ describe('Authentication Integration Tests', () => {
         })
       })
 
-      // Verify success message
-      expect(screen.getByText('Check your email for the confirmation link!')).toBeInTheDocument()
+      // Should auto-login and redirect to dashboard
+      expect(mockPush).toHaveBeenCalledWith('/dashboard')
     })
 
     it('should validate password requirements', async () => {
