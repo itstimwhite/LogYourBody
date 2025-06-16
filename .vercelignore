@@ -1,13 +1,46 @@
-# Ignore everything except what we need
-*
-\!.next
-\!public
-\!package.json
-\!package-lock.json
-\!next.config.ts
-\!vercel.json
+# Development files
+.github
+.vscode
+src
+app
+components
+contexts
+hooks
+lib
+pages
+scripts
+styles
+types
+utils
+tests
+cypress
+docs
+ios
+android
+legacy-react
+supabase
 
-# But still ignore these
-.next/cache
+# Config and docs
+*.md
+*.log
+.env*
+.git
+.gitignore
+tsconfig*.json
+jest.config.js
+jest.setup.js
+playwright.config.ts
+eslint.config.mjs
+postcss.config.mjs
+tailwind.config.ts
+vitest.config.ts
+
+# Dependencies and cache
 node_modules
-EOF < /dev/null
+.next/cache
+
+# Test files
+*.test.*
+*.spec.*
+__tests__
+__mocks__
