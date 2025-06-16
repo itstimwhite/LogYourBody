@@ -1,0 +1,60 @@
+name: Auto Merge Dev to Preview
+
+on:
+  push:
+    branches:
+      - dev
+  workflow_dispatch:
+
+jobs:
+  auto-merge:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Setup Git
+      run: |
+        git config user.name "GitHub Actions"
+        git config user.email "actions@github.com"
+    
+    - name: Merge dev to preview
+      run: |
+        # Fetch all branches
+        git fetch origin
+        
+        # Check out preview branch
+        git checkout preview || git checkout -b preview origin/preview
+        
+        # Merge dev into preview
+        git merge origin/dev --no-edit
+        
+        # Push the changes
+        git push origin preview
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Comment on PR if exists
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { data: pulls } = await github.rest.pulls.list({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            head: 'dev'
+          });
+          
+          for (const pull of pulls) {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: pull.number,
+              body: '✅ Automatically merged to preview branch for testing'
+            });
+          }
