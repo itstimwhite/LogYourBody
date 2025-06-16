@@ -2,12 +2,14 @@ name: CI
 
 on:
   push:
-    branches: [dev, preview, main]
+    branches: [dev, preview]
   pull_request:
     branches: [dev, preview, main]
 
 env:
   NODE_VERSION: '20'
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 # Prevent multiple CI runs on the same branch
 concurrency:
@@ -15,8 +17,8 @@ concurrency:
   cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
-  test:
-    name: Test
+  test-and-deploy:
+    name: Test & Deploy
     runs-on: ubuntu-latest
     
     steps:
@@ -29,17 +31,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          cache: 'npm'
             
       - name: Install dependencies
-        run: npm install
+        run: npm ci
         
       - name: Run linting
         run: npm run lint
@@ -50,14 +45,40 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Deploy to Vercel for branch pushes (not PRs, those are handled by preview.yml)
+      - name: Install Vercel CLI
+        if: github.event_name == 'push'
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        if: github.event_name == 'push'
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/preview" ]; then
+            vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+          else
+            vercel pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }}
+          fi
+
+      - name: Build Project Artifacts
+        if: github.event_name == 'push'
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy to Vercel
+        if: github.event_name == 'push'
+        id: deploy
+        run: |
+          DEPLOYMENT_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+          echo "✅ Deployed to: $DEPLOYMENT_URL"
+
   # Auto-versioning only on direct pushes to branches (not PRs)
   auto-version:
     name: Auto Version
     runs-on: ubuntu-latest
-    needs: test
+    needs: test-and-deploy
     if: |
       github.event_name == 'push' && 
-      (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/preview' || github.ref == 'refs/heads/main') &&
+      (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/preview') &&
       github.actor != 'github-actions[bot]' &&
       !contains(github.event.head_commit.message, 'chore: bump version')
     permissions:
@@ -88,57 +109,11 @@ jobs:
         run: |
           git push origin HEAD:${{ github.ref_name }}
 
-  # Wait for Vercel deployment before proceeding with auto-merge
-  wait-for-vercel:
-    name: Wait for Vercel Deployment
-    runs-on: ubuntu-latest
-    needs: test
-    if: |
-      github.ref == 'refs/heads/dev' && 
-      github.event_name == 'push' &&
-      github.actor != 'github-actions[bot]'
-    steps:
-      # Give Vercel a moment to register the deployment
-      - name: Initial delay for Vercel
-        run: sleep 15
-        
-      - name: Wait for Vercel Preview
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: waitForVercel
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 600
-          check_interval: 10
-        continue-on-error: true
-          
-      - name: Check deployment status
-        run: |
-          echo "Vercel deployment check completed"
-          echo "URL output: '${{ steps.waitForVercel.outputs.url }}'"
-          echo "Outcome: ${{ steps.waitForVercel.outcome }}"
-          
-          if [ "${{ steps.waitForVercel.outcome }}" != "success" ]; then
-            echo "❌ Vercel deployment check failed"
-            echo "This could be due to:"
-            echo "  - Deployment failure"
-            echo "  - Timeout (>10 minutes)"
-            echo "  - Configuration issues"
-            exit 1
-          fi
-          
-          if [ -z "${{ steps.waitForVercel.outputs.url }}" ]; then
-            echo "❌ No deployment URL received from Vercel"
-            exit 1
-          fi
-          
-          echo "✅ Vercel deployment successful"
-          echo "🔗 Preview URL: ${{ steps.waitForVercel.outputs.url }}"
-
-  # Create PR from dev to preview after successful build
+  # Create PR from dev to preview after successful deployment
   create-pr-to-preview:
     name: Auto PR to Preview
     runs-on: ubuntu-latest
-    needs: [test, wait-for-vercel]
+    needs: test-and-deploy
     if: |
       github.ref == 'refs/heads/dev' && 
       github.event_name == 'push' &&
@@ -180,7 +155,7 @@ jobs:
           - Tests: ✅ Passed
           - Type checking: ✅ Passed
           - Linting: ✅ Passed
-          - Vercel Build & Deployment: ✅ Successful
+          - Vercel Deployment: ✅ Successful
           
           ### 📋 Changes
           View commit history for detailed changes.
@@ -221,57 +196,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-  # Wait for Vercel deployment on preview branch
-  wait-for-vercel-preview:
-    name: Wait for Vercel Preview Deployment
-    runs-on: ubuntu-latest
-    needs: test
-    if: |
-      github.ref == 'refs/heads/preview' && 
-      github.event_name == 'push' &&
-      github.actor != 'github-actions[bot]'
-    steps:
-      # Give Vercel a moment to register the deployment
-      - name: Initial delay for Vercel
-        run: sleep 15
-        
-      - name: Wait for Vercel Preview
-        uses: patrickedqvist/wait-for-vercel-preview@v1.3.1
-        id: waitForVercel
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          max_timeout: 600
-          check_interval: 10
-        continue-on-error: true
-          
-      - name: Check deployment status
-        run: |
-          echo "Vercel deployment check completed"
-          echo "URL output: '${{ steps.waitForVercel.outputs.url }}'"
-          echo "Outcome: ${{ steps.waitForVercel.outcome }}"
-          
-          if [ "${{ steps.waitForVercel.outcome }}" != "success" ]; then
-            echo "❌ Vercel deployment check failed"
-            echo "This could be due to:"
-            echo "  - Deployment failure"
-            echo "  - Timeout (>10 minutes)"
-            echo "  - Configuration issues"
-            exit 1
-          fi
-          
-          if [ -z "${{ steps.waitForVercel.outputs.url }}" ]; then
-            echo "❌ No deployment URL received from Vercel"
-            exit 1
-          fi
-          
-          echo "✅ Vercel deployment successful"
-          echo "🔗 Preview URL: ${{ steps.waitForVercel.outputs.url }}"
-
   # Create PR from preview to main (requires manual approval)
   create-pr-to-main:
     name: PR to Main (Manual)
     runs-on: ubuntu-latest
-    needs: [test, wait-for-vercel-preview]
+    needs: test-and-deploy
     if: |
       github.ref == 'refs/heads/preview' && 
       github.event_name == 'push' &&
@@ -312,7 +241,7 @@ jobs:
           - Tests: ✅ Passed
           - Type checking: ✅ Passed
           - Linting: ✅ Passed
-          - Vercel Build & Deployment: ✅ Successful
+          - Vercel Deployment: ✅ Successful
           
           ### 📋 Release Notes
           View commit history for detailed changes.
@@ -354,7 +283,7 @@ jobs:
   auto-merge-dependabot:
     name: Auto-merge Dependabot
     runs-on: ubuntu-latest
-    needs: test
+    needs: test-and-deploy
     if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
     permissions:
       contents: write

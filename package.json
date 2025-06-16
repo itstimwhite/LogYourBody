@@ -10,7 +10,10 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check": "./scripts/pre-push-check.sh",
+    "check:all": "./scripts/pre-push-check.sh --with-build",
+    "prepush": "npm run check"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
