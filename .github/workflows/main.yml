@@ -48,17 +48,10 @@ jobs:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
-          # Create the expected structure for prebuilt
-          mkdir -p .vercel/output/functions/_app.func
-          echo '{}' > .vercel/output/functions/_app.func/.vc-config.json
-          cp -r .next .vercel/output/functions/_app.func/
-          cp -r public .vercel/output/static || true
-          echo '{"version": 3, "routes": [{"src": "/(.*)", "dest": "/_app"}]}' > .vercel/output/config.json
-          
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --yes
+            vercel deploy --prod --token=$VERCEL_TOKEN --yes
           else
-            vercel deploy --prebuilt --token=$VERCEL_TOKEN --yes
+            vercel deploy --token=$VERCEL_TOKEN --yes
           fi
 
   # Database migrations - only when migration files change
