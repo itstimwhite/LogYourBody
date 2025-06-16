@@ -21,9 +21,10 @@ import { cn } from '@/lib/utils'
 interface SMSLoginProps {
   onSuccess?: () => void
   className?: string
+  minimal?: boolean
 }
 
-export function SMSLogin({ onSuccess, className }: SMSLoginProps) {
+export function SMSLogin({ onSuccess, className, minimal = false }: SMSLoginProps) {
   const [phone, setPhone] = useState('')
   const [otp, setOtp] = useState('')
   const [loading, setLoading] = useState(false)
@@ -150,6 +151,131 @@ export function SMSLogin({ onSuccess, className }: SMSLoginProps) {
     if (value.length <= 6) {
       setOtp(value)
     }
+  }
+
+  if (minimal) {
+    return (
+      <div className={cn("space-y-4", className)}>
+        {step === 'phone' ? (
+          <form onSubmit={handleSendOTP} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone" className="text-linear-text">
+                Phone Number
+              </Label>
+              <div className="flex gap-2">
+                <select
+                  value={countryCode}
+                  onChange={(e) => setCountryCode(e.target.value)}
+                  className="w-24 px-3 py-2 bg-linear-bg border border-linear-border text-linear-text rounded-md"
+                  disabled={loading}
+                >
+                  <option value="+1">+1 US</option>
+                  <option value="+44">+44 UK</option>
+                  <option value="+61">+61 AU</option>
+                  <option value="+91">+91 IN</option>
+                </select>
+                <Input
+                  id="phone"
+                  type="tel"
+                  value={phone}
+                  onChange={handlePhoneChange}
+                  placeholder="(555) 123-4567"
+                  className="flex-1 bg-linear-bg border-linear-border text-linear-text"
+                  disabled={loading}
+                  required
+                />
+              </div>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={loading || !phone}
+              className="w-full bg-linear-purple hover:bg-linear-purple/80 text-white"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Sending...
+                </>
+              ) : (
+                <>
+                  Send Code
+                  <ArrowRight className="h-4 w-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </form>
+        ) : (
+          <form onSubmit={handleVerifyOTP} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="otp" className="text-linear-text">
+                Verification Code
+              </Label>
+              <Input
+                id="otp"
+                type="text"
+                inputMode="numeric"
+                value={otp}
+                onChange={handleOTPChange}
+                placeholder="000000"
+                className="bg-linear-bg border-linear-border text-linear-text text-center text-2xl tracking-widest"
+                disabled={loading}
+                required
+                autoFocus
+                maxLength={6}
+              />
+              <p className="text-xs text-linear-text-tertiary text-center">
+                Enter the 6-digit code sent to {phone}
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setStep('phone')
+                  setOtp('')
+                }}
+                disabled={loading}
+                className="flex-1"
+              >
+                Change Number
+              </Button>
+              
+              <Button
+                type="submit"
+                disabled={loading || otp.length !== 6}
+                className="flex-1 bg-linear-purple hover:bg-linear-purple/80 text-white"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Verifying...
+                  </>
+                ) : (
+                  <>
+                    <Check className="h-4 w-4 mr-2" />
+                    Verify
+                  </>
+                )}
+              </Button>
+            </div>
+
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleSendOTP}
+                disabled={loading}
+                className="text-sm text-linear-purple hover:text-linear-purple/80 disabled:opacity-50"
+              >
+                Didn't receive a code? Resend
+              </button>
+            </div>
+          </form>
+        )}
+      </div>
+    )
   }
 
   return (

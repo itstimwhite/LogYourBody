@@ -79,31 +79,25 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-bg p-4">
       <div className="w-full max-w-md">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center mb-4">
+            <BarChart3 className="h-12 w-12 text-linear-purple" />
+          </div>
+          <h1 className="text-3xl font-bold text-linear-text mb-2">Create your account</h1>
+          <p className="text-linear-text-secondary">
+            Start tracking your fitness journey today
+          </p>
+        </div>
+
         <Card className="bg-linear-card border-linear-border">
-          <CardHeader className="space-y-1 text-center">
-            <div className="flex items-center justify-center mb-4">
-              <BarChart3 className="h-10 w-10 text-linear-purple" />
-            </div>
-            <CardTitle className="text-2xl font-bold text-linear-text">Create your account</CardTitle>
-            <CardDescription className="text-linear-text-secondary">
-              Start tracking your fitness journey today
-            </CardDescription>
-          </CardHeader>
-          
-          <CardContent>
+          <CardContent className="pt-6">
             <Tabs defaultValue="email" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6">
-                <TabsTrigger value="email" className="flex items-center gap-2">
-                  <Mail className="h-4 w-4" />
-                  Email
-                </TabsTrigger>
-                <TabsTrigger value="sms" className="flex items-center gap-2">
-                  <Smartphone className="h-4 w-4" />
-                  SMS
-                </TabsTrigger>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="email">Email</TabsTrigger>
+                <TabsTrigger value="sms">SMS</TabsTrigger>
               </TabsList>
               
-              <TabsContent value="email" className="space-y-4">
+              <TabsContent value="email" className="mt-6 space-y-4">
                 <form onSubmit={handleSignUp} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -160,20 +154,21 @@ export default function SignupPage() {
               </Button>
             </form>
 
-                    <div className="relative">
+                    <div className="relative my-6">
                       <div className="absolute inset-0 flex items-center">
                         <Separator className="w-full" />
                       </div>
-                      <div className="relative flex justify-center text-xs uppercase">
-                        <span className="bg-linear-card px-2 text-linear-text-secondary">Or continue with</span>
+                      <div className="relative flex justify-center text-xs">
+                        <span className="bg-linear-card px-2 text-linear-text-secondary">or</span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-3">
                       <Button
                         variant="outline"
                         onClick={() => handleOAuthSignIn('google')}
                         disabled={loading}
+                        className="w-full"
                       >
                         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
                           <path
@@ -193,42 +188,43 @@ export default function SignupPage() {
                             fill="#EA4335"
                           />
                         </svg>
-                        Google
+                        Continue with Google
                       </Button>
                       <Button
                         variant="outline"
                         onClick={() => handleOAuthSignIn('apple')}
                         disabled={loading}
+                        className="w-full"
                       >
                         <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
                           <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.75.92-.01 1.82-.64 3.16-.58 1.84.14 3.11 1.08 3.77 2.78-3.12 1.89-2.47 6.04.82 7.18-.6 1.63-1.44 3.27-2.83 4.84M12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
                         </svg>
-                        Apple
+                        Continue with Apple
                       </Button>
                     </div>
                   </TabsContent>
                   
-                  <TabsContent value="sms">
-                    <SMSLogin onSuccess={handleSMSSuccess} />
+                  <TabsContent value="sms" className="mt-6">
+                    <SMSLogin onSuccess={handleSMSSuccess} minimal />
                   </TabsContent>
                 </Tabs>
               </CardContent>
-          
-          <CardFooter className="flex flex-col space-y-2">
-            <p className="text-sm text-center text-linear-text-secondary">
-              Already have an account?{' '}
-              <Link href="/login" className="font-medium text-linear-purple hover:text-linear-purple/80">
-                Sign in
-              </Link>
-            </p>
-            <p className="text-xs text-center text-linear-text-tertiary px-4">
-              By creating an account, you agree to our{' '}
-              <Link href="/terms" className="underline hover:text-linear-text-secondary">Terms</Link>
-              {' '}and{' '}
-              <Link href="/privacy" className="underline hover:text-linear-text-secondary">Privacy Policy</Link>
-            </p>
-          </CardFooter>
-        </Card>
+            </Card>
+        
+        <div className="mt-6 space-y-2">
+          <p className="text-sm text-center text-linear-text-secondary">
+            Already have an account?{' '}
+            <Link href="/login" className="font-medium text-linear-purple hover:text-linear-purple/80">
+              Sign in
+            </Link>
+          </p>
+          <p className="text-xs text-center text-linear-text-tertiary px-4">
+            By creating an account, you agree to our{' '}
+            <Link href="/terms" className="underline hover:text-linear-text-secondary">Terms</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="underline hover:text-linear-text-secondary">Privacy Policy</Link>
+          </p>
+        </div>
       </div>
     </div>
   )
