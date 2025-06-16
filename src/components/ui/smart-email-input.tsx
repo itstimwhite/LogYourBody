@@ -188,7 +188,7 @@ export function SmartEmailInput({
       {showSuggestions && showDomainSuggestions && suggestions.length > 0 && atIndex > -1 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-xl overflow-hidden"
+          className="absolute z-50 w-full mt-2 bg-linear-card border border-linear-border rounded-lg shadow-xl overflow-hidden"
           role="listbox"
           aria-label="Email domain suggestions"
         >
@@ -199,15 +199,15 @@ export function SmartEmailInput({
               onClick={() => handleSuggestionClick(domain)}
               className={cn(
                 'w-full px-4 py-3 text-left transition-colors duration-150',
-                'hover:bg-gray-50 focus:bg-gray-50 focus:outline-none',
-                'border-b border-gray-100 last:border-0',
-                selectedSuggestion === index && 'bg-gray-50'
+                'hover:bg-linear-purple/10 focus:bg-linear-purple/10 focus:outline-none',
+                'border-b border-linear-border last:border-0',
+                selectedSuggestion === index && 'bg-linear-purple/10'
               )}
               role="option"
               aria-selected={selectedSuggestion === index}
             >
-              <span className="text-gray-600 text-sm">{localPart}@</span>
-              <span className="text-gray-900 font-medium">{domain}</span>
+              <span className="text-linear-text-secondary text-sm">{localPart}@</span>
+              <span className="text-linear-text font-medium">{domain}</span>
             </button>
           ))}
         </div>

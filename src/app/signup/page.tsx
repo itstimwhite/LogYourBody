@@ -82,43 +82,43 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-linear-bg p-4">
+      <Card className="w-full max-w-md bg-linear-card border border-linear-border">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
-          <CardDescription className="text-center">
+          <CardTitle className="text-2xl font-bold text-center text-linear-text">Create an account</CardTitle>
+          <CardDescription className="text-center text-linear-text-secondary">
             Enter your information to get started with LogYourBody
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="fullname">Full Name (Optional)</Label>
+              <Label htmlFor="fullname" className="text-linear-text-secondary">Full Name (Optional)</Label>
               <div className="relative">
-                <User className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <User className="absolute left-3 top-3 h-4 w-4 text-linear-text-tertiary" />
                 <Input
                   id="fullname"
                   type="text"
                   placeholder="John Doe"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-linear-card border-linear-border text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple focus:bg-linear-card/80"
                   disabled={loading}
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-linear-text-secondary">Email</Label>
               <div className="relative">
-                <Mail className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Mail className="absolute left-3 top-3 h-4 w-4 text-linear-text-tertiary" />
                 <Input
                   id="email"
                   type="email"
                   placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-linear-card border-linear-border text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple focus:bg-linear-card/80"
                   required
                   disabled={loading}
                 />
@@ -126,16 +126,16 @@ export default function SignupPage() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-linear-text-secondary">Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-linear-text-tertiary" />
                 <Input
                   id="password"
                   type="password"
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-linear-card border-linear-border text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple focus:bg-linear-card/80"
                   required
                   disabled={loading}
                   minLength={6}
@@ -144,16 +144,16 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Label htmlFor="confirm-password" className="text-linear-text-secondary">Confirm Password</Label>
               <div className="relative">
-                <Lock className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
+                <Lock className="absolute left-3 top-3 h-4 w-4 text-linear-text-tertiary" />
                 <Input
                   id="confirm-password"
                   type="password"
                   placeholder="••••••••"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 bg-linear-card border-linear-border text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple focus:bg-linear-card/80"
                   required
                   disabled={loading}
                   minLength={6}
@@ -199,6 +199,7 @@ export default function SignupPage() {
           <div className="grid grid-cols-2 gap-4">
             <Button
               variant="outline"
+              className="border-linear-border bg-linear-card hover:bg-linear-card/80 text-linear-text"
               onClick={() => handleOAuthSignIn('google')}
               disabled={loading}
             >
@@ -224,6 +225,7 @@ export default function SignupPage() {
             </Button>
             <Button
               variant="outline"
+              className="border-linear-border bg-linear-card hover:bg-linear-card/80 text-linear-text"
               onClick={() => handleOAuthSignIn('apple')}
               disabled={loading}
             >

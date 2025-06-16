@@ -58,9 +58,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <div className="min-h-screen flex bg-linear-bg">
       {/* Left side - Branding */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 to-blue-700 p-12 items-center justify-center relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-linear-purple/20 to-linear-purple/10 p-12 items-center justify-center relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-10"></div>
         <div className="relative z-10 max-w-lg">
           <div className="flex items-center gap-3 mb-8">
@@ -70,7 +70,7 @@ export default function LoginPage() {
           <h2 className="text-3xl font-bold text-white mb-4">
             Welcome back to your fitness journey
           </h2>
-          <p className="text-blue-100 text-lg mb-8">
+          <p className="text-linear-text-secondary text-lg mb-8">
             Track your progress, understand your body, and achieve your goals with scientific precision.
           </p>
           <div className="space-y-4">
@@ -78,19 +78,19 @@ export default function LoginPage() {
               <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-sm">✓</span>
               </div>
-              <p className="text-blue-100">Track body composition with multiple scientific methods</p>
+              <p className="text-linear-text-secondary">Track body composition with multiple scientific methods</p>
             </div>
             <div className="flex items-start gap-3">
               <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-sm">✓</span>
               </div>
-              <p className="text-blue-100">Visualize your progress with advanced analytics</p>
+              <p className="text-linear-text-secondary">Visualize your progress with advanced analytics</p>
             </div>
             <div className="flex items-start gap-3">
               <div className="h-8 w-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                 <span className="text-white text-sm">✓</span>
               </div>
-              <p className="text-blue-100">Your data stays private and secure</p>
+              <p className="text-linear-text-secondary">Your data stays private and secure</p>
             </div>
           </div>
         </div>
@@ -99,20 +99,20 @@ export default function LoginPage() {
       {/* Right side - Login form */}
       <div className="flex-1 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <Card className="border-0 shadow-xl">
+          <Card className="bg-linear-card border border-linear-border">
             <CardHeader className="space-y-1 pb-6">
               <div className="flex items-center justify-center lg:hidden mb-4">
-                <BarChart3 className="h-10 w-10 text-blue-600" />
+                <BarChart3 className="h-10 w-10 text-linear-purple" />
               </div>
-              <CardTitle className="text-2xl font-bold text-center">Sign in to your account</CardTitle>
-              <CardDescription className="text-center text-gray-600">
+              <CardTitle className="text-2xl font-bold text-center text-linear-text">Sign in to your account</CardTitle>
+              <CardDescription className="text-center text-linear-text-secondary">
                 Enter your email and password to access your dashboard
               </CardDescription>
             </CardHeader>
             <CardContent className="pb-6">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email address</Label>
+                  <Label htmlFor="email" className="text-linear-text-secondary">Email address</Label>
                   <SmartEmailInput
                     id="email"
                     placeholder="you@example.com"
@@ -121,29 +121,29 @@ export default function LoginPage() {
                     onValidationChange={setIsEmailValid}
                     required
                     disabled={loading}
-                    className="h-11 !bg-gray-50 !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:!border-blue-500 focus:!bg-white"
+                    className="h-11 bg-linear-card border-linear-border text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple focus:bg-linear-card/80"
                   />
                 </div>
                 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password" className="text-linear-text-secondary">Password</Label>
                     <Link 
                       href="/forgot-password" 
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-sm text-linear-purple hover:text-linear-purple/80 font-medium"
                     >
                       Forgot password?
                     </Link>
                   </div>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3.5 h-4 w-4 text-gray-400" />
+                    <Lock className="absolute left-3 top-3.5 h-4 w-4 text-linear-text-tertiary" />
                     <Input
                       id="password"
                       type="password"
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="pl-10 h-11"
+                      className="pl-10 h-11 bg-linear-card border-linear-border text-linear-text placeholder:text-linear-text-tertiary focus:border-linear-purple focus:bg-linear-card/80"
                       required
                       disabled={loading}
                     />
@@ -158,7 +158,7 @@ export default function LoginPage() {
 
                 <Button 
                   type="submit" 
-                  className="w-full h-11 text-base font-medium"
+                  className="w-full h-11 text-base font-medium bg-linear-purple hover:bg-linear-purple/80 text-white"
                   disabled={loading || !isEmailValid}
                 >
                   {loading ? (
@@ -180,7 +180,7 @@ export default function LoginPage() {
                   <Separator />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                  <span className="bg-linear-card px-2 text-linear-text-secondary">Or continue with</span>
                 </div>
               </div>
 
@@ -189,7 +189,7 @@ export default function LoginPage() {
                   variant="outline"
                   onClick={() => handleOAuthSignIn('google')}
                   disabled={loading}
-                  className="h-11"
+                  className="h-11 border-linear-border bg-linear-card hover:bg-linear-card/80 text-linear-text"
                 >
                   <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24">
                     <path
@@ -215,7 +215,7 @@ export default function LoginPage() {
                   variant="outline"
                   onClick={() => handleOAuthSignIn('apple')}
                   disabled={loading}
-                  className="h-11"
+                  className="h-11 border-linear-border bg-linear-card hover:bg-linear-card/80 text-linear-text"
                 >
                   <svg className="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.75.92-.01 1.82-.64 3.16-.58 1.84.14 3.11 1.08 3.77 2.78-3.12 1.89-2.47 6.04.82 7.18-.6 1.63-1.44 3.27-2.83 4.84M12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
@@ -226,12 +226,12 @@ export default function LoginPage() {
             </CardContent>
             <CardFooter className="flex flex-col space-y-4 pt-2">
               <div className="text-center text-sm">
-                <span className="text-gray-600">Don&apos;t have an account? </span>
-                <Link href="/signup" className="font-medium text-blue-600 hover:text-blue-700">
+                <span className="text-linear-text-secondary">Don&apos;t have an account? </span>
+                <Link href="/signup" className="font-medium text-linear-purple hover:text-linear-purple/80">
                   Create account
                 </Link>
               </div>
-              <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">
+              <Link href="/" className="text-sm text-linear-text-tertiary hover:text-linear-text-secondary">
                 Back to home
               </Link>
             </CardFooter>
