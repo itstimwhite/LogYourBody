@@ -1,11 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { 
-  getSupabaseEnvironment, 
-  validateSupabaseKeys,
-  testSupabaseConnection 
-} from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { 
   Database, 
   CheckCircle, 
@@ -28,15 +24,33 @@ export function SupabaseStatusBanner() {
   const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [showDetails, setShowDetails] = useState(false)
-
-  const supabaseEnv = getSupabaseEnvironment()
-  const keyValidation = validateSupabaseKeys()
+  
+  const supabase = createClient()
 
   const testConnection = async () => {
     setIsLoading(true)
     try {
-      const result = await testSupabaseConnection()
-      setConnectionStatus(result)
+      // Test connection by trying to select from auth.users (will fail but shows if connected)
+      const { error } = await supabase.from('_').select('*').limit(1)
+      
+      if (error && error.code === '42P01') {
+        // Table doesn't exist error means we're connected
+        setConnectionStatus({
+          success: true,
+          message: 'Connected successfully'
+        })
+      } else if (error) {
+        setConnectionStatus({
+          success: false,
+          error: error.message,
+          details: 'Database connection failed'
+        })
+      } else {
+        setConnectionStatus({
+          success: true,
+          message: 'Connected successfully'
+        })
+      }
     } catch (error) {
       setConnectionStatus({
         success: false,
@@ -50,19 +64,19 @@ export function SupabaseStatusBanner() {
 
   useEffect(() => {
     testConnection()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const getEnvironmentColor = (env: string) => {
+  const getEnvironmentColor = () => {
+    const env = process.env.NEXT_PUBLIC_VERCEL_ENV || 'development'
     switch (env) {
       case 'production':
         return 'bg-red-500'
       case 'preview':
         return 'bg-yellow-500'
       case 'development':
-      case 'local':
-        return 'bg-green-500'
       default:
-        return 'bg-gray-500'
+        return 'bg-green-500'
     }
   }
 
@@ -74,10 +88,15 @@ export function SupabaseStatusBanner() {
   }
 
   const getSupabaseProjectId = () => {
-    const url = keyValidation.url.value
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
     if (!url) return 'Not configured'
     const match = url.match(/https:\/\/([^.]+)\.supabase\.co/)
     return match ? match[1] : 'Unknown'
+  }
+
+  // Don't show in production
+  if (process.env.NODE_ENV === 'production') {
+    return null
   }
 
   return (
@@ -109,8 +128,8 @@ export function SupabaseStatusBanner() {
                 <h2 className="text-lg font-bold">
                   Supabase Database Status
                 </h2>
-                <span className={`px-2 py-1 rounded-full text-xs font-semibold text-white ${getEnvironmentColor(supabaseEnv)}`}>
-                  {supabaseEnv.toUpperCase()} BRANCH
+                <span className={`px-2 py-1 rounded-full text-xs font-semibold text-white ${getEnvironmentColor()}`}>
+                  {(process.env.NEXT_PUBLIC_VERCEL_ENV || 'development').toUpperCase()}
                 </span>
               </div>
               <p className="text-sm opacity-80">
@@ -162,8 +181,7 @@ export function SupabaseStatusBanner() {
                   Environment Details
                 </h3>
                 <div className="space-y-1 text-xs">
-                  <div>Supabase Environment: <strong>{supabaseEnv}</strong></div>
-                  <div>Vercel Environment: <strong>{process.env.VERCEL_ENV || 'local'}</strong></div>
+                  <div>Vercel Environment: <strong>{process.env.NEXT_PUBLIC_VERCEL_ENV || 'local'}</strong></div>
                   <div>Node Environment: <strong>{process.env.NODE_ENV}</strong></div>
                 </div>
               </div>
@@ -175,8 +193,7 @@ export function SupabaseStatusBanner() {
                   Connection Details
                 </h3>
                 <div className="space-y-1 text-xs">
-                  <div>URL Status: {keyValidation.url.exists ? '✅ Configured' : '❌ Missing'}</div>
-                  <div>API Key: {keyValidation.anonKey.exists ? '✅ Configured' : '❌ Missing'}</div>
+                  <div>Status: {connectionStatus?.success ? '✅ Connected' : '❌ Failed'}</div>
                   {connectionStatus?.error && (
                     <div className="text-red-600">Error: {connectionStatus.error}</div>
                   )}
@@ -190,22 +207,14 @@ export function SupabaseStatusBanner() {
                   Technical Info
                 </h3>
                 <div className="space-y-1 text-xs font-mono">
-                  <div className="truncate">URL: {keyValidation.url.value || 'Not set'}</div>
-                  <div className="truncate">Key: {keyValidation.anonKey.value ? `${keyValidation.anonKey.value.substring(0, 20)}...` : 'Not set'}</div>
+                  <div className="truncate">Project: {getSupabaseProjectId()}</div>
                 </div>
               </div>
             </div>
 
-            {/* Warning for non-dev environments */}
-            {supabaseEnv === 'production' && (
-              <div className="mt-4 p-3 bg-red-100 border border-red-300 rounded-md text-red-800 text-sm">
-                <strong>⚠️ Warning:</strong> You are connected to the PRODUCTION database. Be careful with any data modifications.
-              </div>
-            )}
-
             {/* Info message */}
             <div className="mt-4 text-xs opacity-60 text-center">
-              This status banner is for development purposes and will be removed in production.
+              This status banner is for development purposes only.
             </div>
           </div>
         )}

@@ -4,12 +4,7 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  getSupabaseEnvironment, 
-  getVercelEnvironment, 
-  validateSupabaseKeys,
-  testSupabaseConnection 
-} from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { 
   Database, 
   CheckCircle, 
@@ -31,16 +26,33 @@ export function DatabaseStatus() {
   const [isLoading, setIsLoading] = useState(false)
   const [showDetails, setShowDetails] = useState(false)
   const [showKeys, setShowKeys] = useState(false)
-
-  const supabaseEnv = getSupabaseEnvironment()
-  const vercelEnv = getVercelEnvironment()
-  const keyValidation = validateSupabaseKeys()
+  
+  const supabase = createClient()
 
   const testConnection = async () => {
     setIsLoading(true)
     try {
-      const result = await testSupabaseConnection()
-      setConnectionStatus(result)
+      // Test connection by trying to select from a non-existent table
+      const { error } = await supabase.from('_').select('*').limit(1)
+      
+      if (error && error.code === '42P01') {
+        // Table doesn't exist error means we're connected
+        setConnectionStatus({
+          success: true,
+          message: 'Connected successfully'
+        })
+      } else if (error) {
+        setConnectionStatus({
+          success: false,
+          error: error.message,
+          details: 'Database connection failed'
+        })
+      } else {
+        setConnectionStatus({
+          success: true,
+          message: 'Connected successfully'
+        })
+      }
     } catch (error) {
       setConnectionStatus({
         success: false,
@@ -54,6 +66,7 @@ export function DatabaseStatus() {
 
   useEffect(() => {
     testConnection()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   const getStatusColor = (status: boolean) => {
@@ -79,6 +92,10 @@ export function DatabaseStatus() {
     }
   }
 
+  const vercelEnv = process.env.NEXT_PUBLIC_VERCEL_ENV || 'development'
+  const hasSupabaseUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL
+  const hasSupabaseKey = !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
   return (
     <Card className="border-linear-border bg-linear-card/50 backdrop-blur-sm">
       <CardHeader className="pb-3">
@@ -100,15 +117,15 @@ export function DatabaseStatus() {
         {/* Environment Information */}
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <div className="text-xs text-linear-text-tertiary mb-1">Supabase Environment</div>
-            <Badge variant={getEnvironmentBadgeVariant(supabaseEnv)} className="text-xs">
-              {supabaseEnv.toUpperCase()}
+            <div className="text-xs text-linear-text-tertiary mb-1">Environment</div>
+            <Badge variant={getEnvironmentBadgeVariant(vercelEnv)} className="text-xs">
+              {vercelEnv.toUpperCase()}
             </Badge>
           </div>
           <div>
-            <div className="text-xs text-linear-text-tertiary mb-1">Vercel Environment</div>
-            <Badge variant={getEnvironmentBadgeVariant(vercelEnv)} className="text-xs">
-              {vercelEnv.toUpperCase()}
+            <div className="text-xs text-linear-text-tertiary mb-1">Node Environment</div>
+            <Badge variant="outline" className="text-xs">
+              {process.env.NODE_ENV || 'unknown'}
             </Badge>
           </div>
         </div>
@@ -154,17 +171,17 @@ export function DatabaseStatus() {
           <div className="space-y-1">
             <div className="flex items-center justify-between text-xs">
               <span className="text-linear-text-tertiary">Supabase URL</span>
-              <div className={`flex items-center gap-1 ${getStatusColor(keyValidation.url.valid)}`}>
-                {getStatusIcon(keyValidation.url.exists && keyValidation.url.valid)}
-                <span>{keyValidation.url.exists ? 'Valid' : 'Missing'}</span>
+              <div className={`flex items-center gap-1 ${getStatusColor(hasSupabaseUrl)}`}>
+                {getStatusIcon(hasSupabaseUrl)}
+                <span>{hasSupabaseUrl ? 'Set' : 'Missing'}</span>
               </div>
             </div>
             
             <div className="flex items-center justify-between text-xs">
               <span className="text-linear-text-tertiary">Anon Key</span>
-              <div className={`flex items-center gap-1 ${getStatusColor(keyValidation.anonKey.valid)}`}>
-                {getStatusIcon(keyValidation.anonKey.exists && keyValidation.anonKey.valid)}
-                <span>{keyValidation.anonKey.exists ? 'Valid' : 'Missing'}</span>
+              <div className={`flex items-center gap-1 ${getStatusColor(hasSupabaseKey)}`}>
+                {getStatusIcon(hasSupabaseKey)}
+                <span>{hasSupabaseKey ? 'Set' : 'Missing'}</span>
               </div>
             </div>
           </div>
@@ -174,13 +191,15 @@ export function DatabaseStatus() {
               <div>
                 <span className="text-linear-text-tertiary">URL: </span>
                 <span className="text-linear-text font-mono text-[10px]">
-                  {keyValidation.url.value}
+                  {process.env.NEXT_PUBLIC_SUPABASE_URL || 'Not set'}
                 </span>
               </div>
               <div>
                 <span className="text-linear-text-tertiary">Key: </span>
                 <span className="text-linear-text font-mono text-[10px]">
-                  {keyValidation.anonKey.value}
+                  {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 
+                    `${process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY.substring(0, 20)}...` : 
+                    'Not set'}
                 </span>
               </div>
             </div>
@@ -205,8 +224,8 @@ export function DatabaseStatus() {
               <div className="mt-1 space-y-1 text-linear-text-tertiary">
                 <div>VERCEL_ENV: {process.env.VERCEL_ENV || 'undefined'}</div>
                 <div>NODE_ENV: {process.env.NODE_ENV || 'undefined'}</div>
-                <div>NEXT_PUBLIC_SUPABASE_URL: {keyValidation.url.exists ? '✓ Set' : '✗ Missing'}</div>
-                <div>NEXT_PUBLIC_SUPABASE_ANON_KEY: {keyValidation.anonKey.exists ? '✓ Set' : '✗ Missing'}</div>
+                <div>NEXT_PUBLIC_SUPABASE_URL: {hasSupabaseUrl ? '✓ Set' : '✗ Missing'}</div>
+                <div>NEXT_PUBLIC_SUPABASE_ANON_KEY: {hasSupabaseKey ? '✓ Set' : '✗ Missing'}</div>
               </div>
             </div>
             
