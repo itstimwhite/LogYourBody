@@ -34,36 +34,25 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       
-      # Build and Deploy to Vercel if not a PR
-      - name: Build and Deploy to Vercel
+      # Build the application
+      - run: npm run build
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+      
+      # Deploy to Vercel if not a PR
+      - name: Deploy to Vercel
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
         run: |
-          # Pull Vercel environment information
-          vercel pull --yes --environment=production --token=$VERCEL_TOKEN
-          
-          # Build project with Vercel (this replaces npm run build for deployments)
-          vercel build --prod --token=$VERCEL_TOKEN
-          
-          # Deploy the prebuilt project
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
             vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --yes
           else
             vercel deploy --prebuilt --token=$VERCEL_TOKEN --yes
           fi
-      
-      # Run regular build for PRs (for testing only)
-      - name: Build for testing
-        if: github.event_name == 'pull_request'
-        run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
   # Database migrations - only when migration files change
   migrate:
