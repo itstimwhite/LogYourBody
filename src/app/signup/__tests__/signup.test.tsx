@@ -37,13 +37,11 @@ describe('SignupPage', () => {
   it('should render signup form', () => {
     render(<SignupPage />)
 
-    expect(screen.getByText('Create an account')).toBeInTheDocument()
-    expect(screen.getByText('Enter your information to get started with LogYourBody')).toBeInTheDocument()
-    expect(screen.getByLabelText('Full Name (Optional)')).toBeInTheDocument()
+    expect(screen.getByText('Create your account')).toBeInTheDocument()
+    expect(screen.getByText('Start tracking your fitness journey today')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
-    expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Create account/i })).toBeInTheDocument()
   })
 
   it('should have link to login page', () => {
@@ -63,8 +61,7 @@ describe('SignupPage', () => {
 
     await user.type(screen.getByLabelText('Email'), 'newuser@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.type(screen.getByLabelText('Confirm Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     await waitFor(() => {
       expect(mockSignUp).toHaveBeenCalledWith('newuser@example.com', 'password123')
@@ -81,27 +78,12 @@ describe('SignupPage', () => {
 
     await user.type(screen.getByLabelText('Email'), 'existing@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.type(screen.getByLabelText('Confirm Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     await waitFor(() => {
       expect(screen.getByText('Email already in use')).toBeInTheDocument()
       expect(mockPush).not.toHaveBeenCalled()
     })
-  })
-
-  it('should validate password match', async () => {
-    const user = userEvent.setup()
-
-    render(<SignupPage />)
-
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
-    await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.type(screen.getByLabelText('Confirm Password'), 'password456')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
-
-    expect(screen.getByText('Passwords do not match')).toBeInTheDocument()
-    expect(mockSignUp).not.toHaveBeenCalled()
   })
 
   it('should validate password length', async () => {
@@ -111,12 +93,9 @@ describe('SignupPage', () => {
 
     await user.type(screen.getByLabelText('Email'), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), '12345')
-    await user.type(screen.getByLabelText('Confirm Password'), '12345')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
-    // The error message appears both as validation text and as the error message
-    const errorMessages = screen.getAllByText('Password must be at least 6 characters')
-    expect(errorMessages.length).toBeGreaterThan(0)
+    expect(screen.getByText('Password must be at least 6 characters')).toBeInTheDocument()
     expect(mockSignUp).not.toHaveBeenCalled()
   })
 
@@ -154,8 +133,7 @@ describe('SignupPage', () => {
 
     await user.type(screen.getByLabelText('Email'), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.type(screen.getByLabelText('Confirm Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     expect(screen.getByText('Creating account...')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeDisabled()
@@ -184,12 +162,10 @@ describe('SignupPage', () => {
 
     const emailInput = screen.getByLabelText('Email') as HTMLInputElement
     const passwordInput = screen.getByLabelText('Password') as HTMLInputElement
-    const confirmPasswordInput = screen.getByLabelText('Confirm Password') as HTMLInputElement
 
     await user.type(emailInput, 'newuser@example.com')
     await user.type(passwordInput, 'password123')
-    await user.type(confirmPasswordInput, 'password123')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     await waitFor(() => {
       expect(mockPush).toHaveBeenCalledWith('/dashboard')

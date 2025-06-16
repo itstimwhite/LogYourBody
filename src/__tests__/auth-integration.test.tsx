@@ -75,10 +75,9 @@ describe('Authentication Integration Tests', () => {
       // Fill in the form
       await user.type(screen.getByLabelText('Email'), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'password123')
-      await user.type(screen.getByLabelText('Confirm Password'), 'password123')
 
       // Submit
-      await user.click(screen.getByRole('button', { name: 'Create Account' }))
+      await user.click(screen.getByRole('button', { name: /Create account/i }))
 
       // Verify sign up was called
       await waitFor(() => {
@@ -107,8 +106,7 @@ describe('Authentication Integration Tests', () => {
       // Try with short password
       await user.type(screen.getByLabelText('Email'), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'pass')
-      await user.type(screen.getByLabelText('Confirm Password'), 'pass')
-      await user.click(screen.getByRole('button', { name: 'Create Account' }))
+      await user.click(screen.getByRole('button', { name: /Create account/i }))
 
       // Should show error
       await waitFor(() => {
@@ -119,25 +117,7 @@ describe('Authentication Integration Tests', () => {
       expect(mockSignUp).not.toHaveBeenCalled()
     })
 
-    it('should validate password confirmation', async () => {
-      const user = userEvent.setup()
-
-      render(
-        <AuthProvider>
-          <SignupPage />
-        </AuthProvider>
-      )
-
-      // Try with mismatched passwords
-      await user.type(screen.getByLabelText('Email'), 'test@example.com')
-      await user.type(screen.getByLabelText('Password'), 'password123')
-      await user.type(screen.getByLabelText('Confirm Password'), 'password456')
-      await user.click(screen.getByRole('button', { name: 'Create Account' }))
-
-      // Should show error
-      expect(await screen.findByText('Passwords do not match')).toBeInTheDocument()
-      expect(mockSignUp).not.toHaveBeenCalled()
-    })
+    // Password confirmation test removed - simplified form doesn't have confirm password field
   })
 
   describe('Email Sign In Flow', () => {
@@ -158,7 +138,7 @@ describe('Authentication Integration Tests', () => {
       )
 
       // Fill in the form
-      await user.type(screen.getByLabelText('Email address'), 'test@example.com')
+      await user.type(screen.getByLabelText('Email'), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'password123')
 
       // Submit
@@ -190,7 +170,7 @@ describe('Authentication Integration Tests', () => {
       )
 
       // Fill in the form
-      await user.type(screen.getByLabelText('Email address'), 'test@example.com')
+      await user.type(screen.getByLabelText('Email'), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'wrongpassword')
 
       // Submit
@@ -266,7 +246,7 @@ describe('Authentication Integration Tests', () => {
         </AuthProvider>
       )
 
-      const signupLink = screen.getByRole('link', { name: 'Create account' })
+      const signupLink = screen.getByRole('link', { name: 'Sign up' })
       expect(signupLink).toHaveAttribute('href', '/signup')
     })
 
@@ -290,7 +270,7 @@ describe('Authentication Integration Tests', () => {
         </AuthProvider>
       )
 
-      const forgotLink = screen.getByRole('link', { name: 'Forgot password?' })
+      const forgotLink = screen.getByRole('link', { name: 'Forgot?' })
       expect(forgotLink).toHaveAttribute('href', '/forgot-password')
     })
   })
