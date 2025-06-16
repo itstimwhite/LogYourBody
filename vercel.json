@@ -1,7 +1,12 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "buildCommand": "echo 'Build already done in CI'",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD -- .",
+  "functions": {
+    "**/*": {
+      "excludeFiles": "legacy-react/**"
+    }
+  },
   "git": {
     "deploymentEnabled": {
       "dev": false,

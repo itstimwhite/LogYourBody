@@ -34,22 +34,6 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       
-      # Build the application
-      - run: npm run build
-        env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-      
-      # Check build output
-      - name: Check build output
-        run: |
-          echo "=== Checking .next directory ==="
-          ls -la .next/ || echo ".next directory not found"
-          echo "=== Checking for routes-manifest.json ==="
-          find . -name "routes-manifest.json" -type f || echo "routes-manifest.json not found"
-          echo "=== Current directory contents ==="
-          ls -la
-      
       # Deploy to Vercel if not a PR
       - name: Deploy to Vercel
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
@@ -64,10 +48,11 @@ jobs:
           # Pull environment variables
           vercel env pull .env.production.local --token=$VERCEL_TOKEN
           
+          # Deploy and let Vercel handle the build
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            vercel deploy --prod --token=$VERCEL_TOKEN --yes
+            vercel --prod --token=$VERCEL_TOKEN --yes
           else
-            vercel deploy --token=$VERCEL_TOKEN --yes
+            vercel --token=$VERCEL_TOKEN --yes
           fi
 
   # Database migrations - only when migration files change
