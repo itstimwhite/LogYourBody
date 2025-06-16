@@ -40,6 +40,16 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       
+      # Check build output
+      - name: Check build output
+        run: |
+          echo "=== Checking .next directory ==="
+          ls -la .next/ || echo ".next directory not found"
+          echo "=== Checking for routes-manifest.json ==="
+          find . -name "routes-manifest.json" -type f || echo "routes-manifest.json not found"
+          echo "=== Current directory contents ==="
+          ls -la
+      
       # Deploy to Vercel if not a PR
       - name: Deploy to Vercel
         if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
