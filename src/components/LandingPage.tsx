@@ -833,12 +833,11 @@ export function LandingPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <ul className="mb-6 space-y-3" role="list">
+                <ul className="mb-6 space-y-3">
                   {features.map((feature, index) => (
                     <li
                       key={index}
                       className="flex items-center text-linear-text"
-                      role="listitem"
                     >
                       <Check
                         className="mr-3 h-5 w-5 text-white"

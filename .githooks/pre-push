@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Git pre-push hook
+# Runs checks before allowing push
+
+echo "🚀 Running pre-push checks..."
+npm run check
+
+if [ $? -ne 0 ]; then
+    echo ""
+    echo "❌ Pre-push checks failed. Push aborted."
+    echo "💡 Fix the issues above and try again."
+    echo "💡 To skip these checks (not recommended), use: git push --no-verify"
+    exit 1
+fi
+
+echo "✅ All checks passed! Proceeding with push..."

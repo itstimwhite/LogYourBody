@@ -254,11 +254,15 @@ export default function SecurityPage() {
                         <Label className="text-linear-text">Severity Level</Label>
                         <div className="space-y-3">
                           {severityLevels.map((level) => (
-                            <label key={level.value} className={cn(
-                              "cursor-pointer rounded-lg border p-4 transition-all flex items-start gap-3",
-                              formData.severity === level.value ? "border-linear-purple bg-linear-purple/5" : "border-linear-border hover:border-linear-border"
-                            )}>
+                            <label 
+                              key={level.value} 
+                              htmlFor={`severity-${level.value}`}
+                              className={cn(
+                                "cursor-pointer rounded-lg border p-4 transition-all flex items-start gap-3",
+                                formData.severity === level.value ? "border-linear-purple bg-linear-purple/5" : "border-linear-border hover:border-linear-border"
+                              )}>
                               <input
+                                id={`severity-${level.value}`}
                                 type="radio"
                                 name="severity"
                                 value={level.value}

@@ -1,7 +1,6 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import { AuthProvider, useAuth } from '../AuthContext'
-import { supabase } from '@/lib/supabase/client'
 
 // Mock the router
 const mockPush = jest.fn()
@@ -9,6 +8,24 @@ jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: mockPush,
   }),
+}))
+
+// Mock the Supabase client
+const mockSupabaseClient = {
+  auth: {
+    getSession: jest.fn().mockResolvedValue({ data: { session: null } }),
+    onAuthStateChange: jest.fn().mockReturnValue({
+      data: { subscription: { unsubscribe: jest.fn() } }
+    }),
+    signInWithPassword: jest.fn(),
+    signUp: jest.fn(),
+    signOut: jest.fn(),
+    signInWithOAuth: jest.fn(),
+  }
+}
+
+jest.mock('@/lib/supabase/client', () => ({
+  createClient: () => mockSupabaseClient
 }))
 
 // Test component that uses the auth context
@@ -61,7 +78,7 @@ describe('AuthContext', () => {
     const mockUser = { id: '123', email: 'test@example.com' }
     const mockSession = { user: mockUser, access_token: 'token' }
     
-    ;(supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+    mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
       data: { user: mockUser, session: mockSession },
       error: null,
     })
@@ -85,7 +102,7 @@ describe('AuthContext', () => {
     button.click()
 
     await waitFor(() => {
-      expect(supabase.auth.signInWithPassword).toHaveBeenCalledWith({
+      expect(mockSupabaseClient.auth.signInWithPassword).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password',
       })
@@ -96,7 +113,7 @@ describe('AuthContext', () => {
   it('should handle sign in error', async () => {
     const mockError = new Error('Invalid credentials')
     
-    ;(supabase.auth.signInWithPassword as jest.Mock).mockResolvedValue({
+    mockSupabaseClient.auth.signInWithPassword.mockResolvedValue({
       data: { user: null, session: null },
       error: mockError,
     })
@@ -131,7 +148,7 @@ describe('AuthContext', () => {
   })
 
   it('should handle sign up', async () => {
-    ;(supabase.auth.signUp as jest.Mock).mockResolvedValue({
+    mockSupabaseClient.auth.signUp.mockResolvedValue({
       data: { user: { id: '123' }, session: null },
       error: null,
     })
@@ -160,7 +177,7 @@ describe('AuthContext', () => {
     button.click()
 
     await waitFor(() => {
-      expect(supabase.auth.signUp).toHaveBeenCalledWith({
+      expect(mockSupabaseClient.auth.signUp).toHaveBeenCalledWith({
         email: 'new@example.com',
         password: 'password',
         options: {
@@ -172,7 +189,7 @@ describe('AuthContext', () => {
   })
 
   it('should handle sign out', async () => {
-    ;(supabase.auth.signOut as jest.Mock).mockResolvedValue({ error: null })
+    mockSupabaseClient.auth.signOut.mockResolvedValue({ error: null })
 
     function SignOutTest() {
       const { signOut } = useAuth()
@@ -189,13 +206,13 @@ describe('AuthContext', () => {
     button.click()
 
     await waitFor(() => {
-      expect(supabase.auth.signOut).toHaveBeenCalled()
+      expect(mockSupabaseClient.auth.signOut).toHaveBeenCalled()
       expect(mockPush).toHaveBeenCalledWith('/')
     })
   })
 
   it('should handle OAuth sign in', async () => {
-    ;(supabase.auth.signInWithOAuth as jest.Mock).mockResolvedValue({
+    mockSupabaseClient.auth.signInWithOAuth.mockResolvedValue({
       data: { provider: 'google', url: 'https://auth.url' },
       error: null,
     })
@@ -224,7 +241,7 @@ describe('AuthContext', () => {
     button.click()
 
     await waitFor(() => {
-      expect(supabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+      expect(mockSupabaseClient.auth.signInWithOAuth).toHaveBeenCalledWith({
         provider: 'google',
         options: {
           redirectTo: expect.stringContaining('/auth/callback'),
