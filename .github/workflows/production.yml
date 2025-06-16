@@ -60,17 +60,45 @@ jobs:
           echo "Deploying prebuilt artifacts to Production..."
           
           # Deploy to production
-          if vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} > deploy.output 2>&1; then
-            DEPLOYMENT_URL=$(cat deploy.output | tail -1)
-            echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
-            echo "✅ Production deployment initiated: $DEPLOYMENT_URL"
-            
-            # Verify deployment
-            echo "Verifying deployment..."
-            vercel inspect $DEPLOYMENT_URL --token=${{ secrets.VERCEL_TOKEN }} || true
-          else
+          if ! vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }} > deploy.output 2>&1; then
             echo "❌ Deployment command failed"
             echo "Error output:"
+            cat deploy.output
+            exit 1
+          fi
+          
+          # Extract deployment URL
+          DEPLOYMENT_OUTPUT=$(cat deploy.output)
+          echo "Raw output: $DEPLOYMENT_OUTPUT"
+          
+          # For production, we might get the production domain
+          DEPLOYMENT_URL=""
+          
+          # Pattern 1: Direct URL output (might be production domain)
+          if [[ "$DEPLOYMENT_OUTPUT" =~ https://[^[:space:]]+ ]]; then
+            DEPLOYMENT_URL="${BASH_REMATCH[0]}"
+          # Pattern 2: "Inspect: URL" format
+          elif [[ "$DEPLOYMENT_OUTPUT" =~ Inspect:[[:space:]]+https://[^[:space:]]+ ]]; then
+            DEPLOYMENT_URL=$(echo "$DEPLOYMENT_OUTPUT" | grep -oE 'https://[^[:space:]]+' | head -1)
+          fi
+          
+          if [[ -n "$DEPLOYMENT_URL" ]]; then
+            echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+            echo "✅ Production deployment successful: $DEPLOYMENT_URL"
+            
+            # Verify deployment status
+            echo "Verifying deployment..."
+            if vercel inspect "$DEPLOYMENT_URL" --token=${{ secrets.VERCEL_TOKEN }} > inspect.output 2>&1; then
+              if grep -q "State.*Ready" inspect.output; then
+                echo "✅ Deployment verified as ready"
+              else
+                echo "⚠️ Deployment state:"
+                grep "State" inspect.output || echo "State not found"
+              fi
+            fi
+          else
+            echo "❌ Could not extract deployment URL from output"
+            echo "Full output:"
             cat deploy.output
             exit 1
           fi

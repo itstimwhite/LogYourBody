@@ -81,26 +81,50 @@ jobs:
           echo "Deploying prebuilt artifacts to Vercel..."
           
           # Deploy and capture output
-          if vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} > deploy.output 2>&1; then
-            DEPLOYMENT_URL=$(cat deploy.output | tail -1)
-            echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
-            echo "✅ Deployment initiated: $DEPLOYMENT_URL"
-            
-            # Get deployment details using Vercel CLI
-            echo "Checking deployment status..."
-            DEPLOYMENT_STATE=$(vercel inspect $DEPLOYMENT_URL --token=${{ secrets.VERCEL_TOKEN }} 2>/dev/null | grep -E "^\s*state:" | awk '{print $2}' || echo "UNKNOWN")
-            
-            if [[ "$DEPLOYMENT_STATE" == "READY" ]] || [[ "$DEPLOYMENT_STATE" == "QUEUED" ]] || [[ "$DEPLOYMENT_STATE" == "BUILDING" ]]; then
-              echo "✅ Deployment state: $DEPLOYMENT_STATE"
-              echo "✅ Preview URL: $DEPLOYMENT_URL"
-            else
-              echo "⚠️ Unexpected deployment state: $DEPLOYMENT_STATE"
-              echo "Full deployment output:"
-              cat deploy.output
-            fi
-          else
+          if ! vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} > deploy.output 2>&1; then
             echo "❌ Deployment command failed"
             echo "Error output:"
+            cat deploy.output
+            exit 1
+          fi
+          
+          # Extract deployment URL
+          DEPLOYMENT_OUTPUT=$(cat deploy.output)
+          echo "Raw output: $DEPLOYMENT_OUTPUT"
+          
+          # Try multiple patterns to extract URL
+          DEPLOYMENT_URL=""
+          
+          # Pattern 1: Direct URL output
+          if [[ "$DEPLOYMENT_OUTPUT" =~ https://[^[:space:]]+\.vercel\.app ]]; then
+            DEPLOYMENT_URL="${BASH_REMATCH[0]}"
+          # Pattern 2: "Inspect: URL" format
+          elif [[ "$DEPLOYMENT_OUTPUT" =~ Inspect:[[:space:]]+https://[^[:space:]]+ ]]; then
+            DEPLOYMENT_URL=$(echo "$DEPLOYMENT_OUTPUT" | grep -oE 'https://[^[:space:]]+' | head -1)
+          # Pattern 3: Production deployment message
+          elif [[ "$DEPLOYMENT_OUTPUT" =~ "production" ]]; then
+            echo "ℹ️ Deployment ready for production promotion"
+            # Try to get the preview URL from the output
+            DEPLOYMENT_URL=$(echo "$DEPLOYMENT_OUTPUT" | grep -oE 'https://[^[:space:]]+\.vercel\.app' | head -1 || echo "")
+          fi
+          
+          if [[ -n "$DEPLOYMENT_URL" ]]; then
+            echo "deployment-url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+            echo "✅ Deployment successful: $DEPLOYMENT_URL"
+            
+            # Verify deployment status
+            echo "Verifying deployment..."
+            if vercel inspect "$DEPLOYMENT_URL" --token=${{ secrets.VERCEL_TOKEN }} > inspect.output 2>&1; then
+              if grep -q "State.*Ready" inspect.output; then
+                echo "✅ Deployment verified as ready"
+              else
+                echo "⚠️ Deployment state:"
+                grep "State" inspect.output || echo "State not found"
+              fi
+            fi
+          else
+            echo "❌ Could not extract deployment URL from output"
+            echo "Full output:"
             cat deploy.output
             exit 1
           fi
