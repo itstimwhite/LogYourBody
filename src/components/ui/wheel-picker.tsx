@@ -115,6 +115,9 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
         ref={containerRef}
         className="scrollbar-hide overflow-hidden"
         style={{ height: containerHeight }}
+        role="listbox"
+        tabIndex={0}
+        aria-label="Select value"
         onScroll={handleScroll}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
@@ -138,6 +141,9 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
         {items.map((item, index) => (
           <div
             key={index}
+            role="option"
+            aria-selected={index === selectedIndex}
+            tabIndex={-1}
             className={cn(
               "flex cursor-pointer items-center justify-center text-center transition-opacity duration-200",
               index === selectedIndex
@@ -146,6 +152,12 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
             )}
             style={{ height: itemHeight }}
             onClick={() => onSelectionChange(index)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onSelectionChange(index)
+              }
+            }}
           >
             {item}
           </div>
