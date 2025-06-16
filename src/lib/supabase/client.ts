@@ -6,21 +6,19 @@ export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 // Environment detection helpers
 export function getSupabaseEnvironment() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  const vercelEnv = process.env.VERCEL_ENV
   
-  // Map known project IDs to environments
-  if (url.includes('blhpuaqbbczzhsshumof')) {
-    return 'development'
-  } else if (url.includes('qyftepmygbumnultlqzm')) {
-    return 'preview'
-  } else if (url.includes('przjeunffnkjzxpykvjn')) {
-    return 'production'
-  } else if (url.includes('0fab5338-b5f2-48af-a596-591bb5b0a51c')) {
-    return 'vercel-auto' // Vercel's auto-provisioned database
-  } else if (url.includes('localhost') || url.includes('127.0.0.1')) {
-    return 'local'
-  } else {
-    return 'unknown'
+  // Use Vercel environment if available
+  if (vercelEnv) {
+    return vercelEnv === 'production' ? 'production' : 'development'
   }
+  
+  // Fallback to URL detection
+  if (url.includes('localhost') || url.includes('127.0.0.1')) {
+    return 'local'
+  }
+  
+  return process.env.NODE_ENV || 'unknown'
 }
 
 export function getVercelEnvironment() {

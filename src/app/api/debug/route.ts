@@ -18,7 +18,7 @@ export async function GET() {
     has_database_url: !!process.env.DATABASE_URL,
     has_postgres_url: !!process.env.POSTGRES_URL,
     build_target: process.env.BUILD_TARGET,
-    next_version: require('next/package.json').version,
+    next_version: process.env.npm_package_dependencies_next || 'unknown',
   }
   
   return NextResponse.json(debugInfo)
