@@ -26,6 +26,7 @@ jobs:
           cache: 'npm'
       
       - run: npm ci
+      - run: npm install -g vercel
       - run: npm run typecheck
       - run: npm run lint
       - run: npm test
@@ -39,16 +40,26 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       
+      # Pull Vercel environment information
+      - run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      
+      # Build for Vercel deployment
+      - run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      
       # Upload build artifacts
       - uses: actions/upload-artifact@v4
         with:
           name: build-artifacts
           path: |
-            .next
-            public
+            .vercel
             package.json
             package-lock.json
-            next.config.ts
 
   # Deploy job - uses prebuilt artifacts
   deploy:
@@ -64,12 +75,6 @@ jobs:
         with:
           name: build-artifacts
       
-      - uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-      
-      - run: npm ci
       - run: npm install -g vercel
       
       # Deploy prebuilt to Vercel
@@ -134,32 +139,53 @@ jobs:
     needs: [build, deploy]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/preview')
+    permissions:
+      contents: write
+      pull-requests: write
     
     steps:
       - uses: actions/checkout@v4
       
       - name: Create PR
+        id: pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
             TARGET="preview"
             TITLE="🚀 Deploy to Preview"
+            AUTO_MERGE="true"
           else
             TARGET="main"
             TITLE="🎯 Deploy to Production"
+            AUTO_MERGE="false"
           fi
           
           # Check if PR already exists
           EXISTING_PR=$(gh pr list --base $TARGET --head ${{ github.ref_name }} --json number --jq '.[0].number' || echo "")
           
           if [ -z "$EXISTING_PR" ]; then
-            gh pr create \
+            PR_URL=$(gh pr create \
               --title "$TITLE" \
               --body "Auto-generated PR from ${{ github.ref_name }} to $TARGET" \
               --base $TARGET \
-              --head ${{ github.ref_name }}
+              --head ${{ github.ref_name }})
+            PR_NUMBER=$(echo $PR_URL | grep -o '[0-9]\+$')
+            echo "pr_number=$PR_NUMBER" >> $GITHUB_OUTPUT
+            echo "auto_merge=$AUTO_MERGE" >> $GITHUB_OUTPUT
+          else
+            echo "PR already exists: #$EXISTING_PR"
+            echo "pr_number=$EXISTING_PR" >> $GITHUB_OUTPUT
+            echo "auto_merge=$AUTO_MERGE" >> $GITHUB_OUTPUT
           fi
+      
+      - name: Enable auto-merge for dev->preview
+        if: steps.pr.outputs.auto_merge == 'true' && steps.pr.outputs.pr_number != ''
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr merge --auto --merge "${{ steps.pr.outputs.pr_number }}"
+          echo "✅ Enabled auto-merge for PR #${{ steps.pr.outputs.pr_number }}"
 
   # Auto-merge dependabot PRs
   auto-merge-dependabot:
