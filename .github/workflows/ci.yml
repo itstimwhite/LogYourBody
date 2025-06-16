@@ -138,7 +138,7 @@ jobs:
   create-pr-to-preview:
     name: Auto PR to Preview
     runs-on: ubuntu-latest
-    needs: [test-and-build, wait-for-vercel]
+    needs: [test, wait-for-vercel]
     if: |
       github.ref == 'refs/heads/dev' && 
       github.event_name == 'push' &&
@@ -271,7 +271,7 @@ jobs:
   create-pr-to-main:
     name: PR to Main (Manual)
     runs-on: ubuntu-latest
-    needs: [test-and-build, wait-for-vercel-preview]
+    needs: [test, wait-for-vercel-preview]
     if: |
       github.ref == 'refs/heads/preview' && 
       github.event_name == 'push' &&
