@@ -61,19 +61,19 @@ jobs:
         if: steps.env.outputs.environment == 'development'
         run: |
           echo "Running migrations on development database..."
-          npx supabase db push --password "${{ secrets.DEV_DATABASE_PASSWORD }}"
+          npx supabase db push --password "${{ secrets.DEV_DATABASE_PASSWORD }}" --project-ref ihivupqpctpkrgqgxfjf
 
       - name: Run migrations - Preview
         if: steps.env.outputs.environment == 'preview'
         run: |
           echo "Running migrations on preview database..."
-          npx supabase db push --password "${{ secrets.PREVIEW_DATABASE_PASSWORD }}"
+          npx supabase db push --password "${{ secrets.PREVIEW_DATABASE_PASSWORD }}" --project-ref ihivupqpctpkrgqgxfjf
 
       - name: Run migrations - Production
         if: steps.env.outputs.environment == 'production'
         run: |
           echo "⚠️ Running migrations on PRODUCTION database..."
-          npx supabase db push --password "${{ secrets.PROD_DATABASE_PASSWORD }}"
+          npx supabase db push --password "${{ secrets.PROD_DATABASE_PASSWORD }}" --project-ref fkpuqlzuwbrsvbeubgqi
 
       - name: Verify migrations
         run: |

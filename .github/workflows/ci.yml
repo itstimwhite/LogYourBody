@@ -66,10 +66,10 @@ jobs:
           
           if [ "${{ github.ref }}" == "refs/heads/preview" ]; then
             echo "Pushing to preview database..."
-            npx supabase db push --password "${{ secrets.PREVIEW_DATABASE_PASSWORD }}"
+            npx supabase db push --password "${{ secrets.PREVIEW_DATABASE_PASSWORD }}" --project-ref ihivupqpctpkrgqgxfjf
           else
             echo "Pushing to dev database..."
-            npx supabase db push --password "${{ secrets.DEV_DATABASE_PASSWORD }}"
+            npx supabase db push --password "${{ secrets.DEV_DATABASE_PASSWORD }}" --project-ref ihivupqpctpkrgqgxfjf
           fi
 
       # Deploy to Vercel for branch pushes (not PRs, those are handled by preview.yml)
