@@ -68,14 +68,18 @@ jobs:
     if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
     
     steps:
-      - uses: actions/checkout@v4
-      
-      # Download prebuilt artifacts
+      # Don't checkout - we only need the artifacts
+      # Download prebuilt artifacts to current directory
       - uses: actions/download-artifact@v4
         with:
           name: build-artifacts
+          path: .
       
       - run: npm install -g vercel
+      
+      # Debug - check what we have
+      - run: ls -la
+      - run: ls -la .vercel/output || echo ".vercel/output not found"
       
       # Deploy prebuilt to Vercel
       - name: Deploy to Vercel
