@@ -59,23 +59,18 @@ jobs:
           fi
 
       # Run database migrations if needed
-      - name: Setup Supabase CLI
-        if: github.event_name == 'push' && steps.migration-check.outputs.has-migrations == 'true'
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
       - name: Run database migrations
         if: github.event_name == 'push' && steps.migration-check.outputs.has-migrations == 'true'
         run: |
           echo "Running database migrations..."
+          
           if [ "${{ github.ref }}" == "refs/heads/preview" ]; then
-            supabase db push --db-url "${{ secrets.PREVIEW_DATABASE_URL }}"
+            echo "Pushing to preview database..."
+            npx supabase db push --password "${{ secrets.PREVIEW_DATABASE_PASSWORD }}"
           else
-            supabase db push --db-url "${{ secrets.DEV_DATABASE_URL }}"
+            echo "Pushing to dev database..."
+            npx supabase db push --password "${{ secrets.DEV_DATABASE_PASSWORD }}"
           fi
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
       # Deploy to Vercel for branch pushes (not PRs, those are handled by preview.yml)
       - name: Install Vercel CLI

@@ -150,11 +150,11 @@ describe('Authentication Integration Tests', () => {
       )
 
       // Fill in the form
-      await user.type(screen.getByLabelText('Email'), 'test@example.com')
+      await user.type(screen.getByLabelText('Email address'), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'password123')
 
       // Submit
-      await user.click(screen.getByRole('button', { name: 'Sign In' }))
+      await user.click(screen.getByRole('button', { name: /Sign in/i }))
 
       // Verify sign in was called
       await waitFor(() => {
@@ -182,11 +182,11 @@ describe('Authentication Integration Tests', () => {
       )
 
       // Fill in the form
-      await user.type(screen.getByLabelText('Email'), 'test@example.com')
+      await user.type(screen.getByLabelText('Email address'), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'wrongpassword')
 
       // Submit
-      await user.click(screen.getByRole('button', { name: 'Sign In' }))
+      await user.click(screen.getByRole('button', { name: /Sign in/i }))
 
       // Should show error
       expect(await screen.findByText('Invalid login credentials')).toBeInTheDocument()
@@ -258,7 +258,7 @@ describe('Authentication Integration Tests', () => {
         </AuthProvider>
       )
 
-      const signupLink = screen.getByRole('link', { name: 'Sign up' })
+      const signupLink = screen.getByRole('link', { name: 'Create account' })
       expect(signupLink).toHaveAttribute('href', '/signup')
     })
 
