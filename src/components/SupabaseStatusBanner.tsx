@@ -30,21 +30,23 @@ export function SupabaseStatusBanner() {
   const testConnection = async () => {
     setIsLoading(true)
     try {
-      // Test connection by trying to select from auth.users (will fail but shows if connected)
-      const { error } = await supabase.from('_').select('*').limit(1)
+      // Test connection by checking if we can query the profiles table
+      const { error } = await supabase.from('profiles').select('count').limit(0)
       
-      if (error && error.code === '42P01') {
-        // Table doesn't exist error means we're connected
-        setConnectionStatus({
-          success: true,
-          message: 'Connected successfully'
-        })
-      } else if (error) {
-        setConnectionStatus({
-          success: false,
-          error: error.message,
-          details: 'Database connection failed'
-        })
+      if (error) {
+        // Check if it's a permission error (which means we're connected but not authenticated)
+        if (error.code === 'PGRST301' || error.message.includes('permission denied')) {
+          setConnectionStatus({
+            success: true,
+            message: 'Connected successfully (not authenticated)'
+          })
+        } else {
+          setConnectionStatus({
+            success: false,
+            error: error.message,
+            details: 'Database connection failed'
+          })
+        }
       } else {
         setConnectionStatus({
           success: true,

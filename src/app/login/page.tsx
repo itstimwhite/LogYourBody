@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -8,8 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Loader2, Lock, AlertCircle, ArrowRight, BarChart3 } from 'lucide-react'
+import { Loader2, Lock, ArrowRight, BarChart3 } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { SmartEmailInput } from '@/components/ui/smart-email-input'
 
@@ -19,8 +18,15 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isEmailValid, setIsEmailValid] = useState(false)
-  const { signIn, signInWithProvider } = useAuth()
+  const { user, signIn, signInWithProvider } = useAuth()
   const router = useRouter()
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard')
+    }
+  }, [user, router])
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -115,7 +121,7 @@ export default function LoginPage() {
                     onValidationChange={setIsEmailValid}
                     required
                     disabled={loading}
-                    className="h-11"
+                    className="h-11 !bg-gray-50 !border-gray-200 !text-gray-900 placeholder:!text-gray-500 focus:!border-blue-500 focus:!bg-white"
                   />
                 </div>
                 
@@ -145,10 +151,9 @@ export default function LoginPage() {
                 </div>
 
                 {error && (
-                  <Alert variant="destructive" className="animate-in fade-in-0 slide-in-from-top-1">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{error}</AlertDescription>
-                  </Alert>
+                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-sm text-red-400">
+                    {error}
+                  </div>
                 )}
 
                 <Button 

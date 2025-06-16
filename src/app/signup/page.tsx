@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,7 +20,15 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [successMessage, setSuccessMessage] = useState<string | null>(null)
-  const { signUp, signInWithProvider } = useAuth()
+  const { user, signUp, signIn, signInWithProvider } = useAuth()
+  const router = useRouter()
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      router.push('/dashboard')
+    }
+  }, [user, router])
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,17 +52,20 @@ export default function SignupPage() {
 
     const { error } = await signUp(email, password)
     
-    setLoading(false)
-    
     if (error) {
       setError(error.message)
+      setLoading(false)
     } else {
-      setSuccessMessage('Check your email for the confirmation link!')
-      // Clear form
-      setEmail('')
-      setPassword('')
-      setConfirmPassword('')
-      setFullName('')
+      // Auto-login after successful signup
+      const { error: signInError } = await signIn(email, password)
+      
+      if (signInError) {
+        setError(signInError.message)
+        setLoading(false)
+      } else {
+        // Redirect will happen via useEffect when user state updates
+        router.push('/dashboard')
+      }
     }
   }
 
