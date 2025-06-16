@@ -113,5 +113,5 @@ This structure provides a clean separation of concerns between UI components, ro
 
 To push migrations to the remote Supabase database, use:
 ```bash
-npx supabase db push --password 64wTTeAkFEngydjf
+npx supabase db push --password zzbTSr5i2y9QBXPu
 ```

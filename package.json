@@ -13,7 +13,14 @@
     "typecheck": "tsc --noEmit",
     "check": "./scripts/pre-push-check.sh",
     "check:all": "./scripts/pre-push-check.sh --with-build",
-    "prepush": "npm run check"
+    "prepush": "npm run check",
+    "db:migrate": "./scripts/create-migration.sh",
+    "db:push": "supabase db push",
+    "db:push:local": "supabase db push --local",
+    "db:status": "supabase db remote list",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:update": "playwright test --update-snapshots"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
@@ -90,12 +97,13 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.53.0",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
     "@types/jest": "^29.5.14",
-    "@types/node": "^20",
+    "@types/node": "^20.19.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",
@@ -105,8 +113,10 @@
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "jest": "^30.0.0",
     "jest-environment-jsdom": "^30.0.0",
+    "playwright": "^1.53.0",
     "postcss": "^8.5.5",
     "tailwindcss": "^4.0.0",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

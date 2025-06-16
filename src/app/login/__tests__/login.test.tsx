@@ -37,10 +37,10 @@ describe('LoginPage', () => {
     render(<LoginPage />)
 
     expect(screen.getByText('Welcome back')).toBeInTheDocument()
-    expect(screen.getByText('Sign in to your LogYourBody account')).toBeInTheDocument()
+    expect(screen.getByText('Sign in to continue your fitness journey')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Sign In' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Sign in/i })).toBeInTheDocument()
   })
 
   it('should have link to sign up page', () => {
@@ -54,7 +54,7 @@ describe('LoginPage', () => {
   it('should have link to forgot password page', () => {
     render(<LoginPage />)
 
-    const forgotPasswordLink = screen.getByRole('link', { name: 'Forgot password?' })
+    const forgotPasswordLink = screen.getByRole('link', { name: 'Forgot?' })
     expect(forgotPasswordLink).toBeInTheDocument()
     expect(forgotPasswordLink).toHaveAttribute('href', '/forgot-password')
   })
@@ -67,7 +67,7 @@ describe('LoginPage', () => {
 
     await user.type(screen.getByLabelText('Email'), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Sign In' }))
+    await user.click(screen.getByRole('button', { name: /Sign in/i }))
 
     await waitFor(() => {
       expect(mockSignIn).toHaveBeenCalledWith('test@example.com', 'password123')
@@ -83,7 +83,7 @@ describe('LoginPage', () => {
 
     await user.type(screen.getByLabelText('Email'), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'wrongpassword')
-    await user.click(screen.getByRole('button', { name: 'Sign In' }))
+    await user.click(screen.getByRole('button', { name: /Sign in/i }))
 
     await waitFor(() => {
       expect(screen.getByText('Invalid credentials')).toBeInTheDocument()
@@ -125,7 +125,7 @@ describe('LoginPage', () => {
 
     await user.type(screen.getByLabelText('Email'), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Sign In' }))
+    await user.click(screen.getByRole('button', { name: /Sign in/i }))
 
     expect(screen.getByText('Signing in...')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeDisabled()

@@ -9,15 +9,17 @@ jest.mock('@/contexts/AuthContext')
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>
 
 // Mock the router
+const mockPush = jest.fn()
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: jest.fn(),
+    push: mockPush,
   }),
 }))
 
 describe('SignupPage', () => {
   const mockSignUp = jest.fn()
   const mockSignInWithProvider = jest.fn()
+  const mockSignIn = jest.fn()
 
   beforeEach(() => {
     jest.clearAllMocks()
@@ -25,7 +27,7 @@ describe('SignupPage', () => {
       user: null,
       session: null,
       loading: false,
-      signIn: jest.fn(),
+      signIn: mockSignIn,
       signUp: mockSignUp,
       signOut: jest.fn(),
       signInWithProvider: mockSignInWithProvider,
@@ -35,13 +37,11 @@ describe('SignupPage', () => {
   it('should render signup form', () => {
     render(<SignupPage />)
 
-    expect(screen.getByText('Create an account')).toBeInTheDocument()
-    expect(screen.getByText('Enter your information to get started with LogYourBody')).toBeInTheDocument()
-    expect(screen.getByLabelText('Full Name (Optional)')).toBeInTheDocument()
+    expect(screen.getByText('Create your account')).toBeInTheDocument()
+    expect(screen.getByText('Start tracking your fitness journey today')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
-    expect(screen.getByLabelText('Confirm Password')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Create Account' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Create account/i })).toBeInTheDocument()
   })
 
   it('should have link to login page', () => {
@@ -55,71 +55,51 @@ describe('SignupPage', () => {
   it('should handle successful sign up', async () => {
     const user = userEvent.setup()
     mockSignUp.mockResolvedValue({ error: null })
+    mockSignIn.mockResolvedValue({ error: null })
 
     render(<SignupPage />)
 
     await user.type(screen.getByLabelText('Email'), 'newuser@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.type(screen.getByLabelText('Confirm Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     await waitFor(() => {
       expect(mockSignUp).toHaveBeenCalledWith('newuser@example.com', 'password123')
-      expect(screen.getByText('Check your email for the confirmation link!')).toBeInTheDocument()
-    })
-  })
-
-  it('should display error when passwords do not match', async () => {
-    const user = userEvent.setup()
-
-    render(<SignupPage />)
-
-    await user.type(screen.getByLabelText('Email'), 'newuser@example.com')
-    await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.type(screen.getByLabelText('Confirm Password'), 'password456')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
-
-    await waitFor(() => {
-      expect(screen.getByText('Passwords do not match')).toBeInTheDocument()
-      expect(mockSignUp).not.toHaveBeenCalled()
-    })
-  })
-
-  it('should display error when password is too short', async () => {
-    const user = userEvent.setup()
-
-    render(<SignupPage />)
-
-    await user.type(screen.getByLabelText('Email'), 'newuser@example.com')
-    await user.type(screen.getByLabelText('Password'), 'pass')
-    await user.type(screen.getByLabelText('Confirm Password'), 'pass')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
-
-    await waitFor(() => {
-      // Use getAllByText since the message appears in multiple places
-      const errorMessages = screen.getAllByText('Password must be at least 6 characters')
-      expect(errorMessages.length).toBeGreaterThan(0)
-      expect(mockSignUp).not.toHaveBeenCalled()
+      expect(mockSignIn).toHaveBeenCalledWith('newuser@example.com', 'password123')
+      expect(mockPush).toHaveBeenCalledWith('/dashboard')
     })
   })
 
   it('should display error on failed sign up', async () => {
     const user = userEvent.setup()
-    mockSignUp.mockResolvedValue({ error: new Error('Email already exists') })
+    mockSignUp.mockResolvedValue({ error: new Error('Email already in use') })
 
     render(<SignupPage />)
 
     await user.type(screen.getByLabelText('Email'), 'existing@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.type(screen.getByLabelText('Confirm Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     await waitFor(() => {
-      expect(screen.getByText('Email already exists')).toBeInTheDocument()
+      expect(screen.getByText('Email already in use')).toBeInTheDocument()
+      expect(mockPush).not.toHaveBeenCalled()
     })
   })
 
-  it('should handle OAuth sign in with Google', async () => {
+  it('should validate password length', async () => {
+    const user = userEvent.setup()
+
+    render(<SignupPage />)
+
+    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByLabelText('Password'), '12345')
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
+
+    expect(screen.getByText('Password must be at least 6 characters')).toBeInTheDocument()
+    expect(mockSignUp).not.toHaveBeenCalled()
+  })
+
+  it('should handle OAuth sign up with Google', async () => {
     const user = userEvent.setup()
     mockSignInWithProvider.mockResolvedValue({ error: null })
 
@@ -132,7 +112,7 @@ describe('SignupPage', () => {
     })
   })
 
-  it('should handle OAuth sign in with Apple', async () => {
+  it('should handle OAuth sign up with Apple', async () => {
     const user = userEvent.setup()
     mockSignInWithProvider.mockResolvedValue({ error: null })
 
@@ -153,33 +133,42 @@ describe('SignupPage', () => {
 
     await user.type(screen.getByLabelText('Email'), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.type(screen.getByLabelText('Confirm Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     expect(screen.getByText('Creating account...')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeDisabled()
     expect(screen.getByLabelText('Password')).toBeDisabled()
   })
 
+  it('should handle OAuth error', async () => {
+    const user = userEvent.setup()
+    mockSignInWithProvider.mockResolvedValue({ error: new Error('OAuth error') })
+
+    render(<SignupPage />)
+
+    await user.click(screen.getByRole('button', { name: /Google/i }))
+
+    await waitFor(() => {
+      expect(screen.getByText('OAuth error')).toBeInTheDocument()
+    })
+  })
+
   it('should clear form after successful signup', async () => {
     const user = userEvent.setup()
     mockSignUp.mockResolvedValue({ error: null })
+    mockSignIn.mockResolvedValue({ error: null })
 
     render(<SignupPage />)
 
     const emailInput = screen.getByLabelText('Email') as HTMLInputElement
     const passwordInput = screen.getByLabelText('Password') as HTMLInputElement
-    const confirmPasswordInput = screen.getByLabelText('Confirm Password') as HTMLInputElement
 
     await user.type(emailInput, 'newuser@example.com')
     await user.type(passwordInput, 'password123')
-    await user.type(confirmPasswordInput, 'password123')
-    await user.click(screen.getByRole('button', { name: 'Create Account' }))
+    await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     await waitFor(() => {
-      expect(emailInput.value).toBe('')
-      expect(passwordInput.value).toBe('')
-      expect(confirmPasswordInput.value).toBe('')
+      expect(mockPush).toHaveBeenCalledWith('/dashboard')
     })
   })
 })
