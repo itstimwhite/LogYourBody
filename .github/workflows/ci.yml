@@ -43,6 +43,37 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Check for migration changes
+      - name: Check for migration changes
+        id: migration-check
+        if: github.event_name == 'push'
+        run: |
+          if git diff --quiet HEAD^ HEAD -- supabase/migrations/; then
+            echo "has-migrations=false" >> $GITHUB_OUTPUT
+            echo "No migration changes detected"
+          else
+            echo "has-migrations=true" >> $GITHUB_OUTPUT
+            echo "Migration changes detected"
+            git diff --name-only HEAD^ HEAD -- supabase/migrations/
+          fi
+
+      # Run database migrations if needed
+      - name: Install Supabase CLI
+        if: github.event_name == 'push' && steps.migration-check.outputs.has-migrations == 'true'
+        run: npm install -g supabase@latest
+
+      - name: Run database migrations
+        if: github.event_name == 'push' && steps.migration-check.outputs.has-migrations == 'true'
+        run: |
+          echo "Running database migrations..."
+          if [ "${{ github.ref }}" == "refs/heads/preview" ]; then
+            supabase db push --db-url "${{ secrets.PREVIEW_DATABASE_URL }}"
+          else
+            supabase db push --db-url "${{ secrets.DEV_DATABASE_URL }}"
+          fi
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
       # Deploy to Vercel for branch pushes (not PRs, those are handled by preview.yml)
       - name: Install Vercel CLI
         if: github.event_name == 'push'

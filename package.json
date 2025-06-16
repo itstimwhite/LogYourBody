@@ -13,7 +13,11 @@
     "typecheck": "tsc --noEmit",
     "check": "./scripts/pre-push-check.sh",
     "check:all": "./scripts/pre-push-check.sh --with-build",
-    "prepush": "npm run check"
+    "prepush": "npm run check",
+    "db:migrate": "./scripts/create-migration.sh",
+    "db:push": "supabase db push",
+    "db:push:local": "supabase db push --local",
+    "db:status": "supabase db remote list"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",

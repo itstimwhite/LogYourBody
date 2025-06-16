@@ -1,0 +1,149 @@
+name: Database Migrations
+
+on:
+  push:
+    branches: [main, preview, dev]
+    paths:
+      - 'supabase/migrations/**'
+      - '.github/workflows/db-migrations.yml'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to run migrations on'
+        required: true
+        default: 'development'
+        type: choice
+        options:
+          - development
+          - preview
+          - production
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  migrate:
+    name: Run Database Migrations
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || (github.ref == 'refs/heads/main' && 'production') || (github.ref == 'refs/heads/preview' && 'preview') || 'development' }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install Supabase CLI
+        run: npm install -g supabase@latest
+
+      - name: Determine environment
+        id: env
+        run: |
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            ENV_NAME="${{ github.event.inputs.environment }}"
+          elif [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            ENV_NAME="production"
+          elif [[ "${{ github.ref }}" == "refs/heads/preview" ]]; then
+            ENV_NAME="preview"
+          else
+            ENV_NAME="development"
+          fi
+          echo "environment=$ENV_NAME" >> $GITHUB_OUTPUT
+          echo "Running migrations for environment: $ENV_NAME"
+
+      - name: Run migrations - Development
+        if: steps.env.outputs.environment == 'development'
+        run: |
+          echo "Running migrations on development database..."
+          supabase db push --db-url "${{ secrets.DEV_DATABASE_URL }}"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Run migrations - Preview
+        if: steps.env.outputs.environment == 'preview'
+        run: |
+          echo "Running migrations on preview database..."
+          supabase db push --db-url "${{ secrets.PREVIEW_DATABASE_URL }}"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Run migrations - Production
+        if: steps.env.outputs.environment == 'production'
+        run: |
+          echo "⚠️ Running migrations on PRODUCTION database..."
+          supabase db push --db-url "${{ secrets.PROD_DATABASE_URL }}"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Verify migrations
+        run: |
+          echo "Verifying migration status..."
+          if [[ "${{ steps.env.outputs.environment }}" == "development" ]]; then
+            DB_URL="${{ secrets.DEV_DATABASE_URL }}"
+          elif [[ "${{ steps.env.outputs.environment }}" == "preview" ]]; then
+            DB_URL="${{ secrets.PREVIEW_DATABASE_URL }}"
+          else
+            DB_URL="${{ secrets.PROD_DATABASE_URL }}"
+          fi
+          
+          # List applied migrations
+          supabase db remote list --db-url "$DB_URL" || true
+
+      - name: Create migration summary
+        if: always()
+        run: |
+          cat > migration-summary.md << 'EOF'
+          ## Database Migration Summary
+          
+          **Environment:** ${{ steps.env.outputs.environment }}
+          **Branch:** ${{ github.ref_name }}
+          **Triggered by:** ${{ github.actor }}
+          
+          ### Migration Files Changed:
+          EOF
+          
+          # List changed migration files
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            git diff --name-only ${{ github.event.before }} ${{ github.sha }} -- supabase/migrations/ >> migration-summary.md || echo "No migration files changed" >> migration-summary.md
+          else
+            ls -la supabase/migrations/*.sql | tail -5 >> migration-summary.md || echo "No migrations found" >> migration-summary.md
+          fi
+          
+          cat migration-summary.md
+
+      - name: Comment PR (if applicable)
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const summary = fs.readFileSync('migration-summary.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: summary + '\n\n✅ Database migrations completed successfully'
+            })
+
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const message = `❌ Database migration failed!\n\nEnvironment: ${{ steps.env.outputs.environment }}\nBranch: ${{ github.ref_name }}\n\nPlease check the [workflow logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.`;
+            
+            // Create an issue for failed migrations
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Migration failure on ${new Date().toISOString().split('T')[0]}`,
+              body: message,
+              labels: ['bug', 'database', 'urgent']
+            })

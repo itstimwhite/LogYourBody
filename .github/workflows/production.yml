@@ -32,6 +32,44 @@ jobs:
       - name: Run tests
         run: npm test
 
+      # Check for migration changes
+      - name: Check for migration changes
+        id: migration-check
+        run: |
+          # Get the merge base to properly detect changes
+          MERGE_BASE=$(git merge-base HEAD origin/preview || git merge-base HEAD origin/main)
+          if git diff --quiet $MERGE_BASE HEAD -- supabase/migrations/; then
+            echo "has-migrations=false" >> $GITHUB_OUTPUT
+            echo "No migration changes detected"
+          else
+            echo "has-migrations=true" >> $GITHUB_OUTPUT
+            echo "⚠️ PRODUCTION migration changes detected:"
+            git diff --name-only $MERGE_BASE HEAD -- supabase/migrations/
+          fi
+
+      # Run database migrations if needed
+      - name: Install Supabase CLI
+        if: steps.migration-check.outputs.has-migrations == 'true'
+        run: npm install -g supabase@latest
+
+      - name: Run PRODUCTION database migrations
+        if: steps.migration-check.outputs.has-migrations == 'true'
+        run: |
+          echo "⚠️ Running PRODUCTION database migrations..."
+          echo "This is a critical operation. Migrations will be applied to the production database."
+          supabase db push --db-url "${{ secrets.PROD_DATABASE_URL }}"
+          echo "✅ Production migrations completed"
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
+      - name: Verify production migrations
+        if: steps.migration-check.outputs.has-migrations == 'true'
+        run: |
+          echo "Verifying production migration status..."
+          supabase db remote list --db-url "${{ secrets.PROD_DATABASE_URL }}" || true
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
