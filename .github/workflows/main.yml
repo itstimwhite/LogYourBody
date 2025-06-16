@@ -13,8 +13,8 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
-  # Build and test job
-  build:
+  # Build, test and deploy job
+  build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     
@@ -40,63 +40,23 @@ jobs:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       
-      # Pull Vercel environment information
-      - run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      
-      # Build for Vercel deployment
-      - run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
-      
-      # Upload build artifacts
-      - uses: actions/upload-artifact@v4
-        with:
-          name: build-artifacts
-          path: |
-            .vercel
-            package.json
-            package-lock.json
-
-  # Deploy job - uses prebuilt artifacts
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    
-    steps:
-      # Don't checkout - we only need the artifacts
-      # Download prebuilt artifacts to current directory
-      - uses: actions/download-artifact@v4
-        with:
-          name: build-artifacts
-          path: .
-      
-      - run: npm install -g vercel
-      
-      # Debug - check what we have
-      - run: ls -la
-      - run: ls -la .vercel/output || echo ".vercel/output not found"
-      
-      # Deploy prebuilt to Vercel
+      # Deploy to Vercel if not a PR
       - name: Deploy to Vercel
+        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
-            vercel deploy --prebuilt --prod --token=$VERCEL_TOKEN --yes
+            vercel deploy --prod --token=$VERCEL_TOKEN --yes
           else
-            vercel deploy --prebuilt --token=$VERCEL_TOKEN --yes
+            vercel deploy --token=$VERCEL_TOKEN --yes
           fi
 
   # Database migrations - only when migration files change
   migrate:
-    needs: build
+    needs: build-and-deploy
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     
@@ -140,7 +100,7 @@ jobs:
 
   # Auto PR creation for dev -> preview -> main flow
   create-pr:
-    needs: [build, deploy]
+    needs: build-and-deploy
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && (github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/preview')
     permissions:
@@ -193,7 +153,7 @@ jobs:
 
   # Auto-merge dependabot PRs
   auto-merge-dependabot:
-    needs: build
+    needs: build-and-deploy
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
     
