@@ -6,7 +6,6 @@
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { useRouter } from 'next/navigation'
 import LoginPage from '@/app/login/page'
 import SignupPage from '@/app/signup/page'
 import { AuthProvider } from '@/contexts/AuthContext'
@@ -206,7 +205,7 @@ describe('Authentication Integration Tests', () => {
 
       // Note: The middleware would handle this redirect in production
       // This test verifies the AuthProvider correctly loads the session
-      const { rerender } = render(
+      render(
         <AuthProvider>
           <div data-testid="test-content">Authenticated</div>
         </AuthProvider>
@@ -219,7 +218,7 @@ describe('Authentication Integration Tests', () => {
     })
 
     it('should handle auth state changes', async () => {
-      let authChangeCallback: any
+      let authChangeCallback: (event: string, session: { user: { id: string; email: string }, access_token: string } | null) => void
       mockOnAuthStateChange.mockImplementation((callback) => {
         authChangeCallback = callback
         return {
@@ -229,7 +228,7 @@ describe('Authentication Integration Tests', () => {
 
       const { act } = await import('@testing-library/react')
       
-      const { rerender } = render(
+      render(
         <AuthProvider>
           <div>Test</div>
         </AuthProvider>
@@ -252,7 +251,6 @@ describe('Authentication Integration Tests', () => {
 
   describe('Navigation Between Auth Pages', () => {
     it('should navigate from login to signup', async () => {
-      const user = userEvent.setup()
 
       render(
         <AuthProvider>
@@ -265,7 +263,6 @@ describe('Authentication Integration Tests', () => {
     })
 
     it('should navigate from signup to login', async () => {
-      const user = userEvent.setup()
 
       render(
         <AuthProvider>
@@ -278,7 +275,6 @@ describe('Authentication Integration Tests', () => {
     })
 
     it('should navigate to forgot password', async () => {
-      const user = userEvent.setup()
 
       render(
         <AuthProvider>

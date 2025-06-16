@@ -48,9 +48,11 @@ jobs:
           fi
 
       # Run database migrations if needed
-      - name: Install Supabase CLI
+      - name: Setup Supabase CLI
         if: steps.migration-check.outputs.has-migrations == 'true'
-        run: npm install -g supabase@latest
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
 
       - name: Run PRODUCTION database migrations
         if: steps.migration-check.outputs.has-migrations == 'true'

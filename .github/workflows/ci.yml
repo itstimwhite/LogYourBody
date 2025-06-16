@@ -48,19 +48,22 @@ jobs:
         id: migration-check
         if: github.event_name == 'push'
         run: |
-          if git diff --quiet HEAD^ HEAD -- supabase/migrations/; then
-            echo "has-migrations=false" >> $GITHUB_OUTPUT
-            echo "No migration changes detected"
-          else
+          # Check if any .sql files exist in migrations folder
+          if ls supabase/migrations/*.sql 2>/dev/null | grep -v template.sql; then
             echo "has-migrations=true" >> $GITHUB_OUTPUT
-            echo "Migration changes detected"
-            git diff --name-only HEAD^ HEAD -- supabase/migrations/
+            echo "Migration files found:"
+            ls -la supabase/migrations/*.sql | grep -v template.sql
+          else
+            echo "has-migrations=false" >> $GITHUB_OUTPUT
+            echo "No migration files found"
           fi
 
       # Run database migrations if needed
-      - name: Install Supabase CLI
+      - name: Setup Supabase CLI
         if: github.event_name == 'push' && steps.migration-check.outputs.has-migrations == 'true'
-        run: npm install -g supabase@latest
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
 
       - name: Run database migrations
         if: github.event_name == 'push' && steps.migration-check.outputs.has-migrations == 'true'
