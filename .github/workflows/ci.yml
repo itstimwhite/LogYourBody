@@ -62,7 +62,14 @@ jobs:
 
       - name: Build Project Artifacts
         if: github.event_name == 'push'
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        run: |
+          # Export environment variables from the downloaded .env file
+          set -a
+          source .vercel/.env.development.local || true
+          set +a
+          
+          # Run the build
+          vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
