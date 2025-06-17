@@ -96,10 +96,11 @@ export function SupabaseStatusBanner() {
     return match ? match[1] : 'Unknown'
   }
 
-  // Don't show in production
-  if (process.env.NODE_ENV === 'production') {
-    return null
-  }
+  // Show on all environments for now
+  // TODO: Hide in production once all workflows are confirmed working
+  // if (process.env.NODE_ENV === 'production') {
+  //   return null
+  // }
 
   return (
     <div className={`w-full border-b-2 ${getStatusStyles()} p-4 transition-all duration-300`}>
