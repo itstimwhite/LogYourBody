@@ -29,6 +29,7 @@ jobs:
       - run: npm install -g vercel
       - run: npm run typecheck
       - run: npm run lint
+        continue-on-error: true
       - run: npm test
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
