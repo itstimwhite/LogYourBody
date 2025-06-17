@@ -62,7 +62,6 @@ export const LazyImage = React.memo(function LazyImage({
     <div ref={imgRef} className={cn("relative overflow-hidden", className)}>
       {/* Placeholder */}
       {!isLoaded && placeholder && (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={placeholder}
           alt=""
@@ -81,7 +80,6 @@ export const LazyImage = React.memo(function LazyImage({
 
       {/* Actual image */}
       {isInView && (
-        // eslint-disable-next-line @next/next/no-img-element
         <img
           src={src}
           srcSet={srcSet}

@@ -17,13 +17,8 @@ import {
   Check,
   X,
   Zap,
-  Info,
-  CreditCard,
-  Calendar,
-  Download
 } from 'lucide-react'
 import Link from 'next/link'
-import { format } from 'date-fns'
 
 export default function SubscriptionSettingsPage() {
   const { user, loading } = useAuth()
@@ -57,7 +52,7 @@ export default function SubscriptionSettingsPage() {
         title: "Upgrade started",
         description: "Redirecting to payment..."
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to start upgrade. Please try again.",
@@ -99,7 +94,7 @@ export default function SubscriptionSettingsPage() {
     }
   }
 
-  const currentPlan = selectedPlan === 'annual' ? plans.annual : plans.monthly
+  const _currentPlan = selectedPlan === 'annual' ? plans.annual : plans.monthly
 
   // Mock subscription data
   const subscription = {

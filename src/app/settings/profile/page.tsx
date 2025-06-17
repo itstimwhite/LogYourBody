@@ -9,16 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { 
   Loader2, 
   ArrowLeft,
   Camera,
-  Save,
-  Calendar,
-  Ruler,
-  User
+  Save
 } from 'lucide-react'
 import Link from 'next/link'
 import { UserProfile } from '@/types/body-metrics'
@@ -73,7 +69,7 @@ export default function ProfileSettingsPage() {
         description: "Your profile has been updated successfully."
       })
       setHasChanges(false)
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to update profile. Please try again.",
@@ -214,7 +210,7 @@ export default function ProfileSettingsPage() {
               <Label htmlFor="gender" className="text-linear-text">Gender</Label>
               <Select 
                 value={profile.gender || ''} 
-                onValueChange={(value) => updateProfile({ gender: value as any })}
+                onValueChange={(value) => updateProfile({ gender: value as 'male' | 'female' | 'other' })}
               >
                 <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text">
                   <SelectValue placeholder="Select gender" />
@@ -240,7 +236,7 @@ export default function ProfileSettingsPage() {
                 />
                 <Select 
                   value={profile.height_unit || 'cm'} 
-                  onValueChange={(value) => updateProfile({ height_unit: value as any })}
+                  onValueChange={(value) => updateProfile({ height_unit: value as 'cm' | 'ft' })}
                 >
                   <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text w-24">
                     <SelectValue />
@@ -257,7 +253,7 @@ export default function ProfileSettingsPage() {
               <Label htmlFor="activityLevel" className="text-linear-text">Activity Level</Label>
               <Select 
                 value={profile.activity_level || ''} 
-                onValueChange={(value) => updateProfile({ activity_level: value as any })}
+                onValueChange={(value) => updateProfile({ activity_level: value as UserProfile['activity_level'] })}
               >
                 <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text">
                   <SelectValue placeholder="Select activity level" />

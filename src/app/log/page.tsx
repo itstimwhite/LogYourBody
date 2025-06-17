@@ -15,7 +15,6 @@ import {
   ArrowLeft, 
   ArrowRight,
   Scale,
-  Activity,
   Ruler,
   CheckCircle,
   Camera,
@@ -25,7 +24,7 @@ import {
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { calculateNavyBodyFat, calculate3SiteBodyFat, calculateFFMI, calculateBodyComposition } from '@/utils/body-calculations'
-import { BodyMetrics, UserProfile } from '@/types/body-metrics'
+import { UserProfile } from '@/types/body-metrics'
 
 type Step = 'weight' | 'method' | 'measurements' | 'photo' | 'review'
 
@@ -171,7 +170,7 @@ export default function LogWeightPage() {
       })
       
       router.push('/dashboard')
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to save metrics. Please try again.",
@@ -325,7 +324,7 @@ export default function LogWeightPage() {
               <CardContent>
                 <RadioGroup
                   value={formData.method}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, method: value as any }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, method: value as 'simple' | 'navy' | 'calipers' }))}
                   className="space-y-3"
                 >
                   <label

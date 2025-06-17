@@ -13,8 +13,7 @@ import {
   ArrowRight, 
   Check,
   AlertCircle,
-  Loader2,
-  Phone
+  Loader2
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -95,10 +94,10 @@ export function SMSLogin({ onSuccess, className, minimal = false }: SMSLoginProp
         title: "Code sent!",
         description: `We've sent a verification code to ${phone}`,
       })
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Error",
-        description: error.message || "Failed to send verification code. Please try again.",
+        description: (error as Error).message || "Failed to send verification code. Please try again.",
         variant: "destructive"
       })
     } finally {
@@ -135,10 +134,10 @@ export function SMSLogin({ onSuccess, className, minimal = false }: SMSLoginProp
       })
       
       onSuccess?.()
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: "Invalid code",
-        description: error.message || "The code you entered is incorrect. Please try again.",
+        description: (error as Error).message || "The code you entered is incorrect. Please try again.",
         variant: "destructive"
       })
     } finally {

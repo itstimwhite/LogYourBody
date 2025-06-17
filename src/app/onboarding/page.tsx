@@ -21,8 +21,6 @@ import {
   Activity,
   CheckCircle,
   Sparkles,
-  Calendar,
-  Scale,
   Info
 } from 'lucide-react'
 import { format } from 'date-fns'
@@ -106,7 +104,7 @@ export default function OnboardingPage() {
       })
       
       router.push('/dashboard')
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to complete setup. Please try again.",
@@ -253,7 +251,7 @@ export default function OnboardingPage() {
                 <Label className="text-linear-text">Gender</Label>
                 <RadioGroup
                   value={formData.gender}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value as any }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value as 'male' | 'female' | 'other' }))}
                   className="grid grid-cols-3 gap-4"
                 >
                   <label
@@ -313,7 +311,7 @@ export default function OnboardingPage() {
                   />
                   <Select 
                     value={formData.height_unit} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, height_unit: value as any }))}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, height_unit: value as 'cm' | 'ft' }))}
                   >
                     <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text w-24">
                       <SelectValue />
@@ -340,7 +338,7 @@ export default function OnboardingPage() {
                   />
                   <Select 
                     value={formData.weight_unit} 
-                    onValueChange={(value) => setFormData(prev => ({ ...prev, weight_unit: value as any }))}
+                    onValueChange={(value) => setFormData(prev => ({ ...prev, weight_unit: value as 'kg' | 'lbs' }))}
                   >
                     <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text w-24">
                       <SelectValue />
@@ -357,7 +355,7 @@ export default function OnboardingPage() {
                 <Label htmlFor="activityLevel" className="text-linear-text">Activity Level</Label>
                 <Select 
                   value={formData.activity_level} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, activity_level: value as any }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, activity_level: value as UserProfile['activity_level'] }))}
                 >
                   <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text">
                     <SelectValue placeholder="Select activity level" />
@@ -396,7 +394,7 @@ export default function OnboardingPage() {
                 <Label className="text-linear-text">Primary Goal</Label>
                 <RadioGroup
                   value={formData.primary_goal}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, primary_goal: value as any }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, primary_goal: value as 'lose_weight' | 'gain_muscle' | 'maintain' | 'body_recomp' }))}
                   className="space-y-3"
                 >
                   <label
@@ -516,7 +514,7 @@ export default function OnboardingPage() {
                       value={formData.units.weight} 
                       onValueChange={(value) => setFormData(prev => ({ 
                         ...prev, 
-                        units: { ...prev.units, weight: value as any }
+                        units: { ...prev.units, weight: value as 'kg' | 'lbs' }
                       }))}
                     >
                       <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text">
@@ -535,7 +533,7 @@ export default function OnboardingPage() {
                       value={formData.units.measurements} 
                       onValueChange={(value) => setFormData(prev => ({ 
                         ...prev, 
-                        units: { ...prev.units, measurements: value as any }
+                        units: { ...prev.units, measurements: value as 'cm' | 'in' }
                       }))}
                     >
                       <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text">
@@ -569,6 +567,7 @@ export default function OnboardingPage() {
                   />
                   <label
                     htmlFor="reminder"
+                    aria-label="Toggle daily reminder"
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                       formData.reminder_enabled ? 'bg-linear-purple' : 'bg-linear-border'
                     }`}

@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import DashboardPage from '../page'
@@ -15,7 +15,6 @@ jest.mock('@/contexts/AuthContext', () => ({
 jest.mock('next/image', () => ({
   __esModule: true,
   default: ({ src, alt, ...props }: { src: string; alt: string; [key: string]: unknown }) => 
-    // eslint-disable-next-line @next/next/no-img-element
     <img src={src} alt={alt} {...props} />
 }))
 

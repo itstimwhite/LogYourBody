@@ -29,7 +29,7 @@ describe('avatar-utils', () => {
     it('returns null for invalid inputs', () => {
       expect(getAvatarUrl(undefined, 15)).toBeNull()
       expect(getAvatarUrl('male', undefined)).toBeNull()
-      expect(getAvatarUrl('invalid' as any, 15)).toBeNull()
+      expect(getAvatarUrl('invalid' as 'male' | 'female', 15)).toBeNull()
     })
 
     it('returns PNG format when specified', () => {

@@ -1,11 +1,11 @@
 'use client'
 
 import React, { useMemo, useCallback, useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { format, differenceInDays, isToday, isYesterday, isSameDay } from 'date-fns'
+import { format, differenceInDays, isToday, isYesterday } from 'date-fns'
 import { ChevronLeft, ChevronRight, Calendar } from 'lucide-react'
 
 interface TimelineEntry {

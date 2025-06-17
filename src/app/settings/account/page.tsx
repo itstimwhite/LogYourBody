@@ -73,7 +73,7 @@ export default function AccountSettingsPage() {
         description: "Your account has been permanently deleted."
       })
       router.push('/')
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to delete account. Please try again.",

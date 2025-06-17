@@ -14,10 +14,7 @@ import { toast } from '@/hooks/use-toast'
 import { 
   ArrowLeft,
   Footprints,
-  TrendingUp,
   Target,
-  Calendar,
-  Plus,
   Edit3,
   Check,
   Info,
@@ -75,7 +72,7 @@ export default function StepsPage() {
       const weekEnd = endOfWeek(today, { weekStartsOn: 1 })
       const daysInWeek = eachDayOfInterval({ start: weekStart, end: weekEnd })
       
-      const mockEntries: StepEntry[] = daysInWeek.map((date, index) => {
+      const mockEntries: StepEntry[] = daysInWeek.map((date, _index) => {
         const dateStr = format(date, 'yyyy-MM-dd')
         const isBeforeToday = date < today && !isToday(date)
         
@@ -89,7 +86,7 @@ export default function StepsPage() {
       })
       
       setStepEntries(mockEntries)
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load step data. Please try again.",
@@ -156,7 +153,7 @@ export default function StepsPage() {
         title: "Steps logged!",
         description: `${steps.toLocaleString()} steps recorded for today.`
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to save steps. Please try again.",

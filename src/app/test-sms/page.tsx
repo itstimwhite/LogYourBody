@@ -22,7 +22,7 @@ export default function TestSMSPage() {
     setResult(null)
     
     try {
-      const { data, error } = await supabase.auth.signInWithOtp({
+      const { error } = await supabase.auth.signInWithOtp({
         phone: phone.startsWith('+') ? phone : `+1${phone.replace(/\D/g, '')}`,
         options: {
           channel: 'sms'
@@ -41,10 +41,10 @@ export default function TestSMSPage() {
         })
         setStep('verify')
       }
-    } catch (err: any) {
+    } catch (err) {
       setResult({ 
         success: false, 
-        message: `Error: ${err.message || 'Unknown error occurred'}` 
+        message: `Error: ${(err as Error).message || 'Unknown error occurred'}` 
       })
     } finally {
       setLoading(false)
@@ -81,10 +81,10 @@ export default function TestSMSPage() {
           setOtp('')
         }, 3000)
       }
-    } catch (err: any) {
+    } catch (err) {
       setResult({ 
         success: false, 
-        message: `Error: ${err.message || 'Unknown error occurred'}` 
+        message: `Error: ${(err as Error).message || 'Unknown error occurred'}` 
       })
     } finally {
       setLoading(false)
@@ -104,10 +104,11 @@ export default function TestSMSPage() {
           {step === 'phone' ? (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-linear-text">
+                <label htmlFor="phone" className="text-sm font-medium text-linear-text">
                   Phone Number
                 </label>
                 <Input
+                  id="phone"
                   type="tel"
                   placeholder="+1 (555) 123-4567"
                   value={phone}
@@ -137,10 +138,11 @@ export default function TestSMSPage() {
           ) : (
             <>
               <div className="space-y-2">
-                <label className="text-sm font-medium text-linear-text">
+                <label htmlFor="otp" className="text-sm font-medium text-linear-text">
                   Verification Code
                 </label>
                 <Input
+                  id="otp"
                   type="text"
                   placeholder="123456"
                   value={otp}

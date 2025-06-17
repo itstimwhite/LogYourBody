@@ -7,7 +7,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Separator } from '@/components/ui/separator'
@@ -15,17 +14,11 @@ import { toast } from '@/hooks/use-toast'
 import { 
   Loader2, 
   ArrowLeft,
-  Bell,
   Mail,
-  Smartphone,
-  Calendar,
-  Trophy,
   Save,
-  Clock,
   Info
 } from 'lucide-react'
 import Link from 'next/link'
-import { UserSettings } from '@/types/body-metrics'
 
 export default function NotificationsSettingsPage() {
   const { user, loading } = useAuth()
@@ -72,7 +65,7 @@ export default function NotificationsSettingsPage() {
     return null
   }
 
-  const updateSettings = (category: string, setting: string, value: any) => {
+  const updateSettings = (category: string, setting: string, value: boolean | string | string[]) => {
     setSettings(prev => ({
       ...prev,
       [category]: {
@@ -101,7 +94,7 @@ export default function NotificationsSettingsPage() {
         description: "Your notification preferences have been saved."
       })
       setHasChanges(false)
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to save notification settings. Please try again.",

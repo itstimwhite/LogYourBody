@@ -15,13 +15,9 @@ import {
   Moon,
   Sun,
   Smartphone,
-  Save,
-  Weight,
-  Ruler,
-  Globe
+  Save
 } from 'lucide-react'
 import Link from 'next/link'
-import { UserSettings } from '@/types/body-metrics'
 
 export default function PreferencesSettingsPage() {
   const { user, loading } = useAuth()
@@ -60,11 +56,11 @@ export default function PreferencesSettingsPage() {
     return null
   }
 
-  const updateSettings = (path: string, value: any) => {
+  const updateSettings = (path: string, value: string | boolean) => {
     setSettings(prev => {
       const newSettings = { ...prev }
       const keys = path.split('.')
-      let current: any = newSettings
+      let current: Record<string, any> = newSettings
       
       for (let i = 0; i < keys.length - 1; i++) {
         if (!current[keys[i]]) current[keys[i]] = {}
@@ -86,7 +82,7 @@ export default function PreferencesSettingsPage() {
         description: "Your preferences have been updated successfully."
       })
       setHasChanges(false)
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to save preferences. Please try again.",

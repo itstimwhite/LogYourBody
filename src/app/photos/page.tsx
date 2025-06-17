@@ -7,18 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
 import { toast } from '@/hooks/use-toast'
 import { 
   ArrowLeft,
   Camera,
   Upload,
   Image as ImageIcon,
-  Calendar,
   Weight,
   Percent,
-  Maximize2,
-  Download,
   Trash2,
   Info,
   X,
@@ -109,7 +105,7 @@ export default function PhotosPage() {
       ]
       
       setPhotos(mockPhotos)
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to load photos. Please try again.",
@@ -188,7 +184,7 @@ export default function PhotosPage() {
       setShowUploadDialog(false)
       setSelectedFile(null)
       setPreview(null)
-    } catch (error) {
+    } catch {
       toast({
         title: "Upload failed",
         description: "Failed to upload photo. Please try again.",
@@ -224,7 +220,7 @@ export default function PhotosPage() {
         title: "Photo deleted",
         description: "The photo has been removed."
       })
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to delete photo. Please try again.",
