@@ -39,7 +39,13 @@ describe('SignupPage', () => {
 
     expect(screen.getByText('Create your account')).toBeInTheDocument()
     expect(screen.getByText('Start tracking your fitness journey today')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email')).toBeInTheDocument()
+    // Check for tabs
+    expect(screen.getByRole('tab', { name: 'Email' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'SMS' })).toBeInTheDocument()
+    // Email tab should be active by default
+    expect(screen.getByRole('tab', { name: 'Email' })).toHaveAttribute('data-state', 'active')
+    // Check form elements within email tab
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Create account/i })).toBeInTheDocument()
   })
@@ -59,7 +65,7 @@ describe('SignupPage', () => {
 
     render(<SignupPage />)
 
-    await user.type(screen.getByLabelText('Email'), 'newuser@example.com')
+    await user.type(screen.getByRole('textbox', { name: /email/i }), 'newuser@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
     await user.click(screen.getByRole('button', { name: /Create account/i }))
 
@@ -76,7 +82,7 @@ describe('SignupPage', () => {
 
     render(<SignupPage />)
 
-    await user.type(screen.getByLabelText('Email'), 'existing@example.com')
+    await user.type(screen.getByRole('textbox', { name: /email/i }), 'existing@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
     await user.click(screen.getByRole('button', { name: /Create account/i }))
 
@@ -91,7 +97,7 @@ describe('SignupPage', () => {
 
     render(<SignupPage />)
 
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), '12345')
     await user.click(screen.getByRole('button', { name: /Create account/i }))
 
@@ -131,12 +137,12 @@ describe('SignupPage', () => {
 
     render(<SignupPage />)
 
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
     await user.click(screen.getByRole('button', { name: /Create account/i }))
 
     expect(screen.getByText('Creating account...')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email')).toBeDisabled()
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeDisabled()
     expect(screen.getByLabelText('Password')).toBeDisabled()
   })
 
@@ -160,7 +166,7 @@ describe('SignupPage', () => {
 
     render(<SignupPage />)
 
-    const emailInput = screen.getByLabelText('Email') as HTMLInputElement
+    const emailInput = screen.getByRole('textbox', { name: /email/i }) as HTMLInputElement
     const passwordInput = screen.getByLabelText('Password') as HTMLInputElement
 
     await user.type(emailInput, 'newuser@example.com')
