@@ -31,11 +31,11 @@ const mockMetrics: BodyMetrics = {
   id: '1',
   user_id: 'user1',
   date: new Date().toISOString(),
-  weight: 75,
-  weight_unit: 'kg',
+  weight: 165,
+  weight_unit: 'lbs',
   body_fat_percentage: 15,
   body_fat_method: 'navy',
-  lean_body_mass: 63.75,
+  lean_body_mass: 140.25,
   ffmi: 21.2,
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString()
@@ -45,17 +45,17 @@ const mockProfile: UserProfile = {
   id: 'user1',
   email: 'user@example.com',
   full_name: 'John Doe',
-  height: 180,
-  height_unit: 'cm',
+  height: 71,
+  height_unit: 'in',
   gender: 'male',
   date_of_birth: '1990-01-01',
   email_verified: true,
   onboarding_completed: true,
   settings: {
     units: {
-      weight: 'kg',
-      height: 'cm',
-      measurements: 'cm'
+      weight: 'lbs',
+      height: 'in',
+      measurements: 'in'
     }
   },
   created_at: new Date().toISOString(),
@@ -311,17 +311,17 @@ export default function DashboardPage() {
   // Format helpers
   const getFormattedWeight = (weight?: number) => {
     if (!weight) return '--'
-    return `${weight.toFixed(1)} ${profile?.settings?.units?.weight || 'kg'}`
+    return `${weight.toFixed(1)} ${profile?.settings?.units?.weight || 'lbs'}`
   }
 
   const getFormattedHeight = (height?: number) => {
     if (!height) return '--'
-    return `${height} ${profile?.settings?.units?.height || 'cm'}`
+    return `${height} ${profile?.settings?.units?.height || 'in'}`
   }
 
   const getFormattedLeanBodyMass = (lbm?: number) => {
     if (!lbm) return '--'
-    return `${lbm.toFixed(1)} ${profile?.settings?.units?.weight || 'kg'}`
+    return `${lbm.toFixed(1)} ${profile?.settings?.units?.weight || 'lbs'}`
   }
 
   return (

@@ -25,6 +25,7 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { UserProfile } from '@/types/body-metrics'
+import { HeightWheelPicker, DateWheelPicker } from '@/components/ui/wheel-picker'
 
 type Step = 'welcome' | 'profile' | 'measurements' | 'goals' | 'preferences' | 'complete'
 
@@ -50,12 +51,14 @@ export default function OnboardingPage() {
     // Profile
     full_name: '',
     date_of_birth: '',
+    date_of_birth_date: new Date(1990, 0, 1), // Default to Jan 1, 1990
     gender: 'male' as 'male' | 'female' | 'other',
     // Measurements
     height: '',
-    height_unit: 'cm' as 'cm' | 'ft',
+    height_in_cm: 180, // Default height in cm
+    height_unit: 'ft' as 'cm' | 'ft',
     weight: '',
-    weight_unit: 'kg' as 'kg' | 'lbs',
+    weight_unit: 'lbs' as 'kg' | 'lbs',
     activity_level: 'moderately_active' as UserProfile['activity_level'],
     // Goals
     primary_goal: 'maintain' as 'lose_weight' | 'gain_muscle' | 'maintain' | 'body_recomp',
@@ -63,9 +66,9 @@ export default function OnboardingPage() {
     target_date: '',
     // Preferences
     units: {
-      weight: 'kg' as 'kg' | 'lbs',
-      height: 'cm' as 'cm' | 'ft',
-      measurements: 'cm' as 'cm' | 'in'
+      weight: 'lbs' as 'kg' | 'lbs',
+      height: 'ft' as 'cm' | 'ft',
+      measurements: 'in' as 'cm' | 'in'
     },
     reminder_enabled: true,
     reminder_time: '09:00'
@@ -122,7 +125,7 @@ export default function OnboardingPage() {
       case 'profile':
         return formData.full_name && formData.date_of_birth
       case 'measurements':
-        return formData.height && formData.weight
+        return formData.height_in_cm && formData.weight
       case 'goals':
         return formData.primary_goal
       case 'preferences':
@@ -231,17 +234,20 @@ export default function OnboardingPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="dateOfBirth" className="text-linear-text">Date of Birth</Label>
-                <Input
-                  id="dateOfBirth"
-                  type="date"
-                  value={formData.date_of_birth}
-                  onChange={(e) => setFormData(prev => ({ ...prev, date_of_birth: e.target.value }))}
-                  className="bg-linear-bg border-linear-border text-linear-text"
-                  max={format(new Date(), 'yyyy-MM-dd')}
+                <Label className="text-linear-text">Date of Birth</Label>
+                <DateWheelPicker
+                  date={formData.date_of_birth_date}
+                  onDateChange={(date) => {
+                    setFormData(prev => ({
+                      ...prev,
+                      date_of_birth_date: date,
+                      date_of_birth: format(date, 'yyyy-MM-dd')
+                    }))
+                  }}
+                  className="bg-linear-bg rounded-lg"
                 />
                 {formData.date_of_birth && (
-                  <p className="text-xs text-linear-text-secondary">
+                  <p className="text-xs text-linear-text-secondary mt-2">
                     Age: {calculateAge()} years
                   </p>
                 )}
@@ -299,26 +305,42 @@ export default function OnboardingPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="height" className="text-linear-text">Height</Label>
-                <div className="flex gap-2">
-                  <Input
-                    id="height"
-                    type="number"
-                    value={formData.height}
-                    onChange={(e) => setFormData(prev => ({ ...prev, height: e.target.value }))}
-                    className="bg-linear-bg border-linear-border text-linear-text"
-                    placeholder="180"
-                  />
+                <Label className="text-linear-text">Height</Label>
+                <HeightWheelPicker
+                  heightInCm={formData.height_in_cm}
+                  units={formData.height_unit === 'ft' ? 'imperial' : 'metric'}
+                  onHeightChange={(heightInCm) => {
+                    setFormData(prev => {
+                      // Update height string based on unit
+                      let heightStr = '';
+                      if (prev.height_unit === 'ft') {
+                        const totalInches = Math.round(heightInCm / 2.54);
+                        const feet = Math.floor(totalInches / 12);
+                        const inches = totalInches % 12;
+                        heightStr = `${feet}.${inches}`;
+                      } else {
+                        heightStr = heightInCm.toString();
+                      }
+                      return {
+                        ...prev,
+                        height_in_cm: heightInCm,
+                        height: heightStr
+                      }
+                    })
+                  }}
+                  className="bg-linear-bg rounded-lg"
+                />
+                <div className="flex justify-end mt-2">
                   <Select 
                     value={formData.height_unit} 
                     onValueChange={(value) => setFormData(prev => ({ ...prev, height_unit: value as 'cm' | 'ft' }))}
                   >
-                    <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text w-24">
+                    <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text w-32">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="cm">cm</SelectItem>
-                      <SelectItem value="ft">ft/in</SelectItem>
+                      <SelectItem value="cm">Metric (cm)</SelectItem>
+                      <SelectItem value="ft">Imperial (ft/in)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -334,7 +356,7 @@ export default function OnboardingPage() {
                     value={formData.weight}
                     onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
                     className="bg-linear-bg border-linear-border text-linear-text"
-                    placeholder="75"
+                    placeholder="165"
                   />
                   <Select 
                     value={formData.weight_unit} 
@@ -464,7 +486,7 @@ export default function OnboardingPage() {
                       value={formData.target_weight}
                       onChange={(e) => setFormData(prev => ({ ...prev, target_weight: e.target.value }))}
                       className="bg-linear-bg border-linear-border text-linear-text"
-                      placeholder={formData.primary_goal === 'lose_weight' ? '70' : '80'}
+                      placeholder={formData.primary_goal === 'lose_weight' ? '154' : '176'}
                     />
                   </div>
 

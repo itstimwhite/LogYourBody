@@ -69,7 +69,6 @@ export interface UserSettings {
     public_profile?: boolean
     show_progress_photos?: boolean
   }
-  theme?: 'light' | 'dark' | 'system'
 }
 
 export interface ProgressPhoto {

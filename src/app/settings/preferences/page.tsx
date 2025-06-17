@@ -6,18 +6,15 @@ import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { toast } from '@/hooks/use-toast'
 import { 
   Loader2, 
   ArrowLeft,
-  Moon,
-  Sun,
-  Smartphone,
   Save
 } from 'lucide-react'
 import Link from 'next/link'
+import { UserSettings } from '@/types/body-metrics'
 
 export default function PreferencesSettingsPage() {
   const { user, loading } = useAuth()
@@ -27,16 +24,12 @@ export default function PreferencesSettingsPage() {
   
   const [settings, setSettings] = useState<UserSettings>({
     units: {
-      weight: 'kg',
-      height: 'cm',
-      measurements: 'cm'
-    },
-    privacy: {
-      public_profile: false,
-      show_progress_photos: false
-    },
-    theme: 'dark'
+      weight: 'lbs',
+      height: 'ft',
+      measurements: 'in'
+    }
   })
+  const [measurementSystem, setMeasurementSystem] = useState<'imperial' | 'metric'>('imperial')
 
   useEffect(() => {
     if (!loading && !user) {
@@ -56,20 +49,27 @@ export default function PreferencesSettingsPage() {
     return null
   }
 
-  const updateSettings = (path: string, value: string | boolean) => {
-    setSettings(prev => {
-      const newSettings = { ...prev }
-      const keys = path.split('.')
-      let current: Record<string, any> = newSettings
-      
-      for (let i = 0; i < keys.length - 1; i++) {
-        if (!current[keys[i]]) current[keys[i]] = {}
-        current = current[keys[i]]
-      }
-      
-      current[keys[keys.length - 1]] = value
-      return newSettings
-    })
+  const handleSystemChange = (system: 'imperial' | 'metric') => {
+    setMeasurementSystem(system)
+    if (system === 'imperial') {
+      setSettings(prev => ({
+        ...prev,
+        units: {
+          weight: 'lbs',
+          height: 'ft',
+          measurements: 'in'
+        }
+      }))
+    } else {
+      setSettings(prev => ({
+        ...prev,
+        units: {
+          weight: 'kg',
+          height: 'cm',
+          measurements: 'cm'
+        }
+      }))
+    }
     setHasChanges(true)
   }
 
@@ -132,186 +132,47 @@ export default function PreferencesSettingsPage() {
           <CardHeader>
             <CardTitle className="text-linear-text">Units & Measurements</CardTitle>
             <CardDescription className="text-linear-text-secondary">
-              Choose your preferred units
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="weightUnit" className="text-linear-text">Weight Unit</Label>
-              <Select 
-                value={settings.units?.weight || 'kg'} 
-                onValueChange={(value) => updateSettings('units.weight', value)}
-              >
-                <SelectTrigger id="weightUnit" className="bg-linear-bg border-linear-border text-linear-text">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kg">Kilograms (kg)</SelectItem>
-                  <SelectItem value="lbs">Pounds (lbs)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="heightUnit" className="text-linear-text">Height Unit</Label>
-              <Select 
-                value={settings.units?.height || 'cm'} 
-                onValueChange={(value) => updateSettings('units.height', value)}
-              >
-                <SelectTrigger id="heightUnit" className="bg-linear-bg border-linear-border text-linear-text">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cm">Centimeters (cm)</SelectItem>
-                  <SelectItem value="ft">Feet & Inches (ft/in)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="measurementUnit" className="text-linear-text">Body Measurements</Label>
-              <Select 
-                value={settings.units?.measurements || 'cm'} 
-                onValueChange={(value) => updateSettings('units.measurements', value)}
-              >
-                <SelectTrigger id="measurementUnit" className="bg-linear-bg border-linear-border text-linear-text">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cm">Centimeters (cm)</SelectItem>
-                  <SelectItem value="in">Inches (in)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Appearance */}
-        <Card className="bg-linear-card border-linear-border">
-          <CardHeader>
-            <CardTitle className="text-linear-text">Appearance</CardTitle>
-            <CardDescription className="text-linear-text-secondary">
-              Customize how the app looks
+              Choose your measurement system
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <Label className="text-linear-text">Theme</Label>
-              <div className="grid grid-cols-3 gap-3">
-                {(['light', 'dark', 'system'] as const).map((theme) => (
-                  <button
-                    key={theme}
-                    onClick={() => updateSettings('theme', theme)}
-                    className={`
-                      p-4 rounded-lg border-2 transition-colors
-                      ${settings.theme === theme 
-                        ? 'border-linear-purple bg-linear-purple/10' 
-                        : 'border-linear-border hover:border-linear-text-tertiary'
-                      }
-                    `}
+            <div className="space-y-4">
+              <Label className="text-linear-text">Measurement System</Label>
+              <Tabs value={measurementSystem} onValueChange={(value) => handleSystemChange(value as 'imperial' | 'metric')}>
+                <TabsList className="grid w-full grid-cols-2 bg-linear-bg">
+                  <TabsTrigger 
+                    value="imperial" 
+                    className="data-[state=active]:bg-linear-purple data-[state=active]:text-white"
                   >
-                    <div className="flex flex-col items-center gap-2">
-                      {theme === 'light' && <Sun className="h-5 w-5 text-linear-text" />}
-                      {theme === 'dark' && <Moon className="h-5 w-5 text-linear-text" />}
-                      {theme === 'system' && <Smartphone className="h-5 w-5 text-linear-text" />}
-                      <span className="text-sm font-medium text-linear-text capitalize">
-                        {theme}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                    Imperial
+                  </TabsTrigger>
+                  <TabsTrigger 
+                    value="metric"
+                    className="data-[state=active]:bg-linear-purple data-[state=active]:text-white"
+                  >
+                    Metric
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
+              <div className="mt-4 space-y-2 text-sm text-linear-text-secondary">
+                {measurementSystem === 'imperial' ? (
+                  <>
+                    <p>• Weight: Pounds (lbs)</p>
+                    <p>• Height: Feet & Inches (ft/in)</p>
+                    <p>• Measurements: Inches (in)</p>
+                  </>
+                ) : (
+                  <>
+                    <p>• Weight: Kilograms (kg)</p>
+                    <p>• Height: Centimeters (cm)</p>
+                    <p>• Measurements: Centimeters (cm)</p>
+                  </>
+                )}
               </div>
-              <p className="text-xs text-linear-text-tertiary mt-2">
-                {settings.theme === 'system' && 'Theme will match your device settings'}
-                {settings.theme === 'light' && 'Light theme for daytime use'}
-                {settings.theme === 'dark' && 'Dark theme for reduced eye strain'}
-              </p>
             </div>
           </CardContent>
         </Card>
 
-        {/* Privacy */}
-        <Card className="bg-linear-card border-linear-border">
-          <CardHeader>
-            <CardTitle className="text-linear-text">Privacy</CardTitle>
-            <CardDescription className="text-linear-text-secondary">
-              Control your privacy settings
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="publicProfile" className="text-linear-text font-normal">
-                  Public Profile
-                </Label>
-                <p className="text-sm text-linear-text-secondary">
-                  Allow others to view your profile
-                </p>
-              </div>
-              <Switch
-                id="publicProfile"
-                checked={settings.privacy?.public_profile || false}
-                onCheckedChange={(checked) => updateSettings('privacy.public_profile', checked)}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <div className="space-y-0.5">
-                <Label htmlFor="showPhotos" className="text-linear-text font-normal">
-                  Show Progress Photos
-                </Label>
-                <p className="text-sm text-linear-text-secondary">
-                  Include photos when sharing progress
-                </p>
-              </div>
-              <Switch
-                id="showPhotos"
-                checked={settings.privacy?.show_progress_photos || false}
-                onCheckedChange={(checked) => updateSettings('privacy.show_progress_photos', checked)}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Language & Region */}
-        <Card className="bg-linear-card border-linear-border">
-          <CardHeader>
-            <CardTitle className="text-linear-text">Language & Region</CardTitle>
-            <CardDescription className="text-linear-text-secondary">
-              Set your language and regional preferences
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="language" className="text-linear-text">Language</Label>
-              <Select defaultValue="en">
-                <SelectTrigger id="language" className="bg-linear-bg border-linear-border text-linear-text">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="es" disabled>Spanish (Coming Soon)</SelectItem>
-                  <SelectItem value="fr" disabled>French (Coming Soon)</SelectItem>
-                  <SelectItem value="de" disabled>German (Coming Soon)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="dateFormat" className="text-linear-text">Date Format</Label>
-              <Select defaultValue="MM/DD/YYYY">
-                <SelectTrigger id="dateFormat" className="bg-linear-bg border-linear-border text-linear-text">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="MM/DD/YYYY">MM/DD/YYYY</SelectItem>
-                  <SelectItem value="DD/MM/YYYY">DD/MM/YYYY</SelectItem>
-                  <SelectItem value="YYYY-MM-DD">YYYY-MM-DD</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
       </main>
     </div>
   )

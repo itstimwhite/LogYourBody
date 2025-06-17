@@ -73,7 +73,7 @@ export default function PhotosPage() {
           url: '/placeholder.svg',
           thumbnail_url: '/placeholder.svg',
           uploaded_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          weight: 75.5,
+          weight: 166.5,
           body_fat_percentage: 18.2,
           notes: 'Feeling stronger!'
         },
@@ -82,7 +82,7 @@ export default function PhotosPage() {
           url: '/placeholder.svg',
           thumbnail_url: '/placeholder.svg',
           uploaded_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-          weight: 76.2,
+          weight: 168,
           body_fat_percentage: 17.8
         },
         {
@@ -90,7 +90,7 @@ export default function PhotosPage() {
           url: '/placeholder.svg',
           thumbnail_url: '/placeholder.svg',
           uploaded_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
-          weight: 76.8,
+          weight: 169.3,
           body_fat_percentage: 17.5,
           notes: 'Great pump today'
         },
@@ -99,7 +99,7 @@ export default function PhotosPage() {
           url: '/placeholder.svg',
           thumbnail_url: '/placeholder.svg',
           uploaded_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
-          weight: 77.1,
+          weight: 170,
           body_fat_percentage: 17.2
         }
       ]

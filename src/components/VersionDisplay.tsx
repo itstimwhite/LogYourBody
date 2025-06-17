@@ -14,7 +14,7 @@ export const VersionDisplay = React.memo(function VersionDisplay({
 
   const versionInfo = useMemo(
     () => ({
-      version: process.env.NEXT_PUBLIC_VERSION || "1.0.0",
+      version: process.env.NEXT_PUBLIC_VERSION || process.env.NEXT_PUBLIC_APP_VERSION || "1.0.0",
     }),
     [],
   );

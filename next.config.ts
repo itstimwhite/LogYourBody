@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { version } from "./package.json";
 
 const nextConfig: NextConfig = {
   // Enable static export for Capacitor when needed
@@ -36,6 +37,11 @@ const nextConfig: NextConfig = {
   // Don't skip TypeScript checks
   typescript: {
     ignoreBuildErrors: false,
+  },
+  
+  // Environment variables
+  env: {
+    NEXT_PUBLIC_APP_VERSION: version,
   },
 };
 

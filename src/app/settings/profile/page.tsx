@@ -18,6 +18,8 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { UserProfile } from '@/types/body-metrics'
+import { HeightWheelPicker, DateWheelPicker } from '@/components/ui/wheel-picker'
+import { format, parseISO } from 'date-fns'
 
 export default function ProfileSettingsPage() {
   const { user, loading } = useAuth()
@@ -29,13 +31,42 @@ export default function ProfileSettingsPage() {
     email: user?.email || '',
     full_name: '',
     username: '',
-    height: 180,
-    height_unit: 'cm',
+    height: 71,
+    height_unit: 'ft',
     gender: 'male',
     date_of_birth: '',
     bio: '',
     activity_level: 'moderately_active'
   })
+
+  // For wheel pickers
+  const [heightInCm, setHeightInCm] = useState(180) // Default height in cm
+  const [dateOfBirthDate, setDateOfBirthDate] = useState(new Date(1990, 0, 1)) // Default date
+
+  // Initialize height in cm from profile
+  useEffect(() => {
+    if (profile.height && profile.height_unit) {
+      if (profile.height_unit === 'cm') {
+        setHeightInCm(profile.height)
+      } else {
+        // Convert feet/inches to cm
+        const totalInches = profile.height
+        setHeightInCm(Math.round(totalInches * 2.54))
+      }
+    }
+  }, [profile.height, profile.height_unit])
+
+  // Initialize date from profile
+  useEffect(() => {
+    if (profile.date_of_birth) {
+      try {
+        const date = parseISO(profile.date_of_birth)
+        setDateOfBirthDate(date)
+      } catch {
+        // Invalid date
+      }
+    }
+  }, [profile.date_of_birth])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -196,13 +227,14 @@ export default function ProfileSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="dateOfBirth" className="text-linear-text">Date of Birth</Label>
-              <Input
-                id="dateOfBirth"
-                type="date"
-                value={profile.date_of_birth || ''}
-                onChange={(e) => updateProfile({ date_of_birth: e.target.value })}
-                className="bg-linear-bg border-linear-border text-linear-text"
+              <Label className="text-linear-text">Date of Birth</Label>
+              <DateWheelPicker
+                date={dateOfBirthDate}
+                onDateChange={(date) => {
+                  setDateOfBirthDate(date)
+                  updateProfile({ date_of_birth: format(date, 'yyyy-MM-dd') })
+                }}
+                className="bg-linear-bg rounded-lg"
               />
             </div>
 
@@ -224,26 +256,46 @@ export default function ProfileSettingsPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="height" className="text-linear-text">Height</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="height"
-                  type="number"
-                  value={profile.height || ''}
-                  onChange={(e) => updateProfile({ height: parseInt(e.target.value) })}
-                  className="bg-linear-bg border-linear-border text-linear-text"
-                  placeholder="180"
-                />
+              <Label className="text-linear-text">Height</Label>
+              <HeightWheelPicker
+                heightInCm={heightInCm}
+                units={profile.height_unit === 'ft' ? 'imperial' : 'metric'}
+                onHeightChange={(newHeightInCm) => {
+                  setHeightInCm(newHeightInCm)
+                  // Update profile height based on unit
+                  if (profile.height_unit === 'ft') {
+                    const totalInches = Math.round(newHeightInCm / 2.54)
+                    updateProfile({ height: totalInches })
+                  } else {
+                    updateProfile({ height: newHeightInCm })
+                  }
+                }}
+                className="bg-linear-bg rounded-lg"
+              />
+              <div className="flex justify-end mt-2">
                 <Select 
                   value={profile.height_unit || 'cm'} 
-                  onValueChange={(value) => updateProfile({ height_unit: value as 'cm' | 'ft' })}
+                  onValueChange={(value) => {
+                    const newUnit = value as 'cm' | 'ft'
+                    // Convert height when changing units
+                    if (newUnit === 'ft' && profile.height_unit === 'cm') {
+                      // Converting from cm to inches
+                      const totalInches = Math.round(heightInCm / 2.54)
+                      updateProfile({ height: totalInches, height_unit: newUnit })
+                    } else if (newUnit === 'cm' && profile.height_unit === 'ft') {
+                      // Converting from inches to cm
+                      updateProfile({ height: heightInCm, height_unit: newUnit })
+                    } else {
+                      updateProfile({ height_unit: newUnit })
+                    }
+                  }}
                 >
-                  <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text w-24">
+                  <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text w-32">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="cm">cm</SelectItem>
-                    <SelectItem value="ft">ft/in</SelectItem>
+                    <SelectItem value="cm">Metric (cm)</SelectItem>
+                    <SelectItem value="ft">Imperial (ft/in)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

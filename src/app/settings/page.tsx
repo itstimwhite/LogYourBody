@@ -58,7 +58,7 @@ export default function SettingsPage() {
     },
     {
       title: 'Preferences',
-      description: 'Units, theme, and display settings',
+      description: 'Units and measurement preferences',
       icon: Globe,
       href: '/settings/preferences',
       badge: null

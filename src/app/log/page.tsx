@@ -47,7 +47,7 @@ export default function LogWeightPage() {
   // Form data
   const [formData, setFormData] = useState({
     weight: '',
-    weight_unit: 'kg' as 'kg' | 'lbs',
+    weight_unit: 'lbs' as 'kg' | 'lbs',
     method: 'simple' as 'simple' | 'navy' | '3-site' | '7-site',
     // Navy method
     waist: '',
@@ -68,14 +68,14 @@ export default function LogWeightPage() {
   // Mock profile data (replace with actual profile fetch)
   const profile: Partial<UserProfile> = {
     height: 180,
-    height_unit: 'cm',
+    height_unit: 'ft',
     gender: 'male',
     date_of_birth: '1990-01-01',
     settings: {
       units: {
-        weight: 'kg',
-        height: 'cm',
-        measurements: 'cm'
+        weight: 'lbs',
+        height: 'ft',
+        measurements: 'in'
       }
     }
   }
@@ -410,7 +410,7 @@ export default function LogWeightPage() {
                 {formData.method === 'navy' && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="neck" className="text-linear-text">Neck (cm)</Label>
+                      <Label htmlFor="neck" className="text-linear-text">Neck (in)</Label>
                       <Input
                         id="neck"
                         type="number"
@@ -418,12 +418,12 @@ export default function LogWeightPage() {
                         value={formData.neck}
                         onChange={(e) => setFormData(prev => ({ ...prev, neck: e.target.value }))}
                         className="bg-linear-bg border-linear-border text-linear-text"
-                        placeholder="38.0"
+                        placeholder="15.0"
                       />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="waist" className="text-linear-text">Waist (cm)</Label>
+                      <Label htmlFor="waist" className="text-linear-text">Waist (in)</Label>
                       <Input
                         id="waist"
                         type="number"
@@ -431,7 +431,7 @@ export default function LogWeightPage() {
                         value={formData.waist}
                         onChange={(e) => setFormData(prev => ({ ...prev, waist: e.target.value }))}
                         className="bg-linear-bg border-linear-border text-linear-text"
-                        placeholder="85.0"
+                        placeholder="33.5"
                       />
                       <p className="text-xs text-linear-text-tertiary">
                         Measure at navel level
@@ -440,7 +440,7 @@ export default function LogWeightPage() {
                     
                     {profile.gender === 'female' && (
                       <div className="space-y-2">
-                        <Label htmlFor="hip" className="text-linear-text">Hip (cm)</Label>
+                        <Label htmlFor="hip" className="text-linear-text">Hip (in)</Label>
                         <Input
                           id="hip"
                           type="number"
@@ -448,7 +448,7 @@ export default function LogWeightPage() {
                           value={formData.hip}
                           onChange={(e) => setFormData(prev => ({ ...prev, hip: e.target.value }))}
                           className="bg-linear-bg border-linear-border text-linear-text"
-                          placeholder="95.0"
+                          placeholder="37.5"
                         />
                         <p className="text-xs text-linear-text-tertiary">
                           Measure at widest point
@@ -627,14 +627,14 @@ export default function LogWeightPage() {
                           <div className="flex items-center justify-between py-2">
                             <span className="text-sm text-linear-text-secondary">Lean Mass</span>
                             <span className="font-medium text-linear-text">
-                              {bodyComp.lean_mass.toFixed(1)} kg
+                              {bodyComp.lean_mass.toFixed(1)} {profile?.settings?.units?.weight || 'lbs'}
                             </span>
                           </div>
                           
                           <div className="flex items-center justify-between py-2">
                             <span className="text-sm text-linear-text-secondary">Fat Mass</span>
                             <span className="font-medium text-linear-text">
-                              {bodyComp.fat_mass.toFixed(1)} kg
+                              {bodyComp.fat_mass.toFixed(1)} {profile?.settings?.units?.weight || 'lbs'}
                             </span>
                           </div>
                         </>

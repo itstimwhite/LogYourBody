@@ -13,7 +13,6 @@ import {
   Loader2, 
   ArrowLeft,
   Lock,
-  Mail,
   Smartphone,
   Shield,
   AlertCircle,
@@ -194,29 +193,6 @@ export default function AccountSettingsPage() {
               Security Log
               <span className="ml-auto text-xs text-linear-text-tertiary">
                 View recent activity
-              </span>
-            </Button>
-          </CardContent>
-        </Card>
-
-        {/* Privacy */}
-        <Card className="bg-linear-card border-linear-border">
-          <CardHeader>
-            <CardTitle className="text-linear-text">Privacy</CardTitle>
-            <CardDescription className="text-linear-text-secondary">
-              Control your data and privacy
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            <Button 
-              variant="outline" 
-              className="w-full justify-start border-linear-border"
-              disabled
-            >
-              <Mail className="h-4 w-4 mr-3" />
-              Download My Data
-              <span className="ml-auto text-xs text-linear-text-tertiary">
-                Get a copy of your data
               </span>
             </Button>
           </CardContent>
