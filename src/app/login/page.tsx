@@ -20,14 +20,16 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [isEmailValid, setIsEmailValid] = useState(false)
-  const { user, signIn, signInWithProvider } = useAuth()
+  const { user, signIn, signInWithProvider, loading: authLoading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (user) {
+    // Only redirect if we're certain the user is authenticated
+    // and auth context is not loading
+    if (user && !authLoading) {
       router.push('/dashboard')
     }
-  }, [user, router])
+  }, [user, authLoading, router])
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
