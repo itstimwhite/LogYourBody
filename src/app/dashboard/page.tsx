@@ -2,14 +2,290 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Loader2, User, Activity, Calendar, TrendingUp } from 'lucide-react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Progress } from '@/components/ui/progress'
+import { Badge } from '@/components/ui/badge'
+import { 
+  Loader2, 
+  User, 
+  Camera,
+  Scale,
+  Ruler,
+  Target,
+  Plus,
+  Settings,
+  Percent,
+  Dumbbell
+} from 'lucide-react'
+import { format } from 'date-fns'
+import { BodyMetrics, UserProfile } from '@/types/body-metrics'
+import { calculateFFMI, getBodyFatCategory } from '@/utils/body-calculations'
+import { getAvatarUrl } from '@/utils/avatar-utils'
+import { cn } from '@/lib/utils'
+import Image from 'next/image'
+
+// Mock data for demonstration
+const mockMetrics: BodyMetrics = {
+  id: '1',
+  user_id: 'user1',
+  date: new Date().toISOString(),
+  weight: 75,
+  weight_unit: 'kg',
+  body_fat_percentage: 15,
+  body_fat_method: 'navy',
+  lean_body_mass: 63.75,
+  ffmi: 21.2,
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
+}
+
+const mockProfile: UserProfile = {
+  id: 'user1',
+  email: 'user@example.com',
+  full_name: 'John Doe',
+  height: 180,
+  height_unit: 'cm',
+  gender: 'male',
+  date_of_birth: '1990-01-01',
+  email_verified: true,
+  onboarding_completed: true,
+  settings: {
+    units: {
+      weight: 'kg',
+      height: 'cm',
+      measurements: 'cm'
+    }
+  },
+  created_at: new Date().toISOString(),
+  updated_at: new Date().toISOString()
+}
+
+// Avatar display component
+const AvatarDisplay = ({ 
+  gender, 
+  bodyFatPercentage, 
+  showPhoto, 
+  profileImage,
+  className 
+}: { 
+  gender?: string
+  bodyFatPercentage?: number
+  showPhoto?: boolean
+  profileImage?: string
+  className?: string
+}) => {
+  if (showPhoto && profileImage) {
+    return (
+      <div className={cn("relative flex items-center justify-center bg-linear-bg", className)}>
+        <Image 
+          src={profileImage} 
+          alt="Profile" 
+          fill
+          className="object-cover"
+        />
+      </div>
+    )
+  }
+
+  const avatarUrl = getAvatarUrl(gender as 'male' | 'female', bodyFatPercentage)
+  
+  return (
+    <div className={cn("relative flex items-center justify-center bg-linear-bg p-8", className)}>
+      {avatarUrl ? (
+        <Image
+          src={avatarUrl}
+          alt={`Body silhouette at ${bodyFatPercentage || 20}% body fat`}
+          width={300}
+          height={400}
+          className="h-full w-auto max-h-[500px] object-contain"
+        />
+      ) : (
+        <div className="text-center text-linear-text-secondary">
+          <User className="h-24 w-24 mx-auto mb-4" />
+          <p>No avatar available</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Profile Panel component
+const ProfilePanel = ({ 
+  metrics, 
+  user, 
+  formattedWeight,
+  formattedHeight,
+  formattedLeanBodyMass 
+}: {
+  metrics: BodyMetrics | null
+  user: UserProfile | null
+  formattedWeight: string
+  formattedHeight: string
+  formattedLeanBodyMass: string
+}) => {
+  const bodyFatCategory = metrics?.body_fat_percentage && user?.gender
+    ? getBodyFatCategory(metrics.body_fat_percentage, user.gender as 'male' | 'female')
+    : null
+
+  return (
+    <div className="h-full overflow-y-auto bg-linear-card p-6">
+      <div className="space-y-6">
+        {/* User Info */}
+        <div>
+          <h2 className="text-2xl font-bold text-linear-text mb-1">
+            {user?.full_name || 'User'}
+          </h2>
+          <p className="text-sm text-linear-text-secondary">{user?.email}</p>
+        </div>
+
+        {/* Current Stats */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-linear-text-secondary uppercase tracking-wider">Current Stats</h3>
+          
+          {/* Weight */}
+          <div className="flex items-center justify-between py-3 border-b border-linear-border">
+            <div className="flex items-center gap-3">
+              <Scale className="h-5 w-5 text-linear-text-tertiary" />
+              <span className="text-linear-text">Weight</span>
+            </div>
+            <span className="font-medium text-linear-text">{formattedWeight}</span>
+          </div>
+
+          {/* Body Fat */}
+          <div className="flex items-center justify-between py-3 border-b border-linear-border">
+            <div className="flex items-center gap-3">
+              <Percent className="h-5 w-5 text-linear-text-tertiary" />
+              <span className="text-linear-text">Body Fat</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="font-medium text-linear-text">
+                {metrics?.body_fat_percentage?.toFixed(1) || '--'}%
+              </span>
+              {bodyFatCategory && (
+                <Badge variant="secondary" className="text-xs">
+                  {bodyFatCategory}
+                </Badge>
+              )}
+            </div>
+          </div>
+
+          {/* Lean Mass */}
+          <div className="flex items-center justify-between py-3 border-b border-linear-border">
+            <div className="flex items-center gap-3">
+              <Dumbbell className="h-5 w-5 text-linear-text-tertiary" />
+              <span className="text-linear-text">Lean Mass</span>
+            </div>
+            <span className="font-medium text-linear-text">{formattedLeanBodyMass}</span>
+          </div>
+
+          {/* Height */}
+          <div className="flex items-center justify-between py-3 border-b border-linear-border">
+            <div className="flex items-center gap-3">
+              <Ruler className="h-5 w-5 text-linear-text-tertiary" />
+              <span className="text-linear-text">Height</span>
+            </div>
+            <span className="font-medium text-linear-text">{formattedHeight}</span>
+          </div>
+
+          {/* FFMI */}
+          {metrics && user?.height && (
+            <div className="flex items-center justify-between py-3 border-b border-linear-border">
+              <div className="flex items-center gap-3">
+                <Target className="h-5 w-5 text-linear-text-tertiary" />
+                <span className="text-linear-text">FFMI</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-linear-text">
+                  {calculateFFMI(metrics.weight!, user.height, metrics.body_fat_percentage!).normalized_ffmi}
+                </span>
+                <Badge variant="secondary" className="text-xs">
+                  {calculateFFMI(metrics.weight!, user.height, metrics.body_fat_percentage!).interpretation.replace('_', ' ')}
+                </Badge>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Goals Progress */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-medium text-linear-text-secondary uppercase tracking-wider">Goals Progress</h3>
+          
+          <div className="space-y-3">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-linear-text">Weight Goal</span>
+                <span className="text-sm font-medium text-linear-text">75%</span>
+              </div>
+              <Progress value={75} className="h-2" />
+            </div>
+            
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-linear-text">Body Fat Goal</span>
+                <span className="text-sm font-medium text-linear-text">60%</span>
+              </div>
+              <Progress value={60} className="h-2" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Timeline component
+const TimelineSlider = ({ 
+  metrics, 
+  selectedIndex, 
+  onIndexChange 
+}: {
+  metrics: BodyMetrics[]
+  selectedIndex: number
+  onIndexChange: (index: number) => void
+}) => {
+  if (metrics.length === 0) return null
+
+  return (
+    <div className="bg-linear-card border-t border-linear-border p-4">
+      <div className="flex items-center justify-between mb-2">
+        <span className="text-xs text-linear-text-secondary">Timeline</span>
+        <span className="text-xs text-linear-text-secondary">
+          {selectedIndex + 1} of {metrics.length}
+        </span>
+      </div>
+      <input
+        type="range"
+        min={0}
+        max={metrics.length - 1}
+        value={selectedIndex}
+        onChange={(e) => onIndexChange(parseInt(e.target.value))}
+        className="w-full h-2 bg-linear-border rounded-lg appearance-none cursor-pointer slider"
+      />
+      <div className="flex items-center justify-between mt-2">
+        <span className="text-xs text-linear-text-secondary">
+          {format(new Date(metrics[0].date), 'MMM d')}
+        </span>
+        <span className="text-xs font-medium text-linear-text">
+          {format(new Date(metrics[selectedIndex].date), 'PPP')}
+        </span>
+        <span className="text-xs text-linear-text-secondary">
+          {format(new Date(metrics[metrics.length - 1].date), 'MMM d')}
+        </span>
+      </div>
+    </div>
+  )
+}
 
 export default function DashboardPage() {
-  const { user, loading, signOut } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
+  const [activeTabIndex, setActiveTabIndex] = useState(0)
+  const [selectedDateIndex, setSelectedDateIndex] = useState(0)
+  const [latestMetrics] = useState<BodyMetrics | null>(mockMetrics)
+  const [profile] = useState<UserProfile | null>(mockProfile)
+  const [metricsHistory] = useState<BodyMetrics[]>([mockMetrics])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -29,102 +305,182 @@ export default function DashboardPage() {
     return null
   }
 
+  // Get current metrics based on selected date
+  const currentMetrics = metricsHistory[selectedDateIndex] || latestMetrics
+
+  // Format helpers
+  const getFormattedWeight = (weight?: number) => {
+    if (!weight) return '--'
+    return `${weight.toFixed(1)} ${profile?.settings?.units?.weight || 'kg'}`
+  }
+
+  const getFormattedHeight = (height?: number) => {
+    if (!height) return '--'
+    return `${height} ${profile?.settings?.units?.height || 'cm'}`
+  }
+
+  const getFormattedLeanBodyMass = (lbm?: number) => {
+    if (!lbm) return '--'
+    return `${lbm.toFixed(1)} ${profile?.settings?.units?.weight || 'kg'}`
+  }
+
   return (
-    <div className="min-h-screen bg-linear-bg">
-      {/* Header */}
-      <header className="bg-linear-card shadow-sm border-b border-linear-border">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-linear-text">Dashboard</h1>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-linear-text-secondary">{user.email}</span>
-              <Button onClick={signOut} variant="outline" size="sm">
-                Sign Out
-              </Button>
-            </div>
+    <div className="flex h-screen flex-col overflow-hidden bg-linear-bg text-linear-text">
+      {/* Header - Desktop only */}
+      <div className="hidden items-center justify-between border-b border-linear-border px-6 py-4 md:flex">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-semibold tracking-tight text-linear-text">
+            LogYourBody
+          </h1>
+          <Badge variant="secondary" className="text-xs">
+            v1.0.0
+          </Badge>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => router.push('/log')}
+            className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
+            onClick={() => router.push('/settings')}
+            className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* Main Content - Avatar/Photo Section with Profile Panel */}
+      <div className="flex min-h-0 flex-1 flex-col md:flex-row">
+        {/* Avatar/Photo Section with Tabs - 2/3 on desktop */}
+        <div className="relative min-h-0 flex-[1.5] md:w-2/3 md:flex-1">
+          <Tabs value={activeTabIndex.toString()} onValueChange={(v) => setActiveTabIndex(parseInt(v))} className="h-full flex flex-col">
+            <TabsList className="grid w-full grid-cols-3 bg-linear-card border-b border-linear-border rounded-none">
+              <TabsTrigger value="0" className="data-[state=active]:bg-linear-border/50">Avatar</TabsTrigger>
+              <TabsTrigger value="1" className="data-[state=active]:bg-linear-border/50">Photo</TabsTrigger>
+              <TabsTrigger value="2" className="data-[state=active]:bg-linear-border/50">Gallery</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="0" className="flex-1 m-0">
+              <Suspense fallback={
+                <div className="flex h-full items-center justify-center bg-linear-bg">
+                  <Loader2 className="h-8 w-8 animate-spin text-linear-text-secondary" />
+                </div>
+              }>
+                <AvatarDisplay
+                  gender={profile?.gender}
+                  bodyFatPercentage={currentMetrics?.body_fat_percentage}
+                  showPhoto={false}
+                  className="h-full w-full"
+                />
+              </Suspense>
+            </TabsContent>
+            
+            <TabsContent value="1" className="flex-1 m-0">
+              <Suspense fallback={
+                <div className="flex h-full items-center justify-center bg-linear-bg">
+                  <Loader2 className="h-8 w-8 animate-spin text-linear-text-secondary" />
+                </div>
+              }>
+                <AvatarDisplay
+                  gender={profile?.gender}
+                  bodyFatPercentage={currentMetrics?.body_fat_percentage}
+                  showPhoto={true}
+                  profileImage={currentMetrics?.photo_url}
+                  className="h-full w-full"
+                />
+              </Suspense>
+            </TabsContent>
+            
+            <TabsContent value="2" className="flex-1 m-0 overflow-y-auto">
+              <div className="p-6">
+                <h3 className="text-lg font-medium text-linear-text mb-4">Progress Photos</h3>
+                {metricsHistory.filter(m => m.photo_url).length > 0 ? (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {metricsHistory.filter(m => m.photo_url).map((metric) => (
+                      <div key={metric.id} className="space-y-2">
+                        <div className="aspect-[3/4] relative bg-linear-border rounded-lg overflow-hidden">
+                          <Image
+                            src={metric.photo_url!}
+                            alt={`Progress photo from ${format(new Date(metric.date), 'PP')}`}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <div className="text-center">
+                          <p className="text-xs text-linear-text-secondary">
+                            {format(new Date(metric.date), 'PP')}
+                          </p>
+                          <p className="text-xs font-medium text-linear-text">
+                            {metric.weight} {metric.weight_unit} • {metric.body_fat_percentage}%
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Camera className="h-12 w-12 text-linear-text-tertiary mx-auto mb-4" />
+                    <p className="text-linear-text-secondary mb-4">
+                      No progress photos yet
+                    </p>
+                    <Button variant="outline" onClick={() => router.push('/photos')}>
+                      <Camera className="h-4 w-4 mr-2" />
+                      Add Your First Photo
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          {/* Mobile Action Buttons - Floating */}
+          <div className="absolute top-4 right-4 z-20 flex gap-3 md:hidden">
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => router.push('/log')}
+              className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm transition-colors hover:bg-linear-card hover:text-linear-text"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              onClick={() => router.push('/settings')}
+              className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm transition-colors hover:bg-linear-card hover:text-linear-text"
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {/* Stats Cards */}
-          <Card className="bg-linear-card border-linear-border">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-linear-text">Total Workouts</CardTitle>
-              <Activity className="h-4 w-4 text-linear-text-tertiary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-linear-text">0</div>
-              <p className="text-xs text-linear-text-tertiary">Start logging your workouts</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-linear-card border-linear-border">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-linear-text">Current Weight</CardTitle>
-              <User className="h-4 w-4 text-linear-text-tertiary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-linear-text">--</div>
-              <p className="text-xs text-linear-text-tertiary">No data yet</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-linear-card border-linear-border">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-linear-text">This Week</CardTitle>
-              <Calendar className="h-4 w-4 text-linear-text-tertiary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-linear-text">0</div>
-              <p className="text-xs text-linear-text-tertiary">Workouts completed</p>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-linear-card border-linear-border">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-linear-text">Progress</CardTitle>
-              <TrendingUp className="h-4 w-4 text-linear-text-tertiary" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-linear-text">--</div>
-              <p className="text-xs text-linear-text-tertiary">Track your journey</p>
-            </CardContent>
-          </Card>
+        {/* Profile Panel - 1/3 on desktop */}
+        <div className="min-h-0 flex-[0.8] border-linear-border md:w-1/3 md:flex-1 md:border-l">
+          <ProfilePanel
+            metrics={currentMetrics}
+            user={profile}
+            formattedWeight={getFormattedWeight(currentMetrics?.weight)}
+            formattedHeight={getFormattedHeight(profile?.height)}
+            formattedLeanBodyMass={getFormattedLeanBodyMass(currentMetrics?.lean_body_mass)}
+          />
         </div>
+      </div>
 
-        {/* Welcome Message */}
-        <Card className="bg-linear-card border-linear-border">
-          <CardHeader>
-            <CardTitle className="text-linear-text">Welcome to LogYourBody!</CardTitle>
-            <CardDescription className="text-linear-text-secondary">
-              Your fitness tracking journey starts here
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <p className="text-linear-text-secondary">
-                You&apos;re successfully logged in! This dashboard will soon include:
-              </p>
-              <ul className="list-disc list-inside space-y-2 text-linear-text-secondary">
-                <li>Daily weight tracking</li>
-                <li>Body composition measurements</li>
-                <li>Progress photos</li>
-                <li>Workout logging</li>
-                <li>Nutrition tracking</li>
-                <li>Progress analytics and trends</li>
-              </ul>
-              <div className="pt-4">
-                <Button className="bg-linear-purple hover:bg-linear-purple/80 text-white">
-                  Start Logging
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </main>
+      {/* Timeline Slider */}
+      <div className="flex-shrink-0">
+        <TimelineSlider
+          metrics={metricsHistory}
+          selectedIndex={selectedDateIndex}
+          onIndexChange={setSelectedDateIndex}
+        />
+      </div>
     </div>
   )
 }

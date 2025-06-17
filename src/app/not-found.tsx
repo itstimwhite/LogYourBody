@@ -1,12 +1,15 @@
 'use client'
 
 import Link from 'next/link'
+import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
-import { Search, Home, ArrowLeft } from 'lucide-react'
+import { Search, Home, ArrowLeft, Settings } from 'lucide-react'
 
 export default function NotFound() {
+  const { user } = useAuth()
+
   return (
     <div className="min-h-screen bg-linear-bg font-inter">
       <Header />
@@ -27,31 +30,63 @@ export default function NotFound() {
           
           <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Link href="/">
-                <Button className="bg-linear-text text-linear-bg hover:bg-linear-text/90 px-6 py-3 inline-flex items-center gap-2">
-                  <Home className="h-4 w-4" />
-                  Go Home
-                </Button>
-              </Link>
-              
-              <Button 
-                variant="ghost" 
-                onClick={() => window.history.back()}
-                className="text-linear-text-secondary hover:text-linear-text border border-linear-border hover:bg-linear-border/50 px-6 py-3 inline-flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Go Back
-              </Button>
+              {user ? (
+                <>
+                  <Link href="/dashboard">
+                    <Button className="bg-linear-text text-linear-bg hover:bg-linear-text/90 px-6 py-3 inline-flex items-center gap-2">
+                      <Home className="h-4 w-4" />
+                      Go to Dashboard
+                    </Button>
+                  </Link>
+                  
+                  <Link href="/settings">
+                    <Button 
+                      variant="ghost" 
+                      className="text-linear-text-secondary hover:text-linear-text border border-linear-border hover:bg-linear-border/50 px-6 py-3 inline-flex items-center gap-2"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Settings
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/">
+                    <Button className="bg-linear-text text-linear-bg hover:bg-linear-text/90 px-6 py-3 inline-flex items-center gap-2">
+                      <Home className="h-4 w-4" />
+                      Go Home
+                    </Button>
+                  </Link>
+                  
+                  <Link href="/login">
+                    <Button 
+                      variant="ghost" 
+                      className="text-linear-text-secondary hover:text-linear-text border border-linear-border hover:bg-linear-border/50 px-6 py-3"
+                    >
+                      Sign In
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
+            
+            <Button 
+              variant="ghost" 
+              onClick={() => window.history.back()}
+              className="text-linear-text-secondary hover:text-linear-text px-6 py-3 inline-flex items-center gap-2"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
+            </Button>
             
             <div className="mt-8 text-sm text-linear-text-tertiary">
               <p>
                 If you think this is a mistake, please{' '}
                 <Link 
-                  href="/security" 
+                  href="/about" 
                   className="text-linear-purple hover:underline"
                 >
-                  let us know
+                  contact support
                 </Link>
                 .
               </p>

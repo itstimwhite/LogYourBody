@@ -4,7 +4,7 @@
  */
 
 import React from 'react'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import LoginPage from '@/app/login/page'
 import SignupPage from '@/app/signup/page'
@@ -42,8 +42,12 @@ describe('Authentication Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockGetSession.mockResolvedValue({ data: { session: null } })
-    mockOnAuthStateChange.mockReturnValue({
-      data: { subscription: { unsubscribe: jest.fn() } }
+    mockOnAuthStateChange.mockImplementation((callback) => {
+      // Immediately invoke the callback to simulate auth state change
+      setTimeout(() => callback('INITIAL', null), 0)
+      return {
+        data: { subscription: { unsubscribe: jest.fn() } }
+      }
     })
   })
 
@@ -66,14 +70,16 @@ describe('Authentication Integration Tests', () => {
         error: null
       })
 
-      render(
-        <AuthProvider>
-          <SignupPage />
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <SignupPage />
+          </AuthProvider>
+        )
+      })
 
       // Fill in the form
-      await user.type(screen.getByLabelText('Email'), 'test@example.com')
+      await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'password123')
 
       // Submit
@@ -97,14 +103,16 @@ describe('Authentication Integration Tests', () => {
     it('should validate password requirements', async () => {
       const user = userEvent.setup()
 
-      render(
-        <AuthProvider>
-          <SignupPage />
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <SignupPage />
+          </AuthProvider>
+        )
+      })
 
       // Try with short password
-      await user.type(screen.getByLabelText('Email'), 'test@example.com')
+      await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'pass')
       await user.click(screen.getByRole('button', { name: /Create account/i }))
 
@@ -131,14 +139,16 @@ describe('Authentication Integration Tests', () => {
         error: null
       })
 
-      render(
-        <AuthProvider>
-          <LoginPage />
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <LoginPage />
+          </AuthProvider>
+        )
+      })
 
       // Fill in the form
-      await user.type(screen.getByLabelText('Email'), 'test@example.com')
+      await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'password123')
 
       // Submit
@@ -163,14 +173,16 @@ describe('Authentication Integration Tests', () => {
         error: new Error('Invalid login credentials')
       })
 
-      render(
-        <AuthProvider>
-          <LoginPage />
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <LoginPage />
+          </AuthProvider>
+        )
+      })
 
       // Fill in the form
-      await user.type(screen.getByLabelText('Email'), 'test@example.com')
+      await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
       await user.type(screen.getByLabelText('Password'), 'wrongpassword')
 
       // Submit
@@ -193,11 +205,13 @@ describe('Authentication Integration Tests', () => {
 
       // Note: The middleware would handle this redirect in production
       // This test verifies the AuthProvider correctly loads the session
-      render(
-        <AuthProvider>
-          <div data-testid="test-content">Authenticated</div>
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <div data-testid="test-content">Authenticated</div>
+          </AuthProvider>
+        )
+      })
 
       // Verify session is loaded
       await waitFor(() => {
@@ -214,13 +228,13 @@ describe('Authentication Integration Tests', () => {
         }
       })
 
-      const { act } = await import('@testing-library/react')
-      
-      render(
-        <AuthProvider>
-          <div>Test</div>
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <div>Test</div>
+          </AuthProvider>
+        )
+      })
 
       // Simulate auth state change
       const mockUser = { id: '123', email: 'test@example.com' }
@@ -240,11 +254,13 @@ describe('Authentication Integration Tests', () => {
   describe('Navigation Between Auth Pages', () => {
     it('should navigate from login to signup', async () => {
 
-      render(
-        <AuthProvider>
-          <LoginPage />
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <LoginPage />
+          </AuthProvider>
+        )
+      })
 
       const signupLink = screen.getByRole('link', { name: 'Sign up' })
       expect(signupLink).toHaveAttribute('href', '/signup')
@@ -252,11 +268,13 @@ describe('Authentication Integration Tests', () => {
 
     it('should navigate from signup to login', async () => {
 
-      render(
-        <AuthProvider>
-          <SignupPage />
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <SignupPage />
+          </AuthProvider>
+        )
+      })
 
       const loginLink = screen.getByRole('link', { name: 'Sign in' })
       expect(loginLink).toHaveAttribute('href', '/login')
@@ -264,11 +282,13 @@ describe('Authentication Integration Tests', () => {
 
     it('should navigate to forgot password', async () => {
 
-      render(
-        <AuthProvider>
-          <LoginPage />
-        </AuthProvider>
-      )
+      await act(async () => {
+        render(
+          <AuthProvider>
+            <LoginPage />
+          </AuthProvider>
+        )
+      })
 
       const forgotLink = screen.getByRole('link', { name: 'Forgot?' })
       expect(forgotLink).toHaveAttribute('href', '/forgot-password')

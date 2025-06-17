@@ -38,7 +38,13 @@ describe('LoginPage', () => {
 
     expect(screen.getByText('Welcome back')).toBeInTheDocument()
     expect(screen.getByText('Sign in to continue your fitness journey')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email')).toBeInTheDocument()
+    // Check for tabs
+    expect(screen.getByRole('tab', { name: 'Email' })).toBeInTheDocument()
+    expect(screen.getByRole('tab', { name: 'SMS' })).toBeInTheDocument()
+    // Email tab should be active by default
+    expect(screen.getByRole('tab', { name: 'Email' })).toHaveAttribute('data-state', 'active')
+    // Check form elements within email tab
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Sign in/i })).toBeInTheDocument()
   })
@@ -65,7 +71,7 @@ describe('LoginPage', () => {
 
     render(<LoginPage />)
 
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
     await user.click(screen.getByRole('button', { name: /Sign in/i }))
 
@@ -81,7 +87,7 @@ describe('LoginPage', () => {
 
     render(<LoginPage />)
 
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'wrongpassword')
     await user.click(screen.getByRole('button', { name: /Sign in/i }))
 
@@ -123,12 +129,12 @@ describe('LoginPage', () => {
 
     render(<LoginPage />)
 
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
+    await user.type(screen.getByRole('textbox', { name: /email/i }), 'test@example.com')
     await user.type(screen.getByLabelText('Password'), 'password123')
     await user.click(screen.getByRole('button', { name: /Sign in/i }))
 
     expect(screen.getByText('Signing in...')).toBeInTheDocument()
-    expect(screen.getByLabelText('Email')).toBeDisabled()
+    expect(screen.getByRole('textbox', { name: /email/i })).toBeDisabled()
     expect(screen.getByLabelText('Password')).toBeDisabled()
   })
 

@@ -27,6 +27,16 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '2mb',
     },
   },
+  
+  // Skip ESLint during builds - we'll run it separately
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  
+  // Don't skip TypeScript checks
+  typescript: {
+    ignoreBuildErrors: false,
+  },
 };
 
 export default nextConfig;

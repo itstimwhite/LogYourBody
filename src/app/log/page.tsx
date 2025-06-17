@@ -1,0 +1,722 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/contexts/AuthContext'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Progress } from '@/components/ui/progress'
+import { Separator } from '@/components/ui/separator'
+import { toast } from '@/hooks/use-toast'
+import { 
+  ArrowLeft, 
+  ArrowRight,
+  Scale,
+  Activity,
+  Ruler,
+  CheckCircle,
+  Camera,
+  Calculator,
+  X
+} from 'lucide-react'
+import Link from 'next/link'
+import { format } from 'date-fns'
+import { calculateNavyBodyFat, calculate3SiteBodyFat, calculateFFMI, calculateBodyComposition } from '@/utils/body-calculations'
+import { BodyMetrics, UserProfile } from '@/types/body-metrics'
+
+type Step = 'weight' | 'method' | 'measurements' | 'photo' | 'review'
+
+const STEPS: Step[] = ['weight', 'method', 'measurements', 'photo', 'review']
+
+const STEP_TITLES = {
+  weight: 'Weight',
+  method: 'Method',
+  measurements: 'Measurements',
+  photo: 'Photo',
+  review: 'Review'
+}
+
+export default function LogWeightPage() {
+  const { user, loading } = useAuth()
+  const router = useRouter()
+  const [currentStep, setCurrentStep] = useState<Step>('weight')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  
+  // Form data
+  const [formData, setFormData] = useState({
+    weight: '',
+    weight_unit: 'kg' as 'kg' | 'lbs',
+    method: 'simple' as 'simple' | 'navy' | '3-site' | '7-site',
+    // Navy method
+    waist: '',
+    neck: '',
+    hip: '', // for females
+    // 3-site method
+    chest: '',
+    abdominal: '',
+    thigh: '',
+    tricep: '',
+    suprailiac: '',
+    // Calculated
+    body_fat_percentage: null as number | null,
+    notes: '',
+    photo: null as File | null
+  })
+
+  // Mock profile data (replace with actual profile fetch)
+  const profile: Partial<UserProfile> = {
+    height: 180,
+    height_unit: 'cm',
+    gender: 'male',
+    date_of_birth: '1990-01-01',
+    settings: {
+      units: {
+        weight: 'kg',
+        height: 'cm',
+        measurements: 'cm'
+      }
+    }
+  }
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login')
+    }
+  }, [user, loading, router])
+
+  const currentStepIndex = STEPS.indexOf(currentStep)
+  const progress = ((currentStepIndex + 1) / STEPS.length) * 100
+
+  const handleNext = () => {
+    if (currentStepIndex < STEPS.length - 1) {
+      // Calculate body fat if moving from measurements step
+      if (currentStep === 'measurements') {
+        calculateBodyFat()
+      }
+      setCurrentStep(STEPS[currentStepIndex + 1])
+    }
+  }
+
+  const handleBack = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStep(STEPS[currentStepIndex - 1])
+    }
+  }
+
+  const calculateAge = () => {
+    if (!profile.date_of_birth) return 30 // default
+    const today = new Date()
+    const birthDate = new Date(profile.date_of_birth)
+    let age = today.getFullYear() - birthDate.getFullYear()
+    const monthDiff = today.getMonth() - birthDate.getMonth()
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--
+    }
+    return age
+  }
+
+  const calculateBodyFat = () => {
+    try {
+      let bodyFat: number | null = null
+      
+      if (formData.method === 'navy' && formData.waist && formData.neck) {
+        bodyFat = calculateNavyBodyFat(
+          profile.gender as 'male' | 'female',
+          parseFloat(formData.waist),
+          parseFloat(formData.neck),
+          profile.height!,
+          formData.hip ? parseFloat(formData.hip) : undefined
+        )
+      } else if (formData.method === '3-site') {
+        const age = calculateAge()
+        if (profile.gender === 'male' && formData.chest && formData.abdominal && formData.thigh) {
+          bodyFat = calculate3SiteBodyFat(
+            'male',
+            age,
+            parseFloat(formData.chest),
+            parseFloat(formData.abdominal),
+            parseFloat(formData.thigh)
+          )
+        } else if (profile.gender === 'female' && formData.tricep && formData.suprailiac && formData.thigh) {
+          bodyFat = calculate3SiteBodyFat(
+            'female',
+            age,
+            undefined,
+            undefined,
+            parseFloat(formData.thigh),
+            parseFloat(formData.tricep),
+            parseFloat(formData.suprailiac)
+          )
+        }
+      }
+      
+      setFormData(prev => ({ ...prev, body_fat_percentage: bodyFat }))
+    } catch (error) {
+      console.error('Error calculating body fat:', error)
+    }
+  }
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true)
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      toast({
+        title: "Success!",
+        description: "Your metrics have been logged successfully."
+      })
+      
+      router.push('/dashboard')
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to save metrics. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const getFFMIData = () => {
+    if (!formData.weight || !formData.body_fat_percentage || !profile.height) return null
+    const weight = formData.weight_unit === 'lbs' 
+      ? parseFloat(formData.weight) / 2.20462 
+      : parseFloat(formData.weight)
+    return calculateFFMI(weight, profile.height, formData.body_fat_percentage)
+  }
+
+  const getBodyComposition = () => {
+    if (!formData.weight || !formData.body_fat_percentage) return null
+    const weight = formData.weight_unit === 'lbs' 
+      ? parseFloat(formData.weight) / 2.20462 
+      : parseFloat(formData.weight)
+    return calculateBodyComposition(weight, formData.body_fat_percentage)
+  }
+
+  const ffmiData = getFFMIData()
+  const bodyComp = getBodyComposition()
+
+  return (
+    <div className="min-h-screen bg-linear-bg">
+      {/* Header */}
+      <header className="bg-linear-card shadow-sm border-b border-linear-border sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Link href="/dashboard">
+                <Button variant="ghost" size="icon">
+                  <X className="h-4 w-4" />
+                </Button>
+              </Link>
+              <h1 className="text-xl font-bold text-linear-text">Log Metrics</h1>
+            </div>
+            <span className="text-sm text-linear-text-secondary">
+              {format(new Date(), 'MMM d, yyyy')}
+            </span>
+          </div>
+        </div>
+      </header>
+
+      {/* Progress Bar */}
+      <div className="bg-linear-card border-b border-linear-border">
+        <div className="container mx-auto px-4 py-3">
+          <Progress value={progress} className="h-2" />
+          <div className="flex justify-between mt-2">
+            {STEPS.map((step, index) => (
+              <span
+                key={step}
+                className={`text-xs ${
+                  index <= currentStepIndex
+                    ? 'text-linear-text font-medium'
+                    : 'text-linear-text-tertiary'
+                }`}
+              >
+                {STEP_TITLES[step]}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-6 max-w-2xl">
+        <Card className="bg-linear-card border-linear-border">
+          {/* Weight Step */}
+          {currentStep === 'weight' && (
+            <>
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                    <Scale className="h-5 w-5 text-linear-text" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-linear-text">Current Weight</CardTitle>
+                    <CardDescription className="text-linear-text-secondary">
+                      What's your weight today?
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="weight" className="text-linear-text">Weight</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      id="weight"
+                      type="number"
+                      step="0.1"
+                      value={formData.weight}
+                      onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+                      className="bg-linear-bg border-linear-border text-linear-text text-xl"
+                      placeholder="0.0"
+                      autoFocus
+                    />
+                    <Button
+                      variant={formData.weight_unit === 'kg' ? 'default' : 'outline'}
+                      onClick={() => setFormData(prev => ({ ...prev, weight_unit: 'kg' }))}
+                      className="w-20"
+                    >
+                      kg
+                    </Button>
+                    <Button
+                      variant={formData.weight_unit === 'lbs' ? 'default' : 'outline'}
+                      onClick={() => setFormData(prev => ({ ...prev, weight_unit: 'lbs' }))}
+                      className="w-20"
+                    >
+                      lbs
+                    </Button>
+                  </div>
+                </div>
+                
+                <div className="pt-4">
+                  <Button 
+                    onClick={() => setCurrentStep('review')}
+                    variant="ghost"
+                    className="text-linear-text-secondary"
+                  >
+                    Just log weight (skip body fat)
+                  </Button>
+                </div>
+              </CardContent>
+            </>
+          )}
+
+          {/* Method Step */}
+          {currentStep === 'method' && (
+            <>
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                    <Calculator className="h-5 w-5 text-linear-text" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-linear-text">Measurement Method</CardTitle>
+                    <CardDescription className="text-linear-text-secondary">
+                      How would you like to measure body fat?
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <RadioGroup
+                  value={formData.method}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, method: value as any }))}
+                  className="space-y-3"
+                >
+                  <label
+                    htmlFor="method-simple"
+                    className="flex items-center space-x-3 p-4 rounded-lg border border-linear-border cursor-pointer hover:bg-linear-card/50"
+                  >
+                    <RadioGroupItem value="simple" id="method-simple" />
+                    <div className="flex-1">
+                      <p className="font-medium text-linear-text">Simple Entry</p>
+                      <p className="text-sm text-linear-text-secondary">
+                        Enter your body fat % directly
+                      </p>
+                    </div>
+                  </label>
+                  
+                  <label
+                    htmlFor="method-navy"
+                    className="flex items-center space-x-3 p-4 rounded-lg border border-linear-border cursor-pointer hover:bg-linear-card/50"
+                  >
+                    <RadioGroupItem value="navy" id="method-navy" />
+                    <div className="flex-1">
+                      <p className="font-medium text-linear-text">Navy Method</p>
+                      <p className="text-sm text-linear-text-secondary">
+                        Tape measurements (±3% accuracy)
+                      </p>
+                    </div>
+                  </label>
+                  
+                  <label
+                    htmlFor="method-3site"
+                    className="flex items-center space-x-3 p-4 rounded-lg border border-linear-border cursor-pointer hover:bg-linear-card/50"
+                  >
+                    <RadioGroupItem value="3-site" id="method-3site" />
+                    <div className="flex-1">
+                      <p className="font-medium text-linear-text">3-Site Skinfold</p>
+                      <p className="text-sm text-linear-text-secondary">
+                        Caliper measurements (±2% accuracy)
+                      </p>
+                    </div>
+                  </label>
+                </RadioGroup>
+              </CardContent>
+            </>
+          )}
+
+          {/* Measurements Step */}
+          {currentStep === 'measurements' && (
+            <>
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                    <Ruler className="h-5 w-5 text-linear-text" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-linear-text">Take Measurements</CardTitle>
+                    <CardDescription className="text-linear-text-secondary">
+                      {formData.method === 'simple' && 'Enter your body fat percentage'}
+                      {formData.method === 'navy' && 'Measure with a tape measure'}
+                      {formData.method === '3-site' && 'Measure with body fat calipers'}
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {formData.method === 'simple' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="bodyFat" className="text-linear-text">Body Fat %</Label>
+                    <Input
+                      id="bodyFat"
+                      type="number"
+                      step="0.1"
+                      value={formData.body_fat_percentage || ''}
+                      onChange={(e) => setFormData(prev => ({ 
+                        ...prev, 
+                        body_fat_percentage: e.target.value ? parseFloat(e.target.value) : null 
+                      }))}
+                      className="bg-linear-bg border-linear-border text-linear-text"
+                      placeholder="15.0"
+                    />
+                  </div>
+                )}
+
+                {formData.method === 'navy' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="neck" className="text-linear-text">Neck (cm)</Label>
+                      <Input
+                        id="neck"
+                        type="number"
+                        step="0.1"
+                        value={formData.neck}
+                        onChange={(e) => setFormData(prev => ({ ...prev, neck: e.target.value }))}
+                        className="bg-linear-bg border-linear-border text-linear-text"
+                        placeholder="38.0"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="waist" className="text-linear-text">Waist (cm)</Label>
+                      <Input
+                        id="waist"
+                        type="number"
+                        step="0.1"
+                        value={formData.waist}
+                        onChange={(e) => setFormData(prev => ({ ...prev, waist: e.target.value }))}
+                        className="bg-linear-bg border-linear-border text-linear-text"
+                        placeholder="85.0"
+                      />
+                      <p className="text-xs text-linear-text-tertiary">
+                        Measure at navel level
+                      </p>
+                    </div>
+                    
+                    {profile.gender === 'female' && (
+                      <div className="space-y-2">
+                        <Label htmlFor="hip" className="text-linear-text">Hip (cm)</Label>
+                        <Input
+                          id="hip"
+                          type="number"
+                          step="0.1"
+                          value={formData.hip}
+                          onChange={(e) => setFormData(prev => ({ ...prev, hip: e.target.value }))}
+                          className="bg-linear-bg border-linear-border text-linear-text"
+                          placeholder="95.0"
+                        />
+                        <p className="text-xs text-linear-text-tertiary">
+                          Measure at widest point
+                        </p>
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {formData.method === '3-site' && profile.gender === 'male' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="chest" className="text-linear-text">Chest (mm)</Label>
+                      <Input
+                        id="chest"
+                        type="number"
+                        step="0.1"
+                        value={formData.chest}
+                        onChange={(e) => setFormData(prev => ({ ...prev, chest: e.target.value }))}
+                        className="bg-linear-bg border-linear-border text-linear-text"
+                        placeholder="10"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="abdominal" className="text-linear-text">Abdominal (mm)</Label>
+                      <Input
+                        id="abdominal"
+                        type="number"
+                        step="0.1"
+                        value={formData.abdominal}
+                        onChange={(e) => setFormData(prev => ({ ...prev, abdominal: e.target.value }))}
+                        className="bg-linear-bg border-linear-border text-linear-text"
+                        placeholder="20"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="thigh" className="text-linear-text">Thigh (mm)</Label>
+                      <Input
+                        id="thigh"
+                        type="number"
+                        step="0.1"
+                        value={formData.thigh}
+                        onChange={(e) => setFormData(prev => ({ ...prev, thigh: e.target.value }))}
+                        className="bg-linear-bg border-linear-border text-linear-text"
+                        placeholder="15"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {formData.method === '3-site' && profile.gender === 'female' && (
+                  <>
+                    <div className="space-y-2">
+                      <Label htmlFor="tricep" className="text-linear-text">Tricep (mm)</Label>
+                      <Input
+                        id="tricep"
+                        type="number"
+                        step="0.1"
+                        value={formData.tricep}
+                        onChange={(e) => setFormData(prev => ({ ...prev, tricep: e.target.value }))}
+                        className="bg-linear-bg border-linear-border text-linear-text"
+                        placeholder="15"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="suprailiac" className="text-linear-text">Suprailiac (mm)</Label>
+                      <Input
+                        id="suprailiac"
+                        type="number"
+                        step="0.1"
+                        value={formData.suprailiac}
+                        onChange={(e) => setFormData(prev => ({ ...prev, suprailiac: e.target.value }))}
+                        className="bg-linear-bg border-linear-border text-linear-text"
+                        placeholder="20"
+                      />
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label htmlFor="thigh" className="text-linear-text">Thigh (mm)</Label>
+                      <Input
+                        id="thigh"
+                        type="number"
+                        step="0.1"
+                        value={formData.thigh}
+                        onChange={(e) => setFormData(prev => ({ ...prev, thigh: e.target.value }))}
+                        className="bg-linear-bg border-linear-border text-linear-text"
+                        placeholder="25"
+                      />
+                    </div>
+                  </>
+                )}
+              </CardContent>
+            </>
+          )}
+
+          {/* Photo Step */}
+          {currentStep === 'photo' && (
+            <>
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                    <Camera className="h-5 w-5 text-linear-text" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-linear-text">Progress Photo</CardTitle>
+                    <CardDescription className="text-linear-text-secondary">
+                      Document your progress visually (optional)
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-12 border-2 border-dashed border-linear-border rounded-lg">
+                  <Camera className="h-12 w-12 text-linear-text-tertiary mx-auto mb-4" />
+                  <p className="text-linear-text-secondary mb-4">
+                    No photo added
+                  </p>
+                  <Button variant="outline" className="border-linear-border">
+                    <Camera className="h-4 w-4 mr-2" />
+                    Take Photo
+                  </Button>
+                </div>
+              </CardContent>
+            </>
+          )}
+
+          {/* Review Step */}
+          {currentStep === 'review' && (
+            <>
+              <CardHeader>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="h-10 w-10 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                    <CheckCircle className="h-5 w-5 text-linear-text" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-linear-text">Review & Save</CardTitle>
+                    <CardDescription className="text-linear-text-secondary">
+                      Confirm your measurements
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Summary */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm text-linear-text-secondary">Date</span>
+                    <span className="font-medium text-linear-text">
+                      {format(new Date(), 'EEEE, MMMM d, yyyy')}
+                    </span>
+                  </div>
+                  
+                  <Separator className="bg-linear-border" />
+                  
+                  <div className="flex items-center justify-between py-2">
+                    <span className="text-sm text-linear-text-secondary">Weight</span>
+                    <span className="font-medium text-linear-text">
+                      {formData.weight} {formData.weight_unit}
+                    </span>
+                  </div>
+                  
+                  {formData.body_fat_percentage && (
+                    <>
+                      <div className="flex items-center justify-between py-2">
+                        <span className="text-sm text-linear-text-secondary">Body Fat %</span>
+                        <span className="font-medium text-linear-text">
+                          {formData.body_fat_percentage.toFixed(1)}%
+                        </span>
+                      </div>
+                      
+                      {bodyComp && (
+                        <>
+                          <div className="flex items-center justify-between py-2">
+                            <span className="text-sm text-linear-text-secondary">Lean Mass</span>
+                            <span className="font-medium text-linear-text">
+                              {bodyComp.lean_mass.toFixed(1)} kg
+                            </span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between py-2">
+                            <span className="text-sm text-linear-text-secondary">Fat Mass</span>
+                            <span className="font-medium text-linear-text">
+                              {bodyComp.fat_mass.toFixed(1)} kg
+                            </span>
+                          </div>
+                        </>
+                      )}
+                      
+                      {ffmiData && (
+                        <div className="flex items-center justify-between py-2">
+                          <span className="text-sm text-linear-text-secondary">FFMI</span>
+                          <span className="font-medium text-linear-text">
+                            {ffmiData.normalized_ffmi}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Notes */}
+                <div className="space-y-2">
+                  <Label htmlFor="notes" className="text-linear-text">Notes (optional)</Label>
+                  <textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
+                    className="w-full px-3 py-2 bg-linear-bg border border-linear-border text-linear-text rounded-md resize-none"
+                    placeholder="Any notes about today's measurement..."
+                    rows={3}
+                  />
+                </div>
+              </CardContent>
+            </>
+          )}
+
+          {/* Footer Actions */}
+          <div className="p-6 border-t border-linear-border flex justify-between">
+            <Button
+              variant="ghost"
+              onClick={handleBack}
+              disabled={currentStepIndex === 0}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back
+            </Button>
+            
+            {currentStep === 'review' ? (
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting || !formData.weight}
+                className="bg-linear-purple hover:bg-linear-purple/80 text-white"
+              >
+                {isSubmitting ? (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2 animate-pulse" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Save Entry
+                  </>
+                )}
+              </Button>
+            ) : (
+              <Button
+                onClick={handleNext}
+                disabled={
+                  (currentStep === 'weight' && !formData.weight) ||
+                  (currentStep === 'measurements' && formData.method !== 'simple' && 
+                    ((formData.method === 'navy' && (!formData.waist || !formData.neck)) ||
+                     (formData.method === '3-site' && profile.gender === 'male' && 
+                      (!formData.chest || !formData.abdominal || !formData.thigh))))
+                }
+                className="bg-linear-purple hover:bg-linear-purple/80 text-white"
+              >
+                Next
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+            )}
+          </div>
+        </Card>
+      </main>
+    </div>
+  )
+}
