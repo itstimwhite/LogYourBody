@@ -25,6 +25,7 @@ import { calculateFFMI, getBodyFatCategory } from '@/utils/body-calculations'
 import { getAvatarUrl } from '@/utils/avatar-utils'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
+import { useNetworkStatus } from '@/hooks/use-network-status'
 
 // Mock data for demonstration
 const mockMetrics: BodyMetrics = {
@@ -281,6 +282,7 @@ const TimelineSlider = ({
 export default function DashboardPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
+  const isOnline = useNetworkStatus()
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [selectedDateIndex, setSelectedDateIndex] = useState(0)
   const [latestMetrics] = useState<BodyMetrics | null>(mockMetrics)
@@ -335,6 +337,11 @@ export default function DashboardPage() {
           <Badge variant="secondary" className="text-xs">
             v1.0.0
           </Badge>
+          {!isOnline && (
+            <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-500">
+              Offline
+            </Badge>
+          )}
         </div>
         <div className="flex gap-3">
           <Button
