@@ -4,9 +4,9 @@
   "ignoreCommand": "git diff --quiet HEAD^ HEAD -- .",
   "git": {
     "deploymentEnabled": {
-      "dev": false,
-      "main": false,
-      "preview": false
+      "dev": true,
+      "main": true,
+      "preview": true
     }
   },
   "headers": [
