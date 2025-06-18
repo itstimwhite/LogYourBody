@@ -54,10 +54,17 @@ export async function updateSession(request: NextRequest) {
       return supabaseResponse
     }
     
-    // Redirect authenticated users away from auth pages
-    if (user && isAuthRoute) {
-      url.pathname = '/dashboard'
-      return NextResponse.redirect(url)
+    // Only redirect from auth pages if user is authenticated AND it's not an API route
+    // This prevents redirect loops with client-side navigation
+    if (user && isAuthRoute && !pathname.includes('/api/')) {
+      // Skip redirect if this is a client-side navigation (has specific headers)
+      const isClientNavigation = request.headers.get('x-nextjs-data') || 
+                                request.headers.get('accept')?.includes('application/json')
+      
+      if (!isClientNavigation) {
+        url.pathname = '/dashboard'
+        return NextResponse.redirect(url)
+      }
     }
 
     // Redirect unauthenticated users to login for protected routes
