@@ -324,7 +324,7 @@ export default function LogWeightPage() {
               <CardContent>
                 <RadioGroup
                   value={formData.method}
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, method: value as 'simple' | 'navy' | 'calipers' }))}
+                  onValueChange={(value) => setFormData(prev => ({ ...prev, method: value as 'simple' | 'navy' | '3-site' | '7-site' }))}
                   className="space-y-3"
                 >
                   <label

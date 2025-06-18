@@ -50,3 +50,29 @@ tests/e2e/__screenshots__/
 
 # Legacy React app
 legacy-react/
+
+# Python
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+ENV/
+.venv
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test outputs
+test_*.png
+base_*.png
+control_*.png
