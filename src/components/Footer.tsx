@@ -22,8 +22,8 @@ export function Footer() {
     {
       title: "Product",
       links: [
-        { label: "Features", href: "#features", disabled: true },
-        { label: "Pricing", href: "/login" },
+        { label: "Features", href: "/#features-grid" },
+        { label: "Pricing", href: "/#pricing" },
         { label: "Changelog", href: "/changelog" },
         { label: "Download", href: "#", disabled: true },
         { label: "API", href: "#", disabled: true },
@@ -161,7 +161,7 @@ export function Footer() {
             <span className="text-sm text-linear-text-secondary hidden sm:block">
               Track what really matters
             </span>
-            <Link href="/login">
+            <Link href="/signup">
               <Button className="bg-linear-text text-linear-bg px-6 py-2 text-sm font-medium rounded-lg hover:bg-linear-text/90 transition-colors">
                 Start Free Trial
               </Button>

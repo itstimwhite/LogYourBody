@@ -22,7 +22,7 @@ export default function PreferencesSettingsPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [hasChanges, setHasChanges] = useState(false)
   
-  const [settings, setSettings] = useState<UserSettings>({
+  const [_settings, setSettings] = useState<UserSettings>({
     units: {
       weight: 'lbs',
       height: 'ft',

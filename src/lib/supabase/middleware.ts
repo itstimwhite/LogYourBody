@@ -58,7 +58,10 @@ export async function updateSession(request: NextRequest) {
     // This prevents redirect loops with client-side navigation
     if (user && isAuthRoute && !pathname.includes('/api/')) {
       // Skip redirect if this is a client-side navigation (has specific headers)
+      // Check for RSC requests and client-side navigation
       const isClientNavigation = request.headers.get('x-nextjs-data') || 
+                                request.headers.get('rsc') ||
+                                request.headers.get('next-router-prefetch') ||
                                 request.headers.get('accept')?.includes('application/json')
       
       if (!isClientNavigation) {

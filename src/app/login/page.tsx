@@ -25,9 +25,13 @@ export default function LoginPage() {
 
   useEffect(() => {
     // Only redirect if we're certain the user is authenticated
-    // and auth context is not loading
+    // and auth context has finished loading
     if (user && !authLoading) {
-      router.push('/dashboard')
+      // Add a small delay to ensure middleware has processed
+      const timer = setTimeout(() => {
+        router.push('/dashboard')
+      }, 100)
+      return () => clearTimeout(timer)
     }
   }, [user, authLoading, router])
 

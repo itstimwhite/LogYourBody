@@ -192,7 +192,7 @@ export function LandingPage() {
                       Sign In
                     </Button>
                   </Link>
-                  <Link href="/login">
+                  <Link href="/signup">
                     <Button
                       className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
                     >
@@ -266,20 +266,22 @@ export function LandingPage() {
                 {/* Bottom horizontal bar of F - CTAs and social proof */}
                 <div className="space-y-6">
                   <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/about">
+                    <Link href="/signup">
                       <Button
                         className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
                       >
-                        Learn More
+                        Start Free Trial
                       </Button>
                     </Link>
-                    <button
-                      className="flex items-center justify-center gap-2 text-base text-linear-text-secondary hover:text-linear-text transition-colors group"
-                      aria-label="View live demo"
-                    >
-                      See it in action
-                      <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-                    </button>
+                    <Link href="/about">
+                      <button
+                        className="flex items-center justify-center gap-2 text-base text-linear-text-secondary hover:text-linear-text transition-colors group"
+                        aria-label="Learn more about LogYourBody"
+                      >
+                        See how it works
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+                      </button>
+                    </Link>
                   </div>
                   
                   {/* Social proof metrics */}
@@ -715,11 +717,11 @@ export function LandingPage() {
                       Download the app or sign up on the web. Your account works everywhere from day one.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Link href="#">
+                      <Link href="/signup">
                         <Button
                           className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary transition-colors"
                         >
-                          Coming Soon
+                          Start Free Trial
                         </Button>
                       </Link>
                       <Button
@@ -847,12 +849,12 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="#">
+                <Link href="/signup">
                   <Button
                     className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
                     aria-describedby="trial-terms"
                   >
-                    Coming Soon
+                    Start 3-Day Free Trial
                   </Button>
                 </Link>
                 <p
@@ -890,11 +892,11 @@ export function LandingPage() {
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-                <Link href="#">
+                <Link href="/signup">
                   <Button
                     className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
                   >
-                    Coming Soon
+                    Start Tracking Today
                   </Button>
                 </Link>
                 <Link href="/about">
