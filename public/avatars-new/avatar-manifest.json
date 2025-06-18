@@ -1,0 +1,130 @@
+{
+  "version": "2.0",
+  "type": "programmatic-wireframe",
+  "avatars": {
+    "male": {
+      "ffmi_15": {
+        "bf_5": "male_ffmi15_bf5.png",
+        "bf_10": "male_ffmi15_bf10.png",
+        "bf_15": "male_ffmi15_bf15.png",
+        "bf_20": "male_ffmi15_bf20.png",
+        "bf_25": "male_ffmi15_bf25.png",
+        "bf_30": "male_ffmi15_bf30.png",
+        "bf_35": "male_ffmi15_bf35.png",
+        "bf_40": "male_ffmi15_bf40.png",
+        "bf_45": "male_ffmi15_bf45.png",
+        "bf_50": "male_ffmi15_bf50.png"
+      },
+      "ffmi_17.5": {
+        "bf_5": "male_ffmi17_5_bf5.png",
+        "bf_10": "male_ffmi17_5_bf10.png",
+        "bf_15": "male_ffmi17_5_bf15.png",
+        "bf_20": "male_ffmi17_5_bf20.png",
+        "bf_25": "male_ffmi17_5_bf25.png",
+        "bf_30": "male_ffmi17_5_bf30.png",
+        "bf_35": "male_ffmi17_5_bf35.png",
+        "bf_40": "male_ffmi17_5_bf40.png",
+        "bf_45": "male_ffmi17_5_bf45.png",
+        "bf_50": "male_ffmi17_5_bf50.png"
+      },
+      "ffmi_20": {
+        "bf_5": "male_ffmi20_bf5.png",
+        "bf_10": "male_ffmi20_bf10.png",
+        "bf_15": "male_ffmi20_bf15.png",
+        "bf_20": "male_ffmi20_bf20.png",
+        "bf_25": "male_ffmi20_bf25.png",
+        "bf_30": "male_ffmi20_bf30.png",
+        "bf_35": "male_ffmi20_bf35.png",
+        "bf_40": "male_ffmi20_bf40.png",
+        "bf_45": "male_ffmi20_bf45.png",
+        "bf_50": "male_ffmi20_bf50.png"
+      },
+      "ffmi_22.5": {
+        "bf_5": "male_ffmi22_5_bf5.png",
+        "bf_10": "male_ffmi22_5_bf10.png",
+        "bf_15": "male_ffmi22_5_bf15.png",
+        "bf_20": "male_ffmi22_5_bf20.png",
+        "bf_25": "male_ffmi22_5_bf25.png",
+        "bf_30": "male_ffmi22_5_bf30.png",
+        "bf_35": "male_ffmi22_5_bf35.png",
+        "bf_40": "male_ffmi22_5_bf40.png",
+        "bf_45": "male_ffmi22_5_bf45.png",
+        "bf_50": "male_ffmi22_5_bf50.png"
+      },
+      "ffmi_25": {
+        "bf_5": "male_ffmi25_bf5.png",
+        "bf_10": "male_ffmi25_bf10.png",
+        "bf_15": "male_ffmi25_bf15.png",
+        "bf_20": "male_ffmi25_bf20.png",
+        "bf_25": "male_ffmi25_bf25.png",
+        "bf_30": "male_ffmi25_bf30.png",
+        "bf_35": "male_ffmi25_bf35.png",
+        "bf_40": "male_ffmi25_bf40.png",
+        "bf_45": "male_ffmi25_bf45.png",
+        "bf_50": "male_ffmi25_bf50.png"
+      }
+    },
+    "female": {
+      "ffmi_15": {
+        "bf_5": "female_ffmi15_bf5.png",
+        "bf_10": "female_ffmi15_bf10.png",
+        "bf_15": "female_ffmi15_bf15.png",
+        "bf_20": "female_ffmi15_bf20.png",
+        "bf_25": "female_ffmi15_bf25.png",
+        "bf_30": "female_ffmi15_bf30.png",
+        "bf_35": "female_ffmi15_bf35.png",
+        "bf_40": "female_ffmi15_bf40.png",
+        "bf_45": "female_ffmi15_bf45.png",
+        "bf_50": "female_ffmi15_bf50.png"
+      },
+      "ffmi_17.5": {
+        "bf_5": "female_ffmi17_5_bf5.png",
+        "bf_10": "female_ffmi17_5_bf10.png",
+        "bf_15": "female_ffmi17_5_bf15.png",
+        "bf_20": "female_ffmi17_5_bf20.png",
+        "bf_25": "female_ffmi17_5_bf25.png",
+        "bf_30": "female_ffmi17_5_bf30.png",
+        "bf_35": "female_ffmi17_5_bf35.png",
+        "bf_40": "female_ffmi17_5_bf40.png",
+        "bf_45": "female_ffmi17_5_bf45.png",
+        "bf_50": "female_ffmi17_5_bf50.png"
+      },
+      "ffmi_20": {
+        "bf_5": "female_ffmi20_bf5.png",
+        "bf_10": "female_ffmi20_bf10.png",
+        "bf_15": "female_ffmi20_bf15.png",
+        "bf_20": "female_ffmi20_bf20.png",
+        "bf_25": "female_ffmi20_bf25.png",
+        "bf_30": "female_ffmi20_bf30.png",
+        "bf_35": "female_ffmi20_bf35.png",
+        "bf_40": "female_ffmi20_bf40.png",
+        "bf_45": "female_ffmi20_bf45.png",
+        "bf_50": "female_ffmi20_bf50.png"
+      },
+      "ffmi_22.5": {
+        "bf_5": "female_ffmi22_5_bf5.png",
+        "bf_10": "female_ffmi22_5_bf10.png",
+        "bf_15": "female_ffmi22_5_bf15.png",
+        "bf_20": "female_ffmi22_5_bf20.png",
+        "bf_25": "female_ffmi22_5_bf25.png",
+        "bf_30": "female_ffmi22_5_bf30.png",
+        "bf_35": "female_ffmi22_5_bf35.png",
+        "bf_40": "female_ffmi22_5_bf40.png",
+        "bf_45": "female_ffmi22_5_bf45.png",
+        "bf_50": "female_ffmi22_5_bf50.png"
+      },
+      "ffmi_25": {
+        "bf_5": "female_ffmi25_bf5.png",
+        "bf_10": "female_ffmi25_bf10.png",
+        "bf_15": "female_ffmi25_bf15.png",
+        "bf_20": "female_ffmi25_bf20.png",
+        "bf_25": "female_ffmi25_bf25.png",
+        "bf_30": "female_ffmi25_bf30.png",
+        "bf_35": "female_ffmi25_bf35.png",
+        "bf_40": "female_ffmi25_bf40.png",
+        "bf_45": "female_ffmi25_bf45.png",
+        "bf_50": "female_ffmi25_bf50.png"
+      }
+    }
+  }
+}

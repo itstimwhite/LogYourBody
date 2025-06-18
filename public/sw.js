@@ -6,13 +6,13 @@ const OFFLINE_PAGE = '/offline.html';
 const urlsToCache = [
   '/',
   '/login',
-  '/manifest.webmanifest',
+  '/dashboard',
+  '/site.webmanifest',
   '/favicon.ico',
   '/android-chrome-192x192.png',
   '/android-chrome-512x512.png',
   '/apple-touch-icon.png',
-  '/_next/static/css/app.css',
-  '/_next/static/js/app.js'
+  OFFLINE_PAGE
 ];
 
 // Install event - cache essential files

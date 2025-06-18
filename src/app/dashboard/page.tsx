@@ -47,7 +47,7 @@ const mockProfile: UserProfile = {
   email: 'user@example.com',
   full_name: 'John Doe',
   height: 71,
-  height_unit: 'in',
+  height_unit: 'ft',
   gender: 'male',
   date_of_birth: '1990-01-01',
   email_verified: true,
@@ -55,7 +55,7 @@ const mockProfile: UserProfile = {
   settings: {
     units: {
       weight: 'lbs',
-      height: 'in',
+      height: 'ft',
       measurements: 'in'
     }
   },
