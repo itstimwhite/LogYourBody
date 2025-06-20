@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   },
   
   // Add trailing slash for better Capacitor compatibility
-  trailingSlash: true,
+  trailingSlash: false,
   
   // Use relative paths for Capacitor
   assetPrefix: process.env.BUILD_TARGET === 'capacitor' ? './' : undefined,

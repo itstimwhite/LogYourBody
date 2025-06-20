@@ -39,14 +39,8 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone()
     const pathname = url.pathname
     
-    // Define auth routes
-    const isAuthRoute = pathname.startsWith('/login') || 
-                       pathname.startsWith('/signup') || 
-                       pathname.startsWith('/auth') ||
-                       pathname.startsWith('/forgot-password')
-    
-    // Define protected routes
-    const protectedRoutes = ['/dashboard', '/settings', '/profile', '/log']
+    // Define protected routes that require authentication
+    const protectedRoutes = ['/dashboard', '/settings', '/profile', '/log', '/photos', '/steps']
     const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route))
     
     // Allow auth callbacks to process
@@ -54,23 +48,8 @@ export async function updateSession(request: NextRequest) {
       return supabaseResponse
     }
     
-    // Only redirect from auth pages if user is authenticated AND it's not an API route
-    // This prevents redirect loops with client-side navigation
-    if (user && isAuthRoute && !pathname.includes('/api/')) {
-      // Skip redirect if this is a client-side navigation (has specific headers)
-      // Check for RSC requests and client-side navigation
-      const isClientNavigation = request.headers.get('x-nextjs-data') || 
-                                request.headers.get('rsc') ||
-                                request.headers.get('next-router-prefetch') ||
-                                request.headers.get('accept')?.includes('application/json')
-      
-      if (!isClientNavigation) {
-        url.pathname = '/dashboard'
-        return NextResponse.redirect(url)
-      }
-    }
-
-    // Redirect unauthenticated users to login for protected routes
+    // Only redirect unauthenticated users away from protected routes
+    // Don't redirect authenticated users from login pages (let client handle it)
     if (!user && isProtectedRoute) {
       url.pathname = '/login'
       return NextResponse.redirect(url)

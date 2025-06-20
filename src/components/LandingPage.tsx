@@ -208,129 +208,220 @@ export function LandingPage() {
 
       {/* Main Content */}
       <main id="main-content" tabIndex={-1}>
-        {/* Hero Section - F-Layout */}
+        {/* Hero Section - YC Style */}
         <section
-          className="relative py-16 md:py-24 overflow-hidden min-h-svh flex items-center"
+          className="relative pt-20 pb-8 md:pt-24 md:pb-12 overflow-hidden"
           role="banner"
           aria-labelledby="hero-heading"
         >
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-linear-purple/5 via-transparent to-linear-purple/5" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(94,106,210,0.1),transparent)]" />
+          {/* Subtle background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-linear-purple/5 to-transparent" />
           
-          <div className="container mx-auto px-4 sm:px-6 relative z-10 w-full">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-              {/* Left Column - F-Layout Content */}
-              <div className="space-y-8">
-                {/* Top horizontal bar of F - Badge and headline */}
-                <div className="space-y-6">
-                  <Badge className="bg-linear-purple/10 text-white border-linear-purple/20 text-sm px-4 py-2 inline-block">
-                    Trusted by 10,000+ users worldwide
-                  </Badge>
-                  
-                  <h1
-                    id="hero-heading"
-                    className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight"
-                  >
-                    <span className="bg-gradient-to-br from-linear-text via-linear-text to-linear-text-secondary bg-clip-text text-transparent">
-                      Track your body
-                    </span>
-                    <br />
-                    <span className="text-linear-text">with precision</span>
-                  </h1>
+          <div className="container mx-auto px-4 sm:px-6 relative z-10">
+            <div className="max-w-5xl mx-auto">
+              {/* Centered Content - YC Style */}
+              <div className="text-center mb-8">
+                {/* Clear Value Prop */}
+                <h1
+                  id="hero-heading"
+                  className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text mb-4"
+                >
+                  Track body fat percentage,
+                  <br />
+                  not just weight
+                </h1>
+                
+                {/* One-liner explanation */}
+                <p className="text-lg sm:text-xl text-linear-text-secondary max-w-2xl mx-auto mb-8">
+                  Professional body composition tracking with FFMI calculations and progress photos. 
+                  Syncs with Apple Health.
+                </p>
+                
+                {/* Primary CTA - YC style */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
+                  <Link href="/signup">
+                    <Button
+                      className="bg-linear-purple text-white px-8 py-3 text-base font-semibold rounded-lg hover:bg-linear-purple/90 transition-all shadow-md"
+                    >
+                      Start Free Trial
+                    </Button>
+                  </Link>
+                  <Link href="/demo" className="text-linear-text-secondary hover:text-linear-text transition-colors underline underline-offset-4">
+                    Watch 2-min demo
+                  </Link>
                 </div>
                 
-                {/* Middle horizontal bar of F - Key benefits */}
-                <div className="space-y-4">
-                  <p className="text-lg sm:text-xl text-linear-text-secondary leading-relaxed">
-                    The professional body composition tracker that goes beyond weight.
-                  </p>
-                  
-                  {/* Key features list - vertical scan area */}
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-1.5 w-1.5 bg-linear-purple rounded-full flex-shrink-0"></div>
-                      <span className="text-linear-text font-medium">Track BF%, FFMI, and lean mass with scientific precision</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="h-1.5 w-1.5 bg-linear-purple rounded-full flex-shrink-0"></div>
-                      <span className="text-linear-text font-medium">Works seamlessly on mobile, desktop, and tablet</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="h-1.5 w-1.5 bg-linear-purple rounded-full flex-shrink-0"></div>
-                      <span className="text-linear-text font-medium">Auto-sync with Apple Health & Google Fit</span>
-                    </div>
-                  </div>
+                {/* Trust indicators */}
+                <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-linear-text-tertiary">
+                  <span>No credit card required</span>
+                  <span>•</span>
+                  <span>10,000+ active users</span>
+                  <span>•</span>
+                  <span>4.9★ App Store</span>
                 </div>
-                
-                {/* Bottom horizontal bar of F - CTAs and social proof */}
-                <div className="space-y-6">
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <Link href="/signup">
-                      <Button
-                        className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
-                      >
-                        Start Free Trial
-                      </Button>
-                    </Link>
-                    <Link href="/about">
-                      <button
-                        className="flex items-center justify-center gap-2 text-base text-linear-text-secondary hover:text-linear-text transition-colors group"
-                        aria-label="Learn more about LogYourBody"
-                      >
-                        See how it works
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
-                      </button>
-                    </Link>
-                  </div>
-                  
-                  {/* Social proof metrics */}
-                  <div className="flex flex-wrap items-center gap-6 text-sm text-linear-text-tertiary">
-                    <div className="flex items-center gap-2">
-                      <Check className="h-4 w-4 text-white" />
-                      <span>No credit card required</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-linear-text">4.9★</span>
-                      <span>App Store rating</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-linear-text">30 sec</span>
-                      <span>average log time</span>
+              </div>
+              
+              {/* Simple Product Visual */}
+              <div className="relative max-w-3xl mx-auto">
+                <div className="rounded-xl bg-gradient-to-br from-linear-card/50 to-linear-card/30 border border-linear-border/50 backdrop-blur-sm p-4 shadow-xl">
+                  <div className="aspect-[16/9] bg-gradient-to-br from-linear-purple/10 to-linear-purple/5 rounded-lg border border-linear-border/30 flex items-center justify-center">
+                    <div className="grid grid-cols-3 gap-4 p-8">
+                      {/* Mini feature previews */}
+                      <div className="text-center">
+                        <div className="h-12 w-12 mx-auto mb-2 rounded-lg bg-linear-purple/20 flex items-center justify-center">
+                          <BarChart3 className="h-6 w-6 text-white" />
+                        </div>
+                        <p className="text-xs text-linear-text-secondary">BF% Tracking</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="h-12 w-12 mx-auto mb-2 rounded-lg bg-linear-purple/20 flex items-center justify-center">
+                          <TrendingUp className="h-6 w-6 text-white" />
+                        </div>
+                        <p className="text-xs text-linear-text-secondary">FFMI Calculator</p>
+                      </div>
+                      <div className="text-center">
+                        <div className="h-12 w-12 mx-auto mb-2 rounded-lg bg-linear-purple/20 flex items-center justify-center">
+                          <Camera className="h-6 w-6 text-white" />
+                        </div>
+                        <p className="text-xs text-linear-text-secondary">Progress Photos</p>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-              
-              {/* Right Column - Visual Content */}
-              <div className="lg:order-last">
-                {/* Product preview with stats overlay */}
-                <div className="relative">
-                  {/* Main preview */}
-                  <div className="relative rounded-2xl bg-gradient-to-br from-linear-card/50 to-linear-card/30 border border-linear-border/50 backdrop-blur-sm p-6 shadow-2xl">
-                    <div className="aspect-[4/5] bg-gradient-to-br from-linear-purple/10 to-linear-purple/5 rounded-xl border border-linear-border/30 flex items-center justify-center">
-                      <div className="text-center">
-                        <BarChart3 className="h-16 w-16 text-white/50 mx-auto mb-4" />
-                        <p className="text-linear-text-secondary text-sm">App Preview Coming Soon</p>
+            </div>
+          </div>
+        </section>
+
+        {/* Unified Data Import Section - Apple/YC Style */}
+        <section className="py-20 md:py-32 bg-gradient-to-b from-transparent via-linear-purple/5 to-transparent">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="max-w-5xl mx-auto">
+              {/* Header - Apple style copy */}
+              <div className="text-center mb-16">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text mb-4">
+                  All your body data.
+                  <br />
+                  <span className="text-linear-text-secondary">One beautiful timeline.</span>
+                </h2>
+                <p className="text-lg sm:text-xl text-linear-text-secondary max-w-3xl mx-auto">
+                  Import DEXA scans, progress photos, smart scale measurements, and body measurements. 
+                  We turn your scattered PDFs and spreadsheets into actionable insights.
+                </p>
+              </div>
+
+              {/* Visual representation - Linear.app inspired */}
+              <div className="relative mx-auto max-w-4xl">
+                <div className="absolute inset-0 bg-gradient-to-r from-linear-purple/10 via-transparent to-linear-purple/10 blur-3xl" />
+                
+                {/* Central hub visualization */}
+                <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                  {/* Left side - Data sources */}
+                  <div className="space-y-4">
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-3 text-sm text-linear-text-secondary">
+                        <span>DEXA Scan PDFs</span>
+                        <div className="h-8 w-8 rounded-lg bg-linear-card border border-linear-border/50 flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 bg-linear-purple rounded-full animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-3 text-sm text-linear-text-secondary">
+                        <span>Smart Scale Data</span>
+                        <div className="h-8 w-8 rounded-lg bg-linear-card border border-linear-border/50 flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 bg-linear-purple rounded-full animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-3 text-sm text-linear-text-secondary">
+                        <span>Progress Photos</span>
+                        <div className="h-8 w-8 rounded-lg bg-linear-card border border-linear-border/50 flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 bg-linear-purple rounded-full animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-3 text-sm text-linear-text-secondary">
+                        <span>Body Measurements</span>
+                        <div className="h-8 w-8 rounded-lg bg-linear-card border border-linear-border/50 flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 bg-linear-purple rounded-full animate-pulse" />
+                        </div>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Floating stats cards */}
-                  <div className="absolute -top-4 -right-4 bg-linear-bg/90 backdrop-blur-sm border border-linear-border/50 rounded-xl p-4 shadow-lg">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-linear-text">2M+</div>
-                      <div className="text-xs text-linear-text-secondary">Measurements</div>
+
+                  {/* Center - LogYourBody hub */}
+                  <div className="relative">
+                    <div className="mx-auto h-32 w-32 rounded-3xl bg-gradient-to-br from-linear-purple to-linear-purple/80 shadow-2xl flex items-center justify-center">
+                      <BarChart3 className="h-16 w-16 text-white" />
                     </div>
+                    <p className="text-center mt-4 font-semibold text-linear-text">LogYourBody</p>
                   </div>
-                  
-                  <div className="absolute -bottom-4 -left-4 bg-linear-bg/90 backdrop-blur-sm border border-linear-border/50 rounded-xl p-4 shadow-lg">
-                    <div className="text-center">
-                      <div className="text-2xl font-bold text-linear-text">10K+</div>
-                      <div className="text-xs text-linear-text-secondary">Active Users</div>
+
+                  {/* Right side - Unified output */}
+                  <div className="space-y-4">
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-3 text-sm text-linear-text">
+                        <div className="h-8 w-8 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                        <span>Unified Timeline</span>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-3 text-sm text-linear-text">
+                        <div className="h-8 w-8 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                        <span>Trend Analysis</span>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-3 text-sm text-linear-text">
+                        <div className="h-8 w-8 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                        <span>Progress Insights</span>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-3 text-sm text-linear-text">
+                        <div className="h-8 w-8 rounded-lg bg-linear-purple/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                        <span>Export Reports</span>
+                      </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Connection lines */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <svg className="absolute inset-0 w-full h-full" style={{ transform: 'scale(1.1)' }}>
+                    <defs>
+                      <linearGradient id="gradient-line" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="transparent" />
+                        <stop offset="50%" stopColor="rgb(94 106 210 / 0.3)" />
+                        <stop offset="100%" stopColor="transparent" />
+                      </linearGradient>
+                    </defs>
+                    {/* Animated connection lines would go here */}
+                  </svg>
+                </div>
+              </div>
+
+              {/* Bottom CTA - YC style */}
+              <div className="text-center mt-16">
+                <p className="text-sm text-linear-text-secondary mb-4">
+                  Stop juggling spreadsheets and PDFs. Start seeing the complete picture.
+                </p>
+                <Link href="/signup">
+                  <Button className="bg-linear-purple text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-linear-purple/90 transition-all">
+                    Import Your Data
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
@@ -865,6 +956,82 @@ export function LandingPage() {
                 </p>
               </CardContent>
             </Card>
+          </div>
+        </section>
+
+        {/* Integrations Section */}
+        <section className="py-16 md:py-24" aria-labelledby="integrations-heading">
+          <div className="container mx-auto px-4 sm:px-6">
+            <div className="mx-auto max-w-4xl text-center">
+              {/* Clean Header */}
+              <div className="mb-8">
+                <h2 id="integrations-heading" className="text-2xl sm:text-3xl font-semibold text-linear-text mb-2">
+                  Integrates with everything
+                </h2>
+                <p className="text-linear-text-secondary">
+                  Sync your data seamlessly across all your fitness apps
+                </p>
+              </div>
+
+              {/* Overlapping Logos Row */}
+              <div className="relative mx-auto mb-8 flex items-center justify-center">
+                {/* Connection line */}
+                <div className="absolute left-1/2 h-px w-64 -translate-x-1/2 bg-gradient-to-r from-transparent via-linear-border to-transparent" />
+                
+                {/* Apple Health - Center */}
+                <div className="relative z-20 mx-4">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-full border-4 border-linear-bg bg-gradient-to-br from-red-500 to-pink-500 shadow-xl">
+                    <svg className="h-9 w-9 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm1.5-13h-3v6l5.25 3.15.75-1.23-4.5-2.67V7z"/>
+                    </svg>
+                  </div>
+                  <p className="mt-2 text-sm font-medium text-linear-text">Apple Health</p>
+                </div>
+
+                {/* Left side apps */}
+                <div className="absolute left-1/2 flex -translate-x-[140px]">
+                  <div className="relative -mr-3 transition-transform hover:z-10 hover:-translate-y-1">
+                    <div className="h-12 w-12 rounded-full border-3 border-linear-bg bg-gradient-to-br from-blue-500 to-blue-600 shadow-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">MFP</span>
+                    </div>
+                  </div>
+                  <div className="relative -mr-3 transition-transform hover:z-10 hover:-translate-y-1">
+                    <div className="h-12 w-12 rounded-full border-3 border-linear-bg bg-gradient-to-br from-orange-500 to-orange-600 shadow-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">S</span>
+                    </div>
+                  </div>
+                  <div className="relative transition-transform hover:z-10 hover:-translate-y-1">
+                    <div className="h-12 w-12 rounded-full border-3 border-linear-bg bg-gradient-to-br from-blue-600 to-cyan-600 shadow-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">G</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right side apps */}
+                <div className="absolute left-1/2 flex translate-x-[44px]">
+                  <div className="relative -mr-3 transition-transform hover:z-10 hover:-translate-y-1">
+                    <div className="h-12 w-12 rounded-full border-3 border-linear-bg bg-gradient-to-br from-teal-500 to-teal-600 shadow-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">F</span>
+                    </div>
+                  </div>
+                  <div className="relative -mr-3 transition-transform hover:z-10 hover:-translate-y-1">
+                    <div className="h-12 w-12 rounded-full border-3 border-linear-bg bg-gradient-to-br from-gray-700 to-gray-800 shadow-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">W</span>
+                    </div>
+                  </div>
+                  <div className="relative transition-transform hover:z-10 hover:-translate-y-1">
+                    <div className="h-12 w-12 rounded-full border-3 border-linear-bg bg-gradient-to-br from-purple-500 to-purple-600 shadow-lg flex items-center justify-center">
+                      <span className="text-white font-bold text-xs">O</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Simple text */}
+              <p className="text-sm text-linear-text-tertiary">
+                MyFitnessPal • Strava • Garmin • Fitbit • Whoop • Oura • and many more
+              </p>
+            </div>
           </div>
         </section>
 

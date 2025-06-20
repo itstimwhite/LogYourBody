@@ -24,7 +24,11 @@ export function PWAInstallPrompt() {
     
     // Check if already installed as PWA
     const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
-                              ('standalone' in window.navigator && window.navigator.standalone === true)
+                              window.matchMedia('(display-mode: fullscreen)').matches ||
+                              window.matchMedia('(display-mode: minimal-ui)').matches ||
+                              ('standalone' in window.navigator && window.navigator.standalone === true) ||
+                              document.referrer.includes('android-app://') ||
+                              window.navigator.userAgent.includes('wv')
 
     setIsIOS(isIOSDevice && isSafari)
     setIsStandalone(isInStandaloneMode)

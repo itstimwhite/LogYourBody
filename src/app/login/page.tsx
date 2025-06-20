@@ -23,17 +23,12 @@ export default function LoginPage() {
   const { user, signIn, signInWithProvider, loading: authLoading } = useAuth()
   const router = useRouter()
 
-  useEffect(() => {
-    // Only redirect if we're certain the user is authenticated
-    // and auth context has finished loading
-    if (user && !authLoading) {
-      // Add a small delay to ensure middleware has processed
-      const timer = setTimeout(() => {
-        router.push('/dashboard')
-      }, 100)
-      return () => clearTimeout(timer)
-    }
-  }, [user, authLoading, router])
+  // Disabled to prevent redirect loops
+  // useEffect(() => {
+  //   if (user && !authLoading) {
+  //     router.push('/dashboard')
+  //   }
+  // }, [user, authLoading, router])
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,6 +62,8 @@ export default function LoginPage() {
   const handleSMSSuccess = () => {
     router.push('/dashboard')
   }
+
+  // Removed loading states to prevent redirect issues
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-bg p-4">
