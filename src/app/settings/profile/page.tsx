@@ -2,8 +2,9 @@
 
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
+import { debounce } from 'lodash'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,18 +15,24 @@ import {
   Loader2, 
   ArrowLeft,
   Camera,
-  Save
+  Calendar,
+  Ruler,
+  Check
 } from 'lucide-react'
 import Link from 'next/link'
 import { UserProfile } from '@/types/body-metrics'
 import { HeightWheelPicker, DateWheelPicker } from '@/components/ui/wheel-picker'
 import { format, parseISO } from 'date-fns'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 export default function ProfileSettingsPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const [isSaving, setIsSaving] = useState(false)
-  const [hasChanges, setHasChanges] = useState(false)
+  const [lastSaved, setLastSaved] = useState<Date | null>(null)
+  const [showHeightModal, setShowHeightModal] = useState(false)
+  const [showDOBModal, setShowDOBModal] = useState(false)
   
   const [profile, setProfile] = useState<Partial<UserProfile>>({
     email: user?.email || '',
@@ -86,29 +93,40 @@ export default function ProfileSettingsPage() {
     return null
   }
 
-  const updateProfile = (updates: Partial<UserProfile>) => {
-    setProfile(prev => ({ ...prev, ...updates }))
-    setHasChanges(true)
-  }
-
-  const handleSave = async () => {
+  // Auto-save function
+  const saveProfile = useCallback(async (profileData: Partial<UserProfile>) => {
     setIsSaving(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      toast({
-        title: "Profile updated",
-        description: "Your profile has been updated successfully."
-      })
-      setHasChanges(false)
-    } catch {
+      // TODO: Replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 800))
+      
+      setLastSaved(new Date())
+      
+      // Show subtle feedback instead of toast for auto-save
+      // Only show toast for errors
+    } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: "Failed to save changes. Please try again.",
         variant: "destructive"
       })
     } finally {
       setIsSaving(false)
     }
+  }, [])
+
+  // Debounced auto-save
+  const debouncedSave = useCallback(
+    debounce((profileData: Partial<UserProfile>) => {
+      saveProfile(profileData)
+    }, 1000),
+    [saveProfile]
+  )
+
+  const updateProfile = (updates: Partial<UserProfile>) => {
+    const newProfile = { ...profile, ...updates }
+    setProfile(newProfile)
+    debouncedSave(newProfile)
   }
 
   const getInitials = (name: string) => {
@@ -118,6 +136,44 @@ export default function ProfileSettingsPage() {
       .join('')
       .toUpperCase()
       .slice(0, 2)
+  }
+
+  const formatHeight = () => {
+    if (!profile.height) return 'Not set'
+    
+    if (profile.height_unit === 'cm') {
+      return `${profile.height} cm`
+    } else {
+      const feet = Math.floor(profile.height / 12)
+      const inches = profile.height % 12
+      return `${feet}'${inches}"`
+    }
+  }
+
+  const formatDOB = () => {
+    if (!profile.date_of_birth) return 'Not set'
+    try {
+      const date = parseISO(profile.date_of_birth)
+      return format(date, 'MMM d, yyyy')
+    } catch {
+      return 'Not set'
+    }
+  }
+
+  const calculateAge = () => {
+    if (!profile.date_of_birth) return null
+    try {
+      const date = parseISO(profile.date_of_birth)
+      const today = new Date()
+      let age = today.getFullYear() - date.getFullYear()
+      const monthDiff = today.getMonth() - date.getMonth()
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < date.getDate())) {
+        age--
+      }
+      return age
+    } catch {
+      return null
+    }
   }
 
   return (
@@ -134,20 +190,19 @@ export default function ProfileSettingsPage() {
               </Link>
               <h1 className="text-xl font-bold text-linear-text">Profile</h1>
             </div>
-            {hasChanges && (
-              <Button 
-                onClick={handleSave}
-                disabled={isSaving}
-                size="sm"
-                className="bg-linear-purple hover:bg-linear-purple/80 text-white"
-              >
-                {isSaving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4" />
-                )}
-              </Button>
-            )}
+            <div className="text-sm text-linear-text-secondary">
+              {isSaving ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Saving...
+                </span>
+              ) : lastSaved ? (
+                <span className="flex items-center gap-2">
+                  <Check className="h-3 w-3" />
+                  Saved
+                </span>
+              ) : null}
+            </div>
           </div>
         </div>
       </header>
@@ -225,79 +280,75 @@ export default function ProfileSettingsPage() {
               Used for accurate calculations
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
+            {/* Gender Toggle */}
+            <div className="space-y-2">
+              <Label className="text-linear-text">Gender</Label>
+              <ToggleGroup 
+                type="single" 
+                value={profile.gender || 'male'}
+                onValueChange={(value) => {
+                  if (value) updateProfile({ gender: value as 'male' | 'female' })
+                }}
+                className="justify-start"
+              >
+                <ToggleGroupItem 
+                  value="male" 
+                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                >
+                  Male
+                </ToggleGroupItem>
+                <ToggleGroupItem 
+                  value="female"
+                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                >
+                  Female
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+
+            {/* Date of Birth with inline display */}
             <div className="space-y-2">
               <Label className="text-linear-text">Date of Birth</Label>
-              <DateWheelPicker
-                date={dateOfBirthDate}
-                onDateChange={(date) => {
-                  setDateOfBirthDate(date)
-                  updateProfile({ date_of_birth: format(date, 'yyyy-MM-dd') })
-                }}
-                className="bg-linear-bg rounded-lg"
-              />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-linear-text-tertiary" />
+                  <span className="text-linear-text">
+                    {formatDOB()}
+                    {calculateAge() && (
+                      <span className="text-linear-text-secondary ml-2">
+                        ({calculateAge()} years old)
+                      </span>
+                    )}
+                  </span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowDOBModal(true)}
+                  className="border-linear-border text-linear-text hover:bg-linear-card"
+                >
+                  Set
+                </Button>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="gender" className="text-linear-text">Gender</Label>
-              <Select 
-                value={profile.gender || ''} 
-                onValueChange={(value) => updateProfile({ gender: value as 'male' | 'female' | 'other' })}
-              >
-                <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text">
-                  <SelectValue placeholder="Select gender" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Male</SelectItem>
-                  <SelectItem value="female">Female</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
+            {/* Height with inline display */}
             <div className="space-y-2">
               <Label className="text-linear-text">Height</Label>
-              <HeightWheelPicker
-                heightInCm={heightInCm}
-                units={profile.height_unit === 'ft' ? 'imperial' : 'metric'}
-                onHeightChange={(newHeightInCm) => {
-                  setHeightInCm(newHeightInCm)
-                  // Update profile height based on unit
-                  if (profile.height_unit === 'ft') {
-                    const totalInches = Math.round(newHeightInCm / 2.54)
-                    updateProfile({ height: totalInches })
-                  } else {
-                    updateProfile({ height: newHeightInCm })
-                  }
-                }}
-                className="bg-linear-bg rounded-lg"
-              />
-              <div className="flex justify-end mt-2">
-                <Select 
-                  value={profile.height_unit || 'cm'} 
-                  onValueChange={(value) => {
-                    const newUnit = value as 'cm' | 'ft'
-                    // Convert height when changing units
-                    if (newUnit === 'ft' && profile.height_unit === 'cm') {
-                      // Converting from cm to inches
-                      const totalInches = Math.round(heightInCm / 2.54)
-                      updateProfile({ height: totalInches, height_unit: newUnit })
-                    } else if (newUnit === 'cm' && profile.height_unit === 'ft') {
-                      // Converting from inches to cm
-                      updateProfile({ height: heightInCm, height_unit: newUnit })
-                    } else {
-                      updateProfile({ height_unit: newUnit })
-                    }
-                  }}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Ruler className="h-4 w-4 text-linear-text-tertiary" />
+                  <span className="text-linear-text">{formatHeight()}</span>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowHeightModal(true)}
+                  className="border-linear-border text-linear-text hover:bg-linear-card"
                 >
-                  <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="cm">Metric (cm)</SelectItem>
-                    <SelectItem value="ft">Imperial (ft/in)</SelectItem>
-                  </SelectContent>
-                </Select>
+                  Set
+                </Button>
               </div>
             </div>
 
@@ -322,6 +373,119 @@ export default function ProfileSettingsPage() {
           </CardContent>
         </Card>
       </main>
+
+      {/* Date of Birth Modal */}
+      <Dialog open={showDOBModal} onOpenChange={setShowDOBModal}>
+        <DialogContent className="bg-linear-card border-linear-border">
+          <DialogHeader>
+            <DialogTitle className="text-linear-text">Set Date of Birth</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <DateWheelPicker
+              date={dateOfBirthDate}
+              onDateChange={(date) => {
+                setDateOfBirthDate(date)
+                updateProfile({ date_of_birth: format(date, 'yyyy-MM-dd') })
+              }}
+              className="bg-linear-bg rounded-lg"
+            />
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowDOBModal(false)}
+              className="border-linear-border"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => setShowDOBModal(false)}
+              className="bg-linear-purple hover:bg-linear-purple/80"
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Height Modal */}
+      <Dialog open={showHeightModal} onOpenChange={setShowHeightModal}>
+        <DialogContent className="bg-linear-card border-linear-border">
+          <DialogHeader>
+            <DialogTitle className="text-linear-text">Set Height</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Unit Toggle */}
+            <div className="flex justify-center">
+              <ToggleGroup 
+                type="single" 
+                value={profile.height_unit || 'cm'}
+                onValueChange={(value) => {
+                  if (value) {
+                    const newUnit = value as 'cm' | 'ft'
+                    // Convert height when changing units
+                    if (newUnit === 'ft' && profile.height_unit === 'cm') {
+                      // Converting from cm to inches
+                      const totalInches = Math.round(heightInCm / 2.54)
+                      updateProfile({ height: totalInches, height_unit: newUnit })
+                    } else if (newUnit === 'cm' && profile.height_unit === 'ft') {
+                      // Converting from inches to cm
+                      updateProfile({ height: heightInCm, height_unit: newUnit })
+                    } else {
+                      updateProfile({ height_unit: newUnit })
+                    }
+                  }
+                }}
+              >
+                <ToggleGroupItem 
+                  value="cm" 
+                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                >
+                  Metric (cm)
+                </ToggleGroupItem>
+                <ToggleGroupItem 
+                  value="ft"
+                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                >
+                  Imperial (ft/in)
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+
+            {/* Height Picker */}
+            <HeightWheelPicker
+              heightInCm={heightInCm}
+              units={profile.height_unit === 'ft' ? 'imperial' : 'metric'}
+              onHeightChange={(newHeightInCm) => {
+                setHeightInCm(newHeightInCm)
+                // Update profile height based on unit
+                if (profile.height_unit === 'ft') {
+                  const totalInches = Math.round(newHeightInCm / 2.54)
+                  updateProfile({ height: totalInches })
+                } else {
+                  updateProfile({ height: newHeightInCm })
+                }
+              }}
+              className="bg-linear-bg rounded-lg"
+            />
+          </div>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setShowHeightModal(false)}
+              className="border-linear-border"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => setShowHeightModal(false)}
+              className="bg-linear-purple hover:bg-linear-purple/80"
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

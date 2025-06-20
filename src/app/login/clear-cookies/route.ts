@@ -3,7 +3,7 @@ import { cookies } from 'next/headers'
 
 export async function GET() {
   // Clear all auth-related cookies
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   
   // Clear Supabase auth cookies
   cookieStore.delete('sb-auth-token')

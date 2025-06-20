@@ -4,8 +4,8 @@ import { cookies } from 'next/headers'
 
 export async function GET() {
   try {
-    const cookieStore = cookies()
-    const supabase = createClient()
+    const cookieStore = await cookies()
+    const supabase = await createClient()
     
     // Get session information
     const { data: { session }, error: sessionError } = await supabase.auth.getSession()
@@ -48,8 +48,6 @@ export async function GET() {
         supabaseCookies: supabaseCookies.map(c => ({
           name: c.name,
           hasValue: !!c.value,
-          httpOnly: c.httpOnly,
-          secure: c.secure,
         })),
       },
       environment: envVars,

@@ -22,7 +22,7 @@ import Link from 'next/link'
 import { format } from 'date-fns'
 
 export default function AccountSettingsPage() {
-  const { user, loading } = useAuth()
+  const { user, loading, signOut } = useAuth()
   const router = useRouter()
   const [isDeleting, setIsDeleting] = useState(false)
 
@@ -65,14 +65,23 @@ export default function AccountSettingsPage() {
 
     setIsDeleting(true)
     try {
+      // TODO: Add actual API call to delete account
+      // const { error } = await supabase.rpc('delete_user_account')
+      
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000))
+      
       toast({
         title: "Account deleted",
         description: "Your account has been permanently deleted."
       })
+      
+      // Sign out the user after account deletion
+      await signOut()
+      
+      // Redirect to home page
       router.push('/')
-    } catch {
+    } catch (error) {
       toast({
         title: "Error",
         description: "Failed to delete account. Please try again.",
