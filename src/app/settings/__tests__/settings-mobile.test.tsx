@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, within } from '@testing-library/react'
 import SettingsPage from '../page'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'

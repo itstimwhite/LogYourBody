@@ -62,7 +62,7 @@ describe('Mobile UX Integration Tests', () => {
     })
     
     it('should handle missing version gracefully', () => {
-      const version = undefined || '1.0.0'
+      const version = undefined ?? '1.0.0'
       expect(version).toBe('1.0.0')
     })
   })
