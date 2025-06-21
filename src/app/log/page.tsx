@@ -26,7 +26,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
-import { calculateNavyBodyFat, calculate3SiteBodyFat, calculateFFMI, calculateBodyComposition } from '@/utils/body-calculations'
+import { calculateNavyBodyFat, calculate3SiteBodyFat, calculateFFMI, calculateBodyComposition, convertMeasurement } from '@/utils/body-calculations'
 import { UserProfile } from '@/types/body-metrics'
 import { 
   compressImage, 
@@ -165,12 +165,31 @@ export default function LogWeightPage() {
       let bodyFat: number | null = null
       
       if (formData.method === 'navy' && formData.waist && formData.neck) {
+        // Convert measurements to cm if they're in inches
+        const measurementUnit = profile.settings?.units?.measurements || 'in'
+        const waistCm = measurementUnit === 'in' 
+          ? convertMeasurement(parseFloat(formData.waist), 'in', 'cm')
+          : parseFloat(formData.waist)
+        const neckCm = measurementUnit === 'in'
+          ? convertMeasurement(parseFloat(formData.neck), 'in', 'cm')
+          : parseFloat(formData.neck)
+        const hipCm = formData.hip 
+          ? (measurementUnit === 'in' 
+              ? convertMeasurement(parseFloat(formData.hip), 'in', 'cm')
+              : parseFloat(formData.hip))
+          : undefined
+        
+        // Convert height to cm if needed
+        const heightCm = profile.settings?.units?.height === 'ft' 
+          ? profile.height! * 2.54 // height is stored in inches when unit is 'ft'
+          : profile.height!
+        
         bodyFat = calculateNavyBodyFat(
           profile.gender as 'male' | 'female',
-          parseFloat(formData.waist),
-          parseFloat(formData.neck),
-          profile.height!,
-          formData.hip ? parseFloat(formData.hip) : undefined
+          waistCm,
+          neckCm,
+          heightCm,
+          hipCm
         )
       } else if (formData.method === '3-site') {
         const age = calculateAge()
@@ -281,7 +300,13 @@ export default function LogWeightPage() {
     const weight = formData.weight_unit === 'lbs' 
       ? parseFloat(formData.weight) / 2.20462 
       : parseFloat(formData.weight)
-    return calculateFFMI(weight, profile.height, formData.body_fat_percentage)
+    
+    // Convert height to cm if needed
+    const heightCm = profile.settings?.units?.height === 'ft'
+      ? profile.height * 2.54 // height is stored in inches when unit is 'ft'
+      : profile.height
+    
+    return calculateFFMI(weight, heightCm, formData.body_fat_percentage)
   }
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -604,7 +629,7 @@ export default function LogWeightPage() {
                 {formData.method === 'navy' && (
                   <>
                     <div className="space-y-2">
-                      <Label htmlFor="neck" className="text-linear-text">Neck (in)</Label>
+                      <Label htmlFor="neck" className="text-linear-text">Neck ({profile.settings?.units?.measurements === 'cm' ? 'cm' : 'in'})</Label>
                       <Input
                         id="neck"
                         type="number"
@@ -617,7 +642,7 @@ export default function LogWeightPage() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="waist" className="text-linear-text">Waist (in)</Label>
+                      <Label htmlFor="waist" className="text-linear-text">Waist ({profile.settings?.units?.measurements === 'cm' ? 'cm' : 'in'})</Label>
                       <Input
                         id="waist"
                         type="number"
@@ -634,7 +659,7 @@ export default function LogWeightPage() {
                     
                     {profile.gender === 'female' && (
                       <div className="space-y-2">
-                        <Label htmlFor="hip" className="text-linear-text">Hip (in)</Label>
+                        <Label htmlFor="hip" className="text-linear-text">Hip ({profile.settings?.units?.measurements === 'cm' ? 'cm' : 'in'})</Label>
                         <Input
                           id="hip"
                           type="number"

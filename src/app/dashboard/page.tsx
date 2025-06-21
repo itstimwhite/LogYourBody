@@ -23,7 +23,7 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { BodyMetrics, UserProfile, ProgressPhoto } from '@/types/body-metrics'
-import { calculateFFMI, getBodyFatCategory } from '@/utils/body-calculations'
+import { calculateFFMI, getBodyFatCategory, convertWeight, convertHeight } from '@/utils/body-calculations'
 import { getAvatarUrl } from '@/utils/avatar-utils'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
@@ -465,11 +465,33 @@ const ProfilePanel = ({
                 {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
                   <>
                     <div className="text-3xl font-bold text-linear-text">
-                      {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)}
+                      {(() => {
+                        // Convert weight to kg if needed
+                        const weightInKg = user?.settings?.units?.weight === 'lbs' 
+                          ? convertWeight(displayValues.weight, 'lbs', 'kg')
+                          : displayValues.weight
+                        
+                        // Convert height to cm if needed
+                        const heightInCm = user?.settings?.units?.height === 'ft'
+                          ? user.height * 2.54 // height is stored in inches when unit is 'ft'
+                          : user.height
+                        
+                        return calculateFFMI(weightInKg, heightInCm, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)
+                      })()}
                     </div>
                     <div className="flex items-start justify-between mt-1">
                       <div className="text-xs text-linear-text-tertiary">
-                        {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')}
+                        {(() => {
+                          const weightInKg = user?.settings?.units?.weight === 'lbs' 
+                            ? convertWeight(displayValues.weight, 'lbs', 'kg')
+                            : displayValues.weight
+                          
+                          const heightInCm = user?.settings?.units?.height === 'ft'
+                            ? user.height * 2.54
+                            : user.height
+                          
+                          return calculateFFMI(weightInKg, heightInCm, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')
+                        })()}
                       </div>
                       {trends.ffmi.direction !== 'unknown' && trends.ffmi.direction !== 'stable' && (
                         <div className="text-xs text-linear-text-tertiary">
@@ -504,7 +526,17 @@ const ProfilePanel = ({
                 <span className="text-sm font-medium text-linear-text">
                   {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
                     <>
-                      {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)} / 22
+                      {(() => {
+                        const weightInKg = user?.settings?.units?.weight === 'lbs' 
+                          ? convertWeight(displayValues.weight, 'lbs', 'kg')
+                          : displayValues.weight
+                        
+                        const heightInCm = user?.settings?.units?.height === 'ft'
+                          ? user.height * 2.54
+                          : user.height
+                        
+                        return calculateFFMI(weightInKg, heightInCm, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)
+                      })()} / 22
                     </>
                   ) : (
                     '-- / 22'
@@ -515,7 +547,15 @@ const ProfilePanel = ({
                 value={
                   displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
                     ? (() => {
-                        const ffmi = calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage)
+                        const weightInKg = user?.settings?.units?.weight === 'lbs' 
+                          ? convertWeight(displayValues.weight, 'lbs', 'kg')
+                          : displayValues.weight
+                        
+                        const heightInCm = user?.settings?.units?.height === 'ft'
+                          ? user.height * 2.54
+                          : user.height
+                        
+                        const ffmi = calculateFFMI(weightInKg, heightInCm, displayValues.bodyFatPercentage)
                         return Math.min(100, (ffmi.normalized_ffmi / 22) * 100)
                       })()
                     : 0
@@ -829,7 +869,18 @@ export default function DashboardPage() {
 
   const getFormattedHeight = (height?: number) => {
     if (!height) return '--'
-    return `${height} ${profile?.settings?.units?.height || 'in'}`
+    
+    const unit = profile?.settings?.units?.height || 'ft'
+    
+    if (unit === 'ft') {
+      // Height is stored in inches when unit is 'ft'
+      const feet = Math.floor(height / 12)
+      const inches = height % 12
+      return `${feet}'${inches}"`
+    } else {
+      // Height is in cm
+      return `${height} cm`
+    }
   }
   
   // Get photo URL for current entry
