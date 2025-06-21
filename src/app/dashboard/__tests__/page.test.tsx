@@ -312,9 +312,8 @@ describe('DashboardPage', () => {
     
     await screen.findByText('Goals Progress')
     expect(screen.getByText('Goals Progress')).toBeInTheDocument()
-    expect(screen.getByText('Weight Goal')).toBeInTheDocument()
+    expect(screen.getByText('FFMI Goal')).toBeInTheDocument()
     expect(screen.getByText('Body Fat Goal')).toBeInTheDocument()
-    expect(screen.getByText('75%')).toBeInTheDocument()
-    // Body fat goal now shows a scale instead of percentage text
+    // FFMI goal now shows current/target format instead of percentage
   })
 })

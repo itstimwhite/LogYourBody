@@ -295,13 +295,28 @@ const ProfilePanel = ({
           <h3 className="text-sm font-medium text-linear-text-secondary uppercase tracking-wider">Goals Progress</h3>
           
           <div className="space-y-4">
-            {/* Weight Goal */}
+            {/* FFMI Goal */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-linear-text">Weight Goal</span>
-                <span className="text-sm font-medium text-linear-text">75%</span>
+                <span className="text-sm text-linear-text">FFMI Goal</span>
+                <span className="text-sm font-medium text-linear-text">
+                  {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
+                    <>
+                      {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi} / 22
+                    </>
+                  ) : (
+                    '-- / 22'
+                  )}
+                </span>
               </div>
-              <Progress value={75} className="h-2" />
+              <Progress 
+                value={
+                  displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
+                    ? Math.min(100, (parseFloat(calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi) / 22) * 100)
+                    : 0
+                } 
+                className="h-2" 
+              />
             </div>
             
             {/* Body Fat Goal */}
