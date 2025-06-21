@@ -178,9 +178,9 @@ export function StepperNavigation({
 
       {/* Progress Bar */}
       <div className="mb-6 mt-4">
-        <div className="h-2 w-full overflow-hidden rounded-full bg-linear-border">
+        <div className="h-2 w-full overflow-hidden rounded-full bg-linear-border/30">
           <motion.div
-            className="h-full rounded-full bg-linear-purple"
+            className="h-full rounded-full bg-gradient-to-r from-yellow-300 via-orange-400 to-pink-500"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
             transition={{ duration: 0.3, ease: "easeOut" }}
