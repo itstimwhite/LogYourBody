@@ -388,17 +388,24 @@ export default function DashboardPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (timelineData.length === 0) return
       
+      // Don't handle if user is typing in an input
+      const target = e.target as HTMLElement
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return
+      
       if (e.key === 'ArrowLeft') {
         e.preventDefault()
+        e.stopPropagation()
         setSelectedDateIndex(prev => Math.max(0, prev - 1))
       } else if (e.key === 'ArrowRight') {
         e.preventDefault()
+        e.stopPropagation()
         setSelectedDateIndex(prev => Math.min(timelineData.length - 1, prev + 1))
       }
     }
 
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
+    // Use capture phase to intercept before other handlers
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
   }, [timelineData.length])
 
   useEffect(() => {
@@ -556,8 +563,22 @@ export default function DashboardPage() {
       <div className="flex min-h-0 flex-1 flex-col md:flex-row">
         {/* Avatar/Photo Section with Tabs - 2/3 on desktop */}
         <div className="relative min-h-0 flex-[1.5] md:w-2/3 md:flex-1">
-          <Tabs value={activeTabIndex.toString()} onValueChange={(v) => setActiveTabIndex(parseInt(v))} className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-2 bg-linear-card border-b border-linear-border rounded-none">
+          <Tabs 
+            value={activeTabIndex.toString()} 
+            onValueChange={(v) => setActiveTabIndex(parseInt(v))} 
+            className="h-full flex flex-col"
+            orientation="horizontal"
+          >
+            <TabsList 
+              className="grid w-full grid-cols-2 bg-linear-card border-b border-linear-border rounded-none"
+              onKeyDown={(e) => {
+                // Disable arrow key navigation for tabs
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }
+              }}
+            >
               <TabsTrigger value="0" className="data-[state=active]:bg-linear-border/50">Avatar</TabsTrigger>
               <TabsTrigger value="1" className="data-[state=active]:bg-linear-border/50">Photo</TabsTrigger>
             </TabsList>

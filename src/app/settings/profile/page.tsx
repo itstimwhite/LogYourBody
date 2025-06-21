@@ -232,118 +232,88 @@ export default function ProfileSettingsPage() {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-6 max-w-2xl space-y-6">
-        {/* Profile Picture */}
-        <Card className="bg-linear-card border-linear-border">
-          <CardContent className="p-6">
-            <div className="flex flex-col items-center text-center">
-              <Avatar className="h-24 w-24 mb-4">
-                <AvatarImage src={profile.avatar_url} />
-                <AvatarFallback className="bg-linear-purple/10 text-linear-text text-xl">
-                  {getInitials(profile.full_name || user.email || 'U')}
-                </AvatarFallback>
-              </Avatar>
-              <Button variant="outline" className="border-linear-border">
-                <Camera className="h-4 w-4 mr-2" />
-                Change Photo
-              </Button>
-              <p className="text-xs text-linear-text-tertiary mt-2">
-                JPG, GIF or PNG. Max size 5MB.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Personal Information */}
+        {/* Basic Profile - Static Information */}
         <Card className="bg-linear-card border-linear-border">
           <CardHeader>
-            <CardTitle className="text-linear-text">Personal Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="fullName" className="text-linear-text">Full Name</Label>
-              <Input
-                id="fullName"
-                value={profile.full_name || ''}
-                onChange={(e) => updateLocalProfile({ full_name: e.target.value })}
-                className="bg-linear-bg border-linear-border text-linear-text"
-                placeholder="John Doe"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="username" className="text-linear-text">Username</Label>
-              <Input
-                id="username"
-                value={profile.username || ''}
-                onChange={(e) => updateLocalProfile({ username: e.target.value })}
-                className="bg-linear-bg border-linear-border text-linear-text"
-                placeholder="johndoe"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="bio" className="text-linear-text">Bio</Label>
-              <textarea
-                id="bio"
-                value={profile.bio || ''}
-                onChange={(e) => updateLocalProfile({ bio: e.target.value })}
-                className="w-full px-3 py-2 bg-linear-bg border border-linear-border text-linear-text rounded-md resize-none"
-                placeholder="Tell us about yourself..."
-                rows={3}
-              />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Physical Attributes */}
-        <Card className="bg-linear-card border-linear-border">
-          <CardHeader>
-            <CardTitle className="text-linear-text">Physical Attributes</CardTitle>
+            <CardTitle className="text-linear-text">Basic Information</CardTitle>
             <CardDescription className="text-linear-text-secondary">
-              Used for accurate calculations
+              Your personal details and account information
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            {/* Gender Toggle */}
-            <div className="space-y-2">
-              <Label className="text-linear-text">Gender</Label>
-              <ToggleGroup 
-                type="single" 
-                value={profile.gender || 'male'}
-                onValueChange={(value) => {
-                  if (value) updateLocalProfile({ gender: value as 'male' | 'female' })
-                }}
-                className="justify-start"
-              >
-                <ToggleGroupItem 
-                  value="male" 
-                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
-                >
-                  Male
-                </ToggleGroupItem>
-                <ToggleGroupItem 
-                  value="female"
-                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
-                >
-                  Female
-                </ToggleGroupItem>
-              </ToggleGroup>
+            {/* Profile Picture and Name Section */}
+            <div className="flex items-start gap-6">
+              <Avatar className="h-20 w-20">
+                <AvatarImage src={profile.avatar_url} />
+                <AvatarFallback className="bg-linear-purple/10 text-linear-text text-lg">
+                  {getInitials(profile.full_name || user.email || 'U')}
+                </AvatarFallback>
+              </Avatar>
+              
+              <div className="flex-1 space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="fullName" className="text-linear-text">Full Name</Label>
+                  <Input
+                    id="fullName"
+                    value={profile.full_name || ''}
+                    onChange={(e) => updateLocalProfile({ full_name: e.target.value })}
+                    className="bg-linear-bg border-linear-border text-linear-text"
+                    placeholder="John Doe"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-linear-text">Email</Label>
+                  <Input
+                    id="email"
+                    value={profile.email || user.email || ''}
+                    disabled
+                    className="bg-linear-bg border-linear-border text-linear-text-secondary"
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Date of Birth with inline display */}
-            <div className="space-y-2">
-              <Label className="text-linear-text">Date of Birth</Label>
+            <Separator className="bg-linear-border" />
+
+            {/* Static Physical Attributes */}
+            <div className="space-y-4">
+              {/* Biological Sex */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-linear-text-tertiary" />
-                  <span className="text-linear-text">
+                <div className="space-y-1">
+                  <Label className="text-linear-text">Biological Sex</Label>
+                  <p className="text-sm text-linear-text-secondary">Used for body composition calculations</p>
+                </div>
+                <ToggleGroup 
+                  type="single" 
+                  value={profile.gender || 'male'}
+                  onValueChange={(value) => {
+                    if (value) updateLocalProfile({ gender: value as 'male' | 'female' })
+                  }}
+                >
+                  <ToggleGroupItem 
+                    value="male" 
+                    className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                  >
+                    Male
+                  </ToggleGroupItem>
+                  <ToggleGroupItem 
+                    value="female"
+                    className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                  >
+                    Female
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </div>
+
+              {/* Date of Birth */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <Label className="text-linear-text">Date of Birth</Label>
+                  <p className="text-sm text-linear-text-secondary">
                     {formatDOB()}
-                    {calculateAge() && (
-                      <span className="text-linear-text-secondary ml-2">
-                        ({calculateAge()} years old)
-                      </span>
-                    )}
-                  </span>
+                    {calculateAge() && ` • ${calculateAge()} years old`}
+                  </p>
                 </div>
                 <Button
                   variant="outline"
@@ -351,18 +321,15 @@ export default function ProfileSettingsPage() {
                   onClick={() => setShowDOBModal(true)}
                   className="border-linear-border text-linear-text hover:bg-linear-card"
                 >
-                  Set
+                  {profile.date_of_birth ? 'Change' : 'Set'}
                 </Button>
               </div>
-            </div>
 
-            {/* Height with inline display */}
-            <div className="space-y-2">
-              <Label className="text-linear-text">Height</Label>
+              {/* Height */}
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Ruler className="h-4 w-4 text-linear-text-tertiary" />
-                  <span className="text-linear-text">{formatHeight()}</span>
+                <div className="space-y-1">
+                  <Label className="text-linear-text">Height</Label>
+                  <p className="text-sm text-linear-text-secondary">{formatHeight()}</p>
                 </div>
                 <Button
                   variant="outline"
@@ -370,11 +337,22 @@ export default function ProfileSettingsPage() {
                   onClick={() => setShowHeightModal(true)}
                   className="border-linear-border text-linear-text hover:bg-linear-card"
                 >
-                  Set
+                  {profile.height ? 'Change' : 'Set'}
                 </Button>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
+        {/* Activity & Lifestyle - Semi-static */}
+        <Card className="bg-linear-card border-linear-border">
+          <CardHeader>
+            <CardTitle className="text-linear-text">Activity & Lifestyle</CardTitle>
+            <CardDescription className="text-linear-text-secondary">
+              Your typical activity patterns
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="activityLevel" className="text-linear-text">Activity Level</Label>
               <Select 
@@ -392,6 +370,47 @@ export default function ProfileSettingsPage() {
                   <SelectItem value="extremely_active">Extremely Active (2x per day)</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bio" className="text-linear-text">Bio</Label>
+              <textarea
+                id="bio"
+                value={profile.bio || ''}
+                onChange={(e) => updateLocalProfile({ bio: e.target.value })}
+                className="w-full px-3 py-2 bg-linear-bg border border-linear-border text-linear-text rounded-md resize-none"
+                placeholder="Share your fitness goals and journey..."
+                rows={3}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Additional Options */}
+        <Card className="bg-linear-card border-linear-border">
+          <CardHeader>
+            <CardTitle className="text-linear-text">Additional Options</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username" className="text-linear-text">Username</Label>
+              <Input
+                id="username"
+                value={profile.username || ''}
+                onChange={(e) => updateLocalProfile({ username: e.target.value })}
+                className="bg-linear-bg border-linear-border text-linear-text"
+                placeholder="@johndoe"
+              />
+              <p className="text-xs text-linear-text-tertiary">
+                Your unique username for sharing your profile
+              </p>
+            </div>
+
+            <div className="pt-2">
+              <Button variant="outline" className="border-linear-border w-full">
+                <Camera className="h-4 w-4 mr-2" />
+                Change Profile Photo
+              </Button>
             </div>
           </CardContent>
         </Card>
