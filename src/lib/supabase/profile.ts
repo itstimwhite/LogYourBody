@@ -5,7 +5,7 @@ export async function getProfile(userId: string): Promise<UserProfile | null> {
   const supabase = createClient()
   
   const { data, error } = await supabase
-    .from('profiles')
+    .from('user_profiles')
     .select('*')
     .eq('id', userId)
     .single()
@@ -31,7 +31,7 @@ export async function updateProfile(userId: string, updates: Partial<UserProfile
   const { id, created_at, updated_at, settings, ...profileUpdates } = updates
   
   const { data, error } = await supabase
-    .from('profiles')
+    .from('user_profiles')
     .update({
       ...profileUpdates,
       updated_at: new Date().toISOString()
@@ -57,7 +57,7 @@ export async function createProfile(userId: string, email: string): Promise<User
   const supabase = createClient()
   
   const { data, error } = await supabase
-    .from('profiles')
+    .from('user_profiles')
     .insert({
       id: userId,
       email,
