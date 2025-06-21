@@ -371,9 +371,6 @@ export default function DashboardPage() {
           <h1 className="text-xl font-semibold tracking-tight text-linear-text">
             LogYourBody
           </h1>
-          <Badge variant="secondary" className="text-xs">
-            v1.0.0
-          </Badge>
           {!isOnline && (
             <Badge variant="outline" className="text-xs border-yellow-500/50 text-yellow-500">
               Offline
