@@ -89,6 +89,7 @@ describe('Profile Utilities', () => {
           if (args.length === 0) {
             super(mockDate.getTime())
           } else {
+            // @ts-ignore - Spread argument type issue in tests
             super(...args)
           }
         }
@@ -179,6 +180,7 @@ describe('Profile Utilities', () => {
           if (args.length === 0) {
             super(mockDate.getTime())
           } else {
+            // @ts-ignore - Spread argument type issue in tests
             super(...args)
           }
         }

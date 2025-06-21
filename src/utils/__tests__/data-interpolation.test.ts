@@ -50,7 +50,7 @@ describe('Data Interpolation', () => {
       user_id: 'user1',
       date: '2024-01-01',
       photo_url: 'photo1.jpg',
-      view_type: 'front',
+      angle: 'front' as const,
       created_at: new Date().toISOString()
     },
     {
@@ -58,7 +58,7 @@ describe('Data Interpolation', () => {
       user_id: 'user1',
       date: '2024-01-05',
       photo_url: 'photo2.jpg',
-      view_type: 'front',
+      angle: 'front' as const,
       created_at: new Date().toISOString()
     },
     {
@@ -66,7 +66,7 @@ describe('Data Interpolation', () => {
       user_id: 'user1',
       date: '2024-01-12',
       photo_url: 'photo3.jpg',
-      view_type: 'front',
+      angle: 'front' as const,
       created_at: new Date().toISOString()
     }
   ]
@@ -131,7 +131,7 @@ describe('Data Interpolation', () => {
         user_id: 'user1',
         date: '2024-03-01',
         photo_url: 'photo4.jpg',
-        view_type: 'front',
+        angle: 'front' as const,
         created_at: new Date().toISOString()
       }
       
@@ -159,9 +159,9 @@ describe('Data Interpolation', () => {
           user_id: 'user1',
           date: '2024-01-30',
           weight: 174,
-          weight_unit: 'lbs',
+          weight_unit: 'lbs' as const,
           body_fat_percentage: 17,
-          body_fat_method: 'dexa',
+          body_fat_method: 'dexa' as const,
           lean_body_mass: 144.42,
           ffmi: 22.8,
           created_at: new Date().toISOString(),
@@ -175,7 +175,7 @@ describe('Data Interpolation', () => {
           user_id: 'user1',
           date: '2024-01-03', // 2 days from metrics
           photo_url: 'photo1.jpg',
-          view_type: 'front',
+          angle: 'front' as const,
           created_at: new Date().toISOString()
         },
         {
@@ -183,7 +183,7 @@ describe('Data Interpolation', () => {
           user_id: 'user1',
           date: '2024-01-10', // 2 days from nearest metrics
           photo_url: 'photo2.jpg',
-          view_type: 'front',
+          angle: 'front' as const,
           created_at: new Date().toISOString()
         },
         {
@@ -191,7 +191,7 @@ describe('Data Interpolation', () => {
           user_id: 'user1',
           date: '2024-01-25', // 10 days from nearest metrics
           photo_url: 'photo3.jpg',
-          view_type: 'front',
+          angle: 'front' as const,
           created_at: new Date().toISOString()
         }
       ]
