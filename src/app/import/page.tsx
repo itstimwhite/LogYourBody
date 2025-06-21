@@ -400,9 +400,15 @@ export default function ImportPage() {
       
       if (parsedData.type === 'photos') {
         setProcessingStatus('Uploading photos...')
-        // Upload photos to Supabase Storage first
-        const photoPromises = selectedData.map(async (entry, index) => {
-          if (!entry.photo_url) return null
+        // Upload photos to Supabase Storage first - sequentially to avoid rate limits
+        const uploadResults = []
+        
+        for (let index = 0; index < selectedData.length; index++) {
+          const entry = selectedData[index]
+          if (!entry.photo_url) {
+            uploadResults.push(null)
+            continue
+          }
           
           try {
             setProcessingStatus(`Uploading photo ${index + 1} of ${selectedData.length}...`)
@@ -440,16 +446,27 @@ export default function ImportPage() {
             throw metricsError
           }
           
-          return { success: true, url: publicUrl }
+          uploadResults.push({ success: true, url: publicUrl })
           } catch (photoError) {
             console.error(`Error uploading photo ${index + 1}:`, photoError)
-            return { success: false, error: photoError }
+            // Log more details about the error
+            if (photoError instanceof Error) {
+              console.error('Error details:', {
+                message: photoError.message,
+                stack: photoError.stack
+              })
+            }
+            uploadResults.push({ success: false, error: photoError, fileName: entry.notes })
           }
-        })
+          
+          // Add a small delay between uploads to avoid rate limiting
+          if (index < selectedData.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 500))
+          }
+        }
         
-        const results = await Promise.all(photoPromises)
-        const successCount = results.filter(r => r?.success).length
-        const failCount = results.filter(r => r && !r.success).length
+        const successCount = uploadResults.filter(r => r?.success).length
+        const failCount = uploadResults.filter(r => r && !r.success).length
         
         if (failCount > 0) {
           toast({

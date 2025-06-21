@@ -49,6 +49,14 @@ export async function uploadToStorage(
 ) {
   const supabase = createClient()
   
+  // Log upload attempt
+  console.log('Attempting to upload file:', {
+    bucketName,
+    filePath,
+    fileSize: file.size,
+    fileType: file.type
+  })
+  
   const { data, error } = await supabase.storage
     .from(bucketName)
     .upload(filePath, file, {
@@ -57,10 +65,18 @@ export async function uploadToStorage(
     })
   
   if (error) {
+    console.error('Storage upload error:', {
+      error,
+      message: error.message,
+      statusCode: 'statusCode' in error ? error.statusCode : undefined,
+      bucketName,
+      filePath
+    })
     throw error
   }
   
   const publicUrl = getStoragePublicUrl(bucketName, filePath)
+  console.log('Upload successful, public URL:', publicUrl)
   
   return {
     data,
