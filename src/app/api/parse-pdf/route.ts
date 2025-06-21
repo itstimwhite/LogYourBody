@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
-import pdf from 'pdf-parse'
 
 export async function POST(request: NextRequest) {
   try {
@@ -30,6 +29,9 @@ export async function POST(request: NextRequest) {
 
     // Convert file to buffer
     const buffer = Buffer.from(await file.arrayBuffer())
+    
+    // Dynamically import pdf-parse to avoid build issues
+    const pdf = (await import('pdf-parse')).default
     
     // Parse PDF to extract text
     const pdfData = await pdf(buffer)

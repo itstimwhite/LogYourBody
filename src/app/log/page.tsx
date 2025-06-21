@@ -653,14 +653,20 @@ export default function LogWeightPage() {
                           <div className="flex items-center justify-between py-2">
                             <span className="text-sm text-linear-text-secondary">Lean Mass</span>
                             <span className="font-medium text-linear-text">
-                              {bodyComp.lean_mass.toFixed(1)} {profile?.settings?.units?.weight || 'lbs'}
+                              {(formData.weight_unit === 'lbs' 
+                                ? bodyComp.lean_mass * 2.20462 
+                                : bodyComp.lean_mass
+                              ).toFixed(1)} {formData.weight_unit}
                             </span>
                           </div>
                           
                           <div className="flex items-center justify-between py-2">
                             <span className="text-sm text-linear-text-secondary">Fat Mass</span>
                             <span className="font-medium text-linear-text">
-                              {bodyComp.fat_mass.toFixed(1)} {profile?.settings?.units?.weight || 'lbs'}
+                              {(formData.weight_unit === 'lbs' 
+                                ? bodyComp.fat_mass * 2.20462 
+                                : bodyComp.fat_mass
+                              ).toFixed(1)} {formData.weight_unit}
                             </span>
                           </div>
                         </>
