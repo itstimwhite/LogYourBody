@@ -415,7 +415,15 @@ export default function ImportPage() {
             
             // Convert blob URL to file
             const response = await fetch(entry.photo_url)
+            if (!response.ok) {
+              throw new Error(`Failed to fetch photo: ${response.status} ${response.statusText}`)
+            }
+            
             const blob = await response.blob()
+            if (!blob || blob.size === 0) {
+              throw new Error('Invalid photo data: empty blob')
+            }
+            
             const fileName = `${user.id}/${Date.now()}-${entry.notes?.replace(/[^a-zA-Z0-9]/g, '-') || 'photo'}.jpg`
           
           // Upload to Supabase Storage using our utility
@@ -427,7 +435,12 @@ export default function ImportPage() {
           )
           
           if (uploadError) {
-            console.error('Upload error:', uploadError)
+            console.error('Upload error details:', {
+              error: uploadError,
+              fileName,
+              blobSize: blob.size,
+              blobType: blob.type
+            })
             throw uploadError
           }
           
@@ -448,15 +461,27 @@ export default function ImportPage() {
           
           uploadResults.push({ success: true, url: publicUrl })
           } catch (photoError) {
-            console.error(`Error uploading photo ${index + 1}:`, photoError)
-            // Log more details about the error
+            // Properly extract error details
+            const errorMessage = photoError instanceof Error 
+              ? photoError.message 
+              : typeof photoError === 'string' 
+              ? photoError 
+              : 'Unknown error occurred'
+            
+            console.error(`Error uploading photo ${index + 1}:`, errorMessage)
+            
+            // Log full error details for debugging
             if (photoError instanceof Error) {
               console.error('Error details:', {
                 message: photoError.message,
+                name: photoError.name,
                 stack: photoError.stack
               })
+            } else {
+              console.error('Non-Error object:', JSON.stringify(photoError, null, 2))
             }
-            uploadResults.push({ success: false, error: photoError, fileName: entry.notes })
+            
+            uploadResults.push({ success: false, error: errorMessage, fileName: entry.notes })
           }
           
           // Add a small delay between uploads to avoid rate limiting
@@ -469,11 +494,25 @@ export default function ImportPage() {
         const failCount = uploadResults.filter(r => r && !r.success).length
         
         if (failCount > 0) {
+          // Get first few error messages for display
+          const errorMessages = uploadResults
+            .filter(r => r && !r.success && r.error)
+            .slice(0, 3)
+            .map(r => r.error)
+            .join(', ')
+          
           toast({
-            title: "Partial import",
-            description: `${successCount} photos imported successfully, ${failCount} failed.`,
+            title: "Some photos failed to upload",
+            description: `${successCount} photos imported successfully, ${failCount} failed. Errors: ${errorMessages}`,
             variant: "default"
           })
+          
+          // Log all errors for debugging
+          uploadResults
+            .filter(r => r && !r.success)
+            .forEach((result, idx) => {
+              console.error(`Failed upload ${idx + 1}:`, result.error)
+            })
         }
       } else {
         // Import body composition or weight data

@@ -28,6 +28,13 @@ import Link from 'next/link'
 import { format } from 'date-fns'
 import { calculateNavyBodyFat, calculate3SiteBodyFat, calculateFFMI, calculateBodyComposition } from '@/utils/body-calculations'
 import { UserProfile } from '@/types/body-metrics'
+import { 
+  compressImage, 
+  validateImageFile, 
+  getUploadErrorMessage,
+  checkBrowserSupport
+} from '@/utils/photo-upload-utils'
+import Image from 'next/image'
 
 type Step = 'weight' | 'method' | 'measurements' | 'photo' | 'review'
 
@@ -67,7 +74,8 @@ export default function LogWeightPage() {
     // Calculated
     body_fat_percentage: null as number | null,
     notes: '',
-    photo: null as File | null
+    photo: null as File | null,
+    photoPreview: null as string | null
   })
 
   // Mock profile data (replace with actual profile fetch)

@@ -25,9 +25,16 @@ import {
 import Link from 'next/link'
 import { format, differenceInDays } from 'date-fns'
 import Image from 'next/image'
-import { loadUserPhotos, deletePhoto, PhotoData } from '@/utils/photo-utils'
+import { loadUserPhotos, deletePhoto, PhotoData, uploadPhotoWithMetrics } from '@/utils/photo-utils'
 import { uploadToStorage } from '@/utils/storage-utils'
 import { createClient } from '@/lib/supabase/client'
+import { 
+  compressImage, 
+  validateImageFile, 
+  getUploadErrorMessage,
+  retryUpload,
+  checkBrowserSupport
+} from '@/utils/photo-upload-utils'
 
 type ProgressPhoto = PhotoData & {
   url: string
@@ -88,22 +95,23 @@ export default function PhotosPage() {
     const file = event.target.files?.[0]
     if (!file) return
 
-    // Validate file type
-    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
-    if (!validTypes.includes(file.type)) {
+    // Check browser support first
+    const browserSupport = checkBrowserSupport()
+    if (!browserSupport.supported) {
       toast({
-        title: "Invalid file type",
-        description: "Please select a JPG, PNG, or WebP image.",
+        title: "Browser not supported",
+        description: `Your browser lacks support for: ${browserSupport.missingFeatures.join(', ')}`,
         variant: "destructive"
       })
       return
     }
 
-    // Validate file size (max 10MB)
-    if (file.size > 10 * 1024 * 1024) {
+    // Validate file
+    const validation = validateImageFile(file)
+    if (!validation.valid) {
       toast({
-        title: "File too large",
-        description: "Please select an image under 10MB.",
+        title: "Invalid file",
+        description: validation.error,
         variant: "destructive"
       })
       return
@@ -128,49 +136,62 @@ export default function PhotosPage() {
     setUploadProgress(0)
 
     try {
-      const supabase = createClient()
+      // Compress image before upload
+      setUploadProgress(10)
+      let fileToUpload: File | Blob = selectedFile
       
-      // Generate file name
-      const fileName = `${user.id}/${Date.now()}-progress.jpg`
+      // Only compress if file is larger than 1MB
+      if (selectedFile.size > 1024 * 1024) {
+        try {
+          const compressed = await compressImage(selectedFile, {
+            maxWidth: 1920,
+            maxHeight: 1920,
+            quality: 0.85,
+            format: 'jpeg'
+          })
+          
+          // Only use compressed version if it's smaller
+          if (compressed.size < selectedFile.size) {
+            fileToUpload = compressed
+            console.log(`Compressed from ${(selectedFile.size / 1024 / 1024).toFixed(2)}MB to ${(compressed.size / 1024 / 1024).toFixed(2)}MB`)
+          }
+        } catch (compressionError) {
+          console.warn('Compression failed, using original:', compressionError)
+          // Continue with original file if compression fails
+        }
+      }
       
-      // Upload to storage
       setUploadProgress(30)
-      const { publicUrl, error: uploadError } = await uploadToStorage(
-        'photos',
-        fileName,
-        selectedFile,
-        { contentType: selectedFile.type }
-      )
       
-      if (uploadError) throw uploadError
-      
-      setUploadProgress(60)
-      
-      // Create body metrics entry with photo
-      const { data: metricsData, error: metricsError } = await supabase
-        .from('body_metrics')
-        .insert({
-          user_id: user.id,
-          date: new Date().toISOString().split('T')[0],
-          photo_url: publicUrl,
+      // Upload with retry mechanism
+      const uploadOperation = async () => {
+        const result = await uploadPhotoWithMetrics(fileToUpload as File, user.id, {
           notes: 'Progress photo'
         })
-        .select()
-        .single()
+        
+        if (!result.success) {
+          throw new Error(result.error || 'Upload failed')
+        }
+        
+        return result.data!
+      }
       
-      if (metricsError) throw metricsError
+      setUploadProgress(50)
+      const metricsData = await retryUpload(uploadOperation, 3, 1000)
       
-      setUploadProgress(100)
+      setUploadProgress(90)
       
       // Add to photos list
       const newPhoto: ProgressPhoto = {
         ...metricsData,
-        url: publicUrl,
-        thumbnail_url: publicUrl,
+        url: metricsData.photo_url,
+        thumbnail_url: metricsData.photo_url,
         uploaded_at: metricsData.created_at
       }
       
       setPhotos(prev => [newPhoto, ...prev])
+      
+      setUploadProgress(100)
       
       toast({
         title: "Success!",
@@ -182,9 +203,11 @@ export default function PhotosPage() {
       setPreview(null)
     } catch (error) {
       console.error('Upload error:', error)
+      const errorMessage = getUploadErrorMessage(error)
+      
       toast({
         title: "Upload failed",
-        description: error instanceof Error ? error.message : "Failed to upload photo. Please try again.",
+        description: errorMessage,
         variant: "destructive"
       })
     } finally {
@@ -568,9 +591,17 @@ export default function PhotosPage() {
               {isUploading ? (
                 <div className="space-y-3">
                   <Progress value={uploadProgress} className="h-2" />
-                  <p className="text-sm text-center text-linear-text-secondary">
-                    Uploading... {uploadProgress}%
-                  </p>
+                  <div className="text-center">
+                    <p className="text-sm text-linear-text-secondary mb-1">
+                      {uploadProgress < 30 ? 'Preparing image...' :
+                       uploadProgress < 50 ? 'Compressing...' :
+                       uploadProgress < 90 ? 'Uploading...' :
+                       'Almost done...'}
+                    </p>
+                    <p className="text-xs text-linear-text-tertiary">
+                      {uploadProgress}%
+                    </p>
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-4">
