@@ -118,7 +118,7 @@ export default function LogWeightPage() {
           if (profileData.settings?.units?.weight) {
             setFormData(prev => ({
               ...prev,
-              weight_unit: profileData.settings.units.weight as 'kg' | 'lbs'
+              weight_unit: profileData.settings.units!.weight as 'kg' | 'lbs'
             }))
           }
         }
@@ -294,7 +294,7 @@ export default function LogWeightPage() {
       if (!support.supported) {
         toast({
           title: "Browser not supported",
-          description: support.message,
+          description: `Missing features: ${support.missingFeatures.join(', ')}`,
           variant: "destructive"
         })
         return
@@ -302,7 +302,7 @@ export default function LogWeightPage() {
 
       // Validate the file
       const validation = validateImageFile(file)
-      if (!validation.isValid) {
+      if (!validation.valid) {
         toast({
           title: "Invalid file",
           description: validation.error,
@@ -313,9 +313,9 @@ export default function LogWeightPage() {
 
       // Compress the image
       const compressedBlob = await compressImage(file, {
-        maxSizeMB: 2,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true
+        maxWidth: 1920,
+        maxHeight: 1920,
+        quality: 0.85
       })
 
       // Create compressed file
