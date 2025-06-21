@@ -151,14 +151,12 @@ const ProfilePanel = ({
   entry,
   user, 
   formattedWeight,
-  formattedHeight,
-  formattedLeanBodyMass 
+  formattedHeight
 }: {
   entry: TimelineEntry | null
   user: UserProfile | null
   formattedWeight: string
   formattedHeight: string
-  formattedLeanBodyMass: string
 }) => {
   const displayValues = entry ? getTimelineDisplayValues(entry) : null
   const bodyFatCategory = displayValues?.bodyFatPercentage && user?.gender
@@ -264,7 +262,9 @@ const ProfilePanel = ({
                 <span className="text-xs text-linear-text-secondary">Lean Mass</span>
               </div>
               <div className="text-3xl font-bold text-linear-text">
-                {displayValues?.leanBodyMass ? displayValues.leanBodyMass.toFixed(1) : <span className="text-2xl text-linear-text-tertiary">--</span>}
+                {displayValues?.weight && displayValues?.bodyFatPercentage 
+                  ? (displayValues.weight * (1 - displayValues.bodyFatPercentage / 100)).toFixed(1)
+                  : <span className="text-2xl text-linear-text-tertiary">--</span>}
               </div>
               <div className="text-xs text-linear-text-tertiary mt-0.5">
                 {user?.settings?.units?.weight || 'lbs'}
@@ -581,11 +581,6 @@ export default function DashboardPage() {
     if (!height) return '--'
     return `${height} ${profile?.settings?.units?.height || 'in'}`
   }
-
-  const getFormattedLeanBodyMass = (lbm?: number) => {
-    if (!lbm) return '--'
-    return `${lbm.toFixed(1)} ${profile?.settings?.units?.weight || 'lbs'}`
-  }
   
   // Get photo URL for current entry
   const currentPhotoUrl = currentEntry?.photo?.photo_url 
@@ -726,7 +721,6 @@ export default function DashboardPage() {
             user={profile}
             formattedWeight={getFormattedWeight(displayValues?.weight || currentEntry?.metrics?.weight)}
             formattedHeight={getFormattedHeight(profile?.height)}
-            formattedLeanBodyMass={getFormattedLeanBodyMass(displayValues?.leanBodyMass || currentEntry?.metrics?.lean_body_mass)}
           />
         </div>
       </div>
