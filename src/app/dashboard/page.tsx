@@ -496,7 +496,7 @@ export default function DashboardPage() {
   const router = useRouter()
   const isOnline = useNetworkStatus()
   const [activeTabIndex, setActiveTabIndex] = useState(0)
-  const [selectedDateIndex, setSelectedDateIndex] = useState(0)
+  const [selectedDateIndex, setSelectedDateIndex] = useState(-1)
   const [latestMetrics, setLatestMetrics] = useState<BodyMetrics | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [metricsHistory, setMetricsHistory] = useState<BodyMetrics[]>([])
@@ -507,7 +507,7 @@ export default function DashboardPage() {
   // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (timelineData.length === 0) return
+      if (timelineData.length === 0 || selectedDateIndex < 0) return
       
       // Don't handle if user is typing in an input
       const target = e.target as HTMLElement
@@ -527,7 +527,7 @@ export default function DashboardPage() {
     // Use capture phase to intercept before other handlers
     window.addEventListener('keydown', handleKeyDown, true)
     return () => window.removeEventListener('keydown', handleKeyDown, true)
-  }, [timelineData.length])
+  }, [timelineData.length, selectedDateIndex])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -609,7 +609,9 @@ export default function DashboardPage() {
   }
 
   // Get current timeline entry based on selected date
-  const currentEntry = timelineData[selectedDateIndex] || null
+  const currentEntry = selectedDateIndex >= 0 && selectedDateIndex < timelineData.length 
+    ? timelineData[selectedDateIndex] 
+    : null
   const displayValues = currentEntry ? getTimelineDisplayValues(currentEntry) : null
 
   // Format helpers
@@ -767,13 +769,15 @@ export default function DashboardPage() {
       </div>
 
       {/* Timeline Slider */}
-      <div className="flex-shrink-0">
-        <TimelineSlider
-          timeline={timelineData}
-          selectedIndex={selectedDateIndex}
-          onIndexChange={setSelectedDateIndex}
-        />
-      </div>
+      {timelineData.length > 0 && (
+        <div className="flex-shrink-0">
+          <TimelineSlider
+            timeline={timelineData}
+            selectedIndex={selectedDateIndex}
+            onIndexChange={setSelectedDateIndex}
+          />
+        </div>
+      )}
     </div>
   )
 }
