@@ -67,3 +67,14 @@ Object.defineProperty(window, 'matchMedia', {
     dispatchEvent: jest.fn(),
   })),
 })
+
+// Add pointer events polyfill for Radix UI
+if (!Element.prototype.hasPointerCapture) {
+  Element.prototype.hasPointerCapture = jest.fn()
+}
+if (!Element.prototype.setPointerCapture) {
+  Element.prototype.setPointerCapture = jest.fn()
+}
+if (!Element.prototype.releasePointerCapture) {
+  Element.prototype.releasePointerCapture = jest.fn()
+}

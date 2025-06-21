@@ -6,7 +6,9 @@ import { useRouter } from 'next/navigation'
 
 // Mock dependencies
 jest.mock('@/contexts/AuthContext')
-jest.mock('next/navigation')
+jest.mock('next/navigation', () => ({
+  useRouter: jest.fn()
+}))
 jest.mock('@/lib/supabase/client', () => ({
   createClient: jest.fn(() => ({
     from: jest.fn(() => ({
