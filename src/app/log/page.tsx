@@ -84,12 +84,12 @@ export default function LogWeightPage() {
 
   const [profile, setProfile] = useState<Partial<UserProfile>>({
     height: 71,
-    height_unit: 'in',
+    height_unit: 'ft',
     gender: 'male',
     settings: {
       units: {
         weight: 'lbs',
-        height: 'in',
+        height: 'ft',
         measurements: 'in'
       }
     }
