@@ -211,27 +211,33 @@ const ProfilePanel = ({
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-linear-text uppercase tracking-wider">Current Stats</h3>
           
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Stats Grid - Responsive with horizontal scroll on mobile */}
+          <div className="flex md:grid md:grid-cols-2 gap-3 overflow-x-auto md:overflow-visible -mx-6 px-6 md:mx-0 md:px-0 pb-2 md:pb-0">
             {/* Weight */}
-            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
-              <div className="flex items-center gap-2 mb-2">
-                <Scale className="h-4 w-4 text-linear-text-tertiary" />
-                <span className="text-xs text-linear-text-secondary">Weight</span>
+            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <Scale className="h-4 w-4 text-linear-text-tertiary" />
+                  <span className="text-xs text-linear-text-secondary">Weight</span>
+                </div>
               </div>
-              <div className="text-3xl font-bold text-linear-text">
-                {displayValues?.weight?.toFixed(1) || '--'}
-              </div>
-              <div className="text-xs text-linear-text-tertiary mt-0.5">
-                {user?.settings?.units?.weight || 'lbs'}
+              <div className="mt-2 flex items-baseline gap-1">
+                <span className="text-3xl font-bold text-linear-text">
+                  {displayValues?.weight?.toFixed(1) || '--'}
+                </span>
+                <span className="text-sm text-linear-text-tertiary">
+                  {user?.settings?.units?.weight || 'lbs'}
+                </span>
               </div>
             </div>
 
             {/* Body Fat */}
-            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
-              <div className="flex items-center gap-2 mb-2">
-                <Percent className="h-4 w-4 text-linear-text-tertiary" />
-                <span className="text-xs text-linear-text-secondary">Body Fat</span>
+            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <Percent className="h-4 w-4 text-linear-text-tertiary" />
+                  <span className="text-xs text-linear-text-secondary">Body Fat</span>
+                </div>
                 {displayValues?.isInferred && (
                   <TooltipProvider>
                     <Tooltip>
@@ -247,35 +253,63 @@ const ProfilePanel = ({
                   </TooltipProvider>
                 )}
               </div>
-              <div className="text-3xl font-bold text-linear-text">
-                {displayValues?.bodyFatPercentage ? `${displayValues.bodyFatPercentage.toFixed(1)}%` : '--'}
-              </div>
-              <div className="text-xs text-linear-text-tertiary mt-0.5">
-                {bodyFatCategory || 'Needs data'}
+              <div className="mt-2">
+                <div className="flex items-baseline gap-1">
+                  <span className="text-3xl font-bold text-linear-text">
+                    {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}
+                  </span>
+                  <span className="text-sm text-linear-text-tertiary">%</span>
+                </div>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div className="text-xs text-linear-text-tertiary mt-1 cursor-help">
+                        {bodyFatCategory ? (
+                          bodyFatCategory === 'obese' ? 'Above Recommended' : bodyFatCategory
+                        ) : 'Needs data'}
+                      </div>
+                    </TooltipTrigger>
+                    {bodyFatCategory === 'obese' && (
+                      <TooltipContent>
+                        <p className="text-xs">This falls within the clinical 'obese' classification per ACSM guidelines.</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
               </div>
             </div>
 
             {/* Lean Mass */}
-            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
-              <div className="flex items-center gap-2 mb-2">
-                <Dumbbell className="h-4 w-4 text-linear-text-tertiary" />
-                <span className="text-xs text-linear-text-secondary">Lean Mass</span>
+            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <Dumbbell className="h-4 w-4 text-linear-text-tertiary" />
+                  <span className="text-xs text-linear-text-secondary">Lean Mass</span>
+                </div>
               </div>
-              <div className="text-3xl font-bold text-linear-text">
-                {displayValues?.weight && displayValues?.bodyFatPercentage 
-                  ? (displayValues.weight * (1 - displayValues.bodyFatPercentage / 100)).toFixed(1)
-                  : <span className="text-2xl text-linear-text-tertiary">--</span>}
-              </div>
-              <div className="text-xs text-linear-text-tertiary mt-0.5">
-                {user?.settings?.units?.weight || 'lbs'}
+              <div className="mt-2 flex items-baseline gap-1">
+                {displayValues?.weight && displayValues?.bodyFatPercentage ? (
+                  <>
+                    <span className="text-3xl font-bold text-linear-text">
+                      {(displayValues.weight * (1 - displayValues.bodyFatPercentage / 100)).toFixed(1)}
+                    </span>
+                    <span className="text-sm text-linear-text-tertiary">
+                      {user?.settings?.units?.weight || 'lbs'}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-2xl text-linear-text-tertiary">--</span>
+                )}
               </div>
             </div>
 
             {/* FFMI */}
-            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
-              <div className="flex items-center gap-2 mb-2">
-                <Target className="h-4 w-4 text-linear-text-tertiary" />
-                <span className="text-xs text-linear-text-secondary">FFMI</span>
+            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-2">
+                  <Target className="h-4 w-4 text-linear-text-tertiary" />
+                  <span className="text-xs text-linear-text-secondary">FFMI</span>
+                </div>
                 {displayValues?.isInferred && (
                   <TooltipProvider>
                     <Tooltip>
@@ -291,15 +325,22 @@ const ProfilePanel = ({
                   </TooltipProvider>
                 )}
               </div>
-              <div className="text-3xl font-bold text-linear-text">
-                {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
-                  ? calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)
-                  : <span className="text-2xl text-linear-text-tertiary">--</span>}
-              </div>
-              <div className="text-xs text-linear-text-tertiary mt-0.5">
-                {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
-                  ? calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')
-                  : 'Needs more data'}
+              <div className="mt-2">
+                {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
+                  <>
+                    <div className="text-3xl font-bold text-linear-text">
+                      {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)}
+                    </div>
+                    <div className="text-xs text-linear-text-tertiary mt-1">
+                      {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="text-2xl text-linear-text-tertiary">--</div>
+                    <div className="text-xs text-linear-text-tertiary mt-1">Needs more data</div>
+                  </>
+                )}
               </div>
             </div>
           </div>
