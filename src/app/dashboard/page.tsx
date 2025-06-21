@@ -198,26 +198,27 @@ const ProfilePanel = ({
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-linear-text-secondary uppercase tracking-wider">Current Stats</h3>
           
-          {/* Weight */}
-          <div className="flex items-center justify-between py-3 border-b border-linear-border">
-            <div className="flex items-center gap-3">
-              <Scale className="h-5 w-5 text-linear-text-tertiary" />
-              <span className="text-linear-text">Weight</span>
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Weight */}
+            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Scale className="h-4 w-4 text-linear-text-tertiary" />
+                <span className="text-xs text-linear-text-secondary">Weight</span>
+              </div>
+              <div className="text-2xl font-semibold text-linear-text">
+                {displayValues?.weight?.toFixed(1) || '--'}
+              </div>
+              <div className="text-xs text-linear-text-tertiary mt-0.5">
+                {user?.settings?.units?.weight || 'lbs'}
+              </div>
             </div>
-            <span className="font-medium text-linear-text">{formattedWeight}</span>
-          </div>
 
-          {/* Body Fat */}
-          <div className="flex items-center justify-between py-3 border-b border-linear-border">
-            <div className="flex items-center gap-3">
-              <Percent className="h-5 w-5 text-linear-text-tertiary" />
-              <span className="text-linear-text">Body Fat</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-1">
-                <span className="font-medium text-linear-text">
-                  {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}%
-                </span>
+            {/* Body Fat */}
+            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Percent className="h-4 w-4 text-linear-text-tertiary" />
+                <span className="text-xs text-linear-text-secondary">Body Fat</span>
                 {displayValues?.isInferred && (
                   <TooltipProvider>
                     <Tooltip>
@@ -226,45 +227,41 @@ const ProfilePanel = ({
                       </TooltipTrigger>
                       <TooltipContent>
                         <p className="text-xs">
-                          Interpolated value ({displayValues.confidenceLevel} confidence)
+                          Interpolated ({displayValues.confidenceLevel})
                         </p>
                       </TooltipContent>
                     </Tooltip>
                   </TooltipProvider>
                 )}
               </div>
-              {bodyFatCategory && (
-                <Badge variant="secondary" className="text-xs">
-                  {bodyFatCategory}
-                </Badge>
-              )}
-            </div>
-          </div>
-
-          {/* Lean Mass */}
-          <div className="flex items-center justify-between py-3 border-b border-linear-border">
-            <div className="flex items-center gap-3">
-              <Dumbbell className="h-5 w-5 text-linear-text-tertiary" />
-              <span className="text-linear-text">Lean Mass</span>
-            </div>
-            <span className="font-medium text-linear-text">{formattedLeanBodyMass}</span>
-          </div>
-
-          {/* FFMI */}
-          {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height && (
-            <div className="flex items-center justify-between py-3 border-b border-linear-border">
-              <div className="flex items-center gap-3">
-                <Target className="h-5 w-5 text-linear-text-tertiary" />
-                <span className="text-linear-text">FFMI</span>
+              <div className="text-2xl font-semibold text-linear-text">
+                {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}%
               </div>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-linear-text">
-                  {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi}
-                </span>
-                <Badge variant="secondary" className="text-xs">
-                  {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')}
-                </Badge>
-                {displayValues.isInferred && (
+              <div className="text-xs text-linear-text-tertiary mt-0.5">
+                {bodyFatCategory || 'No data'}
+              </div>
+            </div>
+
+            {/* Lean Mass */}
+            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Dumbbell className="h-4 w-4 text-linear-text-tertiary" />
+                <span className="text-xs text-linear-text-secondary">Lean Mass</span>
+              </div>
+              <div className="text-2xl font-semibold text-linear-text">
+                {displayValues?.leanBodyMass?.toFixed(1) || '--'}
+              </div>
+              <div className="text-xs text-linear-text-tertiary mt-0.5">
+                {user?.settings?.units?.weight || 'lbs'}
+              </div>
+            </div>
+
+            {/* FFMI */}
+            <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Target className="h-4 w-4 text-linear-text-tertiary" />
+                <span className="text-xs text-linear-text-secondary">FFMI</span>
+                {displayValues?.isInferred && (
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger>
@@ -279,8 +276,18 @@ const ProfilePanel = ({
                   </TooltipProvider>
                 )}
               </div>
+              <div className="text-2xl font-semibold text-linear-text">
+                {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
+                  ? calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi
+                  : '--'}
+              </div>
+              <div className="text-xs text-linear-text-tertiary mt-0.5">
+                {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
+                  ? calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')
+                  : 'No data'}
+              </div>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Goals Progress */}
