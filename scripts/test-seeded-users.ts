@@ -8,15 +8,15 @@ import { format } from 'date-fns'
 dotenv.config({ path: '.env.local' })
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 
-if (!supabaseUrl || !supabaseServiceKey) {
+if (!supabaseUrl || !supabaseAnonKey) {
   console.error('❌ Missing required environment variables')
-  console.error('Make sure NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are set')
+  console.error('Make sure NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY are set')
   process.exit(1)
 }
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey, {
+const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     autoRefreshToken: false,
     persistSession: false
@@ -27,13 +27,10 @@ async function testSeededUsers() {
   console.log('🔍 Testing seeded users...\n')
 
   try {
-    // Get all test users
+    // Get all users from profiles table
     const { data: users, error: usersError } = await supabase
-      .from('user_profiles')
-      .select(`
-        *,
-        auth_users:user_id(email)
-      `)
+      .from('profiles')
+      .select('*')
       .order('created_at', { ascending: true })
 
     if (usersError) {
@@ -50,19 +47,36 @@ async function testSeededUsers() {
 
     // Display each user with their journey
     for (const user of users) {
-      console.log(`👤 ${user.full_name} (@${user.username})`)
-      console.log(`   Email: ${user.auth_users?.email || 'N/A'}`)
-      console.log(`   Gender: ${user.gender}`)
-      console.log(`   Age: ${calculateAge(user.date_of_birth)} years`)
-      console.log(`   Height: ${formatHeight(user.height, user.height_unit)}`)
-      console.log(`   Activity: ${user.activity_level.replace('_', ' ')}`)
-      console.log(`   Bio: ${user.bio}`)
+      console.log(`👤 ${user.full_name || 'No name'} (@${user.username || 'no-username'})`)
+      console.log(`   Email: ${user.email}`)
+      console.log(`   Gender: ${user.gender || 'Not set'}`)
+      console.log(`   Age: ${user.date_of_birth ? calculateAge(user.date_of_birth) + ' years' : 'Not set'}`)
+      console.log(`   Height: ${user.height ? formatHeight(user.height, user.height_unit) : 'Not set'}`)
+      console.log(`   Activity: ${user.activity_level ? user.activity_level.replace('_', ' ') : 'Not set'}`)
+      console.log(`   Bio: ${user.bio || 'No bio'}`)
+      
+      // Display goals
+      if (user.goal_body_fat_percentage || user.goal_weight) {
+        console.log(`\n   🎯 Goals:`)
+        if (user.goal_weight) {
+          console.log(`   Weight: ${formatWeight(user.goal_weight, user.goal_weight_unit || 'kg')}`)
+        }
+        if (user.goal_body_fat_percentage) {
+          console.log(`   Body Fat: ${user.goal_body_fat_percentage}%`)
+        }
+        if (user.goal_ffmi) {
+          console.log(`   FFMI: ${user.goal_ffmi}`)
+        }
+        if (user.goal_waist_to_hip_ratio) {
+          console.log(`   WHR: ${user.goal_waist_to_hip_ratio}`)
+        }
+      }
 
       // Get their body metrics
       const { data: metrics, error: metricsError } = await supabase
         .from('body_metrics')
         .select('*')
-        .eq('user_id', user.user_id)
+        .eq('user_id', user.id)
         .order('date', { ascending: true })
 
       if (metricsError) {
@@ -86,11 +100,24 @@ async function testSeededUsers() {
         }
       }
 
+      // Check for progress photos
+      const { data: photos, error: photosError } = await supabase
+        .from('progress_photos')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false })
+      
+      if (!photosError && photos && photos.length > 0) {
+        console.log(`   📸 Progress photos: ${photos.length} photos`)
+        const angles = [...new Set(photos.map(p => p.angle))].join(', ')
+        console.log(`   Angles: ${angles}`)
+      }
+
       // Check for daily metrics (steps)
       const { data: dailyMetrics, error: dailyError } = await supabase
         .from('daily_metrics')
         .select('*')
-        .eq('user_id', user.user_id)
+        .eq('user_id', user.id)
         .order('date', { ascending: false })
         .limit(7)
 

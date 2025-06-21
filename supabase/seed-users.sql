@@ -5,7 +5,7 @@
 DELETE FROM body_metrics WHERE user_id IN (
   SELECT id FROM auth.users WHERE email LIKE '%@example.com'
 );
-DELETE FROM user_profiles WHERE user_id IN (
+DELETE FROM profiles WHERE id IN (
   SELECT id FROM auth.users WHERE email LIKE '%@example.com'
 );
 
@@ -37,8 +37,8 @@ BEGIN
   ) RETURNING id INTO user_id;
 
   -- Create user profile
-  INSERT INTO user_profiles (
-    user_id,
+  INSERT INTO profiles (
+    id,
     full_name,
     username,
     gender,
@@ -53,7 +53,7 @@ BEGIN
     goal_waist_to_hip_ratio,
     goal_waist_to_height_ratio
   ) VALUES (
-    user_id,
+    id,
     'Sarah Chen',
     'sarahc',
     'female',
@@ -107,7 +107,7 @@ BEGIN
   ) RETURNING id INTO user_id;
 
   INSERT INTO user_profiles (
-    user_id,
+    id,
     full_name,
     username,
     gender,
@@ -123,7 +123,7 @@ BEGIN
     goal_waist_to_hip_ratio,
     goal_waist_to_height_ratio
   ) VALUES (
-    user_id,
+    id,
     'Marcus Johnson',
     'marcusj',
     'male',
@@ -175,7 +175,7 @@ BEGIN
   ) RETURNING id INTO user_id;
 
   INSERT INTO user_profiles (
-    user_id,
+    id,
     full_name,
     username,
     gender,
@@ -185,7 +185,7 @@ BEGIN
     activity_level,
     bio
   ) VALUES (
-    user_id,
+    id,
     'Emily Rodriguez',
     'emilyr',
     'female',
@@ -230,7 +230,7 @@ BEGIN
   ) RETURNING id INTO user_id;
 
   INSERT INTO user_profiles (
-    user_id,
+    id,
     full_name,
     username,
     gender,
@@ -240,7 +240,7 @@ BEGIN
     activity_level,
     bio
   ) VALUES (
-    user_id,
+    id,
     'David Kim',
     'davidk',
     'male',
@@ -286,7 +286,7 @@ BEGIN
   ) RETURNING id INTO user_id;
 
   INSERT INTO user_profiles (
-    user_id,
+    id,
     full_name,
     username,
     gender,
@@ -296,7 +296,7 @@ BEGIN
     activity_level,
     bio
   ) VALUES (
-    user_id,
+    id,
     'Jessica Thompson',
     'jessicat',
     'female',

@@ -21,7 +21,7 @@
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:update": "playwright test --update-snapshots",
-    "seed": "./scripts/seed-database.sh",
+    "seed": "tsx scripts/seed-database.ts",
     "test:seed": "tsx scripts/test-seeded-users.ts"
   },
   "dependencies": {

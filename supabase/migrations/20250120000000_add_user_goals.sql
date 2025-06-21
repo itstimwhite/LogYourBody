@@ -1,5 +1,9 @@
--- Add goal fields to user_profiles table
-ALTER TABLE user_profiles
+-- Add missing fields and goal fields to profiles table
+ALTER TABLE profiles
+ADD COLUMN IF NOT EXISTS gender VARCHAR(10),
+ADD COLUMN IF NOT EXISTS height DECIMAL(6,2),
+ADD COLUMN IF NOT EXISTS height_unit VARCHAR(10) DEFAULT 'cm',
+ADD COLUMN IF NOT EXISTS activity_level VARCHAR(50),
 ADD COLUMN IF NOT EXISTS goal_body_fat_percentage DECIMAL(5,2),
 ADD COLUMN IF NOT EXISTS goal_ffmi DECIMAL(5,2),
 ADD COLUMN IF NOT EXISTS goal_waist_to_hip_ratio DECIMAL(5,3),
@@ -8,10 +12,10 @@ ADD COLUMN IF NOT EXISTS goal_weight DECIMAL(6,2),
 ADD COLUMN IF NOT EXISTS goal_weight_unit VARCHAR(10) DEFAULT 'kg';
 
 -- Add comments to document the research-based defaults
-COMMENT ON COLUMN user_profiles.goal_body_fat_percentage IS 'Target body fat percentage. Research suggests: Males 10-12%, Females 18-22% (Dixson 2010, Tovée 2002)';
-COMMENT ON COLUMN user_profiles.goal_ffmi IS 'Target Fat-Free Mass Index. Research suggests: Males ~22 (Kouri 1995)';
-COMMENT ON COLUMN user_profiles.goal_waist_to_hip_ratio IS 'Target waist-to-hip ratio. Research suggests: Males ~0.9, Females 0.7 (Singh 1993)';
-COMMENT ON COLUMN user_profiles.goal_waist_to_height_ratio IS 'Target waist-to-height ratio. Research suggests: Males 0.45-0.50, Females 0.42-0.48 (Brooks 2010)';
+COMMENT ON COLUMN profiles.goal_body_fat_percentage IS 'Target body fat percentage. Research suggests: Males 10-12%, Females 18-22% (Dixson 2010, Tovée 2002)';
+COMMENT ON COLUMN profiles.goal_ffmi IS 'Target Fat-Free Mass Index. Research suggests: Males ~22 (Kouri 1995)';
+COMMENT ON COLUMN profiles.goal_waist_to_hip_ratio IS 'Target waist-to-hip ratio. Research suggests: Males ~0.9, Females 0.7 (Singh 1993)';
+COMMENT ON COLUMN profiles.goal_waist_to_height_ratio IS 'Target waist-to-height ratio. Research suggests: Males 0.45-0.50, Females 0.42-0.48 (Brooks 2010)';
 
 -- Create a function to set default goals based on gender
 CREATE OR REPLACE FUNCTION set_default_goals()
@@ -36,14 +40,14 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Create trigger to automatically set default goals
-DROP TRIGGER IF EXISTS set_default_goals_trigger ON user_profiles;
+DROP TRIGGER IF EXISTS set_default_goals_trigger ON profiles;
 CREATE TRIGGER set_default_goals_trigger
-BEFORE INSERT OR UPDATE ON user_profiles
+BEFORE INSERT OR UPDATE ON profiles
 FOR EACH ROW
 EXECUTE FUNCTION set_default_goals();
 
 -- Update existing users with default goals where not set
-UPDATE user_profiles
+UPDATE profiles
 SET 
   goal_body_fat_percentage = CASE 
     WHEN gender = 'male' THEN COALESCE(goal_body_fat_percentage, 11.0)

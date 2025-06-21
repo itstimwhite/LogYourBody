@@ -9,16 +9,10 @@ echo "⚠️  WARNING: This will delete existing test users (emails ending with 
 echo "Press Ctrl+C to cancel, or Enter to continue..."
 read
 
-# Check if we have the required environment variables
-if [ -z "$DATABASE_URL" ]; then
-  echo "❌ DATABASE_URL not found. Loading from .env.local..."
-  export $(cat .env.local | grep DATABASE_URL | xargs)
-fi
-
-if [ -z "$DATABASE_URL" ]; then
-  echo "❌ DATABASE_URL still not found. Please set it in your environment or .env.local"
-  exit 1
-fi
+# Use Supabase connection string
+SUPABASE_PROJECT_ID="ihivupqpctpkrgqgxfjf"
+SUPABASE_PASSWORD="zzbTSr5i2y9QBXPu"
+DATABASE_URL="postgresql://postgres:${SUPABASE_PASSWORD}@db.${SUPABASE_PROJECT_ID}.supabase.co:5432/postgres"
 
 # Run the seed script
 echo "🔄 Running seed script..."
