@@ -34,7 +34,7 @@ export function MobileNavbar() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-linear-bg border-t border-linear-border md:hidden">
-      <div className="flex items-center justify-around h-16 px-4">
+      <div className="flex items-center justify-around h-14 px-4">
         {navItems.map((item) => {
           const Icon = item.icon
           const isActive = pathname === item.href
@@ -45,37 +45,23 @@ export function MobileNavbar() {
               key={item.href}
               onClick={() => router.push(item.href)}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full relative",
+                "flex items-center justify-center flex-1 h-full relative",
                 "transition-all duration-200",
                 isCenter && "mx-2"
               )}
+              aria-label={item.label}
             >
               {isCenter ? (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="w-12 h-12 bg-linear-purple rounded-full flex items-center justify-center shadow-lg mb-1">
-                    <Icon className="h-5 w-5 text-white" />
-                  </div>
-                  <span className="text-xs text-linear-purple">
-                    Add
-                  </span>
+                <div className="w-12 h-12 bg-linear-purple rounded-full flex items-center justify-center shadow-lg">
+                  <Icon className="h-5 w-5 text-white" />
                 </div>
               ) : (
-                <>
-                  <Icon
-                    className={cn(
-                      "h-5 w-5 mb-1 transition-colors",
-                      isActive ? "text-linear-purple" : "text-linear-text-secondary"
-                    )}
-                  />
-                  <span
-                    className={cn(
-                      "text-xs transition-colors",
-                      isActive ? "text-linear-purple" : "text-linear-text-secondary"
-                    )}
-                  >
-                    {item.label}
-                  </span>
-                </>
+                <Icon
+                  className={cn(
+                    "h-6 w-6 transition-colors",
+                    isActive ? "text-linear-purple" : "text-linear-text-secondary"
+                  )}
+                />
               )}
             </button>
           )
