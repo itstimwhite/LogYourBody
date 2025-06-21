@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState, useCallback } from 'react'
 import { Button } from '@/components/ui/button'
 import { debounce } from 'lodash'
+import { getProfile, updateProfile } from '@/lib/supabase/profile'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -81,6 +82,28 @@ export default function ProfileSettingsPage() {
     }
   }, [user, loading, router])
 
+  // Load profile data
+  useEffect(() => {
+    if (user) {
+      getProfile(user.id).then((profileData) => {
+        if (profileData) {
+          setProfile({
+            email: profileData.email,
+            full_name: profileData.full_name || '',
+            username: profileData.username || '',
+            height: profileData.height || 71,
+            height_unit: profileData.height_unit || 'ft',
+            gender: profileData.gender || 'male',
+            date_of_birth: profileData.date_of_birth || '',
+            bio: profileData.bio || '',
+            activity_level: profileData.activity_level || 'moderately_active',
+            avatar_url: profileData.avatar_url
+          })
+        }
+      })
+    }
+  }, [user])
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-linear-bg">
@@ -95,11 +118,11 @@ export default function ProfileSettingsPage() {
 
   // Auto-save function
   const saveProfile = useCallback(async (profileData: Partial<UserProfile>) => {
+    if (!user) return
+    
     setIsSaving(true)
     try {
-      // TODO: Replace with actual API call
-      await new Promise(resolve => setTimeout(resolve, 800))
-      
+      await updateProfile(user.id, profileData)
       setLastSaved(new Date())
       
       // Show subtle feedback instead of toast for auto-save
@@ -113,7 +136,7 @@ export default function ProfileSettingsPage() {
     } finally {
       setIsSaving(false)
     }
-  }, [])
+  }, [user])
 
   // Debounced auto-save
   const debouncedSave = useCallback(
@@ -123,7 +146,7 @@ export default function ProfileSettingsPage() {
     [saveProfile]
   )
 
-  const updateProfile = (updates: Partial<UserProfile>) => {
+  const updateLocalProfile = (updates: Partial<UserProfile>) => {
     const newProfile = { ...profile, ...updates }
     setProfile(newProfile)
     debouncedSave(newProfile)
@@ -241,7 +264,7 @@ export default function ProfileSettingsPage() {
               <Input
                 id="fullName"
                 value={profile.full_name || ''}
-                onChange={(e) => updateProfile({ full_name: e.target.value })}
+                onChange={(e) => updateLocalProfile({ full_name: e.target.value })}
                 className="bg-linear-bg border-linear-border text-linear-text"
                 placeholder="John Doe"
               />
@@ -252,7 +275,7 @@ export default function ProfileSettingsPage() {
               <Input
                 id="username"
                 value={profile.username || ''}
-                onChange={(e) => updateProfile({ username: e.target.value })}
+                onChange={(e) => updateLocalProfile({ username: e.target.value })}
                 className="bg-linear-bg border-linear-border text-linear-text"
                 placeholder="johndoe"
               />
@@ -263,7 +286,7 @@ export default function ProfileSettingsPage() {
               <textarea
                 id="bio"
                 value={profile.bio || ''}
-                onChange={(e) => updateProfile({ bio: e.target.value })}
+                onChange={(e) => updateLocalProfile({ bio: e.target.value })}
                 className="w-full px-3 py-2 bg-linear-bg border border-linear-border text-linear-text rounded-md resize-none"
                 placeholder="Tell us about yourself..."
                 rows={3}
@@ -288,7 +311,7 @@ export default function ProfileSettingsPage() {
                 type="single" 
                 value={profile.gender || 'male'}
                 onValueChange={(value) => {
-                  if (value) updateProfile({ gender: value as 'male' | 'female' })
+                  if (value) updateLocalProfile({ gender: value as 'male' | 'female' })
                 }}
                 className="justify-start"
               >
@@ -356,7 +379,7 @@ export default function ProfileSettingsPage() {
               <Label htmlFor="activityLevel" className="text-linear-text">Activity Level</Label>
               <Select 
                 value={profile.activity_level || ''} 
-                onValueChange={(value) => updateProfile({ activity_level: value as UserProfile['activity_level'] })}
+                onValueChange={(value) => updateLocalProfile({ activity_level: value as UserProfile['activity_level'] })}
               >
                 <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text">
                   <SelectValue placeholder="Select activity level" />
@@ -385,7 +408,7 @@ export default function ProfileSettingsPage() {
               date={dateOfBirthDate}
               onDateChange={(date) => {
                 setDateOfBirthDate(date)
-                updateProfile({ date_of_birth: format(date, 'yyyy-MM-dd') })
+                updateLocalProfile({ date_of_birth: format(date, 'yyyy-MM-dd') })
               }}
               className="bg-linear-bg rounded-lg"
             />
@@ -427,12 +450,12 @@ export default function ProfileSettingsPage() {
                     if (newUnit === 'ft' && profile.height_unit === 'cm') {
                       // Converting from cm to inches
                       const totalInches = Math.round(heightInCm / 2.54)
-                      updateProfile({ height: totalInches, height_unit: newUnit })
+                      updateLocalProfile({ height: totalInches, height_unit: newUnit })
                     } else if (newUnit === 'cm' && profile.height_unit === 'ft') {
                       // Converting from inches to cm
-                      updateProfile({ height: heightInCm, height_unit: newUnit })
+                      updateLocalProfile({ height: heightInCm, height_unit: newUnit })
                     } else {
-                      updateProfile({ height_unit: newUnit })
+                      updateLocalProfile({ height_unit: newUnit })
                     }
                   }
                 }}
@@ -461,9 +484,9 @@ export default function ProfileSettingsPage() {
                 // Update profile height based on unit
                 if (profile.height_unit === 'ft') {
                   const totalInches = Math.round(newHeightInCm / 2.54)
-                  updateProfile({ height: totalInches })
+                  updateLocalProfile({ height: totalInches })
                 } else {
-                  updateProfile({ height: newHeightInCm })
+                  updateLocalProfile({ height: newHeightInCm })
                 }
               }}
               className="bg-linear-bg rounded-lg"

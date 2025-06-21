@@ -27,6 +27,9 @@ import { getAvatarUrl } from '@/utils/avatar-utils'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import { useNetworkStatus } from '@/hooks/use-network-status'
+import { ensurePublicUrl } from '@/utils/storage-utils'
+import { getProfile } from '@/lib/supabase/profile'
+import { createClient } from '@/lib/supabase/client'
 
 // Mock data for demonstration
 const mockMetrics: BodyMetrics = {
@@ -137,7 +140,7 @@ const ProfilePanel = ({
         {/* User Info */}
         <div>
           <h2 className="text-2xl font-bold text-linear-text mb-1">
-            {user?.full_name || 'User'}
+            {user?.full_name || user?.email?.split('@')[0] || 'User'}
           </h2>
           <p className="text-sm text-linear-text-secondary">{user?.email}</p>
         </div>
@@ -286,9 +289,10 @@ export default function DashboardPage() {
   const isOnline = useNetworkStatus()
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [selectedDateIndex, setSelectedDateIndex] = useState(0)
-  const [latestMetrics] = useState<BodyMetrics | null>(mockMetrics)
-  const [profile] = useState<UserProfile | null>(mockProfile)
-  const [metricsHistory] = useState<BodyMetrics[]>([mockMetrics])
+  const [latestMetrics, setLatestMetrics] = useState<BodyMetrics | null>(null)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [metricsHistory, setMetricsHistory] = useState<BodyMetrics[]>([])
+  const [profileLoading, setProfileLoading] = useState(true)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -296,7 +300,39 @@ export default function DashboardPage() {
     }
   }, [user, loading, router])
 
-  if (loading) {
+  // Load profile data
+  useEffect(() => {
+    if (user) {
+      setProfileLoading(true)
+      getProfile(user.id).then((profileData) => {
+        if (profileData) {
+          setProfile(profileData)
+        }
+        setProfileLoading(false)
+      }).catch((error) => {
+        console.error('Error loading profile:', error)
+        setProfileLoading(false)
+      })
+
+      // Load metrics data
+      const supabase = createClient()
+      supabase
+        .from('body_metrics')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false })
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Error loading metrics:', error)
+          } else if (data && data.length > 0) {
+            setLatestMetrics(data[0])
+            setMetricsHistory(data.reverse()) // Reverse to have oldest first for timeline
+          }
+        })
+    }
+  }, [user])
+
+  if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-linear-bg">
         <Loader2 className="h-8 w-8 animate-spin text-linear-text-secondary" aria-label="Loading" />
@@ -380,10 +416,9 @@ export default function DashboardPage() {
         {/* Avatar/Photo Section with Tabs - 2/3 on desktop */}
         <div className="relative min-h-0 flex-[1.5] md:w-2/3 md:flex-1">
           <Tabs value={activeTabIndex.toString()} onValueChange={(v) => setActiveTabIndex(parseInt(v))} className="h-full flex flex-col">
-            <TabsList className="grid w-full grid-cols-3 bg-linear-card border-b border-linear-border rounded-none">
+            <TabsList className="grid w-full grid-cols-2 bg-linear-card border-b border-linear-border rounded-none">
               <TabsTrigger value="0" className="data-[state=active]:bg-linear-border/50">Avatar</TabsTrigger>
               <TabsTrigger value="1" className="data-[state=active]:bg-linear-border/50">Photo</TabsTrigger>
-              <TabsTrigger value="2" className="data-[state=active]:bg-linear-border/50">Gallery</TabsTrigger>
             </TabsList>
             
             <TabsContent value="0" className="flex-1 m-0">
@@ -411,52 +446,12 @@ export default function DashboardPage() {
                   gender={profile?.gender}
                   bodyFatPercentage={currentMetrics?.body_fat_percentage}
                   showPhoto={true}
-                  profileImage={currentMetrics?.photo_url}
+                  profileImage={currentMetrics?.photo_url ? ensurePublicUrl(currentMetrics.photo_url) : undefined}
                   className="h-full w-full"
                 />
               </Suspense>
             </TabsContent>
             
-            <TabsContent value="2" className="flex-1 m-0 overflow-y-auto">
-              <div className="p-6">
-                <h3 className="text-lg font-medium text-linear-text mb-4">Progress Photos</h3>
-                {metricsHistory.filter(m => m.photo_url).length > 0 ? (
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {metricsHistory.filter(m => m.photo_url).map((metric) => (
-                      <div key={metric.id} className="space-y-2">
-                        <div className="aspect-[3/4] relative bg-linear-border rounded-lg overflow-hidden">
-                          <Image
-                            src={metric.photo_url!}
-                            alt={`Progress photo from ${format(new Date(metric.date), 'PP')}`}
-                            fill
-                            className="object-cover"
-                          />
-                        </div>
-                        <div className="text-center">
-                          <p className="text-xs text-linear-text-secondary">
-                            {format(new Date(metric.date), 'PP')}
-                          </p>
-                          <p className="text-xs font-medium text-linear-text">
-                            {metric.weight} {metric.weight_unit} • {metric.body_fat_percentage}%
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <Camera className="h-12 w-12 text-linear-text-tertiary mx-auto mb-4" />
-                    <p className="text-linear-text-secondary mb-4">
-                      No progress photos yet
-                    </p>
-                    <Button variant="outline" onClick={() => router.push('/photos')}>
-                      <Camera className="h-4 w-4 mr-2" />
-                      Add Your First Photo
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </TabsContent>
           </Tabs>
 
           {/* Mobile Action Buttons - Floating */}
