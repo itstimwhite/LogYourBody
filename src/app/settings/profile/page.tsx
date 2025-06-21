@@ -11,7 +11,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Separator } from '@/components/ui/separator'
 import { toast } from '@/hooks/use-toast'
 import { 
   Loader2, 
@@ -275,71 +274,75 @@ export default function ProfileSettingsPage() {
               </div>
             </div>
 
-            <Separator className="bg-linear-border" />
-
-            {/* Static Physical Attributes */}
-            <div className="space-y-4">
-              {/* Biological Sex */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-linear-text">Biological Sex</Label>
-                  <p className="text-sm text-linear-text-secondary">Used for body composition calculations</p>
-                </div>
-                <ToggleGroup 
-                  type="single" 
-                  value={profile.gender || 'male'}
-                  onValueChange={(value) => {
-                    if (value) updateLocalProfile({ gender: value as 'male' | 'female' })
-                  }}
+            {/* Biological Sex - inline with inputs */}
+            <div className="space-y-2">
+              <Label className="text-linear-text">Biological Sex</Label>
+              <ToggleGroup 
+                type="single" 
+                value={profile.gender || 'male'}
+                onValueChange={(value) => {
+                  if (value) updateLocalProfile({ gender: value as 'male' | 'female' })
+                }}
+                className="justify-start"
+              >
+                <ToggleGroupItem 
+                  value="male" 
+                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
                 >
-                  <ToggleGroupItem 
-                    value="male" 
-                    className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
-                  >
-                    Male
-                  </ToggleGroupItem>
-                  <ToggleGroupItem 
-                    value="female"
-                    className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
-                  >
-                    Female
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              </div>
-
-              {/* Date of Birth */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-linear-text">Date of Birth</Label>
-                  <p className="text-sm text-linear-text-secondary">
-                    {formatDOB()}
-                    {calculateAge() && ` • ${calculateAge()} years old`}
-                  </p>
-                </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowDOBModal(true)}
-                  className="border-linear-border text-linear-text hover:bg-linear-card"
+                  Male
+                </ToggleGroupItem>
+                <ToggleGroupItem 
+                  value="female"
+                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
                 >
-                  {profile.date_of_birth ? 'Change' : 'Set'}
-                </Button>
-              </div>
+                  Female
+                </ToggleGroupItem>
+              </ToggleGroup>
+            </div>
 
+            {/* Height and Age Row */}
+            <div className="grid grid-cols-2 gap-4">
               {/* Height */}
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
-                  <Label className="text-linear-text">Height</Label>
-                  <p className="text-sm text-linear-text-secondary">{formatHeight()}</p>
+              <div className="space-y-2">
+                <Label className="text-linear-text">Height</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={formatHeight()}
+                    readOnly
+                    className="bg-linear-bg border-linear-border text-linear-text cursor-pointer"
+                    onClick={() => setShowHeightModal(true)}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowHeightModal(true)}
+                    className="text-linear-text-secondary hover:text-linear-text"
+                  >
+                    <Ruler className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowHeightModal(true)}
-                  className="border-linear-border text-linear-text hover:bg-linear-card"
-                >
-                  {profile.height ? 'Change' : 'Set'}
-                </Button>
+              </div>
+
+              {/* Date of Birth / Age */}
+              <div className="space-y-2">
+                <Label className="text-linear-text">Age</Label>
+                <div className="flex items-center gap-2">
+                  <Input
+                    value={calculateAge() ? `${calculateAge()} years` : 'Not set'}
+                    readOnly
+                    className="bg-linear-bg border-linear-border text-linear-text cursor-pointer"
+                    onClick={() => setShowDOBModal(true)}
+                    title={formatDOB()}
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowDOBModal(true)}
+                    className="text-linear-text-secondary hover:text-linear-text"
+                  >
+                    <Calendar className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </div>
           </CardContent>
