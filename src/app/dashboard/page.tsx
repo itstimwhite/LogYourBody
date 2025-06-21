@@ -17,7 +17,8 @@ import {
   Plus,
   Settings,
   Percent,
-  Dumbbell
+  Dumbbell,
+  Upload
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { BodyMetrics, UserProfile } from '@/types/body-metrics'
@@ -347,8 +348,18 @@ export default function DashboardPage() {
           <Button
             size="icon"
             variant="ghost"
+            onClick={() => router.push('/import')}
+            className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
+            title="Bulk Import"
+          >
+            <Upload className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="ghost"
             onClick={() => router.push('/log')}
             className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
+            title="Log Metrics"
           >
             <Plus className="h-4 w-4" />
           </Button>
@@ -357,6 +368,7 @@ export default function DashboardPage() {
             variant="ghost"
             onClick={() => router.push('/settings')}
             className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
+            title="Settings"
           >
             <Settings className="h-4 w-4" />
           </Button>

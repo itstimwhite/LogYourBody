@@ -10,6 +10,9 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Progress } from '@/components/ui/progress'
 import { Separator } from '@/components/ui/separator'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { WeightWheelPicker, BodyFatWheelPicker } from '@/components/ui/weight-wheel-picker'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { toast } from '@/hooks/use-toast'
 import { 
   ArrowLeft, 
@@ -43,6 +46,8 @@ export default function LogWeightPage() {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState<Step>('weight')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [showWeightModal, setShowWeightModal] = useState(false)
+  const [showBodyFatModal, setShowBodyFatModal] = useState(false)
   
   // Form data
   const [formData, setFormData] = useState({
@@ -261,44 +266,65 @@ export default function LogWeightPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="weight" className="text-linear-text">Weight</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      id="weight"
-                      type="number"
-                      step="0.1"
-                      value={formData.weight}
-                      onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
-                      className="bg-linear-bg border-linear-border text-linear-text text-xl"
-                      placeholder="0.0"
-                      autoFocus
-                    />
-                    <Button
-                      variant={formData.weight_unit === 'kg' ? 'default' : 'outline'}
-                      onClick={() => setFormData(prev => ({ ...prev, weight_unit: 'kg' }))}
-                      className="w-20"
+              <CardContent className="space-y-6">
+                {/* Weight Display */}
+                <div className="text-center py-8">
+                  {formData.weight ? (
+                    <div>
+                      <div className="text-5xl font-bold text-linear-text mb-2">
+                        {formData.weight}
+                      </div>
+                      <div className="text-lg text-linear-text-secondary">
+                        {formData.weight_unit}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="text-2xl text-linear-text-secondary">
+                      Tap to set weight
+                    </div>
+                  )}
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="w-full h-16 text-lg"
+                    onClick={() => setShowWeightModal(true)}
+                  >
+                    <Scale className="h-5 w-5 mr-3" />
+                    {formData.weight ? 'Change Weight' : 'Set Weight'}
+                  </Button>
+
+                  {/* Unit Toggle */}
+                  <div className="flex justify-center">
+                    <ToggleGroup
+                      type="single"
+                      value={formData.weight_unit}
+                      onValueChange={(value) => {
+                        if (value) setFormData(prev => ({ ...prev, weight_unit: value as 'kg' | 'lbs' }))
+                      }}
                     >
-                      kg
-                    </Button>
-                    <Button
-                      variant={formData.weight_unit === 'lbs' ? 'default' : 'outline'}
-                      onClick={() => setFormData(prev => ({ ...prev, weight_unit: 'lbs' }))}
-                      className="w-20"
-                    >
-                      lbs
-                    </Button>
+                      <ToggleGroupItem value="kg" className="data-[state=on]:bg-linear-purple data-[state=on]:text-white">
+                        kg
+                      </ToggleGroupItem>
+                      <ToggleGroupItem value="lbs" className="data-[state=on]:bg-linear-purple data-[state=on]:text-white">
+                        lbs
+                      </ToggleGroupItem>
+                    </ToggleGroup>
                   </div>
                 </div>
                 
-                <div className="pt-4">
+                <Separator className="bg-linear-border" />
+                
+                <div className="pt-2">
                   <Button 
                     onClick={() => setCurrentStep('review')}
                     variant="ghost"
-                    className="text-linear-text-secondary"
+                    className="text-linear-text-secondary w-full"
                   >
-                    Just log weight (skip body fat)
+                    Skip body composition →
                   </Button>
                 </div>
               </CardContent>
@@ -716,6 +742,79 @@ export default function LogWeightPage() {
           </div>
         </Card>
       </main>
+
+      {/* Weight Modal */}
+      <Dialog open={showWeightModal} onOpenChange={setShowWeightModal}>
+        <DialogContent className="bg-linear-card border-linear-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-linear-text text-center">Set Weight</DialogTitle>
+          </DialogHeader>
+          <div className="py-8">
+            <WeightWheelPicker
+              weight={parseFloat(formData.weight) || 70}
+              unit={formData.weight_unit}
+              onWeightChange={(weight) => {
+                setFormData(prev => ({ ...prev, weight: weight.toFixed(1) }))
+              }}
+            />
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowWeightModal(false)}
+              className="flex-1 border-linear-border"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setShowWeightModal(false)
+                if (currentStep === 'weight' && formData.weight) {
+                  setCurrentStep('method')
+                }
+              }}
+              className="flex-1 bg-linear-purple hover:bg-linear-purple/80"
+              disabled={!formData.weight}
+            >
+              Continue
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Body Fat Modal */}
+      <Dialog open={showBodyFatModal} onOpenChange={setShowBodyFatModal}>
+        <DialogContent className="bg-linear-card border-linear-border max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-linear-text text-center">Set Body Fat %</DialogTitle>
+          </DialogHeader>
+          <div className="py-8">
+            <BodyFatWheelPicker
+              bodyFat={formData.body_fat_percentage || 20}
+              onBodyFatChange={(bf) => {
+                setFormData(prev => ({ ...prev, body_fat_percentage: bf }))
+              }}
+            />
+          </div>
+          <div className="flex gap-3">
+            <Button
+              variant="outline"
+              onClick={() => setShowBodyFatModal(false)}
+              className="flex-1 border-linear-border"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setShowBodyFatModal(false)
+              }}
+              className="flex-1 bg-linear-purple hover:bg-linear-purple/80"
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
