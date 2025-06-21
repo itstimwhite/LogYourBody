@@ -39,6 +39,10 @@ import { createClient } from '@/lib/supabase/client'
 import { getProfile } from '@/lib/supabase/profile'
 import Image from 'next/image'
 import { MobileNavbar } from '@/components/MobileNavbar'
+import dynamic from 'next/dynamic'
+import { useMediaQuery } from '@/hooks/use-media-query'
+
+const MobileLogPage = dynamic(() => import('./mobile-page'), { ssr: false })
 
 type Step = 'weight' | 'method' | 'measurements' | 'photo' | 'review'
 
@@ -398,8 +402,15 @@ export default function LogWeightPage() {
   const ffmiData = getFFMIData()
   const bodyComp = getBodyComposition()
 
+  const isMobile = useMediaQuery('(max-width: 768px)')
+
+  // Use mobile experience on small screens
+  if (isMobile) {
+    return <MobileLogPage />
+  }
+
   return (
-    <div className="min-h-screen bg-linear-bg pb-16 md:pb-0">
+    <div className="min-h-screen bg-linear-bg">
       {/* Header */}
       <header className="bg-linear-card shadow-sm border-b border-linear-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
@@ -1071,8 +1082,6 @@ export default function LogWeightPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Mobile Navigation Bar */}
-      <MobileNavbar />
     </div>
   )
 }

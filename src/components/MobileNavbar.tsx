@@ -8,6 +8,11 @@ export function MobileNavbar() {
   const pathname = usePathname()
   const router = useRouter()
 
+  // Don't show navbar on log page
+  if (pathname === '/log') {
+    return null
+  }
+
   const navItems = [
     {
       icon: Home,
