@@ -182,8 +182,8 @@ describe('DashboardPage', () => {
 
     render(<DashboardPage />)
     
-    await screen.findByRole('tab', { name: 'Avatar' })
-    expect(screen.getByRole('tab', { name: 'Avatar' })).toBeInTheDocument()
+    await screen.findByRole('tab', { name: 'Body Model' })
+    expect(screen.getByRole('tab', { name: 'Body Model' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: 'Photo' })).toBeInTheDocument()
   })
 
@@ -270,10 +270,10 @@ describe('DashboardPage', () => {
     render(<DashboardPage />)
     
     // Wait for tabs to load
-    await screen.findByRole('tab', { name: 'Avatar' })
+    await screen.findByRole('tab', { name: 'Body Model' })
     
     // Check initial state
-    const avatarTab = screen.getByRole('tab', { name: 'Avatar' })
+    const avatarTab = screen.getByRole('tab', { name: 'Body Model' })
     expect(avatarTab).toHaveAttribute('data-state', 'active')
     
     // Click photo tab

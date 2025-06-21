@@ -77,43 +77,69 @@ const AvatarDisplay = ({
   bodyFatPercentage, 
   showPhoto, 
   profileImage,
-  className 
+  className,
+  onAddPhoto 
 }: { 
   gender?: string
   bodyFatPercentage?: number
   showPhoto?: boolean
   profileImage?: string
   className?: string
+  onAddPhoto?: () => void
 }) => {
-  if (showPhoto && profileImage) {
-    return (
-      <div className={cn("relative flex items-center justify-center bg-linear-bg", className)}>
-        <Image 
-          src={profileImage} 
-          alt="Profile" 
-          fill
-          className="object-cover"
-        />
-      </div>
-    )
+  if (showPhoto) {
+    if (profileImage) {
+      return (
+        <div className={cn("relative flex items-center justify-center bg-linear-bg", className)}>
+          <Image 
+            src={profileImage} 
+            alt="Profile" 
+            fill
+            className="object-cover"
+          />
+        </div>
+      )
+    } else {
+      // No photo available - show add photo prompt
+      return (
+        <div className={cn("relative flex items-center justify-center bg-linear-bg", className)}>
+          <div className="text-center">
+            <Camera className="h-24 w-24 mx-auto mb-4 text-linear-text-tertiary" />
+            <p className="text-linear-text-secondary mb-4">No photo yet</p>
+            <Button 
+              variant="outline" 
+              className="border-linear-border"
+              onClick={onAddPhoto}
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Photo
+            </Button>
+          </div>
+        </div>
+      )
+    }
   }
 
   const avatarUrl = getAvatarUrl(gender as 'male' | 'female', bodyFatPercentage)
   
+  const [imageError, setImageError] = useState(false)
+
   return (
     <div className={cn("relative flex items-center justify-center bg-linear-bg p-8", className)}>
-      {avatarUrl ? (
+      {avatarUrl && !imageError ? (
         <Image
           src={avatarUrl}
           alt={`Body silhouette at ${bodyFatPercentage || 20}% body fat`}
           width={300}
           height={400}
           className="h-full w-auto max-h-[500px] object-contain"
+          onError={() => setImageError(true)}
         />
       ) : (
-        <div className="text-center text-linear-text-secondary">
-          <User className="h-24 w-24 mx-auto mb-4" />
-          <p>No avatar available</p>
+        <div className="text-center">
+          <User className="h-24 w-24 mx-auto mb-4 text-linear-text-tertiary" />
+          <p className="text-linear-text-secondary">Body model unavailable</p>
+          <p className="text-xs text-linear-text-tertiary mt-1">Add measurements to generate</p>
         </div>
       )}
     </div>
@@ -172,31 +198,20 @@ const ProfilePanel = ({
           </div>
           
           {/* Right side - Metrics */}
-          <div className="flex gap-4">
-            {age && (
-              <div className="text-right">
-                <div className="text-lg font-semibold text-linear-text">{age}</div>
-                <div className="text-xs text-linear-text-tertiary">years</div>
-              </div>
-            )}
-            {user?.height && (
-              <div className="text-right">
-                <div className="text-lg font-semibold text-linear-text">{formattedHeight.split(' ')[0]}</div>
-                <div className="text-xs text-linear-text-tertiary">{formattedHeight.split(' ')[1]}</div>
-              </div>
-            )}
-            {user?.gender && (
-              <div className="text-right">
-                <div className="text-lg font-semibold text-linear-text capitalize">{user.gender === 'male' ? 'M' : 'F'}</div>
-                <div className="text-xs text-linear-text-tertiary">sex</div>
-              </div>
-            )}
+          <div className="text-right">
+            <div className="text-sm text-linear-text-secondary">
+              {[
+                age && `${age}y`,
+                user?.height && formattedHeight,
+                user?.gender && (user.gender === 'male' ? 'Male' : 'Female')
+              ].filter(Boolean).join(' • ')}
+            </div>
           </div>
         </div>
 
         {/* Current Stats */}
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-linear-text-secondary uppercase tracking-wider">Current Stats</h3>
+          <h3 className="text-sm font-semibold text-linear-text uppercase tracking-wider">Current Stats</h3>
           
           {/* Stats Grid */}
           <div className="grid grid-cols-2 gap-3">
@@ -206,7 +221,7 @@ const ProfilePanel = ({
                 <Scale className="h-4 w-4 text-linear-text-tertiary" />
                 <span className="text-xs text-linear-text-secondary">Weight</span>
               </div>
-              <div className="text-2xl font-semibold text-linear-text">
+              <div className="text-3xl font-bold text-linear-text">
                 {displayValues?.weight?.toFixed(1) || '--'}
               </div>
               <div className="text-xs text-linear-text-tertiary mt-0.5">
@@ -234,11 +249,11 @@ const ProfilePanel = ({
                   </TooltipProvider>
                 )}
               </div>
-              <div className="text-2xl font-semibold text-linear-text">
-                {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}%
+              <div className="text-3xl font-bold text-linear-text">
+                {displayValues?.bodyFatPercentage ? `${displayValues.bodyFatPercentage.toFixed(1)}%` : '--'}
               </div>
               <div className="text-xs text-linear-text-tertiary mt-0.5">
-                {bodyFatCategory || 'No data'}
+                {bodyFatCategory || 'Needs data'}
               </div>
             </div>
 
@@ -248,8 +263,8 @@ const ProfilePanel = ({
                 <Dumbbell className="h-4 w-4 text-linear-text-tertiary" />
                 <span className="text-xs text-linear-text-secondary">Lean Mass</span>
               </div>
-              <div className="text-2xl font-semibold text-linear-text">
-                {displayValues?.leanBodyMass?.toFixed(1) || '--'}
+              <div className="text-3xl font-bold text-linear-text">
+                {displayValues?.leanBodyMass ? displayValues.leanBodyMass.toFixed(1) : <span className="text-2xl text-linear-text-tertiary">--</span>}
               </div>
               <div className="text-xs text-linear-text-tertiary mt-0.5">
                 {user?.settings?.units?.weight || 'lbs'}
@@ -276,15 +291,15 @@ const ProfilePanel = ({
                   </TooltipProvider>
                 )}
               </div>
-              <div className="text-2xl font-semibold text-linear-text">
+              <div className="text-3xl font-bold text-linear-text">
                 {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
                   ? calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)
-                  : '--'}
+                  : <span className="text-2xl text-linear-text-tertiary">--</span>}
               </div>
               <div className="text-xs text-linear-text-tertiary mt-0.5">
                 {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
                   ? calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')
-                  : 'No data'}
+                  : 'Needs more data'}
               </div>
             </div>
           </div>
@@ -292,7 +307,7 @@ const ProfilePanel = ({
 
         {/* Goals Progress */}
         <div className="space-y-4">
-          <h3 className="text-sm font-medium text-linear-text-secondary uppercase tracking-wider">Goals Progress</h3>
+          <h3 className="text-sm font-semibold text-linear-text uppercase tracking-wider">Goals Progress</h3>
           
           <div className="space-y-4">
             {/* FFMI Goal */}
@@ -644,7 +659,7 @@ export default function DashboardPage() {
                 }
               }}
             >
-              <TabsTrigger value="0" className="data-[state=active]:bg-linear-border/50">Avatar</TabsTrigger>
+              <TabsTrigger value="0" className="data-[state=active]:bg-linear-border/50">Body Model</TabsTrigger>
               <TabsTrigger value="1" className="data-[state=active]:bg-linear-border/50">Photo</TabsTrigger>
             </TabsList>
             
@@ -659,6 +674,7 @@ export default function DashboardPage() {
                   bodyFatPercentage={displayValues?.bodyFatPercentage}
                   showPhoto={false}
                   className="h-full w-full"
+                  onAddPhoto={() => router.push('/log')}
                 />
               </Suspense>
             </TabsContent>
@@ -675,6 +691,7 @@ export default function DashboardPage() {
                   showPhoto={true}
                   profileImage={currentPhotoUrl}
                   className="h-full w-full"
+                  onAddPhoto={() => router.push('/log')}
                 />
               </Suspense>
             </TabsContent>
