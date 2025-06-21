@@ -144,8 +144,19 @@ export default function ImportPage() {
       })
       
       if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.error || 'Failed to parse PDF')
+        const errorData = await response.json()
+        console.error('PDF parsing error response:', errorData)
+        
+        // Check for specific error types
+        if (errorData.error?.includes('OpenAI API key not configured')) {
+          throw new Error('PDF parsing requires an OpenAI API key. Please set OPENAI_API_KEY in your environment variables.')
+        } else if (errorData.error?.includes('Could not extract text')) {
+          throw new Error('Could not extract text from PDF. The file might be image-based or corrupted.')
+        } else if (errorData.details?.includes('rate limit')) {
+          throw new Error('OpenAI rate limit exceeded. Please try again in a few moments.')
+        }
+        
+        throw new Error(errorData.error || errorData.details || 'Failed to parse PDF')
       }
       
       const result = await response.json()
@@ -351,10 +362,22 @@ export default function ImportPage() {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
       
       // Show specific error message for OpenAI API key
-      if (errorMessage.includes('OpenAI API key not configured')) {
+      if (errorMessage.includes('OpenAI API key') || errorMessage.includes('PDF parsing requires')) {
         toast({
           title: "Configuration Required",
-          description: "PDF parsing requires an OpenAI API key. Please set OPENAI_API_KEY in your environment variables.",
+          description: errorMessage,
+          variant: "destructive"
+        })
+      } else if (errorMessage.includes('Could not extract text')) {
+        toast({
+          title: "PDF Reading Error",
+          description: errorMessage,
+          variant: "destructive"
+        })
+      } else if (errorMessage.includes('rate limit')) {
+        toast({
+          title: "Rate Limit Exceeded",
+          description: errorMessage,
           variant: "destructive"
         })
       } else {
