@@ -19,6 +19,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { MobileNavbar } from '@/components/MobileNavbar'
+import { VersionDisplay } from '@/components/VersionDisplay'
 
 export default function SettingsPage() {
   const { user, loading, signOut } = useAuth()
@@ -165,10 +166,11 @@ export default function SettingsPage() {
 
           {/* App Version */}
           <div className="text-center py-8">
-            <p className="text-xs text-linear-text-tertiary">
-              LogYourBody v1.0.0
-            </p>
-            <div className="flex items-center justify-center gap-4 mt-2">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <span className="text-xs text-linear-text-tertiary">LogYourBody</span>
+              <VersionDisplay />
+            </div>
+            <div className="flex items-center justify-center gap-4">
               <Link href="/terms" className="text-xs text-linear-text-tertiary hover:text-linear-text">
                 Terms
               </Link>
