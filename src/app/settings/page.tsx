@@ -18,6 +18,7 @@ import {
   LogOut
 } from 'lucide-react'
 import Link from 'next/link'
+import { MobileNavbar } from '@/components/MobileNavbar'
 
 export default function SettingsPage() {
   const { user, loading, signOut } = useAuth()
@@ -80,7 +81,7 @@ export default function SettingsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-linear-bg">
+    <div className="min-h-screen bg-linear-bg pb-16 md:pb-0">
       {/* Header */}
       <header className="bg-linear-card shadow-sm border-b border-linear-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
@@ -183,6 +184,9 @@ export default function SettingsPage() {
           </div>
         </div>
       </main>
+
+      {/* Mobile Navigation Bar */}
+      <MobileNavbar />
     </div>
   )
 }

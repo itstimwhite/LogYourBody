@@ -38,6 +38,7 @@ import { uploadToStorage } from '@/utils/storage-utils'
 import { createClient } from '@/lib/supabase/client'
 import { getProfile } from '@/lib/supabase/profile'
 import Image from 'next/image'
+import { MobileNavbar } from '@/components/MobileNavbar'
 
 type Step = 'weight' | 'method' | 'measurements' | 'photo' | 'review'
 
@@ -373,7 +374,7 @@ export default function LogWeightPage() {
   const bodyComp = getBodyComposition()
 
   return (
-    <div className="min-h-screen bg-linear-bg">
+    <div className="min-h-screen bg-linear-bg pb-16 md:pb-0">
       {/* Header */}
       <header className="bg-linear-card shadow-sm border-b border-linear-border sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4">
@@ -1044,6 +1045,9 @@ export default function LogWeightPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Mobile Navigation Bar */}
+      <MobileNavbar />
     </div>
   )
 }

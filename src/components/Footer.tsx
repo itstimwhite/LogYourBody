@@ -44,6 +44,7 @@ export function Footer() {
       title: "Resources",
       links: [
         { label: "Blog", href: "/blog" },
+        { label: "Brand", href: "/brand" },
         { label: "Community", href: "#", disabled: true },
         { label: "Support", href: "mailto:support@logyourbody.com", external: true },
         { label: "Documentation", href: "#", disabled: true },
@@ -63,15 +64,15 @@ export function Footer() {
   ];
 
   return (
-    <footer className="border-t border-linear-border bg-linear-bg font-inter" role="contentinfo">
+    <footer className="border-t border-[#1a1b1e] bg-[#08090a] font-inter" role="contentinfo">
       <div className="container mx-auto px-4 sm:px-6 py-16">
         {/* Main Footer Content */}
         <div className="grid grid-cols-2 gap-8 lg:grid-cols-5">
           {/* Brand Column */}
           <div className="col-span-2 lg:col-span-1">
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-linear-text mb-3">LogYourBody</h3>
-              <p className="text-sm text-linear-text-secondary leading-relaxed mb-6">
+              <h3 className="text-xl font-semibold text-white mb-3">LogYourBody</h3>
+              <p className="text-sm text-white/70 leading-relaxed mb-6">
                 Track real progress. Not just weight.
               </p>
               
@@ -81,7 +82,7 @@ export function Footer() {
                   href="https://github.com/itstimwhite/LogYourBody"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-linear-text-tertiary hover:text-linear-text transition-colors p-1"
+                  className="text-white/50 hover:text-white transition-colors p-1"
                   aria-label="GitHub"
                 >
                   <Github className="h-5 w-5" />
@@ -90,14 +91,14 @@ export function Footer() {
                   href="https://twitter.com/logyourbody"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-linear-text-tertiary hover:text-linear-text transition-colors p-1"
+                  className="text-white/50 hover:text-white transition-colors p-1"
                   aria-label="Twitter"
                 >
                   <Twitter className="h-5 w-5" />
                 </a>
                 <a
                   href="mailto:support@logyourbody.com"
-                  className="text-linear-text-tertiary hover:text-linear-text transition-colors p-1"
+                  className="text-white/50 hover:text-white transition-colors p-1"
                   aria-label="Email"
                 >
                   <Mail className="h-5 w-5" />
@@ -109,14 +110,14 @@ export function Footer() {
           {/* Link Columns */}
           {footerSections.map((section) => (
             <div key={section.title} className="flex flex-col">
-              <h4 className="text-sm font-medium text-linear-text mb-4 tracking-wide">
+              <h4 className="text-sm font-medium text-white mb-4 tracking-wide">
                 {section.title}
               </h4>
               <div className="flex flex-col gap-3">
                 {section.links.map((link) => (
                   <div key={link.label}>
                     {link.disabled ? (
-                      <span className="text-left text-sm text-linear-text-tertiary cursor-not-allowed opacity-50">
+                      <span className="text-left text-sm text-white/50 cursor-not-allowed opacity-50">
                         {link.label}
                       </span>
                     ) : link.external ? (
@@ -124,7 +125,7 @@ export function Footer() {
                         href={link.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-left text-sm text-linear-text-secondary hover:text-linear-text transition-colors cursor-pointer inline-flex items-center gap-1"
+                        className="text-left text-sm text-white/70 hover:text-white transition-colors cursor-pointer inline-flex items-center gap-1"
                       >
                         {link.icon && <link.icon className="h-3 w-3" />}
                         {link.label}
@@ -135,7 +136,7 @@ export function Footer() {
                     ) : (
                       <Link
                         href={link.href}
-                        className="text-left text-sm text-linear-text-secondary hover:text-linear-text transition-colors cursor-pointer"
+                        className="text-left text-sm text-white/70 hover:text-white transition-colors cursor-pointer"
                       >
                         {link.label}
                       </Link>
@@ -148,9 +149,9 @@ export function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="border-t border-linear-border mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="border-t border-[#1a1b1e] mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <p className="text-sm text-linear-text-tertiary">
+            <p className="text-sm text-white/50">
               © {new Date().getFullYear()} LogYourBody
             </p>
             <VersionDisplay />
@@ -158,11 +159,11 @@ export function Footer() {
           
           {/* CTA */}
           <div className="flex items-center gap-4">
-            <span className="text-sm text-linear-text-secondary hidden sm:block">
+            <span className="text-sm text-white/70 hidden sm:block">
               Track what really matters
             </span>
             <Link href="/signup">
-              <Button className="bg-linear-text text-linear-bg px-6 py-2 text-sm font-medium rounded-lg hover:bg-linear-text/90 transition-colors">
+              <Button className="bg-white text-[#08090a] px-6 py-2 text-sm font-medium rounded-md hover:bg-white/90 transition-colors">
                 Start Free Trial
               </Button>
             </Link>

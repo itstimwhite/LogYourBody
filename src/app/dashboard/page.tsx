@@ -18,7 +18,8 @@ import {
   Settings,
   Percent,
   Dumbbell,
-  Upload
+  Upload,
+  ChevronDown
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { BodyMetrics, UserProfile, ProgressPhoto } from '@/types/body-metrics'
@@ -31,9 +32,17 @@ import { ensurePublicUrl } from '@/utils/storage-utils'
 import { getProfile } from '@/lib/supabase/profile'
 import { createClient } from '@/lib/supabase/client'
 import { createTimelineData, getTimelineDisplayValues, TimelineEntry } from '@/utils/data-interpolation'
-import { Info } from 'lucide-react'
+import { Info, TrendingDown, TrendingUp, Minus } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { BodyFatScale } from '@/components/BodyFatScale'
+import { calculatePhase, PhaseResult } from '@/utils/phase-calculator'
+import { getMetricsTrends, getTrendArrow, getTrendColorClass, TrendInfo } from '@/utils/trend-calculator'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
 
 // Mock data for demonstration
 const mockMetrics: BodyMetrics = {
@@ -70,6 +79,87 @@ const mockProfile: UserProfile = {
   created_at: new Date().toISOString(),
   updated_at: new Date().toISOString()
 }
+
+// Phase Indicator component
+const PhaseIndicator = ({ phaseData }: { phaseData: PhaseResult | null }) => {
+  if (!phaseData || phaseData.phase === 'insufficient-data') {
+    return (
+      <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4 text-linear-text-tertiary" />
+            <span className="text-xs text-linear-text-secondary">Current Phase</span>
+          </div>
+        </div>
+        <div className="mt-2">
+          <span className="text-lg font-semibold text-linear-text-tertiary">
+            Need more data
+          </span>
+          <p className="text-xs text-linear-text-tertiary mt-1">
+            Log weight for 3 weeks to see phase
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const getPhaseIcon = () => {
+    switch (phaseData.phase) {
+      case 'cutting':
+        return <TrendingDown className="h-4 w-4 text-red-400" />;
+      case 'bulking':
+        return <TrendingUp className="h-4 w-4 text-green-400" />;
+      case 'maintaining':
+        return <Minus className="h-4 w-4 text-blue-400" />;
+      default:
+        return <TrendingUp className="h-4 w-4 text-linear-text-tertiary" />;
+    }
+  };
+
+  const getPhaseColor = () => {
+    switch (phaseData.phase) {
+      case 'cutting':
+        return 'text-red-400';
+      case 'bulking':
+        return 'text-green-400';
+      case 'maintaining':
+        return 'text-blue-400';
+      default:
+        return 'text-linear-text-tertiary';
+    }
+  };
+
+  return (
+    <div className="bg-linear-bg rounded-lg p-4 border border-linear-border">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          {getPhaseIcon()}
+          <span className="text-xs text-linear-text-secondary">Current Phase</span>
+        </div>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Badge variant="outline" className="text-xs capitalize">
+                {phaseData.confidence} confidence
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p className="text-xs">Based on {phaseData.confidence === 'high' ? '6+' : phaseData.confidence === 'medium' ? '4-5' : '3'} data points</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </div>
+      <div className="mt-2">
+        <span className={cn("text-2xl font-bold capitalize", getPhaseColor())}>
+          {phaseData.phase}
+        </span>
+        <p className="text-sm text-linear-text-secondary mt-1">
+          {phaseData.message}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 // Avatar display component
 const AvatarDisplay = ({ 
@@ -151,12 +241,16 @@ const ProfilePanel = ({
   entry,
   user, 
   formattedWeight,
-  formattedHeight
+  formattedHeight,
+  phaseData,
+  trends
 }: {
   entry: TimelineEntry | null
   user: UserProfile | null
   formattedWeight: string
   formattedHeight: string
+  phaseData: PhaseResult | null
+  trends: ReturnType<typeof getMetricsTrends>
 }) => {
   const displayValues = entry ? getTimelineDisplayValues(entry) : null
   const bodyFatCategory = displayValues?.bodyFatPercentage && user?.gender
@@ -220,6 +314,11 @@ const ProfilePanel = ({
                   <Scale className="h-4 w-4 text-linear-text-tertiary" />
                   <span className="text-xs text-linear-text-secondary">Weight</span>
                 </div>
+                {trends.weight.direction !== 'unknown' && (
+                  <span className={cn("text-lg", getTrendColorClass(trends.weight.direction, 'weight'))}>
+                    {getTrendArrow(trends.weight.direction)}
+                  </span>
+                )}
               </div>
               <div className="mt-2 flex items-baseline gap-1">
                 <span className="text-3xl font-bold text-linear-text">
@@ -229,6 +328,11 @@ const ProfilePanel = ({
                   {user?.settings?.units?.weight || 'lbs'}
                 </span>
               </div>
+              {trends.weight.direction !== 'unknown' && trends.weight.direction !== 'stable' && (
+                <div className="text-xs text-linear-text-tertiary mt-1">
+                  {trends.weight.difference > 0 ? '+' : ''}{trends.weight.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
+                </div>
+              )}
             </div>
 
             {/* Body Fat */}
@@ -238,20 +342,27 @@ const ProfilePanel = ({
                   <Percent className="h-4 w-4 text-linear-text-tertiary" />
                   <span className="text-xs text-linear-text-secondary">Body Fat</span>
                 </div>
-                {displayValues?.isInferred && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Info className="h-3 w-3 text-linear-text-tertiary" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">
-                          Interpolated ({displayValues.confidenceLevel})
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+                <div className="flex items-center gap-2">
+                  {trends.bodyFat.direction !== 'unknown' && (
+                    <span className={cn("text-lg", getTrendColorClass(trends.bodyFat.direction, 'bodyFat'))}>
+                      {getTrendArrow(trends.bodyFat.direction)}
+                    </span>
+                  )}
+                  {displayValues?.isInferred && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="h-3 w-3 text-linear-text-tertiary" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">
+                            Interpolated ({displayValues.confidenceLevel})
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
               </div>
               <div className="mt-2">
                 <div className="flex items-baseline gap-1">
@@ -260,22 +371,29 @@ const ProfilePanel = ({
                   </span>
                   <span className="text-sm text-linear-text-tertiary">%</span>
                 </div>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="text-xs text-linear-text-tertiary mt-1 cursor-help">
-                        {bodyFatCategory ? (
-                          bodyFatCategory === 'obese' ? 'Above Recommended' : bodyFatCategory
-                        ) : 'Needs data'}
-                      </div>
-                    </TooltipTrigger>
-                    {bodyFatCategory === 'obese' && (
-                      <TooltipContent>
-                        <p className="text-xs">This falls within the clinical 'obese' classification per ACSM guidelines.</p>
-                      </TooltipContent>
-                    )}
-                  </Tooltip>
-                </TooltipProvider>
+                <div className="flex items-start justify-between mt-1">
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div className="text-xs text-linear-text-tertiary cursor-help">
+                          {bodyFatCategory ? (
+                            bodyFatCategory === 'obese' ? 'Above Recommended' : bodyFatCategory
+                          ) : 'Needs data'}
+                        </div>
+                      </TooltipTrigger>
+                      {bodyFatCategory === 'obese' && (
+                        <TooltipContent>
+                          <p className="text-xs">This falls within the clinical 'obese' classification per ACSM guidelines.</p>
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </TooltipProvider>
+                  {trends.bodyFat.direction !== 'unknown' && trends.bodyFat.direction !== 'stable' && (
+                    <div className="text-xs text-linear-text-tertiary">
+                      {trends.bodyFat.difference > 0 ? '+' : ''}{trends.bodyFat.percentage.toFixed(1)}%
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
 
@@ -286,6 +404,11 @@ const ProfilePanel = ({
                   <Dumbbell className="h-4 w-4 text-linear-text-tertiary" />
                   <span className="text-xs text-linear-text-secondary">Lean Mass</span>
                 </div>
+                {trends.leanMass.direction !== 'unknown' && (
+                  <span className={cn("text-lg", getTrendColorClass(trends.leanMass.direction, 'leanMass'))}>
+                    {getTrendArrow(trends.leanMass.direction)}
+                  </span>
+                )}
               </div>
               <div className="mt-2 flex items-baseline gap-1">
                 {displayValues?.weight && displayValues?.bodyFatPercentage ? (
@@ -301,6 +424,11 @@ const ProfilePanel = ({
                   <span className="text-2xl text-linear-text-tertiary">--</span>
                 )}
               </div>
+              {trends.leanMass.direction !== 'unknown' && trends.leanMass.direction !== 'stable' && (
+                <div className="text-xs text-linear-text-tertiary mt-1">
+                  {trends.leanMass.difference > 0 ? '+' : ''}{trends.leanMass.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
+                </div>
+              )}
             </div>
 
             {/* FFMI */}
@@ -310,20 +438,27 @@ const ProfilePanel = ({
                   <Target className="h-4 w-4 text-linear-text-tertiary" />
                   <span className="text-xs text-linear-text-secondary">FFMI</span>
                 </div>
-                {displayValues?.isInferred && (
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger>
-                        <Info className="h-3 w-3 text-linear-text-tertiary" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs">
-                          Calculated from interpolated values
-                        </p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                )}
+                <div className="flex items-center gap-2">
+                  {trends.ffmi.direction !== 'unknown' && (
+                    <span className={cn("text-lg", getTrendColorClass(trends.ffmi.direction, 'ffmi'))}>
+                      {getTrendArrow(trends.ffmi.direction)}
+                    </span>
+                  )}
+                  {displayValues?.isInferred && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="h-3 w-3 text-linear-text-tertiary" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">
+                            Calculated from interpolated values
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
               </div>
               <div className="mt-2">
                 {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
@@ -331,8 +466,15 @@ const ProfilePanel = ({
                     <div className="text-3xl font-bold text-linear-text">
                       {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)}
                     </div>
-                    <div className="text-xs text-linear-text-tertiary mt-1">
-                      {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')}
+                    <div className="flex items-start justify-between mt-1">
+                      <div className="text-xs text-linear-text-tertiary">
+                        {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')}
+                      </div>
+                      {trends.ffmi.direction !== 'unknown' && trends.ffmi.direction !== 'stable' && (
+                        <div className="text-xs text-linear-text-tertiary">
+                          {trends.ffmi.difference > 0 ? '+' : ''}{trends.ffmi.difference.toFixed(1)}
+                        </div>
+                      )}
                     </div>
                   </>
                 ) : (
@@ -345,6 +487,9 @@ const ProfilePanel = ({
             </div>
           </div>
         </div>
+
+        {/* Phase Indicator */}
+        <PhaseIndicator phaseData={phaseData} />
 
         {/* Goals Progress */}
         <div className="space-y-4">
@@ -503,6 +648,13 @@ export default function DashboardPage() {
   const [profileLoading, setProfileLoading] = useState(true)
   const [photosHistory, setPhotosHistory] = useState<ProgressPhoto[]>([])
   const [timelineData, setTimelineData] = useState<TimelineEntry[]>([])
+  const [phaseData, setPhaseData] = useState<PhaseResult | null>(null)
+  const [metricsTrends, setMetricsTrends] = useState<ReturnType<typeof getMetricsTrends>>({
+    weight: { direction: 'unknown', percentage: 0, difference: 0 },
+    bodyFat: { direction: 'unknown', percentage: 0, difference: 0 },
+    leanMass: { direction: 'unknown', percentage: 0, difference: 0 },
+    ffmi: { direction: 'unknown', percentage: 0, difference: 0 }
+  })
 
   // Handle keyboard navigation
   useEffect(() => {
@@ -596,6 +748,60 @@ export default function DashboardPage() {
     }
   }, [metricsHistory, photosHistory, profile?.height])
 
+  // Calculate phase data when metrics history changes
+  useEffect(() => {
+    if (metricsHistory.length > 0) {
+      const phase = calculatePhase(metricsHistory, profile?.settings?.units?.weight || 'lbs')
+      setPhaseData(phase)
+    }
+  }, [metricsHistory, profile?.settings?.units?.weight])
+
+  // Calculate trends when selected date changes
+  useEffect(() => {
+    if (selectedDateIndex >= 0 && timelineData.length > 0) {
+      const currentData = timelineData[selectedDateIndex];
+      
+      // Find the previous entry with metrics data
+      let previousIndex = selectedDateIndex - 1;
+      let previousData = null;
+      
+      while (previousIndex >= 0) {
+        const entry = timelineData[previousIndex];
+        if (entry.metrics || entry.inferredData) {
+          previousData = entry;
+          break;
+        }
+        previousIndex--;
+      }
+      
+      // Calculate trends
+      const trends = getMetricsTrends(
+        currentData.metrics || (currentData.inferredData ? {
+          ...currentData.inferredData,
+          id: '',
+          user_id: '',
+          date: currentData.date,
+          created_at: '',
+          updated_at: '',
+          body_fat_method: 'navy' as const,
+          weight_unit: 'lbs' as const
+        } : null),
+        previousData?.metrics || (previousData?.inferredData ? {
+          ...previousData.inferredData,
+          id: '',
+          user_id: '',
+          date: previousData.date,
+          created_at: '',
+          updated_at: '',
+          body_fat_method: 'navy' as const,
+          weight_unit: 'lbs' as const
+        } : null)
+      );
+      
+      setMetricsTrends(trends);
+    }
+  }, [selectedDateIndex, timelineData])
+
   if (loading || profileLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-linear-bg">
@@ -647,24 +853,27 @@ export default function DashboardPage() {
           )}
         </div>
         <div className="flex gap-3">
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => router.push('/import')}
-            className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
-            title="Bulk Import"
-          >
-            <Upload className="h-4 w-4" />
-          </Button>
-          <Button
-            size="icon"
-            variant="ghost"
-            onClick={() => router.push('/log')}
-            className="h-10 w-10 text-linear-text-secondary transition-colors hover:bg-linear-border/50 hover:text-linear-text"
-            title="Log Metrics"
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                className="bg-linear-purple text-white hover:bg-linear-purple/90 font-medium"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Data
+                <ChevronDown className="h-4 w-4 ml-2" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuItem onClick={() => router.push('/log')}>
+                <Plus className="h-4 w-4 mr-2" />
+                Log Metrics
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push('/import')}>
+                <Upload className="h-4 w-4 mr-2" />
+                Bulk Import
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           <Button
             size="icon"
             variant="ghost"
@@ -738,14 +947,26 @@ export default function DashboardPage() {
 
           {/* Mobile Action Buttons - Floating */}
           <div className="absolute top-4 right-4 z-20 flex gap-3 md:hidden">
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => router.push('/log')}
-              className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm transition-colors hover:bg-linear-card hover:text-linear-text"
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  className="bg-linear-purple text-white hover:bg-linear-purple/90 shadow-lg font-medium"
+                  size="sm"
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem onClick={() => router.push('/log')}>
+                  <Plus className="h-4 w-4 mr-2" />
+                  Log Metrics
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => router.push('/import')}>
+                  <Upload className="h-4 w-4 mr-2" />
+                  Bulk Import
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button
               size="icon"
               variant="ghost"
@@ -764,6 +985,8 @@ export default function DashboardPage() {
             user={profile}
             formattedWeight={getFormattedWeight(displayValues?.weight || currentEntry?.metrics?.weight)}
             formattedHeight={getFormattedHeight(profile?.height)}
+            phaseData={phaseData}
+            trends={metricsTrends}
           />
         </div>
       </div>
@@ -778,6 +1001,9 @@ export default function DashboardPage() {
           />
         </div>
       )}
+
+      {/* Mobile Navigation Bar */}
+      <MobileNavbar />
     </div>
   )
 }

@@ -7,13 +7,13 @@ import { TrendingUp, Clock } from 'lucide-react'
 export function LandingPredictionSection() {
   return (
     <section className="py-20 md:py-32 bg-gradient-to-b from-transparent via-linear-purple/5 to-transparent">
-      <div className="container mx-auto px-4 sm:px-6">
+      <div className="max-w-[1280px] mx-auto px-6">
         <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
           <div>
             <Badge className="mb-4 bg-linear-purple/10 text-white border-linear-purple/20 inline-block">
               Future insights
             </Badge>
-            <h2 className="mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-linear-text">
+            <h2 className="mb-6 text-4xl sm:text-5xl font-bold tracking-tight text-linear-text leading-[1.2]">
               Know your body&apos;s future
             </h2>
             <p className="mb-8 text-lg sm:text-xl text-linear-text-secondary">

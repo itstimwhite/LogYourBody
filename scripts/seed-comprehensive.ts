@@ -3,6 +3,7 @@
 import { createClient } from '@supabase/supabase-js'
 import dotenv from 'dotenv'
 import { format, subDays, subMonths, subYears } from 'date-fns'
+import { getProfileAvatarUrl } from '../src/utils/pravatar-utils'
 
 // Load environment variables
 dotenv.config({ path: '.env.local' })
@@ -75,7 +76,7 @@ const users = [
       goal_body_fat_percentage: 20.0,
       goal_waist_to_hip_ratio: 0.7,
       goal_waist_to_height_ratio: 0.45,
-      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=sarah',
+      avatar_url: getProfileAvatarUrl('sarahc', 300),
       settings: {
         units: {
           weight: 'kg',
@@ -135,7 +136,7 @@ const users = [
       goal_ffmi: 22.0,
       goal_waist_to_hip_ratio: 0.9,
       goal_waist_to_height_ratio: 0.475,
-      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=marcus',
+      avatar_url: getProfileAvatarUrl('marcusj', 300),
       settings: {
         units: {
           weight: 'kg',
@@ -197,7 +198,7 @@ const users = [
       goal_body_fat_percentage: 20.0,
       goal_waist_to_hip_ratio: 0.7,
       goal_waist_to_height_ratio: 0.45,
-      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=emily',
+      avatar_url: getProfileAvatarUrl('emilyr', 300),
       settings: {
         units: {
           weight: 'lbs',
@@ -257,7 +258,7 @@ const users = [
       goal_ffmi: 22.0,
       goal_waist_to_hip_ratio: 0.9,
       goal_waist_to_height_ratio: 0.475,
-      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=david',
+      avatar_url: getProfileAvatarUrl('davidk', 300),
       settings: {
         units: {
           weight: 'lbs',
@@ -314,7 +315,7 @@ const users = [
       goal_body_fat_percentage: 20.0,
       goal_waist_to_hip_ratio: 0.7,
       goal_waist_to_height_ratio: 0.45,
-      avatar_url: 'https://api.dicebear.com/7.x/avataaars/svg?seed=jessica',
+      avatar_url: getProfileAvatarUrl('jessicat', 300),
       settings: {
         units: {
           weight: 'kg',
@@ -493,8 +494,9 @@ async function seedComprehensiveData() {
       return {
         user_id: userId,
         date: format(photoDate, 'yyyy-MM-dd'),
-        photo_url: `https://api.dicebear.com/7.x/shapes/svg?seed=${userData.profile.username}-${photo.daysAgo}-${photo.angle}`,
-        thumbnail_url: `https://api.dicebear.com/7.x/shapes/svg?seed=${userData.profile.username}-${photo.daysAgo}-${photo.angle}-thumb`,
+        // Using pravatar for progress photos as placeholders
+        photo_url: getProfileAvatarUrl(`${userData.profile.username}-${photo.daysAgo}-${photo.angle}`, 600),
+        thumbnail_url: getProfileAvatarUrl(`${userData.profile.username}-${photo.daysAgo}-${photo.angle}`, 150),
         angle: photo.angle,
         notes: photo.note,
         body_metrics_id: undefined // Would need to query for actual ID

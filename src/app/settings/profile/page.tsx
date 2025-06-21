@@ -26,6 +26,7 @@ import { HeightWheelPicker, DateWheelPicker } from '@/components/ui/wheel-picker
 import { format, parseISO } from 'date-fns'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { getProfileAvatarUrl, getRandomAvatarUrl } from '@/utils/pravatar-utils'
 
 export default function ProfileSettingsPage() {
   const { user, loading } = useAuth()
@@ -243,12 +244,26 @@ export default function ProfileSettingsPage() {
           <CardContent className="space-y-6">
             {/* Profile Picture and Name Section */}
             <div className="flex items-start gap-6">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={profile.avatar_url} />
-                <AvatarFallback className="bg-linear-purple/10 text-linear-text text-lg">
-                  {getInitials(profile.full_name || user.email || 'U')}
-                </AvatarFallback>
-              </Avatar>
+              <div className="relative group">
+                <Avatar className="h-20 w-20">
+                  <AvatarImage src={profile.avatar_url || getProfileAvatarUrl(profile.username || user.id, 300)} />
+                  <AvatarFallback className="bg-linear-purple/10 text-linear-text text-lg">
+                    {getInitials(profile.full_name || user.email || 'U')}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-linear-card border border-linear-border opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={() => {
+                    // Generate a new random avatar
+                    const newAvatarUrl = getRandomAvatarUrl(300)
+                    updateLocalProfile({ avatar_url: newAvatarUrl })
+                  }}
+                >
+                  <Camera className="h-4 w-4" />
+                </Button>
+              </div>
               
               <div className="flex-1 space-y-4">
                 <div className="space-y-2">

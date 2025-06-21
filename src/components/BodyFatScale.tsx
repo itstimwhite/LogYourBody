@@ -31,8 +31,10 @@ const GOAL_RANGES = {
 }
 
 export function BodyFatScale({ currentBF, gender = 'male', className }: BodyFatScaleProps) {
-  const ranges = BF_RANGES[gender]
-  const goalRange = GOAL_RANGES[gender]
+  // Ensure we have a valid gender, default to male if undefined
+  const validGender = gender || 'male'
+  const ranges = BF_RANGES[validGender]
+  const goalRange = GOAL_RANGES[validGender]
   const maxDisplay = 35 // Max value to display on scale
   
   // Calculate position percentages
