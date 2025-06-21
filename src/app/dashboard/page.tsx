@@ -162,26 +162,34 @@ const ProfilePanel = ({
     <div className="h-full overflow-y-auto bg-linear-card p-6">
       <div className="space-y-6">
         {/* User Info */}
-        <div>
-          <h2 className="text-2xl font-bold text-linear-text mb-1">
-            {user?.full_name || user?.email?.split('@')[0] || 'User'}
-          </h2>
-          <p className="text-sm text-linear-text-secondary">{user?.email}</p>
-          <div className="flex items-center gap-3 mt-2 text-sm text-linear-text-secondary">
+        <div className="flex items-start justify-between">
+          {/* Left side - Name and email */}
+          <div>
+            <h2 className="text-2xl font-bold text-linear-text mb-1">
+              {user?.full_name || user?.email?.split('@')[0] || 'User'}
+            </h2>
+            <p className="text-sm text-linear-text-secondary">{user?.email}</p>
+          </div>
+          
+          {/* Right side - Metrics */}
+          <div className="flex gap-4">
             {age && (
-              <>
-                <span>{age} years</span>
-                <span className="text-linear-border">•</span>
-              </>
+              <div className="text-right">
+                <div className="text-lg font-semibold text-linear-text">{age}</div>
+                <div className="text-xs text-linear-text-tertiary">years</div>
+              </div>
             )}
             {user?.height && (
-              <>
-                <span>{formattedHeight}</span>
-                <span className="text-linear-border">•</span>
-              </>
+              <div className="text-right">
+                <div className="text-lg font-semibold text-linear-text">{formattedHeight.split(' ')[0]}</div>
+                <div className="text-xs text-linear-text-tertiary">{formattedHeight.split(' ')[1]}</div>
+              </div>
             )}
             {user?.gender && (
-              <span className="capitalize">{user.gender}</span>
+              <div className="text-right">
+                <div className="text-lg font-semibold text-linear-text capitalize">{user.gender === 'male' ? 'M' : 'F'}</div>
+                <div className="text-xs text-linear-text-tertiary">sex</div>
+              </div>
             )}
           </div>
         </div>
