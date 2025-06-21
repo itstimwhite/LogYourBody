@@ -30,6 +30,7 @@ import {
 import { Footer } from "./Footer";
 import { LandingTimelineDemo } from "./LandingTimelineDemo";
 import { StepTrackerSection } from "./StepTrackerModule";
+import { LandingPredictionSection } from "./LandingPredictionSection";
 import { FeaturesFlyout } from "./FeaturesFlyout";
 import { SupabaseStatusBanner } from "./SupabaseStatusBanner";
 
@@ -660,6 +661,8 @@ export function LandingPage() {
         </section>
 
         <StepTrackerSection />
+
+        <LandingPredictionSection />
 
         {/* Cross-Platform Section */}
         <section className="py-20 md:py-32 bg-linear-card/30">
