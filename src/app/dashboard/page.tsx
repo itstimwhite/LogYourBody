@@ -319,25 +319,25 @@ const ProfilePanel = ({
             {/* Weight */}
             <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
               <div className="flex flex-col items-center text-center">
-                <div className="flex items-baseline gap-1 mb-1">
+                <div className="text-xs uppercase tracking-wider text-linear-text-secondary mb-2">Weight</div>
+                <div className="flex items-baseline gap-1">
                   <span className="text-4xl md:text-3xl font-bold text-linear-text">
                     {displayValues?.weight?.toFixed(1) || '--'}
                   </span>
-                  <span className="text-lg md:text-sm text-linear-text-tertiary">
+                  <span className="text-lg md:text-sm text-linear-text-secondary font-medium">
                     {user?.settings?.units?.weight || 'lbs'}
                   </span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs uppercase tracking-wider text-linear-text-secondary">Weight</span>
-                  {trends.weight.direction !== 'unknown' && (
-                    <span className={cn("text-sm", getTrendColorClass(trends.weight.direction, 'weight'))}>
+                {trends.weight.direction !== 'unknown' && (
+                  <div className="flex items-center gap-1 mt-2">
+                    <span className={cn("text-sm font-medium", getTrendColorClass(trends.weight.direction, 'weight'))}>
                       {getTrendArrow(trends.weight.direction)}
+                      {trends.weight.direction !== 'stable' && (
+                        <span className="ml-1">
+                          {trends.weight.difference > 0 ? '+' : ''}{trends.weight.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
+                        </span>
+                      )}
                     </span>
-                  )}
-                </div>
-                {trends.weight.direction !== 'unknown' && trends.weight.direction !== 'stable' && (
-                  <div className="text-xs text-linear-text-tertiary mt-1">
-                    {trends.weight.difference > 0 ? '+' : ''}{trends.weight.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
                   </div>
                 )}
               </div>
@@ -346,19 +346,8 @@ const ProfilePanel = ({
             {/* Body Fat */}
             <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
               <div className="flex flex-col items-center text-center">
-                <div className="flex items-baseline gap-1 mb-1">
-                  <span className="text-4xl md:text-3xl font-bold text-linear-text">
-                    {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}
-                  </span>
-                  <span className="text-lg md:text-sm text-linear-text-tertiary">%</span>
-                </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 mb-2">
                   <span className="text-xs uppercase tracking-wider text-linear-text-secondary">Body Fat</span>
-                  {trends.bodyFat.direction !== 'unknown' && (
-                    <span className={cn("text-sm", getTrendColorClass(trends.bodyFat.direction, 'bodyFat'))}>
-                      {getTrendArrow(trends.bodyFat.direction)}
-                    </span>
-                  )}
                   {displayValues?.isInferred && (
                     <TooltipProvider>
                       <Tooltip>
@@ -374,9 +363,27 @@ const ProfilePanel = ({
                     </TooltipProvider>
                   )}
                 </div>
-                {trends.bodyFat.direction !== 'unknown' && trends.bodyFat.direction !== 'stable' && (
+                <div className="flex items-baseline gap-0.5">
+                  <span className="text-4xl md:text-3xl font-bold text-linear-text">
+                    {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}
+                  </span>
+                  <span className="text-2xl md:text-xl text-linear-text-secondary font-medium">%</span>
+                </div>
+                {bodyFatCategory && (
                   <div className="text-xs text-linear-text-tertiary mt-1">
-                    {trends.bodyFat.difference > 0 ? '+' : ''}{trends.bodyFat.percentage.toFixed(1)}%
+                    {bodyFatCategory}
+                  </div>
+                )}
+                {trends.bodyFat.direction !== 'unknown' && (
+                  <div className="flex items-center gap-1 mt-2">
+                    <span className={cn("text-sm font-medium", getTrendColorClass(trends.bodyFat.direction, 'bodyFat'))}>
+                      {getTrendArrow(trends.bodyFat.direction)}
+                      {trends.bodyFat.direction !== 'stable' && (
+                        <span className="ml-1">
+                          {trends.bodyFat.difference > 0 ? '+' : ''}{trends.bodyFat.percentage.toFixed(1)}%
+                        </span>
+                      )}
+                    </span>
                   </div>
                 )}
               </div>
@@ -385,33 +392,33 @@ const ProfilePanel = ({
             {/* Lean Mass */}
             <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
               <div className="flex flex-col items-center text-center">
+                <div className="text-xs uppercase tracking-wider text-linear-text-secondary mb-2">Lean Mass</div>
                 {displayValues?.weight && displayValues?.bodyFatPercentage ? (
                   <>
-                    <div className="flex items-baseline gap-1 mb-1">
+                    <div className="flex items-baseline gap-1">
                       <span className="text-4xl md:text-3xl font-bold text-linear-text">
                         {(displayValues.weight * (1 - displayValues.bodyFatPercentage / 100)).toFixed(1)}
                       </span>
-                      <span className="text-lg md:text-sm text-linear-text-tertiary">
+                      <span className="text-lg md:text-sm text-linear-text-secondary font-medium">
                         {user?.settings?.units?.weight || 'lbs'}
                       </span>
                     </div>
                   </>
                 ) : (
-                  <div className="mb-1">
-                    <span className="text-4xl md:text-3xl text-linear-text-tertiary">--</span>
+                  <div>
+                    <span className="text-4xl md:text-3xl font-bold text-linear-text-tertiary">--</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2">
-                  <span className="text-xs uppercase tracking-wider text-linear-text-secondary">Lean Mass</span>
-                  {trends.leanMass.direction !== 'unknown' && (
-                    <span className={cn("text-sm", getTrendColorClass(trends.leanMass.direction, 'leanMass'))}>
+                {trends.leanMass.direction !== 'unknown' && (
+                  <div className="flex items-center gap-1 mt-2">
+                    <span className={cn("text-sm font-medium", getTrendColorClass(trends.leanMass.direction, 'leanMass'))}>
                       {getTrendArrow(trends.leanMass.direction)}
+                      {trends.leanMass.direction !== 'stable' && (
+                        <span className="ml-1">
+                          {trends.leanMass.difference > 0 ? '+' : ''}{trends.leanMass.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
+                        </span>
+                      )}
                     </span>
-                  )}
-                </div>
-                {trends.leanMass.direction !== 'unknown' && trends.leanMass.direction !== 'stable' && (
-                  <div className="text-xs text-linear-text-tertiary mt-1">
-                    {trends.leanMass.difference > 0 ? '+' : ''}{trends.leanMass.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
                   </div>
                 )}
               </div>
@@ -420,9 +427,26 @@ const ProfilePanel = ({
             {/* FFMI */}
             <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
               <div className="flex flex-col items-center text-center">
+                <div className="flex items-center gap-1 mb-2">
+                  <span className="text-xs uppercase tracking-wider text-linear-text-secondary">FFMI</span>
+                  {displayValues?.isInferred && displayValues?.weight && displayValues?.bodyFatPercentage && user?.height && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="h-3 w-3 text-linear-text-tertiary" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">
+                            Calculated from interpolated values
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
+                </div>
                 {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
                   <>
-                    <div className="mb-1">
+                    <div>
                       <span className="text-4xl md:text-3xl font-bold text-linear-text">
                         {(() => {
                           const weightInKg = user?.settings?.units?.weight === 'lbs' 
@@ -437,29 +461,7 @@ const ProfilePanel = ({
                         })()}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="text-xs uppercase tracking-wider text-linear-text-secondary">FFMI</span>
-                      {trends.ffmi.direction !== 'unknown' && (
-                        <span className={cn("text-sm", getTrendColorClass(trends.ffmi.direction, 'ffmi'))}>
-                          {getTrendArrow(trends.ffmi.direction)}
-                        </span>
-                      )}
-                      {displayValues?.isInferred && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger>
-                              <Info className="h-3 w-3 text-linear-text-tertiary" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">
-                                Calculated from interpolated values
-                              </p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </div>
-                    <div className="text-xs text-linear-text-tertiary">
+                    <div className="text-xs text-linear-text-tertiary mt-1">
                       {(() => {
                         const weightInKg = user?.settings?.units?.weight === 'lbs' 
                           ? convertWeight(displayValues.weight, 'lbs', 'kg')
@@ -476,18 +478,24 @@ const ProfilePanel = ({
                         ).join(' ')
                       })()}
                     </div>
-                    {trends.ffmi.direction !== 'unknown' && trends.ffmi.direction !== 'stable' && (
-                      <div className="text-xs text-linear-text-tertiary mt-1">
-                        {trends.ffmi.difference > 0 ? '+' : ''}{trends.ffmi.difference.toFixed(1)}
+                    {trends.ffmi.direction !== 'unknown' && (
+                      <div className="flex items-center gap-1 mt-2">
+                        <span className={cn("text-sm font-medium", getTrendColorClass(trends.ffmi.direction, 'ffmi'))}>
+                          {getTrendArrow(trends.ffmi.direction)}
+                          {trends.ffmi.direction !== 'stable' && (
+                            <span className="ml-1">
+                              {trends.ffmi.difference > 0 ? '+' : ''}{trends.ffmi.difference.toFixed(1)}
+                            </span>
+                          )}
+                        </span>
                       </div>
                     )}
                   </>
                 ) : (
                   <>
-                    <div className="mb-1">
-                      <span className="text-4xl md:text-3xl text-linear-text-tertiary">--</span>
+                    <div>
+                      <span className="text-4xl md:text-3xl font-bold text-linear-text-tertiary">--</span>
                     </div>
-                    <div className="text-xs uppercase tracking-wider text-linear-text-secondary">FFMI</div>
                     <div className="text-xs text-linear-text-tertiary mt-1">Needs more data</div>
                   </>
                 )}
