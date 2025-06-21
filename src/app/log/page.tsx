@@ -34,6 +34,9 @@ import {
   getUploadErrorMessage,
   checkBrowserSupport
 } from '@/utils/photo-upload-utils'
+import { uploadToStorage } from '@/utils/storage-utils'
+import { createClient } from '@/lib/supabase/client'
+import { getProfile } from '@/lib/supabase/profile'
 import Image from 'next/image'
 
 type Step = 'weight' | 'method' | 'measurements' | 'photo' | 'review'
@@ -55,6 +58,7 @@ export default function LogWeightPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [showWeightModal, setShowWeightModal] = useState(false)
   const [showBodyFatModal, setShowBodyFatModal] = useState(false)
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false)
   
   // Form data
   const [formData, setFormData] = useState({
@@ -78,26 +82,51 @@ export default function LogWeightPage() {
     photoPreview: null as string | null
   })
 
-  // Mock profile data (replace with actual profile fetch)
-  const profile: Partial<UserProfile> = {
-    height: 180,
-    height_unit: 'ft',
+  const [profile, setProfile] = useState<Partial<UserProfile>>({
+    height: 71,
+    height_unit: 'in',
     gender: 'male',
-    date_of_birth: '1990-01-01',
     settings: {
       units: {
         weight: 'lbs',
-        height: 'ft',
+        height: 'in',
         measurements: 'in'
       }
     }
-  }
+  })
 
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login')
     }
   }, [user, loading, router])
+
+  // Load user profile
+  useEffect(() => {
+    if (user) {
+      getProfile(user.id).then((profileData) => {
+        if (profileData) {
+          setProfile({
+            height: profileData.height,
+            height_unit: profileData.height_unit,
+            gender: profileData.gender,
+            date_of_birth: profileData.date_of_birth,
+            settings: profileData.settings
+          })
+          
+          // Update form data with user's preferred units
+          if (profileData.settings?.units?.weight) {
+            setFormData(prev => ({
+              ...prev,
+              weight_unit: profileData.settings.units.weight as 'kg' | 'lbs'
+            }))
+          }
+        }
+      }).catch((error) => {
+        console.error('Error loading profile:', error)
+      })
+    }
+  }, [user])
 
   const currentStepIndex = STEPS.indexOf(currentStep)
   const progress = ((currentStepIndex + 1) / STEPS.length) * 100
@@ -172,21 +201,73 @@ export default function LogWeightPage() {
   }
 
   const handleSubmit = async () => {
+    if (!user) return
+    
     setIsSubmitting(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const supabase = createClient()
+      let photoUrl = null
+      
+      // Upload photo if present
+      if (formData.photo) {
+        const fileName = `${user.id}/${Date.now()}-progress.jpg`
+        const { publicUrl, error: uploadError } = await uploadToStorage(
+          'photos',
+          fileName,
+          formData.photo,
+          { contentType: formData.photo.type }
+        )
+        
+        if (uploadError) {
+          throw new Error('Failed to upload photo')
+        }
+        
+        photoUrl = publicUrl
+      }
+      
+      // Convert weight to kg for storage
+      const weightInKg = formData.weight_unit === 'lbs' 
+        ? parseFloat(formData.weight) / 2.20462 
+        : parseFloat(formData.weight)
+      
+      // Save body metrics
+      const { error } = await supabase
+        .from('body_metrics')
+        .insert({
+          user_id: user.id,
+          date: format(new Date(), 'yyyy-MM-dd'),
+          weight: weightInKg,
+          weight_unit: 'kg', // Always store in kg
+          body_fat_percentage: formData.body_fat_percentage,
+          body_fat_method: formData.method === 'simple' ? 'manual' : formData.method,
+          lean_body_mass: formData.body_fat_percentage 
+            ? weightInKg * (1 - formData.body_fat_percentage / 100) 
+            : null,
+          waist: formData.waist ? parseFloat(formData.waist) : null,
+          neck: formData.neck ? parseFloat(formData.neck) : null,
+          hip: formData.hip ? parseFloat(formData.hip) : null,
+          notes: formData.notes || null,
+          photo_url: photoUrl
+        })
+      
+      if (error) throw error
       
       toast({
         title: "Success!",
         description: "Your metrics have been logged successfully."
       })
       
+      // Clean up photo preview
+      if (formData.photoPreview) {
+        URL.revokeObjectURL(formData.photoPreview)
+      }
+      
       router.push('/dashboard')
-    } catch {
+    } catch (error) {
+      console.error('Submit error:', error)
       toast({
         title: "Error",
-        description: "Failed to save metrics. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to save metrics. Please try again.",
         variant: "destructive"
       })
     } finally {
@@ -200,6 +281,84 @@ export default function LogWeightPage() {
       ? parseFloat(formData.weight) / 2.20462 
       : parseFloat(formData.weight)
     return calculateFFMI(weight, profile.height, formData.body_fat_percentage)
+  }
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setIsUploadingPhoto(true)
+    try {
+      // Check browser support
+      const support = checkBrowserSupport()
+      if (!support.supported) {
+        toast({
+          title: "Browser not supported",
+          description: support.message,
+          variant: "destructive"
+        })
+        return
+      }
+
+      // Validate the file
+      const validation = validateImageFile(file)
+      if (!validation.isValid) {
+        toast({
+          title: "Invalid file",
+          description: validation.error,
+          variant: "destructive"
+        })
+        return
+      }
+
+      // Compress the image
+      const compressedBlob = await compressImage(file, {
+        maxSizeMB: 2,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true
+      })
+
+      // Create compressed file
+      const compressedFile = new File([compressedBlob], file.name, {
+        type: compressedBlob.type,
+        lastModified: Date.now()
+      })
+
+      // Create preview URL
+      const previewUrl = URL.createObjectURL(compressedFile)
+      
+      // Update form data
+      setFormData(prev => ({
+        ...prev,
+        photo: compressedFile,
+        photoPreview: previewUrl
+      }))
+
+      toast({
+        title: "Photo ready",
+        description: "Your photo has been processed and is ready to upload."
+      })
+    } catch (error) {
+      const message = getUploadErrorMessage(error)
+      toast({
+        title: "Photo processing failed",
+        description: message,
+        variant: "destructive"
+      })
+    } finally {
+      setIsUploadingPhoto(false)
+    }
+  }
+
+  const removePhoto = () => {
+    if (formData.photoPreview) {
+      URL.revokeObjectURL(formData.photoPreview)
+    }
+    setFormData(prev => ({
+      ...prev,
+      photo: null,
+      photoPreview: null
+    }))
   }
 
   const getBodyComposition = () => {
@@ -598,16 +757,57 @@ export default function LogWeightPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="text-center py-12 border-2 border-dashed border-linear-border rounded-lg">
-                  <Camera className="h-12 w-12 text-linear-text-tertiary mx-auto mb-4" />
-                  <p className="text-linear-text-secondary mb-4">
-                    No photo added
-                  </p>
-                  <Button variant="outline" className="border-linear-border">
-                    <Camera className="h-4 w-4 mr-2" />
-                    Take Photo
-                  </Button>
-                </div>
+                {!formData.photoPreview ? (
+                  <div className="text-center py-12 border-2 border-dashed border-linear-border rounded-lg">
+                    <input
+                      type="file"
+                      id="photo-upload"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                      disabled={isUploadingPhoto}
+                    />
+                    <Camera className="h-12 w-12 text-linear-text-tertiary mx-auto mb-4" />
+                    <p className="text-linear-text-secondary mb-4">
+                      {isUploadingPhoto ? 'Processing photo...' : 'No photo added'}
+                    </p>
+                    <label htmlFor="photo-upload">
+                      <Button 
+                        variant="outline" 
+                        className="border-linear-border"
+                        disabled={isUploadingPhoto}
+                        asChild
+                      >
+                        <span>
+                          <Camera className="h-4 w-4 mr-2" />
+                          {isUploadingPhoto ? 'Processing...' : 'Choose Photo'}
+                        </span>
+                      </Button>
+                    </label>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-linear-border">
+                      <Image
+                        src={formData.photoPreview}
+                        alt="Progress photo"
+                        fill
+                        className="object-cover"
+                      />
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="absolute top-2 right-2"
+                        onClick={removePhoto}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <p className="text-sm text-center text-linear-text-secondary">
+                      Photo ready to upload
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </>
           )}
@@ -691,6 +891,21 @@ export default function LogWeightPage() {
                     </>
                   )}
                 </div>
+
+                {/* Photo Preview */}
+                {formData.photoPreview && (
+                  <div className="space-y-2">
+                    <Label className="text-linear-text">Progress Photo</Label>
+                    <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-linear-border max-w-xs mx-auto">
+                      <Image
+                        src={formData.photoPreview}
+                        alt="Progress photo"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                )}
 
                 {/* Notes */}
                 <div className="space-y-2">

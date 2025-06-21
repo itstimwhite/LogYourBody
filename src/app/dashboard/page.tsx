@@ -278,7 +278,7 @@ const ProfilePanel = ({
               </div>
               <div className="text-2xl font-semibold text-linear-text">
                 {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
-                  ? calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi
+                  ? calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)
                   : '--'}
               </div>
               <div className="text-xs text-linear-text-tertiary mt-0.5">
@@ -302,7 +302,7 @@ const ProfilePanel = ({
                 <span className="text-sm font-medium text-linear-text">
                   {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
                     <>
-                      {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi} / 22
+                      {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)} / 22
                     </>
                   ) : (
                     '-- / 22'
@@ -312,7 +312,10 @@ const ProfilePanel = ({
               <Progress 
                 value={
                   displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
-                    ? Math.min(100, (parseFloat(calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi) / 22) * 100)
+                    ? (() => {
+                        const ffmi = calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage)
+                        return Math.min(100, (ffmi.normalized_ffmi / 22) * 100)
+                      })()
                     : 0
                 } 
                 className="h-2" 
