@@ -29,6 +29,13 @@ SUPABASE_JWT_SECRET=your-jwt-secret
 POSTGRES_DATABASE=postgres
 ```
 
+### AI Integration (Optional)
+
+```bash
+# OpenAI API Key (for PDF parsing of body composition reports)
+OPENAI_API_KEY=your-openai-api-key
+```
+
 ## Deployment Platforms
 
 ### Vercel

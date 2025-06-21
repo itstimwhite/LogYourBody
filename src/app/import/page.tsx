@@ -544,7 +544,7 @@ export default function ImportPage() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 max-w-4xl">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-4xl">
         {!parsedData ? (
           <Card className="bg-linear-card border-linear-border">
             <CardHeader>
@@ -576,12 +576,14 @@ export default function ImportPage() {
                       <p className="text-linear-text font-medium mb-3">
                         {uploadedFiles.length} file{uploadedFiles.length > 1 ? 's' : ''} selected
                       </p>
-                      <div className="space-y-2 max-h-32 overflow-y-auto">
+                      <div className="space-y-2 max-h-32 overflow-y-auto px-2">
                         {uploadedFiles.map((file, index) => (
                           <div key={index} className="flex items-center gap-2 text-sm text-linear-text-secondary">
-                            {getFileIcon(detectFileType(file))}
-                            <span className="truncate max-w-xs">{file.name}</span>
-                            <span className="text-xs">({(file.size / 1024 / 1024).toFixed(1)} MB)</span>
+                            <div className="flex-shrink-0">
+                              {getFileIcon(detectFileType(file))}
+                            </div>
+                            <span className="truncate flex-1 max-w-[200px] sm:max-w-xs">{file.name}</span>
+                            <span className="text-xs flex-shrink-0">({(file.size / 1024 / 1024).toFixed(1)} MB)</span>
                           </div>
                         ))}
                       </div>
@@ -629,7 +631,7 @@ export default function ImportPage() {
               {/* Info Section */}
               <div className="mt-6 space-y-4">
                 <h3 className="text-sm font-medium text-linear-text">Supported File Types</h3>
-                <div className="grid gap-3 text-sm">
+                <div className="grid gap-3 text-xs sm:text-sm">
                   <div className="flex gap-3">
                     <Image className="h-5 w-5 text-linear-text-secondary flex-shrink-0 mt-0.5" />
                     <div>
@@ -740,7 +742,7 @@ export default function ImportPage() {
                       {parsedData.entries.map((entry, index) => (
                         <div
                           key={index}
-                          className={`flex items-center gap-4 p-4 hover:bg-linear-card/50 cursor-pointer transition-colors ${
+                          className={`flex items-center gap-2 sm:gap-4 p-3 sm:p-4 hover:bg-linear-card/50 cursor-pointer transition-colors ${
                             selectedEntries.has(index) ? 'bg-linear-purple/5' : ''
                           }`}
                           onClick={() => handleEntryToggle(index)}
@@ -754,7 +756,7 @@ export default function ImportPage() {
                               <Check className="h-3 w-3 text-white" />
                             )}
                           </div>
-                          <div className="flex-1 grid grid-cols-2 md:grid-cols-4 gap-4">
+                          <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4">
                             <div>
                               <p className="text-xs text-linear-text-secondary">Date</p>
                               <p className="text-sm font-medium text-linear-text">
@@ -795,7 +797,7 @@ export default function ImportPage() {
             </Card>
 
             {/* Action Buttons */}
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Button
                 variant="outline"
                 onClick={() => {
@@ -803,7 +805,7 @@ export default function ImportPage() {
                   setUploadedFiles([])
                   setSelectedEntries(new Set())
                 }}
-                className="border-linear-border"
+                className="w-full sm:w-auto border-linear-border"
               >
                 <XIcon className="h-4 w-4 mr-2" />
                 Start Over
@@ -811,7 +813,7 @@ export default function ImportPage() {
               <Button
                 onClick={handleImport}
                 disabled={selectedEntries.size === 0}
-                className="flex-1 bg-linear-purple hover:bg-linear-purple/80"
+                className="w-full sm:flex-1 bg-linear-purple hover:bg-linear-purple/80"
               >
                 <CheckCircle className="h-4 w-4 mr-2" />
                 Import {selectedEntries.size} {selectedEntries.size === 1 ? 'Entry' : 'Entries'}
