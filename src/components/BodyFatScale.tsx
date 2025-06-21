@@ -10,18 +10,18 @@ interface BodyFatScaleProps {
 
 const BF_RANGES = {
   male: {
-    essential: { min: 2, max: 5, color: 'bg-red-500', label: 'Essential' },
-    athletes: { min: 6, max: 13, color: 'bg-orange-500', label: 'Athletes' },
-    fitness: { min: 14, max: 17, color: 'bg-green-500', label: 'Fitness' },
-    average: { min: 18, max: 24, color: 'bg-yellow-500', label: 'Average' },
-    obese: { min: 25, max: 100, color: 'bg-red-600', label: 'Obese' }
+    essential: { min: 2, max: 5, color: 'bg-gradient-to-r from-red-500/20 to-red-500/10', label: 'Essential' },
+    athletes: { min: 6, max: 13, color: 'bg-gradient-to-r from-blue-500/20 to-blue-500/10', label: 'Athletes' },
+    fitness: { min: 14, max: 17, color: 'bg-gradient-to-r from-green-500/20 to-green-500/10', label: 'Fitness' },
+    average: { min: 18, max: 24, color: 'bg-gradient-to-r from-yellow-500/20 to-yellow-500/10', label: 'Average' },
+    obese: { min: 25, max: 100, color: 'bg-gradient-to-r from-orange-500/20 to-orange-500/10', label: 'Obese' }
   },
   female: {
-    essential: { min: 10, max: 13, color: 'bg-red-500', label: 'Essential' },
-    athletes: { min: 14, max: 20, color: 'bg-orange-500', label: 'Athletes' },
-    fitness: { min: 21, max: 24, color: 'bg-green-500', label: 'Fitness' },
-    average: { min: 25, max: 31, color: 'bg-yellow-500', label: 'Average' },
-    obese: { min: 32, max: 100, color: 'bg-red-600', label: 'Obese' }
+    essential: { min: 10, max: 13, color: 'bg-gradient-to-r from-red-500/20 to-red-500/10', label: 'Essential' },
+    athletes: { min: 14, max: 20, color: 'bg-gradient-to-r from-blue-500/20 to-blue-500/10', label: 'Athletes' },
+    fitness: { min: 21, max: 24, color: 'bg-gradient-to-r from-green-500/20 to-green-500/10', label: 'Fitness' },
+    average: { min: 25, max: 31, color: 'bg-gradient-to-r from-yellow-500/20 to-yellow-500/10', label: 'Average' },
+    obese: { min: 32, max: 100, color: 'bg-gradient-to-r from-orange-500/20 to-orange-500/10', label: 'Obese' }
   }
 }
 
@@ -41,11 +41,11 @@ export function BodyFatScale({ currentBF, gender = 'male', className }: BodyFatS
   const goalEndPosition = (goalRange.max / maxDisplay) * 100
   
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("space-y-2", className)}>
       {/* Scale bar */}
-      <div className="relative h-10 rounded-lg overflow-hidden bg-linear-border/20">
-        {/* Background gradient showing BF ranges */}
-        <div className="absolute inset-0">
+      <div className="relative h-6 bg-linear-bg rounded border border-linear-border overflow-hidden">
+        {/* Background segments */}
+        <div className="absolute inset-0 flex">
           {Object.entries(ranges).map(([key, range]) => {
             const startPercent = (range.min / maxDisplay) * 100
             const endPercent = (Math.min(range.max, maxDisplay) / maxDisplay) * 100
@@ -54,7 +54,7 @@ export function BodyFatScale({ currentBF, gender = 'male', className }: BodyFatS
             return (
               <div
                 key={key}
-                className={cn(range.color, "opacity-20")}
+                className={cn(range.color)}
                 style={{
                   left: `${startPercent}%`,
                   width: `${width}%`,
@@ -66,68 +66,60 @@ export function BodyFatScale({ currentBF, gender = 'male', className }: BodyFatS
           })}
         </div>
         
-        {/* Goal range overlay */}
+        {/* Goal range overlay - subtle highlight */}
         <div
-          className="absolute h-full bg-green-500 opacity-40 rounded"
+          className="absolute h-full bg-linear-purple/10 border-x border-linear-purple/30"
           style={{
             left: `${goalStartPosition}%`,
             width: `${goalEndPosition - goalStartPosition}%`
           }}
         />
         
-        {/* Goal range borders */}
-        <div
-          className="absolute h-full border-l-2 border-green-600"
-          style={{ left: `${goalStartPosition}%` }}
-        />
-        <div
-          className="absolute h-full border-r-2 border-green-600"
-          style={{ left: `${goalEndPosition}%` }}
-        />
-        
         {/* Current BF% marker */}
         {currentPosition !== null && currentBF !== undefined && (
           <div
-            className="absolute top-1/2 -translate-y-1/2 w-0.5 h-8 bg-linear-text shadow-lg"
+            className="absolute top-0 bottom-0 w-0.5 bg-linear-text"
             style={{ left: `${currentPosition}%` }}
           >
-            <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-linear-card border border-linear-border px-2 py-0.5 rounded text-xs font-semibold text-linear-text whitespace-nowrap">
+            <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-linear-card border border-linear-border px-1.5 py-0.5 rounded text-xs font-medium text-linear-text whitespace-nowrap">
               {currentBF.toFixed(1)}%
             </div>
           </div>
         )}
       </div>
       
-      {/* Scale labels */}
-      <div className="relative h-4">
-        {/* Percentage markers */}
-        <div className="absolute inset-0 flex text-xs text-linear-text-tertiary">
-          <span className="absolute" style={{ left: '0%' }}>0%</span>
-          <span className="absolute" style={{ left: '28.5%', transform: 'translateX(-50%)' }}>10%</span>
-          <span className="absolute" style={{ left: '57%', transform: 'translateX(-50%)' }}>20%</span>
-          <span className="absolute" style={{ left: '85.5%', transform: 'translateX(-50%)' }}>30%</span>
-        </div>
-        
-        {/* Goal range label */}
-        <div
-          className="absolute -top-5 text-xs font-medium text-green-600 bg-linear-card px-1 rounded"
-          style={{
-            left: `${(goalStartPosition + goalEndPosition) / 2}%`,
-            transform: 'translateX(-50%)'
-          }}
-        >
-          Goal: {goalRange.min}-{goalRange.max}%
-        </div>
+      {/* Scale labels - minimalist approach */}
+      <div className="flex justify-between text-xs text-linear-text-tertiary">
+        <span>0</span>
+        <span>10</span>
+        <span>20</span>
+        <span>30%</span>
       </div>
       
-      {/* Legend */}
-      <div className="flex flex-wrap gap-3 text-xs mt-4">
-        {Object.entries(ranges).slice(0, 4).map(([key, range]) => (
-          <div key={key} className="flex items-center gap-1.5">
-            <div className={cn("w-2.5 h-2.5 rounded", range.color, "opacity-40")} />
-            <span className="text-linear-text-secondary">{range.label}</span>
-          </div>
-        ))}
+      {/* Info row */}
+      <div className="flex items-center justify-between text-xs">
+        {/* Current status */}
+        <div className="flex items-center gap-2">
+          {currentBF !== undefined && (
+            <>
+              <span className="text-linear-text-secondary">Current:</span>
+              <span className="font-medium text-linear-text">
+                {(() => {
+                  const category = Object.entries(ranges).find(([_, range]) => 
+                    currentBF >= range.min && currentBF <= range.max
+                  )?.[1]?.label || 'Unknown'
+                  return category
+                })()}
+              </span>
+            </>
+          )}
+        </div>
+        
+        {/* Goal indicator */}
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 bg-linear-purple/20 border border-linear-purple/30 rounded-sm" />
+          <span className="text-linear-text-secondary">Goal: {goalRange.min}-{goalRange.max}%</span>
+        </div>
       </div>
     </div>
   )
