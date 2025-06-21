@@ -99,13 +99,13 @@ export function PWAInstallPrompt() {
       <div className="bg-linear-card border border-linear-border rounded-2xl shadow-2xl p-4 sm:p-6">
         <button
           onClick={handleDismiss}
-          className="absolute top-4 right-4 text-linear-text-tertiary hover:text-linear-text transition-colors"
+          className="absolute top-2 right-2 p-2 text-linear-text-tertiary hover:text-linear-text transition-colors rounded-lg hover:bg-linear-border/50"
           aria-label="Dismiss"
         >
           <X className="h-5 w-5" />
         </button>
 
-        <div className="pr-8">
+        <div className="pr-10">
           <div className="flex items-start gap-4 mb-4">
             <div className="h-12 w-12 bg-linear-purple/10 rounded-xl flex items-center justify-center flex-shrink-0">
               <Smartphone className="h-6 w-6 text-white" />
