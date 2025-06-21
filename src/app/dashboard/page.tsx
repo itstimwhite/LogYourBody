@@ -989,38 +989,6 @@ export default function DashboardPage() {
             </TabsContent>
             
           </Tabs>
-
-          {/* Mobile Action Buttons - Floating */}
-          <div className="absolute top-4 right-4 z-20 flex gap-3 md:hidden">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  className="bg-linear-purple text-white hover:bg-linear-purple/90 shadow-lg font-medium"
-                  size="sm"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuItem onClick={() => router.push('/log')}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Log Metrics
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => router.push('/import')}>
-                  <Upload className="h-4 w-4 mr-2" />
-                  Bulk Import
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-              size="icon"
-              variant="ghost"
-              onClick={() => router.push('/settings')}
-              className="h-10 w-10 bg-linear-bg/80 text-linear-text-secondary shadow-lg backdrop-blur-sm transition-colors hover:bg-linear-card hover:text-linear-text"
-            >
-              <Settings className="h-4 w-4" />
-            </Button>
-          </div>
         </div>
 
         {/* Profile Panel - 1/3 on desktop */}

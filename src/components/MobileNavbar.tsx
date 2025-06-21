@@ -8,8 +8,8 @@ export function MobileNavbar() {
   const pathname = usePathname()
   const router = useRouter()
 
-  // Don't show navbar on log page
-  if (pathname === '/log') {
+  // Don't show navbar on log page or settings pages
+  if (pathname === '/log' || pathname.startsWith('/settings')) {
     return null
   }
 
