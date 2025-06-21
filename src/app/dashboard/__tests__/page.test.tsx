@@ -203,7 +203,6 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Weight')).toBeInTheDocument()
     expect(screen.getByText('Body Fat')).toBeInTheDocument()
     expect(screen.getByText('Lean Mass')).toBeInTheDocument()
-    expect(screen.getByText('Height')).toBeInTheDocument()
     expect(screen.getByText('FFMI')).toBeInTheDocument()
   })
 
@@ -316,6 +315,6 @@ describe('DashboardPage', () => {
     expect(screen.getByText('Weight Goal')).toBeInTheDocument()
     expect(screen.getByText('Body Fat Goal')).toBeInTheDocument()
     expect(screen.getByText('75%')).toBeInTheDocument()
-    expect(screen.getByText('60%')).toBeInTheDocument()
+    // Body fat goal now shows a scale instead of percentage text
   })
 })

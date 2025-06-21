@@ -33,6 +33,7 @@ import { createClient } from '@/lib/supabase/client'
 import { createTimelineData, getTimelineDisplayValues, TimelineEntry } from '@/utils/data-interpolation'
 import { Info } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+import { BodyFatScale } from '@/components/BodyFatScale'
 
 // Mock data for demonstration
 const mockMetrics: BodyMetrics = {
@@ -138,6 +139,25 @@ const ProfilePanel = ({
     ? getBodyFatCategory(displayValues.bodyFatPercentage, user.gender as 'male' | 'female')
     : null
 
+  // Calculate age from date of birth
+  const calculateAge = () => {
+    if (!user?.date_of_birth) return null
+    try {
+      const birthDate = new Date(user.date_of_birth)
+      const today = new Date()
+      let age = today.getFullYear() - birthDate.getFullYear()
+      const monthDiff = today.getMonth() - birthDate.getMonth()
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--
+      }
+      return age
+    } catch {
+      return null
+    }
+  }
+
+  const age = calculateAge()
+
   return (
     <div className="h-full overflow-y-auto bg-linear-card p-6">
       <div className="space-y-6">
@@ -147,6 +167,23 @@ const ProfilePanel = ({
             {user?.full_name || user?.email?.split('@')[0] || 'User'}
           </h2>
           <p className="text-sm text-linear-text-secondary">{user?.email}</p>
+          <div className="flex items-center gap-3 mt-2 text-sm text-linear-text-secondary">
+            {age && (
+              <>
+                <span>{age} years</span>
+                <span className="text-linear-border">•</span>
+              </>
+            )}
+            {user?.height && (
+              <>
+                <span>{formattedHeight}</span>
+                <span className="text-linear-border">•</span>
+              </>
+            )}
+            {user?.gender && (
+              <span className="capitalize">{user.gender}</span>
+            )}
+          </div>
         </div>
 
         {/* Current Stats */}
@@ -205,15 +242,6 @@ const ProfilePanel = ({
             <span className="font-medium text-linear-text">{formattedLeanBodyMass}</span>
           </div>
 
-          {/* Height */}
-          <div className="flex items-center justify-between py-3 border-b border-linear-border">
-            <div className="flex items-center gap-3">
-              <Ruler className="h-5 w-5 text-linear-text-tertiary" />
-              <span className="text-linear-text">Height</span>
-            </div>
-            <span className="font-medium text-linear-text">{formattedHeight}</span>
-          </div>
-
           {/* FFMI */}
           {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height && (
             <div className="flex items-center justify-between py-3 border-b border-linear-border">
@@ -251,7 +279,8 @@ const ProfilePanel = ({
         <div className="space-y-4">
           <h3 className="text-sm font-medium text-linear-text-secondary uppercase tracking-wider">Goals Progress</h3>
           
-          <div className="space-y-3">
+          <div className="space-y-4">
+            {/* Weight Goal */}
             <div>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-linear-text">Weight Goal</span>
@@ -260,12 +289,15 @@ const ProfilePanel = ({
               <Progress value={75} className="h-2" />
             </div>
             
+            {/* Body Fat Goal */}
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="mb-2">
                 <span className="text-sm text-linear-text">Body Fat Goal</span>
-                <span className="text-sm font-medium text-linear-text">60%</span>
               </div>
-              <Progress value={60} className="h-2" />
+              <BodyFatScale 
+                currentBF={displayValues?.bodyFatPercentage}
+                gender={user?.gender as 'male' | 'female' | undefined}
+              />
             </div>
           </div>
         </div>
