@@ -519,7 +519,7 @@ export default function ImportPage() {
         if (failCount > 0) {
           // Get first few error messages for display
           const errorMessages = uploadResults
-            .filter(r => r && !r.success && r.error)
+            .filter((r): r is NonNullable<typeof r> => r !== null && !r.success && !!r.error)
             .slice(0, 3)
             .map(r => r.error)
             .join(', ')
@@ -532,7 +532,7 @@ export default function ImportPage() {
           
           // Log all errors for debugging
           uploadResults
-            .filter(r => r && !r.success)
+            .filter((r): r is NonNullable<typeof r> => r !== null && !r.success)
             .forEach((result, idx) => {
               console.error(`Failed upload ${idx + 1}:`, result.error)
             })
