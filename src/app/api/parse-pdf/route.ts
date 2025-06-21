@@ -45,6 +45,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    console.log('Sending to OpenAI:', {
+      textLength: pdfText.length,
+      textPreview: pdfText.substring(0, 200) + '...'
+    })
+
     // Use OpenAI to extract body composition data
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -100,10 +105,23 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Error parsing PDF:', error)
+    
+    // Log more details about the error
+    if (error instanceof Error) {
+      console.error('Error details:', {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        // Check if it's an OpenAI specific error
+        isOpenAIError: error.message.includes('OpenAI') || error.message.includes('API')
+      })
+    }
+    
     return NextResponse.json(
       { 
         error: 'Failed to parse PDF', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+        details: error instanceof Error ? error.message : 'Unknown error',
+        errorType: error instanceof Error ? error.name : 'Unknown'
       },
       { status: 500 }
     )
