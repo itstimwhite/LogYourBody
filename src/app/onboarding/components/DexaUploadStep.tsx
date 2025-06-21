@@ -75,36 +75,127 @@ export function DexaUploadStep() {
       const formData = new FormData()
       formData.append('file', file)
       
-      const response = await fetch('/api/parse-pdf', {
+      // Try the new PDF parser first
+      let response = await fetch('/api/parse-pdf-v2', {
         method: 'POST',
         body: formData,
       })
       
+      // If v2 fails, fallback to original
       if (!response.ok) {
-        throw new Error('Failed to process PDF')
+        console.log('PDF v2 failed, trying original parser...')
+        response = await fetch('/api/parse-pdf', {
+          method: 'POST',
+          body: formData,
+        })
       }
       
-      const data = await response.json()
+      const result = await response.json()
       
-      // Update onboarding data with parsed values
-      updateData({
-        weight: data.weight,
-        bodyFatPercentage: data.bodyFatPercentage,
-        leanMass: data.leanMass,
-        fatMass: data.fatMass,
-        boneMass: data.boneMass,
-        scanDate: data.scanDate
-      })
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to process PDF')
+      }
+      
+      // Check if we got successful data
+      if (!result.success || !result.data) {
+        throw new Error('No data extracted from PDF')
+      }
+      
+      const data = result.data
+      
+      // Check if we have multiple scans
+      if (data.scans && Array.isArray(data.scans) && data.scans.length > 0) {
+        // Store all scans in the context
+        updateData({
+          extractedScans: data.scans,
+          scanCount: data.scans.length,
+          filename: result.filename
+        })
+        
+        // If there's only one scan, also populate the form fields
+        if (data.scans.length === 1) {
+          const scan = data.scans[0]
+          const updates: any = {}
+          
+          if (scan.weight) {
+            updates.weight = scan.weight_unit === 'lbs' ? scan.weight * 0.453592 : scan.weight
+          }
+          if (scan.body_fat_percentage) {
+            updates.bodyFatPercentage = scan.body_fat_percentage
+          }
+          if (scan.muscle_mass) {
+            updates.leanMass = scan.muscle_mass
+          }
+          if (scan.date) {
+            updates.scanDate = scan.date
+          }
+          if (scan.bone_mass) {
+            updates.boneMass = scan.bone_mass
+          }
+          
+          // Calculate fat mass if we have weight and body fat percentage
+          if (updates.weight && updates.bodyFatPercentage) {
+            updates.fatMass = updates.weight * (updates.bodyFatPercentage / 100)
+          }
+          
+          updateData(updates)
+        }
+      } else {
+        // Fallback to old format if no scans array
+        const updates: any = {}
+        
+        if (data.weight) {
+          updates.weight = data.weight_unit === 'lbs' ? data.weight * 0.453592 : data.weight
+        }
+        if (data.body_fat_percentage) {
+          updates.bodyFatPercentage = data.body_fat_percentage
+        }
+        if (data.muscle_mass) {
+          updates.leanMass = data.muscle_mass
+        }
+        if (data.date) {
+          updates.scanDate = data.date
+        }
+        
+        if (updates.weight && updates.bodyFatPercentage) {
+          updates.fatMass = updates.weight * (updates.bodyFatPercentage / 100)
+        }
+        
+        updateData(updates)
+      }
       
       toast({
         title: 'PDF processed successfully',
-        description: 'We extracted your body composition data.',
+        description: data.scans && data.scans.length > 0 
+          ? `Found ${data.scans.length} scan${data.scans.length > 1 ? 's' : ''} in your PDF`
+          : 'We extracted your body composition data.',
       })
       
       nextStep()
     } catch (err) {
       console.error('Error processing PDF:', err)
-      setError('Failed to process PDF. Please try again or skip this step.')
+      
+      let errorMessage = 'Failed to process PDF. Please try again or skip this step.'
+      
+      if (err instanceof Error) {
+        if (err.message.includes('OpenAI')) {
+          errorMessage = 'AI service is temporarily unavailable. Please try again later or skip this step.'
+        } else if (err.message.includes('No data extracted')) {
+          errorMessage = 'Could not extract body composition data from this PDF. Please ensure it\'s a DEXA or body composition scan.'
+        } else if (err.message.includes('text from PDF')) {
+          errorMessage = 'This PDF appears to be image-based. Please try a text-based PDF or skip this step.'
+        } else {
+          errorMessage = err.message
+        }
+      }
+      
+      setError(errorMessage)
+      
+      toast({
+        title: 'Error processing PDF',
+        description: errorMessage,
+        variant: 'destructive'
+      })
     } finally {
       setIsProcessing(false)
     }
@@ -178,6 +269,12 @@ export function DexaUploadStep() {
         <p className="text-sm text-linear-text-secondary">
           We'll extract your body composition data automatically from the PDF.
         </p>
+        
+        <div className="mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+          <p className="text-sm text-amber-800 dark:text-amber-300">
+            <strong>Tip:</strong> If PDF upload fails, try taking a screenshot of your scan results and uploading it as an image instead.
+          </p>
+        </div>
 
         <div className="flex gap-3 pt-4">
           <Button

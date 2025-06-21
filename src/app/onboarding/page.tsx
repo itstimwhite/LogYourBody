@@ -7,14 +7,15 @@ import { OnboardingProvider, useOnboarding } from '@/contexts/OnboardingContext'
 import { WelcomeStep } from './components/WelcomeStep'
 import { DexaUploadStep } from './components/DexaUploadStep'
 import { DataConfirmationStep } from './components/DataConfirmationStep'
-import { ProfileSetupStep } from './components/ProfileSetupStep'
+import { MultiScanConfirmationStep } from './components/MultiScanConfirmationStep'
+import { ProfileSetupStepV2 } from './components/ProfileSetupStepV2'
 import { NotificationsStep } from './components/NotificationsStep'
 import { CompletionStep } from './components/CompletionStep'
 import { Progress } from '@/components/ui/progress'
 import { Loader2 } from 'lucide-react'
 
 function OnboardingFlow() {
-  const { currentStep, totalSteps } = useOnboarding()
+  const { currentStep, totalSteps, data } = useOnboarding()
   const progress = (currentStep / totalSteps) * 100
 
   const renderStep = () => {
@@ -24,9 +25,13 @@ function OnboardingFlow() {
       case 2:
         return <DexaUploadStep />
       case 3:
+        // Show multi-scan confirmation if we have multiple scans
+        if (data.extractedScans && data.extractedScans.length > 1) {
+          return <MultiScanConfirmationStep />
+        }
         return <DataConfirmationStep />
       case 4:
-        return <ProfileSetupStep />
+        return <ProfileSetupStepV2 />
       case 5:
         return <NotificationsStep />
       case 6:

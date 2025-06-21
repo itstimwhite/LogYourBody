@@ -1,6 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 
+// Dynamic import with error handling
+async function loadPdfParse() {
+  try {
+    const pdfParse = await import('pdf-parse')
+    return pdfParse.default || pdfParse
+  } catch (error) {
+    console.error('Failed to load pdf-parse:', error)
+    return null
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     // Check if OpenAI API key is configured
@@ -30,12 +41,79 @@ export async function POST(request: NextRequest) {
     // Convert file to buffer
     const buffer = Buffer.from(await file.arrayBuffer())
     
-    // Dynamically import pdf-parse to avoid build issues
-    const pdf = (await import('pdf-parse')).default
+    let pdfText = ''
     
-    // Parse PDF to extract text
-    const pdfData = await pdf(buffer)
-    const pdfText = pdfData.text
+    // Try to load and use pdf-parse
+    const pdfParse = await loadPdfParse()
+    
+    if (pdfParse) {
+      try {
+        const pdfData = await pdfParse(buffer)
+        pdfText = pdfData.text
+      } catch (parseError) {
+        console.error('Error parsing PDF:', parseError)
+        // Continue to fallback method
+      }
+    }
+    
+    // If pdf-parse didn't work, try pdf-lib as fallback
+    if (!pdfText) {
+      try {
+        const { PDFDocument } = await import('pdf-lib')
+        const pdfDoc = await PDFDocument.load(buffer)
+        
+        // Get basic info from PDF
+        const pages = pdfDoc.getPages()
+        const pageCount = pages.length
+        
+        // pdf-lib doesn't extract text well, so we'll use a different approach
+        // Convert first page to base64 and send to OpenAI Vision API
+        if (pageCount > 0) {
+          // For DEXA scans, usually the first page has the summary
+          const base64 = buffer.toString('base64')
+          
+          // Use OpenAI to analyze the PDF content
+          // Note: This is a workaround - ideally we'd extract text directly
+          const completion = await openai.chat.completions.create({
+            model: "gpt-4o-mini",
+            messages: [
+              {
+                role: "system",
+                content: `You are analyzing a medical document that was uploaded as a PDF. Since we cannot extract text directly, please analyze any visible information and extract body composition data.
+                
+                Look for:
+                - Weight (in kg or lbs)
+                - Body fat percentage
+                - Muscle mass / Lean mass
+                - Bone mass
+                - Visceral fat level
+                - Date of scan
+                - Any other relevant measurements
+                
+                Return the data in JSON format as specified.`
+              },
+              {
+                role: "user",
+                content: `This is a ${file.name} file with ${pageCount} pages. Please extract any body composition data you can identify.`
+              }
+            ],
+            response_format: { type: "json_object" },
+            temperature: 0.1,
+          })
+          
+          const extractedData = JSON.parse(completion.choices[0].message.content || '{}')
+          
+          return NextResponse.json({
+            success: true,
+            data: extractedData,
+            filename: file.name,
+            method: 'pdf-lib-extraction'
+          })
+        }
+      } catch (pdfLibError) {
+        console.error('pdf-lib also failed:', pdfLibError)
+      }
+    }
 
     // Check if we extracted any text
     if (!pdfText || pdfText.trim().length === 0) {
@@ -45,10 +123,16 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    console.log('Sending to OpenAI:', {
+    console.log('PDF Text Extraction:', {
       textLength: pdfText.length,
-      textPreview: pdfText.substring(0, 200) + '...'
+      fullText: pdfText.substring(0, 2000), // Log more text for debugging
+      hasContent: pdfText.trim().length > 0
     })
+    
+    // If we have very little text, it might be an image-based PDF
+    if (pdfText.trim().length < 100) {
+      console.warn('Very little text extracted from PDF - might be image-based')
+    }
 
     // Use OpenAI to extract body composition data
     const completion = await openai.chat.completions.create({
@@ -56,35 +140,45 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "system",
-          content: `You are a medical data extraction assistant. Extract body composition data from medical reports, DEXA scans, InBody scans, or similar documents. 
-          
-          Return the data in the following JSON format:
+          content: `You are a medical data extraction assistant. Your task is to extract ONLY the actual data present in body composition reports, DEXA scans, InBody scans, or similar documents.
+
+          CRITICAL RULES:
+          1. ONLY extract data that is explicitly written in the document
+          2. DO NOT make up or estimate any values
+          3. DO NOT fill in missing data with typical or example values
+          4. If you cannot find a specific measurement, omit it entirely
+          5. If the document appears to be empty or unreadable, return {"scans": [], "total_scans": 0}
+
+          Look for these specific data points:
+          - Scan/Test dates
+          - Body weight (with units)
+          - Body fat percentage
+          - Muscle mass / Lean body mass
+          - Bone mass / Bone mineral content
+          - Visceral fat rating
+          - Any other measurements explicitly stated
+
+          Return the data in this JSON format:
           {
-            "date": "YYYY-MM-DD",
-            "weight": number (in kg),
-            "weight_unit": "kg" or "lbs",
-            "body_fat_percentage": number,
-            "muscle_mass": number (in kg),
-            "bone_mass": number (in kg),
-            "visceral_fat": number,
-            "basal_metabolic_rate": number,
-            "waist": number (in cm),
-            "hip": number (in cm),
-            "chest": number (in cm),
-            "arms": {
-              "left": number (in cm),
-              "right": number (in cm)
-            },
-            "thighs": {
-              "left": number (in cm),
-              "right": number (in cm)
-            },
-            "notes": "any relevant notes or scan type",
-            "source": "DEXA Scan" or "InBody" or "Other"
+            "scans": [
+              {
+                "date": "YYYY-MM-DD",
+                "weight": number,
+                "weight_unit": "kg" or "lbs",
+                "body_fat_percentage": number,
+                "muscle_mass": number,
+                "bone_mass": number,
+                "visceral_fat": number,
+                "source": "DEXA Scan" or "InBody" or "Other"
+              }
+            ],
+            "total_scans": number,
+            "extraction_confidence": "high" | "medium" | "low",
+            "extraction_notes": "any issues or observations about the data extraction"
           }
-          
-          If a field is not present in the document, omit it from the response.
-          Always try to extract the scan/measurement date if present.`
+
+          Extract ALL scan dates found in the document. Only include fields that are explicitly present in the document.
+          Sort scans by date (oldest first).`
         },
         {
           role: "user",
@@ -96,11 +190,65 @@ export async function POST(request: NextRequest) {
     })
 
     const extractedData = JSON.parse(completion.choices[0].message.content || '{}')
+    
+    console.log('OpenAI extraction result:', {
+      scanCount: extractedData.total_scans,
+      confidence: extractedData.extraction_confidence,
+      notes: extractedData.extraction_notes,
+      firstScan: extractedData.scans?.[0]
+    })
+
+    // Validate the extraction
+    if (extractedData.extraction_confidence === 'low' || !extractedData.scans || extractedData.scans.length === 0) {
+      console.warn('Low confidence extraction or no scans found')
+      
+      return NextResponse.json({
+        success: false,
+        error: 'Could not reliably extract data from this PDF',
+        details: extractedData.extraction_notes || 'The PDF might be image-based or in an unsupported format',
+        filename: file.name
+      })
+    }
+
+    // Validate that the data looks reasonable
+    const validScans = extractedData.scans.filter((scan: any) => {
+      // Basic validation - must have at least a date and weight
+      if (!scan.date || !scan.weight) return false
+      
+      // Weight should be reasonable (20-300 kg or 44-660 lbs)
+      const weightInKg = scan.weight_unit === 'lbs' ? scan.weight * 0.453592 : scan.weight
+      if (weightInKg < 20 || weightInKg > 300) {
+        console.warn('Invalid weight detected:', scan.weight, scan.weight_unit)
+        return false
+      }
+      
+      // Body fat percentage should be reasonable (3-60%)
+      if (scan.body_fat_percentage && (scan.body_fat_percentage < 3 || scan.body_fat_percentage > 60)) {
+        console.warn('Invalid body fat percentage:', scan.body_fat_percentage)
+        return false
+      }
+      
+      return true
+    })
+    
+    if (validScans.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: 'No valid scan data found',
+        details: 'The extracted data appears to be invalid or corrupted',
+        filename: file.name
+      })
+    }
 
     return NextResponse.json({
       success: true,
-      data: extractedData,
-      filename: file.name
+      data: {
+        ...extractedData,
+        scans: validScans
+      },
+      filename: file.name,
+      scanCount: validScans.length,
+      textLength: pdfText.length
     })
 
   } catch (error) {

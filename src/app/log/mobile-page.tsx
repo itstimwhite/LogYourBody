@@ -17,14 +17,15 @@ import { toast } from '@/hooks/use-toast'
 import { 
   ArrowLeft, 
   ArrowRight,
-  Scale,
   Ruler,
   CheckCircle,
   Camera,
   Calculator,
   X,
   Check,
-  Percent
+  Percent,
+  User,
+  AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -456,11 +457,26 @@ export default function MobileLogPage() {
                     </p>
                   </div>
 
+                  {/* Weight requirement message */}
+                  <div className="flex items-start gap-2 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                    <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                    <div className="text-sm text-amber-800 dark:text-amber-300">
+                      <p className="font-medium">Weight entry is required</p>
+                      <p className="text-amber-700 dark:text-amber-400 mt-1">
+                        Tap the box below to enter your weight
+                      </p>
+                    </div>
+                  </div>
+
                   <button
                     onClick={() => setShowWeightModal(true)}
                     className="w-full"
                   >
-                    <div className="bg-linear-card border-2 border-linear-border rounded-2xl p-8 text-center hover:border-linear-purple/50 transition-colors">
+                    <div className={`border-2 rounded-2xl p-8 text-center transition-all ${
+                      formData.weight 
+                        ? 'bg-linear-card border-linear-border hover:border-linear-purple/50' 
+                        : 'bg-linear-purple/10 border-linear-purple hover:bg-linear-purple/20 animate-pulse'
+                    }`}>
                       {formData.weight ? (
                         <div className="space-y-1">
                           <div className="text-5xl font-bold text-linear-text">
@@ -472,8 +488,8 @@ export default function MobileLogPage() {
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <Scale className="h-12 w-12 mx-auto text-linear-text-tertiary" />
-                          <div className="text-xl text-linear-text-secondary">
+                          <User className="h-12 w-12 mx-auto text-linear-purple" />
+                          <div className="text-xl text-linear-text font-medium">
                             Tap to enter weight
                           </div>
                         </div>
@@ -939,7 +955,11 @@ export default function MobileLogPage() {
                      (formData.method === '3-site' && profile.gender === 'male' && 
                       (!formData.chest || !formData.abdominal || !formData.thigh))))
                 }
-                className="flex-1 bg-linear-purple hover:bg-linear-purple/90 text-white"
+                className={`flex-1 bg-linear-purple hover:bg-linear-purple/90 text-white transition-all ${
+                  currentStep === 'weight' && formData.weight
+                    ? 'animate-glow-pulse' 
+                    : ''
+                }`}
               >
                 Next
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -997,6 +1017,22 @@ export default function MobileLogPage() {
           <DialogHeader>
             <DialogTitle className="text-linear-text text-center">Set Weight</DialogTitle>
           </DialogHeader>
+          {/* Direct input option for mobile */}
+          <div className="mb-4">
+            <Input
+              type="number"
+              inputMode="decimal"
+              step="0.1"
+              placeholder={`Enter weight in ${formData.weight_unit}`}
+              value={formData.weight}
+              onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+              className="text-center text-2xl font-bold h-14 bg-linear-bg border-linear-border"
+              autoFocus
+            />
+          </div>
+          <div className="text-center text-sm text-linear-text-secondary mb-4">
+            Or use the wheel picker below
+          </div>
           <div className="py-8">
             <WeightWheelPicker
               weight={parseFloat(formData.weight) || 70}

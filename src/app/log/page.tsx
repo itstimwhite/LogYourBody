@@ -17,12 +17,13 @@ import { toast } from '@/hooks/use-toast'
 import { 
   ArrowLeft, 
   ArrowRight,
-  Scale,
   Ruler,
   CheckCircle,
   Camera,
   Calculator,
-  X
+  X,
+  User,
+  AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -38,7 +39,6 @@ import { uploadToStorage } from '@/utils/storage-utils'
 import { createClient } from '@/lib/supabase/client'
 import { getProfile } from '@/lib/supabase/profile'
 import Image from 'next/image'
-import { MobileNavbar } from '@/components/MobileNavbar'
 import dynamic from 'next/dynamic'
 import { useMediaQuery } from '@/hooks/use-media-query'
 
@@ -460,13 +460,23 @@ export default function LogWeightPage() {
               <CardHeader>
                 <div className="flex items-center gap-3 mb-2">
                   <div className="h-10 w-10 rounded-lg bg-linear-purple/10 flex items-center justify-center">
-                    <Scale className="h-5 w-5 text-linear-text" />
+                    <User className="h-5 w-5 text-linear-text" />
                   </div>
                   <div>
                     <CardTitle className="text-linear-text">Current Weight</CardTitle>
                     <CardDescription className="text-linear-text-secondary">
                       What's your weight today?
                     </CardDescription>
+                  </div>
+                </div>
+                {/* Weight requirement message */}
+                <div className="flex items-start gap-2 mt-4 p-3 bg-amber-50 dark:bg-amber-950/20 rounded-lg border border-amber-200 dark:border-amber-800">
+                  <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-amber-800 dark:text-amber-300">
+                    <p className="font-medium">Weight entry is required</p>
+                    <p className="text-amber-700 dark:text-amber-400 mt-1">
+                      Please enter your current weight to continue with body composition tracking.
+                    </p>
                   </div>
                 </div>
               </CardHeader>
@@ -492,13 +502,17 @@ export default function LogWeightPage() {
                 {/* Action Buttons */}
                 <div className="space-y-3">
                   <Button
-                    variant="outline"
+                    variant={formData.weight ? "outline" : "default"}
                     size="lg"
-                    className="w-full h-16 text-lg"
+                    className={`w-full h-16 text-lg transition-all ${
+                      !formData.weight 
+                        ? 'bg-linear-purple hover:bg-linear-purple/90 text-white shadow-lg animate-pulse' 
+                        : ''
+                    }`}
                     onClick={() => setShowWeightModal(true)}
                   >
-                    <Scale className="h-5 w-5 mr-3" />
-                    {formData.weight ? 'Change Weight' : 'Set Weight'}
+                    <User className="h-5 w-5 mr-3" />
+                    {formData.weight ? 'Change Weight' : 'Set Your Weight'}
                   </Button>
 
                   {/* Unit Toggle */}
@@ -999,7 +1013,11 @@ export default function LogWeightPage() {
                      (formData.method === '3-site' && profile.gender === 'male' && 
                       (!formData.chest || !formData.abdominal || !formData.thigh))))
                 }
-                className="bg-linear-purple hover:bg-linear-purple/80 text-white"
+                className={`bg-linear-purple hover:bg-linear-purple/80 text-white transition-all ${
+                  currentStep === 'weight' && formData.weight && !isSubmitting
+                    ? 'animate-glow-pulse' 
+                    : ''
+                }`}
               >
                 Next
                 <ArrowRight className="h-4 w-4 ml-2" />
@@ -1015,6 +1033,22 @@ export default function LogWeightPage() {
           <DialogHeader>
             <DialogTitle className="text-linear-text text-center">Set Weight</DialogTitle>
           </DialogHeader>
+          {/* Direct input option */}
+          <div className="mb-4">
+            <Input
+              type="number"
+              inputMode="decimal"
+              step="0.1"
+              placeholder={`Enter weight in ${formData.weight_unit}`}
+              value={formData.weight}
+              onChange={(e) => setFormData(prev => ({ ...prev, weight: e.target.value }))}
+              className="text-center text-2xl font-bold h-14 bg-linear-bg border-linear-border"
+              autoFocus
+            />
+          </div>
+          <div className="text-center text-sm text-linear-text-secondary mb-4">
+            Or use the wheel picker below
+          </div>
           <div className="py-8">
             <WeightWheelPicker
               weight={parseFloat(formData.weight) || 70}

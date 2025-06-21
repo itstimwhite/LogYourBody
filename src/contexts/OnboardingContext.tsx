@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from './AuthContext'
+import { formatDateForDB } from '@/utils/date-utils'
 
 interface OnboardingData {
   // DEXA scan data
@@ -12,6 +13,13 @@ interface OnboardingData {
   fatMass?: number
   boneMass?: number
   scanDate?: string
+  
+  // Multiple scans data
+  extractedScans?: any[]
+  scanCount?: number
+  filename?: string
+  confirmedScans?: any[]
+  selectedScanCount?: number
   
   // Profile data
   fullName?: string
@@ -85,13 +93,33 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       
       if (profileError) throw profileError
       
-      // Save initial body metrics if we have DEXA data
-      if (data.weight && data.bodyFatPercentage) {
+      // Save body metrics - either multiple scans or single entry
+      if (data.confirmedScans && data.confirmedScans.length > 0) {
+        // Multiple scans from PDF
+        const metricsToInsert = data.confirmedScans.map(scan => ({
+          user_id: user.id,
+          date: formatDateForDB(scan.date),
+          weight: scan.weight_unit === 'lbs' ? scan.weight * 0.453592 : scan.weight, // Convert to kg
+          weight_unit: 'kg',
+          body_fat_percentage: scan.body_fat_percentage || null,
+          body_fat_method: 'dexa',
+          lean_body_mass: scan.muscle_mass || null,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }))
+        
+        const { error: metricsError } = await supabase
+          .from('body_metrics')
+          .insert(metricsToInsert)
+        
+        if (metricsError) throw metricsError
+      } else if (data.weight && data.bodyFatPercentage) {
+        // Single entry (manual or single scan)
         const { error: metricsError } = await supabase
           .from('body_metrics')
           .insert({
             user_id: user.id,
-            date: data.scanDate || new Date().toISOString(),
+            date: data.scanDate ? formatDateForDB(data.scanDate) : formatDateForDB(new Date()),
             weight: data.weight,
             weight_unit: 'lbs',
             body_fat_percentage: data.bodyFatPercentage,
