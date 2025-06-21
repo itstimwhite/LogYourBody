@@ -147,3 +147,57 @@
     display: none;  /* Chrome, Safari and Opera */
   }
 }
+
+/* Custom slider styles */
+@layer components {
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  
+  .slider::-webkit-slider-track {
+    background: hsl(var(--linear-border));
+    height: 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    background: hsl(var(--linear-text));
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -0.25rem;
+    transition: all 0.2s ease;
+  }
+  
+  .slider::-webkit-slider-thumb:hover {
+    background: hsl(var(--primary));
+    transform: scale(1.2);
+  }
+  
+  .slider::-moz-range-track {
+    background: hsl(var(--linear-border));
+    height: 0.5rem;
+    border-radius: 0.25rem;
+  }
+  
+  .slider::-moz-range-thumb {
+    background: hsl(var(--linear-text));
+    width: 1rem;
+    height: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s ease;
+  }
+  
+  .slider::-moz-range-thumb:hover {
+    background: hsl(var(--primary));
+    transform: scale(1.2);
+  }
+}

@@ -21,7 +21,7 @@ import {
   Upload
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { BodyMetrics, UserProfile } from '@/types/body-metrics'
+import { BodyMetrics, UserProfile, ProgressPhoto } from '@/types/body-metrics'
 import { calculateFFMI, getBodyFatCategory } from '@/utils/body-calculations'
 import { getAvatarUrl } from '@/utils/avatar-utils'
 import { cn } from '@/lib/utils'
@@ -30,6 +30,9 @@ import { useNetworkStatus } from '@/hooks/use-network-status'
 import { ensurePublicUrl } from '@/utils/storage-utils'
 import { getProfile } from '@/lib/supabase/profile'
 import { createClient } from '@/lib/supabase/client'
+import { createTimelineData, getTimelineDisplayValues, TimelineEntry } from '@/utils/data-interpolation'
+import { Info } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 // Mock data for demonstration
 const mockMetrics: BodyMetrics = {
@@ -118,20 +121,21 @@ const AvatarDisplay = ({
 
 // Profile Panel component
 const ProfilePanel = ({ 
-  metrics, 
+  entry,
   user, 
   formattedWeight,
   formattedHeight,
   formattedLeanBodyMass 
 }: {
-  metrics: BodyMetrics | null
+  entry: TimelineEntry | null
   user: UserProfile | null
   formattedWeight: string
   formattedHeight: string
   formattedLeanBodyMass: string
 }) => {
-  const bodyFatCategory = metrics?.body_fat_percentage && user?.gender
-    ? getBodyFatCategory(metrics.body_fat_percentage, user.gender as 'male' | 'female')
+  const displayValues = entry ? getTimelineDisplayValues(entry) : null
+  const bodyFatCategory = displayValues?.bodyFatPercentage && user?.gender
+    ? getBodyFatCategory(displayValues.bodyFatPercentage, user.gender as 'male' | 'female')
     : null
 
   return (
@@ -165,9 +169,25 @@ const ProfilePanel = ({
               <span className="text-linear-text">Body Fat</span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="font-medium text-linear-text">
-                {metrics?.body_fat_percentage?.toFixed(1) || '--'}%
-              </span>
+              <div className="flex items-center gap-1">
+                <span className="font-medium text-linear-text">
+                  {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}%
+                </span>
+                {displayValues?.isInferred && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-3 w-3 text-linear-text-tertiary" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Interpolated value ({displayValues.confidenceLevel} confidence)
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
               {bodyFatCategory && (
                 <Badge variant="secondary" className="text-xs">
                   {bodyFatCategory}
@@ -195,7 +215,7 @@ const ProfilePanel = ({
           </div>
 
           {/* FFMI */}
-          {metrics && user?.height && (
+          {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height && (
             <div className="flex items-center justify-between py-3 border-b border-linear-border">
               <div className="flex items-center gap-3">
                 <Target className="h-5 w-5 text-linear-text-tertiary" />
@@ -203,11 +223,25 @@ const ProfilePanel = ({
               </div>
               <div className="flex items-center gap-2">
                 <span className="font-medium text-linear-text">
-                  {calculateFFMI(metrics.weight!, user.height, metrics.body_fat_percentage!).normalized_ffmi}
+                  {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).normalized_ffmi}
                 </span>
                 <Badge variant="secondary" className="text-xs">
-                  {calculateFFMI(metrics.weight!, user.height, metrics.body_fat_percentage!).interpretation.replace('_', ' ')}
+                  {calculateFFMI(displayValues.weight, user.height, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')}
                 </Badge>
+                {displayValues.isInferred && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <Info className="h-3 w-3 text-linear-text-tertiary" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs">
+                          Calculated from interpolated values
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
               </div>
             </div>
           )}
@@ -242,42 +276,95 @@ const ProfilePanel = ({
 
 // Timeline component
 const TimelineSlider = ({ 
-  metrics, 
+  timeline, 
   selectedIndex, 
   onIndexChange 
 }: {
-  metrics: BodyMetrics[]
+  timeline: TimelineEntry[]
   selectedIndex: number
   onIndexChange: (index: number) => void
 }) => {
-  if (metrics.length === 0) return null
+  if (timeline.length === 0) return null
 
   return (
     <div className="bg-linear-card border-t border-linear-border p-4">
       <div className="flex items-center justify-between mb-2">
         <span className="text-xs text-linear-text-secondary">Timeline</span>
         <span className="text-xs text-linear-text-secondary">
-          {selectedIndex + 1} of {metrics.length}
+          {selectedIndex + 1} of {timeline.length}
         </span>
       </div>
-      <input
-        type="range"
-        min={0}
-        max={metrics.length - 1}
-        value={selectedIndex}
-        onChange={(e) => onIndexChange(parseInt(e.target.value))}
-        className="w-full h-2 bg-linear-border rounded-lg appearance-none cursor-pointer slider"
-      />
+      <div className="relative">
+        <input
+          type="range"
+          min={0}
+          max={timeline.length - 1}
+          value={selectedIndex}
+          onChange={(e) => onIndexChange(parseInt(e.target.value))}
+          className="w-full h-2 bg-linear-border rounded-lg appearance-none cursor-pointer slider relative z-10 focus:outline-none"
+        />
+        {/* Photo indicators */}
+        <div className="absolute inset-0 flex items-center pointer-events-none">
+          {timeline.map((entry, index) => {
+            const position = timeline.length > 1 ? (index / (timeline.length - 1)) * 100 : 50
+            const hasPhoto = !!entry.photo
+            const hasMetrics = !!entry.metrics
+            const hasInferred = !!entry.inferredData
+            
+            if (!hasPhoto && !hasMetrics) return null
+            
+            return (
+              <div
+                key={index}
+                className={cn(
+                  "absolute w-2 h-2 rounded-full",
+                  hasPhoto && hasMetrics && "bg-green-500",
+                  hasPhoto && !hasMetrics && hasInferred && "bg-blue-500",
+                  hasPhoto && !hasMetrics && !hasInferred && "bg-purple-500",
+                  !hasPhoto && hasMetrics && "bg-gray-400"
+                )}
+                style={{ left: `${position}%`, transform: 'translateX(-50%)' }}
+                title={
+                  hasPhoto && hasMetrics ? "Photo & data" :
+                  hasPhoto && hasInferred ? "Photo with interpolated data" :
+                  hasPhoto ? "Photo only" :
+                  "Data only"
+                }
+              />
+            )
+          })}
+        </div>
+      </div>
       <div className="flex items-center justify-between mt-2">
         <span className="text-xs text-linear-text-secondary">
-          {format(new Date(metrics[0].date), 'MMM d')}
+          {format(new Date(timeline[0].date), 'MMM d')}
         </span>
         <span className="text-xs font-medium text-linear-text">
-          {format(new Date(metrics[selectedIndex].date), 'PPP')}
+          {format(new Date(timeline[selectedIndex].date), 'PPP')}
         </span>
         <span className="text-xs text-linear-text-secondary">
-          {format(new Date(metrics[metrics.length - 1].date), 'MMM d')}
+          {format(new Date(timeline[timeline.length - 1].date), 'MMM d')}
         </span>
+      </div>
+      
+      {/* Legend */}
+      <div className="flex items-center gap-4 mt-3 text-xs text-linear-text-secondary">
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-green-500 rounded-full" />
+          <span>Photo & Data</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-blue-500 rounded-full" />
+          <span>Photo (interpolated)</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-purple-500 rounded-full" />
+          <span>Photo only</span>
+        </div>
+        <div className="flex items-center gap-1">
+          <div className="w-2 h-2 bg-gray-400 rounded-full" />
+          <span>Data only</span>
+        </div>
       </div>
     </div>
   )
@@ -293,6 +380,26 @@ export default function DashboardPage() {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [metricsHistory, setMetricsHistory] = useState<BodyMetrics[]>([])
   const [profileLoading, setProfileLoading] = useState(true)
+  const [photosHistory, setPhotosHistory] = useState<ProgressPhoto[]>([])
+  const [timelineData, setTimelineData] = useState<TimelineEntry[]>([])
+
+  // Handle keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (timelineData.length === 0) return
+      
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault()
+        setSelectedDateIndex(prev => Math.max(0, prev - 1))
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault()
+        setSelectedDateIndex(prev => Math.min(timelineData.length - 1, prev + 1))
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [timelineData.length])
 
   useEffect(() => {
     if (!loading && !user) {
@@ -316,6 +423,8 @@ export default function DashboardPage() {
 
       // Load metrics data
       const supabase = createClient()
+      
+      // Load body metrics
       supabase
         .from('body_metrics')
         .select('*')
@@ -329,8 +438,35 @@ export default function DashboardPage() {
             setMetricsHistory(data.reverse()) // Reverse to have oldest first for timeline
           }
         })
+      
+      // Load progress photos
+      supabase
+        .from('progress_photos')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false })
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Error loading photos:', error)
+          } else if (data) {
+            setPhotosHistory(data.reverse()) // Reverse to have oldest first for timeline
+          }
+        })
     }
   }, [user])
+  
+  // Create timeline data when metrics or photos change
+  useEffect(() => {
+    if (metricsHistory.length > 0 || photosHistory.length > 0) {
+      const timeline = createTimelineData(metricsHistory, photosHistory, profile?.height)
+      setTimelineData(timeline)
+      
+      // Set selected index to the most recent entry
+      if (timeline.length > 0) {
+        setSelectedDateIndex(timeline.length - 1)
+      }
+    }
+  }, [metricsHistory, photosHistory, profile?.height])
 
   if (loading || profileLoading) {
     return (
@@ -344,8 +480,9 @@ export default function DashboardPage() {
     return null
   }
 
-  // Get current metrics based on selected date
-  const currentMetrics = metricsHistory[selectedDateIndex] || latestMetrics
+  // Get current timeline entry based on selected date
+  const currentEntry = timelineData[selectedDateIndex] || null
+  const displayValues = currentEntry ? getTimelineDisplayValues(currentEntry) : null
 
   // Format helpers
   const getFormattedWeight = (weight?: number) => {
@@ -362,6 +499,13 @@ export default function DashboardPage() {
     if (!lbm) return '--'
     return `${lbm.toFixed(1)} ${profile?.settings?.units?.weight || 'lbs'}`
   }
+  
+  // Get photo URL for current entry
+  const currentPhotoUrl = currentEntry?.photo?.photo_url 
+    ? ensurePublicUrl(currentEntry.photo.photo_url) 
+    : currentEntry?.metrics?.photo_url 
+    ? ensurePublicUrl(currentEntry.metrics.photo_url)
+    : undefined
 
   return (
     <div className="flex h-screen flex-col overflow-hidden bg-linear-bg text-linear-text">
@@ -426,7 +570,7 @@ export default function DashboardPage() {
               }>
                 <AvatarDisplay
                   gender={profile?.gender}
-                  bodyFatPercentage={currentMetrics?.body_fat_percentage}
+                  bodyFatPercentage={displayValues?.bodyFatPercentage}
                   showPhoto={false}
                   className="h-full w-full"
                 />
@@ -441,9 +585,9 @@ export default function DashboardPage() {
               }>
                 <AvatarDisplay
                   gender={profile?.gender}
-                  bodyFatPercentage={currentMetrics?.body_fat_percentage}
+                  bodyFatPercentage={displayValues?.bodyFatPercentage}
                   showPhoto={true}
-                  profileImage={currentMetrics?.photo_url ? ensurePublicUrl(currentMetrics.photo_url) : undefined}
+                  profileImage={currentPhotoUrl}
                   className="h-full w-full"
                 />
               </Suspense>
@@ -475,11 +619,11 @@ export default function DashboardPage() {
         {/* Profile Panel - 1/3 on desktop */}
         <div className="min-h-0 flex-[0.8] border-linear-border md:w-1/3 md:flex-1 md:border-l">
           <ProfilePanel
-            metrics={currentMetrics}
+            entry={currentEntry}
             user={profile}
-            formattedWeight={getFormattedWeight(currentMetrics?.weight)}
+            formattedWeight={getFormattedWeight(displayValues?.weight || currentEntry?.metrics?.weight)}
             formattedHeight={getFormattedHeight(profile?.height)}
-            formattedLeanBodyMass={getFormattedLeanBodyMass(currentMetrics?.lean_body_mass)}
+            formattedLeanBodyMass={getFormattedLeanBodyMass(displayValues?.leanBodyMass || currentEntry?.metrics?.lean_body_mass)}
           />
         </div>
       </div>
@@ -487,7 +631,7 @@ export default function DashboardPage() {
       {/* Timeline Slider */}
       <div className="flex-shrink-0">
         <TimelineSlider
-          metrics={metricsHistory}
+          timeline={timelineData}
           selectedIndex={selectedDateIndex}
           onIndexChange={setSelectedDateIndex}
         />
