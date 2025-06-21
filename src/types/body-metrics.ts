@@ -7,10 +7,13 @@ export interface BodyMetrics {
   body_fat_percentage?: number
   body_fat_method?: 'navy' | '3-site' | '7-site' | 'dexa' | 'bodpod'
   
-  // Measurements for body fat calculations
+  // Measurements for body fat calculations and ratios
   waist?: number
-  neck?: number
+  waist_circumference?: number // More explicit naming
   hip?: number // For female navy method
+  hip_circumference?: number // More explicit naming
+  neck?: number
+  waist_unit?: 'cm' | 'in'
   
   // Skinfold measurements
   chest_skinfold?: number
@@ -46,6 +49,15 @@ export interface UserProfile {
   height_unit?: 'cm' | 'ft'
   gender?: 'male' | 'female' | 'other'
   activity_level?: 'sedentary' | 'lightly_active' | 'moderately_active' | 'very_active' | 'extremely_active'
+  
+  // Goal metrics based on research
+  goal_body_fat_percentage?: number
+  goal_ffmi?: number
+  goal_waist_to_hip_ratio?: number
+  goal_waist_to_height_ratio?: number
+  goal_weight?: number
+  goal_weight_unit?: 'kg' | 'lbs'
+  
   email_verified: boolean
   onboarding_completed: boolean
   settings: UserSettings

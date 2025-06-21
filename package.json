@@ -20,7 +20,9 @@
     "db:status": "supabase db remote list",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "test:e2e:update": "playwright test --update-snapshots"
+    "test:e2e:update": "playwright test --update-snapshots",
+    "seed": "./scripts/seed-database.sh",
+    "test:seed": "tsx scripts/test-seeded-users.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.4",
