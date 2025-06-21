@@ -25,16 +25,14 @@ import {
 import Link from 'next/link'
 import { format, differenceInDays } from 'date-fns'
 import Image from 'next/image'
+import { loadUserPhotos, deletePhoto, PhotoData } from '@/utils/photo-utils'
+import { uploadToStorage } from '@/utils/storage-utils'
+import { createClient } from '@/lib/supabase/client'
 
-type ProgressPhoto = {
-  id: string
+type ProgressPhoto = PhotoData & {
   url: string
   thumbnail_url: string
   uploaded_at: string
-  body_metrics_id?: string
-  weight?: number
-  body_fat_percentage?: number
-  notes?: string
 }
 
 type ViewMode = 'grid' | 'comparison'
@@ -63,49 +61,19 @@ export default function PhotosPage() {
   const loadPhotos = async () => {
     setIsLoading(true)
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const photoData = await loadUserPhotos()
       
-      // Mock data
-      const mockPhotos: ProgressPhoto[] = [
-        {
-          id: '1',
-          url: '/placeholder.svg',
-          thumbnail_url: '/placeholder.svg',
-          uploaded_at: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-          weight: 166.5,
-          body_fat_percentage: 18.2,
-          notes: 'Feeling stronger!'
-        },
-        {
-          id: '2',
-          url: '/placeholder.svg',
-          thumbnail_url: '/placeholder.svg',
-          uploaded_at: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
-          weight: 168,
-          body_fat_percentage: 17.8
-        },
-        {
-          id: '3',
-          url: '/placeholder.svg',
-          thumbnail_url: '/placeholder.svg',
-          uploaded_at: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(),
-          weight: 169.3,
-          body_fat_percentage: 17.5,
-          notes: 'Great pump today'
-        },
-        {
-          id: '4',
-          url: '/placeholder.svg',
-          thumbnail_url: '/placeholder.svg',
-          uploaded_at: new Date(Date.now() - 28 * 24 * 60 * 60 * 1000).toISOString(),
-          weight: 170,
-          body_fat_percentage: 17.2
-        }
-      ]
+      // Transform to ProgressPhoto format
+      const transformedPhotos: ProgressPhoto[] = photoData.map(photo => ({
+        ...photo,
+        url: photo.photo_url,
+        thumbnail_url: photo.photo_url, // Using same URL for now
+        uploaded_at: photo.created_at
+      }))
       
-      setPhotos(mockPhotos)
-    } catch {
+      setPhotos(transformedPhotos)
+    } catch (error) {
+      console.error('Error loading photos:', error)
       toast({
         title: "Error",
         description: "Failed to load photos. Please try again.",
@@ -154,26 +122,54 @@ export default function PhotosPage() {
   }
 
   const handleUpload = async () => {
-    if (!selectedFile) return
+    if (!selectedFile || !user) return
 
     setIsUploading(true)
     setUploadProgress(0)
 
     try {
-      // Simulate upload progress
-      for (let i = 0; i <= 100; i += 10) {
-        await new Promise(resolve => setTimeout(resolve, 200))
-        setUploadProgress(i)
-      }
-
-      // Create new photo entry
+      const supabase = createClient()
+      
+      // Generate file name
+      const fileName = `${user.id}/${Date.now()}-progress.jpg`
+      
+      // Upload to storage
+      setUploadProgress(30)
+      const { publicUrl, error: uploadError } = await uploadToStorage(
+        'photos',
+        fileName,
+        selectedFile,
+        { contentType: selectedFile.type }
+      )
+      
+      if (uploadError) throw uploadError
+      
+      setUploadProgress(60)
+      
+      // Create body metrics entry with photo
+      const { data: metricsData, error: metricsError } = await supabase
+        .from('body_metrics')
+        .insert({
+          user_id: user.id,
+          date: new Date().toISOString().split('T')[0],
+          photo_url: publicUrl,
+          notes: 'Progress photo'
+        })
+        .select()
+        .single()
+      
+      if (metricsError) throw metricsError
+      
+      setUploadProgress(100)
+      
+      // Add to photos list
       const newPhoto: ProgressPhoto = {
-        id: Date.now().toString(),
-        url: preview!,
-        thumbnail_url: preview!,
-        uploaded_at: new Date().toISOString()
+        ...metricsData,
+        url: publicUrl,
+        thumbnail_url: publicUrl,
+        uploaded_at: metricsData.created_at
       }
-
+      
       setPhotos(prev => [newPhoto, ...prev])
       
       toast({
@@ -184,10 +180,11 @@ export default function PhotosPage() {
       setShowUploadDialog(false)
       setSelectedFile(null)
       setPreview(null)
-    } catch {
+    } catch (error) {
+      console.error('Upload error:', error)
       toast({
         title: "Upload failed",
-        description: "Failed to upload photo. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to upload photo. Please try again.",
         variant: "destructive"
       })
     } finally {
@@ -213,6 +210,8 @@ export default function PhotosPage() {
     if (!confirm('Are you sure you want to delete this photo?')) return
 
     try {
+      await deletePhoto(photoId)
+      
       setPhotos(prev => prev.filter(p => p.id !== photoId))
       setSelectedPhotos(prev => prev.filter(id => id !== photoId))
       
@@ -220,7 +219,8 @@ export default function PhotosPage() {
         title: "Photo deleted",
         description: "The photo has been removed."
       })
-    } catch {
+    } catch (error) {
+      console.error('Delete error:', error)
       toast({
         title: "Error",
         description: "Failed to delete photo. Please try again.",

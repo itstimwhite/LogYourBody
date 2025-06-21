@@ -2,6 +2,22 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
+### Environment Setup
+
+1. Copy the example environment file:
+```bash
+cp .env.local.example .env.local
+```
+
+2. Add your OpenAI API key (required for PDF parsing):
+   - Get your API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+   - Add it to `.env.local`:
+   ```
+   OPENAI_API_KEY=your-api-key-here
+   ```
+
+### Running the Development Server
+
 First, run the development server:
 
 ```bash
