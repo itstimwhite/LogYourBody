@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Slider } from "./ui/slider";
 import { Calendar } from "lucide-react";
+import { DataStat } from "./DataStat";
 
 interface DemoEntry {
   date: string; // ISO string
@@ -42,19 +43,10 @@ export function LandingTimelineDemo() {
       </div>
 
       <div className="grid gap-4 text-center mb-8">
-        <div>
-          <div className="text-3xl font-bold text-linear-text">{entry.bodyFat}%</div>
-          <div className="text-sm text-linear-text-tertiary">Body Fat</div>
-        </div>
+        <DataStat value={`${entry.bodyFat}%`} label="Body Fat" />
         <div className="grid grid-cols-2 gap-4">
-          <div>
-            <div className="text-2xl font-semibold text-linear-text">{entry.weight} lbs</div>
-            <div className="text-sm text-linear-text-tertiary">Weight</div>
-          </div>
-          <div>
-            <div className="text-2xl font-semibold text-linear-text">{entry.ffmi}</div>
-            <div className="text-sm text-linear-text-tertiary">FFMI</div>
-          </div>
+          <DataStat value={`${entry.weight} lbs`} label="Weight" />
+          <DataStat value={entry.ffmi} label="FFMI" />
         </div>
       </div>
 

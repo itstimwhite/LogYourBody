@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Footprints, TrendingUp, Zap, Activity } from "lucide-react";
+import { DataStat } from "./DataStat";
 
 export function StepTrackerSection() {
   const [currentStep, setCurrentStep] = useState(7234);
@@ -201,35 +202,38 @@ export function StepTrackerSection() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.6 }}
-                  className="rounded-lg bg-linear-border/20 p-4 text-center"
                 >
-                  <Zap className="mx-auto mb-2 h-5 w-5 text-yellow-500" />
-                  <div className="text-2xl font-bold text-linear-text">1,247</div>
-                  <div className="text-xs text-linear-text-tertiary">Calories burned</div>
+                  <DataStat
+                    icon={<Zap className="h-5 w-5 text-yellow-500" />}
+                    value="1,247"
+                    label="Calories burned"
+                  />
                 </motion.div>
-                
+
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.7 }}
-                  className="rounded-lg bg-linear-border/20 p-4 text-center"
                 >
-                  <Activity className="mx-auto mb-2 h-5 w-5 text-green-500" />
-                  <div className="text-2xl font-bold text-linear-text">5.2</div>
-                  <div className="text-xs text-linear-text-tertiary">Miles walked</div>
+                  <DataStat
+                    icon={<Activity className="h-5 w-5 text-green-500" />}
+                    value="5.2"
+                    label="Miles walked"
+                  />
                 </motion.div>
-                
+
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: 0.8 }}
-                  className="rounded-lg bg-linear-border/20 p-4 text-center"
                 >
-                  <TrendingUp className="mx-auto mb-2 h-5 w-5 text-blue-500" />
-                  <div className="text-2xl font-bold text-linear-text">87%</div>
-                  <div className="text-xs text-linear-text-tertiary">Goal completion</div>
+                  <DataStat
+                    icon={<TrendingUp className="h-5 w-5 text-blue-500" />}
+                    value="87%"
+                    label="Goal completion"
+                  />
                 </motion.div>
               </div>
             </div>
