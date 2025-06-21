@@ -51,8 +51,13 @@ export function MobileNavbar() {
               )}
             >
               {isCenter ? (
-                <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-14 h-14 bg-linear-purple rounded-full flex items-center justify-center shadow-lg">
-                  <Icon className="h-6 w-6 text-white" />
+                <div className="flex flex-col items-center justify-center">
+                  <div className="w-12 h-12 bg-linear-purple rounded-full flex items-center justify-center shadow-lg mb-1">
+                    <Icon className="h-5 w-5 text-white" />
+                  </div>
+                  <span className="text-xs text-linear-purple">
+                    Add
+                  </span>
                 </div>
               ) : (
                 <>

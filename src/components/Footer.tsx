@@ -25,8 +25,6 @@ export function Footer() {
         { label: "Features", href: "/#features-grid" },
         { label: "Pricing", href: "/#pricing" },
         { label: "Changelog", href: "/changelog" },
-        { label: "Download", href: "#", disabled: true },
-        { label: "API", href: "#", disabled: true },
       ]
     },
     {
@@ -45,9 +43,7 @@ export function Footer() {
       links: [
         { label: "Blog", href: "/blog" },
         { label: "Brand", href: "/brand" },
-        { label: "Community", href: "#", disabled: true },
         { label: "Support", href: "mailto:support@logyourbody.com", external: true },
-        { label: "Documentation", href: "#", disabled: true },
         { label: "Status", href: "https://status.logyourbody.com", external: true },
       ]
     },
@@ -55,9 +51,6 @@ export function Footer() {
       title: "Developers",
       links: [
         { label: "GitHub", href: "https://github.com/itstimwhite/LogYourBody", icon: Github, external: true },
-        { label: "API Docs", href: "#", disabled: true },
-        { label: "SDKs", href: "#", disabled: true },
-        { label: "Webhooks", href: "#", disabled: true },
         { label: "Open Source", href: "https://github.com/itstimwhite/LogYourBody", external: true },
       ]
     }

@@ -87,10 +87,6 @@ export default function BrandPage() {
               </Link>
               <h1 className="text-xl font-semibold text-linear-text">Brand Guidelines</h1>
             </div>
-            <Button className="gap-2" disabled>
-              <Download className="h-4 w-4" />
-              Download Assets
-            </Button>
           </div>
         </div>
       </header>

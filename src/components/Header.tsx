@@ -68,12 +68,12 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
                 Learn More
               </Button>
             </Link>
-            <Link href="/">
+            <Link href="/signup">
               <Button
-                aria-label="Coming soon"
+                aria-label="Get started with LogYourBody"
                 className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
               >
-                Coming Soon
+                Get Started
               </Button>
             </Link>
           </div>

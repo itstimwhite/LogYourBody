@@ -229,8 +229,16 @@ const AvatarDisplay = ({
       ) : (
         <div className="text-center">
           <User className="h-24 w-24 mx-auto mb-4 text-linear-text-tertiary" />
-          <p className="text-linear-text-secondary">Body model unavailable</p>
-          <p className="text-xs text-linear-text-tertiary mt-1">Add measurements to generate</p>
+          <p className="text-white mb-2">No body model yet</p>
+          <p className="text-sm text-linear-text-secondary mb-4">Add your measurements to generate one</p>
+          <Button 
+            variant="outline" 
+            size="sm"
+            className="border-linear-purple text-linear-purple hover:bg-linear-purple/10"
+            onClick={onAddPhoto}
+          >
+            Add Measurements
+          </Button>
         </div>
       )}
     </div>
@@ -306,46 +314,48 @@ const ProfilePanel = ({
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-linear-text uppercase tracking-wider">Current Stats</h3>
           
-          {/* Stats Grid - Responsive with horizontal scroll on mobile */}
+          {/* Stats Grid - Mobile optimized with horizontal scroll */}
           <div className="flex md:grid md:grid-cols-2 gap-3 overflow-x-auto md:overflow-visible -mx-6 px-6 md:mx-0 md:px-0 pb-2 md:pb-0">
             {/* Weight */}
             <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <Scale className="h-4 w-4 text-linear-text-tertiary" />
-                  <span className="text-xs text-linear-text-secondary">Weight</span>
-                </div>
-                {trends.weight.direction !== 'unknown' && (
-                  <span className={cn("text-lg", getTrendColorClass(trends.weight.direction, 'weight'))}>
-                    {getTrendArrow(trends.weight.direction)}
+              <div className="flex flex-col items-center text-center">
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-4xl md:text-3xl font-bold text-linear-text">
+                    {displayValues?.weight?.toFixed(1) || '--'}
                   </span>
+                  <span className="text-lg md:text-sm text-linear-text-tertiary">
+                    {user?.settings?.units?.weight || 'lbs'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wider text-linear-text-secondary">Weight</span>
+                  {trends.weight.direction !== 'unknown' && (
+                    <span className={cn("text-sm", getTrendColorClass(trends.weight.direction, 'weight'))}>
+                      {getTrendArrow(trends.weight.direction)}
+                    </span>
+                  )}
+                </div>
+                {trends.weight.direction !== 'unknown' && trends.weight.direction !== 'stable' && (
+                  <div className="text-xs text-linear-text-tertiary mt-1">
+                    {trends.weight.difference > 0 ? '+' : ''}{trends.weight.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
+                  </div>
                 )}
               </div>
-              <div className="mt-2 flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-linear-text">
-                  {displayValues?.weight?.toFixed(1) || '--'}
-                </span>
-                <span className="text-sm text-linear-text-tertiary">
-                  {user?.settings?.units?.weight || 'lbs'}
-                </span>
-              </div>
-              {trends.weight.direction !== 'unknown' && trends.weight.direction !== 'stable' && (
-                <div className="text-xs text-linear-text-tertiary mt-1">
-                  {trends.weight.difference > 0 ? '+' : ''}{trends.weight.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
-                </div>
-              )}
             </div>
 
             {/* Body Fat */}
             <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <Percent className="h-4 w-4 text-linear-text-tertiary" />
-                  <span className="text-xs text-linear-text-secondary">Body Fat</span>
+              <div className="flex flex-col items-center text-center">
+                <div className="flex items-baseline gap-1 mb-1">
+                  <span className="text-4xl md:text-3xl font-bold text-linear-text">
+                    {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}
+                  </span>
+                  <span className="text-lg md:text-sm text-linear-text-tertiary">%</span>
                 </div>
                 <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wider text-linear-text-secondary">Body Fat</span>
                   {trends.bodyFat.direction !== 'unknown' && (
-                    <span className={cn("text-lg", getTrendColorClass(trends.bodyFat.direction, 'bodyFat'))}>
+                    <span className={cn("text-sm", getTrendColorClass(trends.bodyFat.direction, 'bodyFat'))}>
                       {getTrendArrow(trends.bodyFat.direction)}
                     </span>
                   )}
@@ -364,123 +374,56 @@ const ProfilePanel = ({
                     </TooltipProvider>
                   )}
                 </div>
-              </div>
-              <div className="mt-2">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-linear-text">
-                    {displayValues?.bodyFatPercentage?.toFixed(1) || '--'}
-                  </span>
-                  <span className="text-sm text-linear-text-tertiary">%</span>
-                </div>
-                <div className="flex items-start justify-between mt-1">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <div className="text-xs text-linear-text-tertiary cursor-help">
-                          {bodyFatCategory ? (
-                            bodyFatCategory === 'obese' ? 'Above Recommended' : bodyFatCategory
-                          ) : 'Needs data'}
-                        </div>
-                      </TooltipTrigger>
-                      {bodyFatCategory === 'obese' && (
-                        <TooltipContent>
-                          <p className="text-xs">This falls within the clinical 'obese' classification per ACSM guidelines.</p>
-                        </TooltipContent>
-                      )}
-                    </Tooltip>
-                  </TooltipProvider>
-                  {trends.bodyFat.direction !== 'unknown' && trends.bodyFat.direction !== 'stable' && (
-                    <div className="text-xs text-linear-text-tertiary">
-                      {trends.bodyFat.difference > 0 ? '+' : ''}{trends.bodyFat.percentage.toFixed(1)}%
-                    </div>
-                  )}
-                </div>
+                {trends.bodyFat.direction !== 'unknown' && trends.bodyFat.direction !== 'stable' && (
+                  <div className="text-xs text-linear-text-tertiary mt-1">
+                    {trends.bodyFat.difference > 0 ? '+' : ''}{trends.bodyFat.percentage.toFixed(1)}%
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Lean Mass */}
             <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <Dumbbell className="h-4 w-4 text-linear-text-tertiary" />
-                  <span className="text-xs text-linear-text-secondary">Lean Mass</span>
-                </div>
-                {trends.leanMass.direction !== 'unknown' && (
-                  <span className={cn("text-lg", getTrendColorClass(trends.leanMass.direction, 'leanMass'))}>
-                    {getTrendArrow(trends.leanMass.direction)}
-                  </span>
-                )}
-              </div>
-              <div className="mt-2 flex items-baseline gap-1">
+              <div className="flex flex-col items-center text-center">
                 {displayValues?.weight && displayValues?.bodyFatPercentage ? (
                   <>
-                    <span className="text-3xl font-bold text-linear-text">
-                      {(displayValues.weight * (1 - displayValues.bodyFatPercentage / 100)).toFixed(1)}
-                    </span>
-                    <span className="text-sm text-linear-text-tertiary">
-                      {user?.settings?.units?.weight || 'lbs'}
-                    </span>
+                    <div className="flex items-baseline gap-1 mb-1">
+                      <span className="text-4xl md:text-3xl font-bold text-linear-text">
+                        {(displayValues.weight * (1 - displayValues.bodyFatPercentage / 100)).toFixed(1)}
+                      </span>
+                      <span className="text-lg md:text-sm text-linear-text-tertiary">
+                        {user?.settings?.units?.weight || 'lbs'}
+                      </span>
+                    </div>
                   </>
                 ) : (
-                  <span className="text-2xl text-linear-text-tertiary">--</span>
+                  <div className="mb-1">
+                    <span className="text-4xl md:text-3xl text-linear-text-tertiary">--</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-2">
+                  <span className="text-xs uppercase tracking-wider text-linear-text-secondary">Lean Mass</span>
+                  {trends.leanMass.direction !== 'unknown' && (
+                    <span className={cn("text-sm", getTrendColorClass(trends.leanMass.direction, 'leanMass'))}>
+                      {getTrendArrow(trends.leanMass.direction)}
+                    </span>
+                  )}
+                </div>
+                {trends.leanMass.direction !== 'unknown' && trends.leanMass.direction !== 'stable' && (
+                  <div className="text-xs text-linear-text-tertiary mt-1">
+                    {trends.leanMass.difference > 0 ? '+' : ''}{trends.leanMass.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
+                  </div>
                 )}
               </div>
-              {trends.leanMass.direction !== 'unknown' && trends.leanMass.direction !== 'stable' && (
-                <div className="text-xs text-linear-text-tertiary mt-1">
-                  {trends.leanMass.difference > 0 ? '+' : ''}{trends.leanMass.difference.toFixed(1)} {user?.settings?.units?.weight || 'lbs'}
-                </div>
-              )}
             </div>
 
             {/* FFMI */}
             <div className="bg-linear-bg rounded-lg p-4 border border-linear-border min-w-[140px] md:min-w-0">
-              <div className="flex items-start justify-between">
-                <div className="flex items-center gap-2">
-                  <Target className="h-4 w-4 text-linear-text-tertiary" />
-                  <span className="text-xs text-linear-text-secondary">FFMI</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  {trends.ffmi.direction !== 'unknown' && (
-                    <span className={cn("text-lg", getTrendColorClass(trends.ffmi.direction, 'ffmi'))}>
-                      {getTrendArrow(trends.ffmi.direction)}
-                    </span>
-                  )}
-                  {displayValues?.isInferred && (
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger>
-                          <Info className="h-3 w-3 text-linear-text-tertiary" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p className="text-xs">
-                            Calculated from interpolated values
-                          </p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  )}
-                </div>
-              </div>
-              <div className="mt-2">
+              <div className="flex flex-col items-center text-center">
                 {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
                   <>
-                    <div className="text-3xl font-bold text-linear-text">
-                      {(() => {
-                        // Convert weight to kg if needed
-                        const weightInKg = user?.settings?.units?.weight === 'lbs' 
-                          ? convertWeight(displayValues.weight, 'lbs', 'kg')
-                          : displayValues.weight
-                        
-                        // Convert height to cm if needed
-                        const heightInCm = user?.settings?.units?.height === 'ft'
-                          ? user.height * 2.54 // height is stored in inches when unit is 'ft'
-                          : user.height
-                        
-                        return calculateFFMI(weightInKg, heightInCm, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)
-                      })()}
-                    </div>
-                    <div className="flex items-start justify-between mt-1">
-                      <div className="text-xs text-linear-text-tertiary">
+                    <div className="mb-1">
+                      <span className="text-4xl md:text-3xl font-bold text-linear-text">
                         {(() => {
                           const weightInKg = user?.settings?.units?.weight === 'lbs' 
                             ? convertWeight(displayValues.weight, 'lbs', 'kg')
@@ -490,19 +433,61 @@ const ProfilePanel = ({
                             ? user.height * 2.54
                             : user.height
                           
-                          return calculateFFMI(weightInKg, heightInCm, displayValues.bodyFatPercentage).interpretation.replace('_', ' ')
+                          return calculateFFMI(weightInKg, heightInCm, displayValues.bodyFatPercentage).normalized_ffmi.toFixed(1)
                         })()}
-                      </div>
-                      {trends.ffmi.direction !== 'unknown' && trends.ffmi.direction !== 'stable' && (
-                        <div className="text-xs text-linear-text-tertiary">
-                          {trends.ffmi.difference > 0 ? '+' : ''}{trends.ffmi.difference.toFixed(1)}
-                        </div>
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs uppercase tracking-wider text-linear-text-secondary">FFMI</span>
+                      {trends.ffmi.direction !== 'unknown' && (
+                        <span className={cn("text-sm", getTrendColorClass(trends.ffmi.direction, 'ffmi'))}>
+                          {getTrendArrow(trends.ffmi.direction)}
+                        </span>
+                      )}
+                      {displayValues?.isInferred && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <Info className="h-3 w-3 text-linear-text-tertiary" />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p className="text-xs">
+                                Calculated from interpolated values
+                              </p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       )}
                     </div>
+                    <div className="text-xs text-linear-text-tertiary">
+                      {(() => {
+                        const weightInKg = user?.settings?.units?.weight === 'lbs' 
+                          ? convertWeight(displayValues.weight, 'lbs', 'kg')
+                          : displayValues.weight
+                        
+                        const heightInCm = user?.settings?.units?.height === 'ft'
+                          ? user.height * 2.54
+                          : user.height
+                        
+                        const interpretation = calculateFFMI(weightInKg, heightInCm, displayValues.bodyFatPercentage).interpretation
+                        // Convert snake_case to Title Case
+                        return interpretation.split('_').map(word => 
+                          word.charAt(0).toUpperCase() + word.slice(1)
+                        ).join(' ')
+                      })()}
+                    </div>
+                    {trends.ffmi.direction !== 'unknown' && trends.ffmi.direction !== 'stable' && (
+                      <div className="text-xs text-linear-text-tertiary mt-1">
+                        {trends.ffmi.difference > 0 ? '+' : ''}{trends.ffmi.difference.toFixed(1)}
+                      </div>
+                    )}
                   </>
                 ) : (
                   <>
-                    <div className="text-2xl text-linear-text-tertiary">--</div>
+                    <div className="mb-1">
+                      <span className="text-4xl md:text-3xl text-linear-text-tertiary">--</span>
+                    </div>
+                    <div className="text-xs uppercase tracking-wider text-linear-text-secondary">FFMI</div>
                     <div className="text-xs text-linear-text-tertiary mt-1">Needs more data</div>
                   </>
                 )}
