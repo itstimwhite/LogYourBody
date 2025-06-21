@@ -8,14 +8,22 @@ jest.mock('../client', () => ({
 }))
 
 describe('Profile API', () => {
-  const mockSupabase = {
-    from: jest.fn(() => mockSupabase),
-    select: jest.fn(() => mockSupabase),
-    eq: jest.fn(() => mockSupabase),
-    single: jest.fn(() => mockSupabase),
-    update: jest.fn(() => mockSupabase),
-    insert: jest.fn(() => mockSupabase)
+  const mockSupabase: any = {
+    from: jest.fn(),
+    select: jest.fn(),
+    eq: jest.fn(),
+    single: jest.fn(),
+    update: jest.fn(),
+    insert: jest.fn()
   }
+  
+  // Set up method chaining
+  mockSupabase.from.mockReturnValue(mockSupabase)
+  mockSupabase.select.mockReturnValue(mockSupabase)
+  mockSupabase.eq.mockReturnValue(mockSupabase)
+  mockSupabase.single.mockReturnValue(mockSupabase)
+  mockSupabase.update.mockReturnValue(mockSupabase)
+  mockSupabase.insert.mockReturnValue(mockSupabase)
 
   const mockProfileData = {
     id: 'test-user-id',
