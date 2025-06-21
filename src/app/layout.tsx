@@ -4,6 +4,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/react'
 import { Providers } from './providers'
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt'
+import { MobileBottomNav } from '@/components/MobileBottomNav'
 import "./globals.css";
 
 const inter = Inter({ 
@@ -131,6 +132,7 @@ export default function RootLayout({
         <Providers>
           {children}
           <PWAInstallPrompt />
+          <MobileBottomNav />
         </Providers>
         <SpeedInsights />
         <Analytics />
