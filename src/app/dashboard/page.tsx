@@ -43,6 +43,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { MobileNavbar } from '@/components/MobileNavbar'
 
 // Mock data for demonstration
 const mockMetrics: BodyMetrics = {
