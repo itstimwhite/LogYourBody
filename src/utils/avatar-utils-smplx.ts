@@ -2,7 +2,9 @@
 export const AVATAR_CONFIG = {
   USE_SMPLX: false, // Set to true when SMPL-X avatars are generated
   SMPLX_BASE_PATH: '/avatars-smplx',
-  EXISTING_BASE_PATH: '/avatars'
+  EXISTING_BASE_PATH: '/avatars',
+  DEMO_BASE_PATH: '/avatars-wireframe-demo',
+  USE_DEMO: false // Set to true to use demo wireframes
 }
 
 // Get closest FFMI bracket for SMPL-X avatars

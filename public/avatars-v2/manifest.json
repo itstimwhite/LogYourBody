@@ -1,0 +1,141 @@
+{
+  "total": 20,
+  "body_fat_percentages": [
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    35,
+    40,
+    45,
+    50
+  ],
+  "genders": [
+    "male",
+    "female"
+  ],
+  "files": [
+    {
+      "gender": "male",
+      "body_fat": 5,
+      "filename": "m_bf5.png",
+      "path": "public/avatars-v2/m_bf5.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 10,
+      "filename": "m_bf10.png",
+      "path": "public/avatars-v2/m_bf10.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 15,
+      "filename": "m_bf15.png",
+      "path": "public/avatars-v2/m_bf15.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 20,
+      "filename": "m_bf20.png",
+      "path": "public/avatars-v2/m_bf20.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 25,
+      "filename": "m_bf25.png",
+      "path": "public/avatars-v2/m_bf25.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 30,
+      "filename": "m_bf30.png",
+      "path": "public/avatars-v2/m_bf30.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 35,
+      "filename": "m_bf35.png",
+      "path": "public/avatars-v2/m_bf35.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 40,
+      "filename": "m_bf40.png",
+      "path": "public/avatars-v2/m_bf40.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 45,
+      "filename": "m_bf45.png",
+      "path": "public/avatars-v2/m_bf45.png"
+    },
+    {
+      "gender": "male",
+      "body_fat": 50,
+      "filename": "m_bf50.png",
+      "path": "public/avatars-v2/m_bf50.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 5,
+      "filename": "f_bf5.png",
+      "path": "public/avatars-v2/f_bf5.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 10,
+      "filename": "f_bf10.png",
+      "path": "public/avatars-v2/f_bf10.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 15,
+      "filename": "f_bf15.png",
+      "path": "public/avatars-v2/f_bf15.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 20,
+      "filename": "f_bf20.png",
+      "path": "public/avatars-v2/f_bf20.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 25,
+      "filename": "f_bf25.png",
+      "path": "public/avatars-v2/f_bf25.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 30,
+      "filename": "f_bf30.png",
+      "path": "public/avatars-v2/f_bf30.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 35,
+      "filename": "f_bf35.png",
+      "path": "public/avatars-v2/f_bf35.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 40,
+      "filename": "f_bf40.png",
+      "path": "public/avatars-v2/f_bf40.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 45,
+      "filename": "f_bf45.png",
+      "path": "public/avatars-v2/f_bf45.png"
+    },
+    {
+      "gender": "female",
+      "body_fat": 50,
+      "filename": "f_bf50.png",
+      "path": "public/avatars-v2/f_bf50.png"
+    }
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "avatars": {
+    "male": {
+      "ffmi15": {
+        "bf5": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf5.png",
+        "bf10": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf10.png",
+        "bf15": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf15.png",
+        "bf20": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf20.png",
+        "bf25": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf25.png",
+        "bf30": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf30.png",
+        "bf35": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf35.png",
+        "bf40": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf40.png",
+        "bf45": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf45.png",
+        "bf50": "public/avatars-smpl/male/ffmi15/male_ffmi15_bf50.png"
+      },
+      "ffmi17.5": {
+        "bf5": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf5.png",
+        "bf10": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf10.png",
+        "bf15": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf15.png",
+        "bf20": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf20.png",
+        "bf25": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf25.png",
+        "bf30": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf30.png",
+        "bf35": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf35.png",
+        "bf40": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf40.png",
+        "bf45": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf45.png",
+        "bf50": "public/avatars-smpl/male/ffmi17_5/male_ffmi17_5_bf50.png"
+      },
+      "ffmi20": {
+        "bf5": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf5.png",
+        "bf10": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf10.png",
+        "bf15": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf15.png",
+        "bf20": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf20.png",
+        "bf25": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf25.png",
+        "bf30": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf30.png",
+        "bf35": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf35.png",
+        "bf40": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf40.png",
+        "bf45": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf45.png",
+        "bf50": "public/avatars-smpl/male/ffmi20/male_ffmi20_bf50.png"
+      },
+      "ffmi22.5": {
+        "bf5": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf5.png",
+        "bf10": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf10.png",
+        "bf15": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf15.png",
+        "bf20": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf20.png",
+        "bf25": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf25.png",
+        "bf30": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf30.png",
+        "bf35": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf35.png",
+        "bf40": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf40.png",
+        "bf45": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf45.png",
+        "bf50": "public/avatars-smpl/male/ffmi22_5/male_ffmi22_5_bf50.png"
+      },
+      "ffmi25": {
+        "bf5": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf5.png",
+        "bf10": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf10.png",
+        "bf15": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf15.png",
+        "bf20": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf20.png",
+        "bf25": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf25.png",
+        "bf30": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf30.png",
+        "bf35": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf35.png",
+        "bf40": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf40.png",
+        "bf45": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf45.png",
+        "bf50": "public/avatars-smpl/male/ffmi25/male_ffmi25_bf50.png"
+      }
+    },
+    "female": {
+      "ffmi15": {
+        "bf5": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf5.png",
+        "bf10": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf10.png",
+        "bf15": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf15.png",
+        "bf20": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf20.png",
+        "bf25": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf25.png",
+        "bf30": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf30.png",
+        "bf35": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf35.png",
+        "bf40": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf40.png",
+        "bf45": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf45.png",
+        "bf50": "public/avatars-smpl/female/ffmi15/female_ffmi15_bf50.png"
+      },
+      "ffmi17.5": {
+        "bf5": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf5.png",
+        "bf10": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf10.png",
+        "bf15": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf15.png",
+        "bf20": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf20.png",
+        "bf25": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf25.png",
+        "bf30": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf30.png",
+        "bf35": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf35.png",
+        "bf40": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf40.png",
+        "bf45": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf45.png",
+        "bf50": "public/avatars-smpl/female/ffmi17_5/female_ffmi17_5_bf50.png"
+      },
+      "ffmi20": {
+        "bf5": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf5.png",
+        "bf10": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf10.png",
+        "bf15": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf15.png",
+        "bf20": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf20.png",
+        "bf25": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf25.png",
+        "bf30": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf30.png",
+        "bf35": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf35.png",
+        "bf40": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf40.png",
+        "bf45": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf45.png",
+        "bf50": "public/avatars-smpl/female/ffmi20/female_ffmi20_bf50.png"
+      },
+      "ffmi22.5": {
+        "bf5": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf5.png",
+        "bf10": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf10.png",
+        "bf15": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf15.png",
+        "bf20": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf20.png",
+        "bf25": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf25.png",
+        "bf30": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf30.png",
+        "bf35": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf35.png",
+        "bf40": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf40.png",
+        "bf45": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf45.png",
+        "bf50": "public/avatars-smpl/female/ffmi22_5/female_ffmi22_5_bf50.png"
+      },
+      "ffmi25": {
+        "bf5": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf5.png",
+        "bf10": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf10.png",
+        "bf15": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf15.png",
+        "bf20": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf20.png",
+        "bf25": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf25.png",
+        "bf30": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf30.png",
+        "bf35": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf35.png",
+        "bf40": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf40.png",
+        "bf45": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf45.png",
+        "bf50": "public/avatars-smpl/female/ffmi25/female_ffmi25_bf50.png"
+      }
+    }
+  }
+}

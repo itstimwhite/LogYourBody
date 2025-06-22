@@ -1,0 +1,44 @@
+{
+  "avatars": {
+    "male": {
+      "ffmi17.5": {
+        "bf10": "public/avatars-wireframe-demo/male/ffmi17_5/male_ffmi17_5_bf10.png",
+        "bf20": "public/avatars-wireframe-demo/male/ffmi17_5/male_ffmi17_5_bf20.png",
+        "bf30": "public/avatars-wireframe-demo/male/ffmi17_5/male_ffmi17_5_bf30.png",
+        "bf40": "public/avatars-wireframe-demo/male/ffmi17_5/male_ffmi17_5_bf40.png"
+      },
+      "ffmi20": {
+        "bf10": "public/avatars-wireframe-demo/male/ffmi20/male_ffmi20_bf10.png",
+        "bf20": "public/avatars-wireframe-demo/male/ffmi20/male_ffmi20_bf20.png",
+        "bf30": "public/avatars-wireframe-demo/male/ffmi20/male_ffmi20_bf30.png",
+        "bf40": "public/avatars-wireframe-demo/male/ffmi20/male_ffmi20_bf40.png"
+      },
+      "ffmi22.5": {
+        "bf10": "public/avatars-wireframe-demo/male/ffmi22_5/male_ffmi22_5_bf10.png",
+        "bf20": "public/avatars-wireframe-demo/male/ffmi22_5/male_ffmi22_5_bf20.png",
+        "bf30": "public/avatars-wireframe-demo/male/ffmi22_5/male_ffmi22_5_bf30.png",
+        "bf40": "public/avatars-wireframe-demo/male/ffmi22_5/male_ffmi22_5_bf40.png"
+      }
+    },
+    "female": {
+      "ffmi17.5": {
+        "bf10": "public/avatars-wireframe-demo/female/ffmi17_5/female_ffmi17_5_bf10.png",
+        "bf20": "public/avatars-wireframe-demo/female/ffmi17_5/female_ffmi17_5_bf20.png",
+        "bf30": "public/avatars-wireframe-demo/female/ffmi17_5/female_ffmi17_5_bf30.png",
+        "bf40": "public/avatars-wireframe-demo/female/ffmi17_5/female_ffmi17_5_bf40.png"
+      },
+      "ffmi20": {
+        "bf10": "public/avatars-wireframe-demo/female/ffmi20/female_ffmi20_bf10.png",
+        "bf20": "public/avatars-wireframe-demo/female/ffmi20/female_ffmi20_bf20.png",
+        "bf30": "public/avatars-wireframe-demo/female/ffmi20/female_ffmi20_bf30.png",
+        "bf40": "public/avatars-wireframe-demo/female/ffmi20/female_ffmi20_bf40.png"
+      },
+      "ffmi22.5": {
+        "bf10": "public/avatars-wireframe-demo/female/ffmi22_5/female_ffmi22_5_bf10.png",
+        "bf20": "public/avatars-wireframe-demo/female/ffmi22_5/female_ffmi22_5_bf20.png",
+        "bf30": "public/avatars-wireframe-demo/female/ffmi22_5/female_ffmi22_5_bf30.png",
+        "bf40": "public/avatars-wireframe-demo/female/ffmi22_5/female_ffmi22_5_bf40.png"
+      }
+    }
+  }
+}

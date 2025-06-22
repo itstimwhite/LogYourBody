@@ -21,18 +21,20 @@ from sklearn.linear_model import LinearRegression
 # Avatar generation specifications
 BODY_FAT_PERCENTAGES = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
 FFMI_VALUES = [15, 17.5, 20, 22.5, 25]
-GENDERS = ['male', 'female']
+GENDERS = ['male']  # Only male for now since we only have SMPLX_MALE.npz
 OUTPUT_DIR = 'public/avatars-smplx'
 AVATAR_MANIFEST_FILE = 'avatar-manifest.json'
 
 # SMPL-X model configuration
-SMPLX_MODEL_PATH = './assets/models/smplx'  # Download from https://smpl-x.is.tue.mpg.de/
+SMPLX_MODEL_PATH = './assets/models'  # Path to models directory
 SMPLX_CONFIG = {
     'model_type': 'smplx',
     'ext': 'npz',
     'use_pca': False,
-    'flat_hand_mean': True,
-    'use_face_contour': False
+    'use_face_contour': False,
+    'flat_hand_mean': False,
+    'use_hands': False,
+    'use_face': False
 }
 
 class SMPLXAvatarGenerator:

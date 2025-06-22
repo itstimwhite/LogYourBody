@@ -72,6 +72,33 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
   const completeOnboarding = useCallback(async () => {
     if (!user) return
     
+    // Validate data before submission to avoid constraint violations
+    if (data.height) {
+      // Height should be between 12 and 96 inches for 'ft' unit
+      if (data.height < 12 || data.height > 96) {
+        const { toast } = await import('@/hooks/use-toast')
+        toast({
+          title: 'Invalid height',
+          description: 'Height must be between 1ft and 8ft',
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+    
+    if (data.bodyFatPercentage) {
+      // Body fat should be between 0 and 70%
+      if (data.bodyFatPercentage < 0 || data.bodyFatPercentage > 70) {
+        const { toast } = await import('@/hooks/use-toast')
+        toast({
+          title: 'Invalid body fat percentage',
+          description: 'Body fat percentage must be between 0% and 70%',
+          variant: 'destructive',
+        })
+        return
+      }
+    }
+    
     setIsLoading(true)
     try {
       // Save profile data
@@ -87,7 +114,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
           full_name: data.fullName,
           date_of_birth: data.dateOfBirth,
           height: data.height,
-          height_unit: 'in', // Since we're storing height in inches
+          height_unit: 'ft', // Heights in inches use 'ft' unit per database constraint
           gender: data.gender,
           onboarding_completed: true,
           updated_at: new Date().toISOString()
@@ -117,16 +144,19 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         if (metricsError) throw metricsError
       } else if (data.weight && data.bodyFatPercentage) {
         // Single entry (manual or single scan)
+        // Convert weight to kg for storage (database expects kg when weight_unit is 'kg')
+        const weightInKg = data.weight * 0.453592 // Convert lbs to kg
+        
         const { error: metricsError } = await supabase
           .from('body_metrics')
           .insert({
             user_id: user.id,
             date: data.scanDate ? formatDateForDB(data.scanDate) : formatDateForDB(new Date()),
-            weight: data.weight,
-            weight_unit: 'lbs',
+            weight: weightInKg,
+            weight_unit: 'kg',
             body_fat_percentage: data.bodyFatPercentage,
             body_fat_method: 'dexa',
-            lean_body_mass: data.leanMass,
+            lean_body_mass: data.leanMass ? data.leanMass * 0.453592 : null, // Convert to kg if present
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })

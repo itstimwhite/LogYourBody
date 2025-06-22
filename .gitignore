@@ -75,4 +75,6 @@ Thumbs.db
 # Test outputs
 test_*.png
 base_*.png
-control_*.png
+control_*.png# Large model files
+assets/models/smplx/*.npz
+assets/models/smplx/**/*.npz
