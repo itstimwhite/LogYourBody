@@ -66,6 +66,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   };
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    e.preventDefault();
     setIsDragging(true);
     setStartY(e.touches[0].clientY);
     setStartScrollTop(containerRef.current?.scrollTop || 0);
@@ -73,6 +74,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || !containerRef.current) return;
+    e.preventDefault();
 
     const deltaY = e.touches[0].clientY - startY;
     const newScrollTop = startScrollTop - deltaY;
@@ -100,7 +102,7 @@ export const WheelPicker: React.FC<WheelPickerProps> = ({
   };
 
   return (
-    <div className={cn("relative select-none", className)}>
+    <div className={cn("relative select-none touch-none", className)}>
       {/* Selection highlight */}
       <div
         className="pointer-events-none absolute left-0 right-0 z-10 border-y border-primary/20 bg-primary/10"
