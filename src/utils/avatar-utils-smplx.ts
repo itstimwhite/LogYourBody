@@ -1,10 +1,8 @@
-import { pravatar } from '@/utils/pravatar-utils'
-
 // Configuration for avatar sources
 export const AVATAR_CONFIG = {
   USE_SMPLX: false, // Set to true when SMPL-X avatars are generated
   SMPLX_BASE_PATH: '/avatars-smplx',
-  PRAVATAR_BASE_PATH: '/avatars-new'
+  EXISTING_BASE_PATH: '/avatars'
 }
 
 // Get closest FFMI bracket for SMPL-X avatars
@@ -57,17 +55,11 @@ export function getAvatarUrl(
     return `${AVATAR_CONFIG.SMPLX_BASE_PATH}/${normalizedGender}/ffmi${ffmiStr}/${filename}`
   }
 
-  // Fallback to pravatar system
+  // Fallback to existing avatar system
   const bfBracket = getBodyFatBracket(normalizedBodyFat)
-  const ffmiBracket = getClosestFFMI(normalizedFFMI)
+  const prefix = normalizedGender === 'male' ? 'm' : 'f'
   
-  // Use pravatar with both BF% and FFMI for better selection
-  return pravatar({
-    gender: normalizedGender,
-    bodyFat: bfBracket,
-    ffmi: ffmiBracket,
-    baseUrl: AVATAR_CONFIG.PRAVATAR_BASE_PATH
-  })
+  return `${AVATAR_CONFIG.EXISTING_BASE_PATH}/${prefix}_bf${bfBracket}.png`
 }
 
 /**
