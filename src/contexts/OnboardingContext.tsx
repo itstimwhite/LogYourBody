@@ -83,6 +83,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
         .from('profiles')
         .upsert({
           id: user.id,
+          email: user.email || '', // Include email from auth user
           full_name: data.fullName,
           date_of_birth: data.dateOfBirth,
           height: data.height,

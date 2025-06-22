@@ -12,7 +12,10 @@ jest.mock('@/contexts/AuthContext')
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn()
 }))
-jest.mock('@/lib/supabase/profile')
+jest.mock('@/lib/supabase/profile', () => ({
+  getProfile: jest.fn(),
+  updateProfile: jest.fn()
+}))
 jest.mock('@/hooks/use-toast', () => ({
   toast: jest.fn(),
   useToast: () => ({ toast: jest.fn() })
