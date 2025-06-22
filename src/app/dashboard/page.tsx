@@ -220,7 +220,15 @@ const ProfilePanel = ({
   phaseData: PhaseResult | null
   trends: ReturnType<typeof getMetricsTrends>
 }) => {
-  const displayValues = entry ? getTimelineDisplayValues(entry) : null
+  const rawValues = entry ? getTimelineDisplayValues(entry) : null
+  
+  // Convert weight from kg (database storage) to user's preferred unit
+  const displayValues = rawValues ? {
+    ...rawValues,
+    weight: rawValues.weight && user?.settings?.units?.weight === 'lbs' 
+      ? convertWeight(rawValues.weight, 'kg', 'lbs')
+      : rawValues.weight
+  } : null
   const bodyFatCategory = displayValues?.bodyFatPercentage && user?.gender
     ? getBodyFatCategory(displayValues.bodyFatPercentage, user.gender as 'male' | 'female')
     : null
@@ -287,8 +295,8 @@ const ProfilePanel = ({
                     {user?.settings?.units?.weight || 'lbs'}
                   </span>
                 </div>
-                {trends.weight.direction !== 'unknown' && (
-                  <div className="flex items-center gap-1 mt-2">
+                <div className="flex items-center gap-1 mt-2 h-6">
+                  {trends.weight.direction !== 'unknown' && (
                     <span className={cn("text-sm font-medium", getTrendColorClass(trends.weight.direction, 'weight'))}>
                       {getTrendArrow(trends.weight.direction)}
                       {trends.weight.direction !== 'stable' && (
@@ -297,8 +305,8 @@ const ProfilePanel = ({
                         </span>
                       )}
                     </span>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 
@@ -333,8 +341,8 @@ const ProfilePanel = ({
                     {bodyFatCategory}
                   </div>
                 )}
-                {trends.bodyFat.direction !== 'unknown' && (
-                  <div className="flex items-center gap-1 mt-2">
+                <div className="flex items-center gap-1 mt-2 h-6">
+                  {trends.bodyFat.direction !== 'unknown' && (
                     <span className={cn("text-sm font-medium", getTrendColorClass(trends.bodyFat.direction, 'bodyFat'))}>
                       {getTrendArrow(trends.bodyFat.direction)}
                       {trends.bodyFat.direction !== 'stable' && (
@@ -343,8 +351,8 @@ const ProfilePanel = ({
                         </span>
                       )}
                     </span>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 
@@ -368,8 +376,8 @@ const ProfilePanel = ({
                     <span className="text-4xl md:text-3xl font-bold text-linear-text-tertiary">--</span>
                   </div>
                 )}
-                {trends.leanMass.direction !== 'unknown' && (
-                  <div className="flex items-center gap-1 mt-2">
+                <div className="flex items-center gap-1 mt-2 h-6">
+                  {trends.leanMass.direction !== 'unknown' && (
                     <span className={cn("text-sm font-medium", getTrendColorClass(trends.leanMass.direction, 'leanMass'))}>
                       {getTrendArrow(trends.leanMass.direction)}
                       {trends.leanMass.direction !== 'stable' && (
@@ -378,8 +386,8 @@ const ProfilePanel = ({
                         </span>
                       )}
                     </span>
-                  </div>
-                )}
+                  )}
+                </div>
               </div>
             </div>
 
@@ -408,9 +416,9 @@ const ProfilePanel = ({
                     <div>
                       <span className="text-4xl md:text-3xl font-bold text-linear-text">
                         {(() => {
-                          const weightInKg = user?.settings?.units?.weight === 'lbs' 
-                            ? convertWeight(displayValues.weight, 'lbs', 'kg')
-                            : displayValues.weight
+                          // displayValues.weight is already in user's preferred unit
+                          // rawValues.weight is in kg (database storage)
+                          const weightInKg = rawValues.weight || 0
                           
                           const heightInCm = user?.settings?.units?.height === 'ft'
                             ? user.height * 2.54
@@ -422,9 +430,9 @@ const ProfilePanel = ({
                     </div>
                     <div className="text-xs text-linear-text-tertiary mt-1">
                       {(() => {
-                        const weightInKg = user?.settings?.units?.weight === 'lbs' 
-                          ? convertWeight(displayValues.weight, 'lbs', 'kg')
-                          : displayValues.weight
+                        // displayValues.weight is already in user's preferred unit
+                        // rawValues.weight is in kg (database storage)
+                        const weightInKg = rawValues.weight || 0
                         
                         const heightInCm = user?.settings?.units?.height === 'ft'
                           ? user.height * 2.54
@@ -437,8 +445,8 @@ const ProfilePanel = ({
                         ).join(' ')
                       })()}
                     </div>
-                    {trends.ffmi.direction !== 'unknown' && (
-                      <div className="flex items-center gap-1 mt-2">
+                    <div className="flex items-center gap-1 mt-2 h-6">
+                      {trends.ffmi.direction !== 'unknown' && (
                         <span className={cn("text-sm font-medium", getTrendColorClass(trends.ffmi.direction, 'ffmi'))}>
                           {getTrendArrow(trends.ffmi.direction)}
                           {trends.ffmi.direction !== 'stable' && (
@@ -447,8 +455,8 @@ const ProfilePanel = ({
                             </span>
                           )}
                         </span>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </>
                 ) : (
                   <>
@@ -479,9 +487,9 @@ const ProfilePanel = ({
                   {displayValues?.weight && displayValues?.bodyFatPercentage && user?.height ? (
                     <>
                       {(() => {
-                        const weightInKg = user?.settings?.units?.weight === 'lbs' 
-                          ? convertWeight(displayValues.weight, 'lbs', 'kg')
-                          : displayValues.weight
+                        // displayValues.weight is already in user's preferred unit
+                        // rawValues.weight is in kg (database storage)
+                        const weightInKg = rawValues.weight || 0
                         
                         const heightInCm = user?.settings?.units?.height === 'ft'
                           ? user.height * 2.54
@@ -499,9 +507,9 @@ const ProfilePanel = ({
                 value={
                   displayValues?.weight && displayValues?.bodyFatPercentage && user?.height
                     ? (() => {
-                        const weightInKg = user?.settings?.units?.weight === 'lbs' 
-                          ? convertWeight(displayValues.weight, 'lbs', 'kg')
-                          : displayValues.weight
+                        // displayValues.weight is already in user's preferred unit
+                        // rawValues.weight is in kg (database storage)
+                        const weightInKg = rawValues.weight || 0
                         
                         const heightInCm = user?.settings?.units?.height === 'ft'
                           ? user.height * 2.54
@@ -820,7 +828,15 @@ export default function DashboardPage() {
   const currentEntry = selectedDateIndex >= 0 && selectedDateIndex < timelineData.length 
     ? timelineData[selectedDateIndex] 
     : null
-  const displayValues = currentEntry ? getTimelineDisplayValues(currentEntry) : null
+  const rawValues = currentEntry ? getTimelineDisplayValues(currentEntry) : null
+  
+  // Convert weight from kg (database storage) to user's preferred unit
+  const displayValues = rawValues ? {
+    ...rawValues,
+    weight: rawValues.weight && profile?.settings?.units?.weight === 'lbs' 
+      ? convertWeight(rawValues.weight, 'kg', 'lbs')
+      : rawValues.weight
+  } : null
 
   // Format helpers
   const getFormattedWeight = (weight?: number) => {
