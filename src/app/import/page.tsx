@@ -10,6 +10,9 @@ import { Badge } from '@/components/ui/badge'
 // import { Separator } from '@/components/ui/separator' // Not used
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs' // Not used
 import { toast } from '@/hooks/use-toast'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Progress } from '@/components/ui/progress'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   ArrowLeft,
   Upload,
@@ -18,7 +21,9 @@ import {
   Image,
   CheckCircle,
   Check,
-  X as XIcon
+  X as XIcon,
+  Loader2,
+  AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -61,6 +66,9 @@ export default function ImportPage() {
   const [parsedData, setParsedData] = useState<ParsedData | null>(null)
   const [selectedEntries, setSelectedEntries] = useState<Set<number>>(new Set())
   const [processingStatus, setProcessingStatus] = useState<string>('')
+  const [uploadProgress, setUploadProgress] = useState(0)
+  const [uploadErrors, setUploadErrors] = useState<string[]>([])
+  const [successCount, setSuccessCount] = useState(0)
 
   if (loading) {
     return (
@@ -409,19 +417,27 @@ export default function ImportPage() {
     if (!parsedData || selectedEntries.size === 0 || !user) return
 
     setIsProcessing(true)
-    setProcessingStatus('Importing data...')
+    setProcessingStatus('Preparing import...')
+    setUploadProgress(0)
+    setUploadErrors([])
+    setSuccessCount(0)
     
     try {
       const supabase = createClient()
       const selectedData = parsedData.entries.filter((_, index) => selectedEntries.has(index))
       
       if (parsedData.type === 'photos') {
-        setProcessingStatus('Uploading photos...')
+        setProcessingStatus('Starting photo upload...')
         // Upload photos to Supabase Storage first - sequentially to avoid rate limits
         const uploadResults = []
+        let successfulUploads = 0
+        const errors: string[] = []
         
         for (let index = 0; index < selectedData.length; index++) {
           const entry = selectedData[index]
+          const progress = Math.round(((index + 1) / selectedData.length) * 100)
+          setUploadProgress(progress)
+          
           if (!entry.photo_url) {
             uploadResults.push(null)
             continue
@@ -477,6 +493,8 @@ export default function ImportPage() {
           }
           
           uploadResults.push({ success: true, url: publicUrl })
+          successfulUploads++
+          setSuccessCount(successfulUploads)
           } catch (photoError) {
             // Properly extract error details
             const errorMessage = photoError instanceof Error 
@@ -498,6 +516,9 @@ export default function ImportPage() {
               console.error('Non-Error object:', JSON.stringify(photoError, null, 2))
             }
             
+            const errorString = `Photo ${index + 1}: ${errorMessage}`
+            errors.push(errorString)
+            setUploadErrors(errors)
             uploadResults.push({ success: false, error: errorMessage, fileName: entry.notes })
           }
           
@@ -569,6 +590,9 @@ export default function ImportPage() {
     } finally {
       setIsProcessing(false)
       setProcessingStatus('')
+      setUploadProgress(0)
+      setUploadErrors([])
+      setSuccessCount(0)
     }
   }
 
@@ -878,6 +902,56 @@ export default function ImportPage() {
           </div>
         )}
       </main>
+
+      {/* Upload Progress Dialog */}
+      <Dialog open={isProcessing} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md bg-linear-card border-linear-border">
+          <DialogHeader>
+            <DialogTitle className="text-linear-text">
+              {parsedData?.type === 'photos' ? 'Uploading Photos' : 'Importing Data'}
+            </DialogTitle>
+            <DialogDescription className="text-linear-text-secondary">
+              {processingStatus}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Progress Bar */}
+            <div className="space-y-2">
+              <Progress value={uploadProgress} className="h-2" />
+              <div className="flex justify-between text-sm text-linear-text-secondary">
+                <span>{successCount} successful</span>
+                <span>{uploadProgress}%</span>
+              </div>
+            </div>
+
+            {/* Loading Animation */}
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-8 w-8 animate-spin text-linear-purple" />
+            </div>
+
+            {/* Errors */}
+            {uploadErrors.length > 0 && (
+              <div className="max-h-32 overflow-y-auto space-y-1 p-3 bg-red-500/10 rounded-lg">
+                <div className="flex items-center gap-2 text-red-500 mb-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <span className="text-sm font-medium">Errors:</span>
+                </div>
+                {uploadErrors.map((error, index) => (
+                  <p key={index} className="text-xs text-red-400">
+                    {error}
+                  </p>
+                ))}
+              </div>
+            )}
+
+            {/* Info Text */}
+            <p className="text-xs text-center text-linear-text-tertiary">
+              Please keep this window open until the upload completes
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -687,6 +687,15 @@ export default function DashboardPage() {
       getProfile(user.id).then((profileData) => {
         if (profileData) {
           setProfile(profileData)
+          // Check if onboarding is needed
+          if (!profileData.onboarding_completed) {
+            router.push('/onboarding')
+            return
+          }
+        } else {
+          // No profile exists, redirect to onboarding
+          router.push('/onboarding')
+          return
         }
         setProfileLoading(false)
       }).catch((error) => {
@@ -726,7 +735,7 @@ export default function DashboardPage() {
           }
         })
     }
-  }, [user])
+  }, [user, router])
   
   // Create timeline data when metrics or photos change
   useEffect(() => {
