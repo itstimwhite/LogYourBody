@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const openai = new OpenAI({
+    const _openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     })
 

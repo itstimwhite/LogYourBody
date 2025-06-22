@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns'
+import { format } from 'date-fns'
 
 /**
  * Formats a date string to avoid timezone issues

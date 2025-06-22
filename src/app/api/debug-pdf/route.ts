@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
         textLength: text.length,
         preview: isProbablyText ? text.substring(0, 500) : 'Not plain text'
       }
-    } catch (error) {
+    } catch {
       results.methods.textDecode = {
         success: false,
         error: 'Failed to decode as text'

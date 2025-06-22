@@ -14,9 +14,10 @@ jest.mock('@/lib/supabase/client')
 
 // Don't mock MobileNavbar to test actual integration
 jest.mock('@/components/MobileNavbar', () => {
-  const { usePathname } = require('next/navigation')
   return {
     MobileNavbar: () => {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { usePathname } = require('next/navigation')
       const pathname = usePathname()
       if (pathname === '/log' || pathname.startsWith('/settings')) {
         return null

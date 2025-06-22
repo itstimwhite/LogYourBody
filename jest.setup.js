@@ -3,21 +3,19 @@ import '@testing-library/jest-dom'
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({
-  useRouter() {
-    return {
-      push: jest.fn(),
-      replace: jest.fn(),
-      prefetch: jest.fn(),
-      back: jest.fn(),
-    }
-  },
-  usePathname() {
-    return '/'
-  },
-  useSearchParams() {
-    const searchParams = new URLSearchParams()
-    return searchParams
-  },
+  useRouter: jest.fn(() => ({
+    push: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+    back: jest.fn(),
+    refresh: jest.fn(),
+    forward: jest.fn(),
+  })),
+  usePathname: jest.fn(() => '/'),
+  useSearchParams: jest.fn(() => new URLSearchParams()),
+  useParams: jest.fn(() => ({})),
+  notFound: jest.fn(),
+  redirect: jest.fn(),
 }))
 
 // Mock Supabase client
@@ -78,3 +76,62 @@ if (!Element.prototype.setPointerCapture) {
 if (!Element.prototype.releasePointerCapture) {
   Element.prototype.releasePointerCapture = jest.fn()
 }
+
+// Mock date-fns to avoid timezone issues in tests
+jest.mock('date-fns', () => ({
+  ...jest.requireActual('date-fns'),
+  format: (date, formatStr) => {
+    const actual = jest.requireActual('date-fns')
+    if (formatStr === 'yyyy-MM-dd' && typeof date === 'string') {
+      return date // Return the string as-is for DB formatting
+    }
+    return actual.format(date, formatStr)
+  }
+}))
+
+// Mock framer-motion
+jest.mock('framer-motion', () => ({
+  motion: {
+    div: ({ children, ...props }) => {
+      const { initial, animate, exit, transition, ...restProps } = props
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require('react').createElement('div', restProps, children)
+    },
+    button: ({ children, ...props }) => {
+      const { initial, animate, exit, transition, whileHover, whileTap, ...restProps } = props
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require('react').createElement('button', restProps, children)
+    },
+    span: ({ children, ...props }) => {
+      const { initial, animate, exit, transition, ...restProps } = props
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      return require('react').createElement('span', restProps, children)
+    }
+  },
+  AnimatePresence: ({ children }) => children
+}))
+
+// Mock Supabase profile module
+jest.mock('@/lib/supabase/profile', () => ({
+  getProfile: jest.fn().mockResolvedValue({
+    height: 71,
+    height_unit: 'ft',
+    gender: 'male',
+    settings: {
+      units: {
+        weight: 'lbs',
+        height: 'ft',
+        measurements: 'in'
+      }
+    }
+  })
+}))
+
+// Mock createClient from Supabase
+jest.mock('@/lib/supabase/client', () => ({
+  createClient: jest.fn(() => ({
+    from: jest.fn(() => ({
+      insert: jest.fn().mockResolvedValue({ error: null })
+    }))
+  }))
+}))

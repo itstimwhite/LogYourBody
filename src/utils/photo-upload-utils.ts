@@ -9,13 +9,13 @@ interface CompressOptions {
   format?: 'webp' | 'jpeg' | 'png'
 }
 
-interface UploadResult {
-  success: boolean
-  publicUrl?: string
-  thumbnailUrl?: string
-  error?: string
-  details?: any
-}
+// interface UploadResult { // Not currently used
+//   success: boolean
+//   publicUrl?: string
+//   thumbnailUrl?: string
+//   error?: string
+//   details?: any
+// }
 
 /**
  * Compresses an image file before upload

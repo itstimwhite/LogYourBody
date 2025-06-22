@@ -6,9 +6,9 @@ import { useAuth } from '@/contexts/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Separator } from '@/components/ui/separator'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+// import { Alert, AlertDescription } from '@/components/ui/alert' // Not used
+// import { Separator } from '@/components/ui/separator' // Not used
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs' // Not used
 import { toast } from '@/hooks/use-toast'
 import {
   ArrowLeft,
@@ -16,15 +16,9 @@ import {
   FileSpreadsheet,
   FileText,
   Image,
-  AlertCircle,
   CheckCircle,
   Check,
-  X as XIcon,
-  Calendar,
-  Weight,
-  Percent,
-  Eye,
-  Trash2
+  X as XIcon
 } from 'lucide-react'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -776,7 +770,7 @@ export default function ImportPage() {
                             {entry.photo_url && (
                               <img
                                 src={entry.photo_url}
-                                alt={`Progress photo ${index + 1}`}
+                                alt={`Progress entry ${index + 1}`}
                                 className="object-cover w-full h-full"
                               />
                             )}

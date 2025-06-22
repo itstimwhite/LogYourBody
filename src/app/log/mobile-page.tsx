@@ -531,7 +531,7 @@ export default function MobileLogPage() {
                     onValueChange={(value) => setFormData(prev => ({ ...prev, method: value as any }))}
                     className="space-y-4"
                   >
-                    <label className="block">
+                    <label htmlFor="simple" className="block">
                       <div className={cn(
                         "border-2 rounded-xl p-6 transition-all cursor-pointer",
                         formData.method === 'simple' 
@@ -552,7 +552,7 @@ export default function MobileLogPage() {
                       </div>
                     </label>
 
-                    <label className="block">
+                    <label htmlFor="navy" className="block">
                       <div className={cn(
                         "border-2 rounded-xl p-6 transition-all cursor-pointer",
                         formData.method === 'navy' 
@@ -573,7 +573,7 @@ export default function MobileLogPage() {
                       </div>
                     </label>
 
-                    <label className="block">
+                    <label htmlFor="3-site" className="block">
                       <div className={cn(
                         "border-2 rounded-xl p-6 transition-all cursor-pointer",
                         formData.method === '3-site' 

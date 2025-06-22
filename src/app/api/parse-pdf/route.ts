@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         // Convert first page to base64 and send to OpenAI Vision API
         if (pageCount > 0) {
           // For DEXA scans, usually the first page has the summary
-          const base64 = buffer.toString('base64')
+          // const base64 = buffer.toString('base64') // Not used with current approach
           
           // Use OpenAI to analyze the PDF content
           // Note: This is a workaround - ideally we'd extract text directly

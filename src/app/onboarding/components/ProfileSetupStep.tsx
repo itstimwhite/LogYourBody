@@ -93,12 +93,12 @@ export function ProfileSetupStep() {
             onValueChange={(value) => setFormData(prev => ({ ...prev, gender: value as 'male' | 'female' }))}
             className="flex gap-4"
           >
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <RadioGroupItem value="male" />
+            <label htmlFor="gender-male" className="flex items-center space-x-2 cursor-pointer">
+              <RadioGroupItem value="male" id="gender-male" />
               <span className="text-linear-text">Male</span>
             </label>
-            <label className="flex items-center space-x-2 cursor-pointer">
-              <RadioGroupItem value="female" />
+            <label htmlFor="gender-female" className="flex items-center space-x-2 cursor-pointer">
+              <RadioGroupItem value="female" id="gender-female" />
               <span className="text-linear-text">Female</span>
             </label>
           </RadioGroup>

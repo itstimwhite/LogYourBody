@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'
 import ProfileSettingsPage from '../page'
 import * as profileApi from '@/lib/supabase/profile'
-import { format } from 'date-fns'
+// import { format } from 'date-fns' // Not used
 
 // Mock dependencies
 jest.mock('@/contexts/AuthContext')

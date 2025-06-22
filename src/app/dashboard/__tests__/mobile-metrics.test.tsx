@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, within } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import DashboardPage from '../page'
 import { useAuth } from '@/contexts/AuthContext'
 import { useRouter } from 'next/navigation'

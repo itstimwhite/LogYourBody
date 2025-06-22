@@ -80,12 +80,13 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       
       // Update user profile
       const { error: profileError } = await supabase
-        .from('user_profiles')
+        .from('profiles')
         .upsert({
           id: user.id,
           full_name: data.fullName,
           date_of_birth: data.dateOfBirth,
           height: data.height,
+          height_unit: 'in', // Since we're storing height in inches
           gender: data.gender,
           onboarding_completed: true,
           updated_at: new Date().toISOString()
@@ -136,7 +137,15 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
       router.push('/dashboard')
     } catch (error) {
       console.error('Error completing onboarding:', error)
-      // Handle error appropriately
+      // Show error to user
+      const errorMessage = error instanceof Error ? error.message : 'Failed to complete onboarding'
+      // Import toast dynamically to avoid issues
+      const { toast } = await import('@/hooks/use-toast')
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      })
     } finally {
       setIsLoading(false)
     }

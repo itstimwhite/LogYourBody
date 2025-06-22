@@ -11,19 +11,14 @@ import {
   Loader2, 
   User, 
   Camera,
-  Scale,
-  Ruler,
-  Target,
   Plus,
   Settings,
-  Percent,
-  Dumbbell,
   Upload,
   ChevronDown
 } from 'lucide-react'
 import { format } from 'date-fns'
 import { BodyMetrics, UserProfile, ProgressPhoto } from '@/types/body-metrics'
-import { calculateFFMI, getBodyFatCategory, convertWeight, convertHeight } from '@/utils/body-calculations'
+import { calculateFFMI, getBodyFatCategory, convertWeight } from '@/utils/body-calculations'
 import { getAvatarUrl } from '@/utils/avatar-utils'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
@@ -36,7 +31,7 @@ import { Info, TrendingDown, TrendingUp, Minus } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { BodyFatScale } from '@/components/BodyFatScale'
 import { calculatePhase, PhaseResult } from '@/utils/phase-calculator'
-import { getMetricsTrends, getTrendArrow, getTrendColorClass, TrendInfo } from '@/utils/trend-calculator'
+import { getMetricsTrends, getTrendArrow, getTrendColorClass } from '@/utils/trend-calculator'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -45,41 +40,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { MobileNavbar } from '@/components/MobileNavbar'
 
-// Mock data for demonstration
-const mockMetrics: BodyMetrics = {
-  id: '1',
-  user_id: 'user1',
-  date: new Date().toISOString(),
-  weight: 165,
-  weight_unit: 'lbs',
-  body_fat_percentage: 15,
-  body_fat_method: 'navy',
-  lean_body_mass: 140.25,
-  ffmi: 21.2,
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
-}
-
-const mockProfile: UserProfile = {
-  id: 'user1',
-  email: 'user@example.com',
-  full_name: 'John Doe',
-  height: 71,
-  height_unit: 'ft',
-  gender: 'male',
-  date_of_birth: '1990-01-01',
-  email_verified: true,
-  onboarding_completed: true,
-  settings: {
-    units: {
-      weight: 'lbs',
-      height: 'ft',
-      measurements: 'in'
-    }
-  },
-  created_at: new Date().toISOString(),
-  updated_at: new Date().toISOString()
-}
+// Mock data removed - not being used
 
 // Phase Indicator component
 const PhaseIndicator = ({ phaseData }: { phaseData: PhaseResult | null }) => {
@@ -178,6 +139,8 @@ const AvatarDisplay = ({
   className?: string
   onAddPhoto?: () => void
 }) => {
+  const [imageError, setImageError] = useState(false)
+  
   if (showPhoto) {
     if (profileImage) {
       return (
@@ -212,8 +175,6 @@ const AvatarDisplay = ({
   }
 
   const avatarUrl = getAvatarUrl(gender as 'male' | 'female', bodyFatPercentage)
-  
-  const [imageError, setImageError] = useState(false)
 
   return (
     <div className={cn("relative flex items-center justify-center bg-linear-bg p-8", className)}>
@@ -249,14 +210,12 @@ const AvatarDisplay = ({
 const ProfilePanel = ({ 
   entry,
   user, 
-  formattedWeight,
   formattedHeight,
   phaseData,
   trends
 }: {
   entry: TimelineEntry | null
   user: UserProfile | null
-  formattedWeight: string
   formattedHeight: string
   phaseData: PhaseResult | null
   trends: ReturnType<typeof getMetricsTrends>
@@ -676,7 +635,7 @@ export default function DashboardPage() {
   const isOnline = useNetworkStatus()
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [selectedDateIndex, setSelectedDateIndex] = useState(-1)
-  const [latestMetrics, setLatestMetrics] = useState<BodyMetrics | null>(null)
+  const [_latestMetrics, setLatestMetrics] = useState<BodyMetrics | null>(null)
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [metricsHistory, setMetricsHistory] = useState<BodyMetrics[]>([])
   const [profileLoading, setProfileLoading] = useState(true)
@@ -996,7 +955,6 @@ export default function DashboardPage() {
           <ProfilePanel
             entry={currentEntry}
             user={profile}
-            formattedWeight={getFormattedWeight(displayValues?.weight || currentEntry?.metrics?.weight)}
             formattedHeight={getFormattedHeight(profile?.height)}
             phaseData={phaseData}
             trends={metricsTrends}

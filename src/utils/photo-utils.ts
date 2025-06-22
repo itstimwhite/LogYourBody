@@ -133,7 +133,7 @@ export async function uploadPhotoWithMetrics(
     const fileName = `${userId}/${Date.now()}-progress.jpg`
     
     // Upload to storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('photos')
       .upload(fileName, file, {
         contentType: file.type,

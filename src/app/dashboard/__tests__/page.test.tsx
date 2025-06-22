@@ -1,11 +1,14 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import DashboardPage from '../page'
 
 // Mock dependencies
 jest.mock('next/navigation', () => ({
-  useRouter: jest.fn()
+  useRouter: jest.fn(),
+  usePathname: jest.fn(() => '/dashboard'),
+  useSearchParams: jest.fn(() => new URLSearchParams()),
+  useParams: jest.fn(() => ({}))
 }))
 
 jest.mock('@/contexts/AuthContext', () => ({
@@ -223,6 +226,10 @@ describe('DashboardPage', () => {
   })
 
   it('navigates to log page when plus button clicked', async () => {
+    const mockRouterPush = jest.fn()
+    ;(useRouter as jest.Mock).mockReturnValue({
+      push: mockRouterPush
+    })
     ;(useAuth as jest.Mock).mockReturnValue({
       user: { id: 'user1', email: 'test@example.com' },
       loading: false,
@@ -233,12 +240,10 @@ describe('DashboardPage', () => {
     
     await screen.findByText('LogYourBody')
     
-    const addButton = screen.getAllByRole('button').find(btn => 
-      btn.querySelector('svg')?.classList.contains('lucide-plus')
-    )
+    const addButton = screen.getByLabelText('Add Data')
     
-    fireEvent.click(addButton!)
-    expect(mockPush).toHaveBeenCalledWith('/log')
+    fireEvent.click(addButton)
+    expect(mockRouterPush).toHaveBeenCalledWith('/log')
   })
 
   it('navigates to settings when settings button clicked', async () => {
