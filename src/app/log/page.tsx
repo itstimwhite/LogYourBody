@@ -264,9 +264,6 @@ export default function LogWeightPage() {
           weight_unit: 'kg', // Always store in kg
           body_fat_percentage: formData.body_fat_percentage,
           body_fat_method: formData.method === 'simple' ? 'manual' : formData.method,
-          lean_body_mass: formData.body_fat_percentage 
-            ? weightInKg * (1 - formData.body_fat_percentage / 100) 
-            : null,
           waist: formData.waist ? parseFloat(formData.waist) : null,
           neck: formData.neck ? parseFloat(formData.neck) : null,
           hip: formData.hip ? parseFloat(formData.hip) : null,

@@ -562,9 +562,7 @@ export default function ImportPage() {
           body_fat_percentage: entry.body_fat_percentage,
           waist: entry.waist,
           hip: entry.hip,
-          notes: entry.notes,
-          // Add muscle mass as lean body mass if available
-          lean_body_mass: entry.muscle_mass
+          notes: entry.notes
         }))
         
         const { error } = await supabase

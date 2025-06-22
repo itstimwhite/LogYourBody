@@ -132,7 +132,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
           weight_unit: 'kg',
           body_fat_percentage: scan.body_fat_percentage || null,
           body_fat_method: 'dexa',
-          lean_body_mass: scan.muscle_mass || null,
+          bone_mass: scan.bone_mass ? (scan.weight_unit === 'lbs' ? scan.bone_mass * 0.453592 : scan.bone_mass) : null, // Convert to kg if needed
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         }))
@@ -156,7 +156,7 @@ export function OnboardingProvider({ children }: { children: React.ReactNode }) 
             weight_unit: 'kg',
             body_fat_percentage: data.bodyFatPercentage,
             body_fat_method: 'dexa',
-            lean_body_mass: data.leanMass ? data.leanMass * 0.453592 : null, // Convert to kg if present
+            bone_mass: data.boneMass ? data.boneMass * 0.453592 : null, // Convert to kg if present
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })
