@@ -26,12 +26,34 @@ export function PWAInstallPrompt() {
     const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches || 
                               window.matchMedia('(display-mode: fullscreen)').matches ||
                               window.matchMedia('(display-mode: minimal-ui)').matches ||
+                              window.matchMedia('(display-mode: window-controls-overlay)').matches ||
                               ('standalone' in window.navigator && window.navigator.standalone === true) ||
                               document.referrer.includes('android-app://') ||
-                              window.navigator.userAgent.includes('wv')
+                              window.navigator.userAgent.includes('wv') ||
+                              // Additional checks for PWA on desktop
+                              window.location.href.includes('mode=standalone') ||
+                              window.location.search.includes('mode=standalone') ||
+                              // Check if launched from home screen on desktop
+                              (window.matchMedia('(display-mode: browser)').matches === false)
 
     setIsIOS(isIOSDevice && isSafari)
     setIsStandalone(isInStandaloneMode)
+
+    // Debug logging for PWA detection
+    if (process.env.NODE_ENV === 'development') {
+      console.log('PWA Detection:', {
+        isInStandaloneMode,
+        displayModeStandalone: window.matchMedia('(display-mode: standalone)').matches,
+        displayModeBrowser: window.matchMedia('(display-mode: browser)').matches,
+        navigatorStandalone: 'standalone' in window.navigator ? window.navigator.standalone : 'not supported',
+        userAgent: window.navigator.userAgent
+      })
+    }
+
+    // Don't show if already installed
+    if (isInStandaloneMode) {
+      return
+    }
 
     // Don't show if already installed or previously dismissed
     const dismissed = localStorage.getItem('pwa-install-dismissed')
@@ -53,10 +75,13 @@ export function PWAInstallPrompt() {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       setDeferredPrompt(e as BeforeInstallPromptEvent)
-      // Show custom install UI after 30 seconds
-      setTimeout(() => {
-        setShowPrompt(true)
-      }, 30000)
+      // Only show if not already installed and not recently dismissed
+      if (!isInStandaloneMode && daysSinceDismissed > 7) {
+        // Show custom install UI after 30 seconds
+        setTimeout(() => {
+          setShowPrompt(true)
+        }, 30000)
+      }
     }
 
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)

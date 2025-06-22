@@ -147,36 +147,58 @@ export function NotificationsStep() {
           <Button
             variant="ghost"
             onClick={previousStep}
+            tabIndex={1}
           >
             Back
           </Button>
           
-          {permission === 'default' && isSupported && !hasAsked && (
-            <Button
-              onClick={requestPermission}
-              className="ml-auto bg-linear-purple hover:bg-linear-purple/90 text-white"
-            >
-              Enable Notifications
-            </Button>
+          {permission === 'default' && isSupported && (
+            <>
+              <Button
+                onClick={requestPermission}
+                className="ml-auto bg-linear-purple hover:bg-linear-purple/90 text-white"
+                tabIndex={2}
+                autoFocus
+              >
+                <Bell className="h-4 w-4 mr-2" />
+                Enable Notifications
+              </Button>
+            </>
           )}
           
-          {(permission !== 'default' || !isSupported || hasAsked) && (
+          {permission === 'granted' && (
             <Button
               onClick={nextStep}
               className="ml-auto bg-linear-purple hover:bg-linear-purple/90 text-white"
+              tabIndex={2}
+              autoFocus
             >
               Continue
+            </Button>
+          )}
+          
+          {(permission === 'denied' || !isSupported) && (
+            <Button
+              onClick={nextStep}
+              className="ml-auto"
+              variant="default"
+              tabIndex={2}
+            >
+              Continue without notifications
             </Button>
           )}
         </div>
 
         {permission === 'default' && isSupported && (
-          <button
-            onClick={skip}
-            className="text-sm text-linear-text-tertiary hover:text-linear-text text-center w-full"
-          >
-            Skip for now
-          </button>
+          <div className="mt-6 text-center">
+            <button
+              onClick={skip}
+              className="text-xs text-linear-text-tertiary hover:text-linear-text-secondary transition-colors underline-offset-4 hover:underline"
+              tabIndex={3}
+            >
+              Skip for now
+            </button>
+          </div>
         )}
       </CardContent>
     </Card>
