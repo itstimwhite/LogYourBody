@@ -418,7 +418,7 @@ const ProfilePanel = ({
                         {(() => {
                           // displayValues.weight is already in user's preferred unit
                           // rawValues.weight is in kg (database storage)
-                          const weightInKg = rawValues.weight || 0
+                          const weightInKg = rawValues?.weight || 0
                           
                           const heightInCm = user?.settings?.units?.height === 'ft'
                             ? user.height * 2.54
@@ -432,7 +432,7 @@ const ProfilePanel = ({
                       {(() => {
                         // displayValues.weight is already in user's preferred unit
                         // rawValues.weight is in kg (database storage)
-                        const weightInKg = rawValues.weight || 0
+                        const weightInKg = rawValues?.weight || 0
                         
                         const heightInCm = user?.settings?.units?.height === 'ft'
                           ? user.height * 2.54
@@ -489,7 +489,7 @@ const ProfilePanel = ({
                       {(() => {
                         // displayValues.weight is already in user's preferred unit
                         // rawValues.weight is in kg (database storage)
-                        const weightInKg = rawValues.weight || 0
+                        const weightInKg = rawValues?.weight || 0
                         
                         const heightInCm = user?.settings?.units?.height === 'ft'
                           ? user.height * 2.54
@@ -509,7 +509,7 @@ const ProfilePanel = ({
                     ? (() => {
                         // displayValues.weight is already in user's preferred unit
                         // rawValues.weight is in kg (database storage)
-                        const weightInKg = rawValues.weight || 0
+                        const weightInKg = rawValues?.weight || 0
                         
                         const heightInCm = user?.settings?.units?.height === 'ft'
                           ? user.height * 2.54
