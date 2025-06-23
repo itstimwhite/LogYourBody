@@ -207,14 +207,14 @@ export function DexaUploadStep() {
   }
 
   return (
-    <Card className="bg-linear-card border-linear-border">
-      <CardHeader>
+    <Card className="bg-linear-card border-linear-border max-h-[85vh] flex flex-col">
+      <CardHeader className="flex-shrink-0">
         <CardTitle className="text-linear-text">Upload your DEXA scan</CardTitle>
         <CardDescription className="text-linear-text-secondary">
           Support for BodySpec, DexaFit, and other providers
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 flex-1 overflow-y-auto">
         {!file ? (
           <div
             onDrop={handleDrop}
@@ -276,7 +276,10 @@ export function DexaUploadStep() {
           </p>
         </div>
 
-        <div className="flex gap-3 pt-4">
+      </CardContent>
+      {/* Fixed button footer */}
+      <div className="p-6 pt-0 flex-shrink-0">
+        <div className="flex gap-3">
           <Button
             variant="ghost"
             onClick={previousStep}
@@ -309,7 +312,7 @@ export function DexaUploadStep() {
             )}
           </Button>
         </div>
-      </CardContent>
+      </div>
     </Card>
   )
 }

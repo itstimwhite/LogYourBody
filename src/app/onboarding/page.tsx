@@ -44,13 +44,13 @@ function OnboardingFlow() {
   return (
     <div className="min-h-screen bg-linear-bg flex flex-col">
       {/* Progress bar */}
-      <div className="w-full px-4 pt-8">
+      <div className="w-full px-4 pt-8 pb-4">
         <Progress value={progress} className="h-1 max-w-2xl mx-auto" />
       </div>
       
-      {/* Step content */}
-      <div className="flex-1 flex items-center justify-center px-4 py-12">
-        <div className="w-full max-w-lg">
+      {/* Step content - with max height and scroll */}
+      <div className="flex-1 flex items-center justify-center px-4 pb-8 overflow-y-auto">
+        <div className="w-full max-w-lg py-4">
           {renderStep()}
         </div>
       </div>

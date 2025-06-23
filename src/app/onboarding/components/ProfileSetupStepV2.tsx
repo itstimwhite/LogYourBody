@@ -113,8 +113,8 @@ export function ProfileSetupStepV2() {
   const StepIcon = currentContent.icon
 
   return (
-    <Card className="bg-linear-card border-linear-border overflow-hidden">
-      <CardHeader className="pb-4">
+    <Card className="bg-linear-card border-linear-border max-h-[85vh] flex flex-col">
+      <CardHeader className="pb-4 flex-shrink-0">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-linear-purple/10 flex items-center justify-center">
@@ -139,7 +139,7 @@ export function ProfileSetupStepV2() {
         </div>
       </CardHeader>
       
-      <CardContent className="min-h-[300px]">
+      <CardContent className="flex-1 overflow-y-auto">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentProfileStep}
