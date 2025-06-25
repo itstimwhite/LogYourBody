@@ -27,8 +27,10 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: '2mb',
     },
-    serverComponentsExternalPackages: ['pdf-parse'],
   },
+  
+  // Server external packages
+  serverExternalPackages: ['pdf-parse'],
   
   // Skip ESLint during builds - we'll run it separately
   eslint: {
@@ -45,7 +47,7 @@ const nextConfig: NextConfig = {
     NEXT_PUBLIC_APP_VERSION: version,
   },
   
-  // Webpack configuration
+  // Webpack configuration (only used when not using Turbopack)
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
