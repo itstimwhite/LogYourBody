@@ -1,90 +1,88 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+# Dependencies
+node_modules
+.pnp
+.pnp.js
 
-# dependencies
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
+# Python virtual environments
+venv/
+venv-*/
+**/venv/
+**/venv-*/
 
-# testing
-/coverage
+# Large model files
+*.npz
+assets/models/
 
-# next.js
-/.next/
-/out/
+# Testing
+coverage
+*.lcov
+.nyc_output
 
-# production
-/build
+# Turbo
+.turbo
 
-# misc
+# Next.js
+.next/
+out/
+build
+dist
+
+# Misc
 .DS_Store
 *.pem
+.vscode
+.idea
 
-# debug
+# Debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
-.env*
+# Local env files
+.env*.local
+.env
 
-# vercel
+# Vercel
 .vercel
 
-# typescript
+# TypeScript
 *.tsbuildinfo
 next-env.d.ts
-.env*.local
 
-# playwright
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-tests/e2e/__screenshots__/
-
-# Legacy React app
-legacy-react/
-
-# Python
-venv/
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-env/
-ENV/
-.venv
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# iOS/Xcode
-*.xcuserdata
-*.xcworkspace/xcshareddata/
-DerivedData/
-.build/
-*.swiftpm/
-*.playground
-*.xcodeproj/project.xcworkspace/
+# iOS / Xcode
+*.xcworkspace/xcuserdata/
 *.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+DerivedData/
+*.moved-aside
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.xcscmblueprint
+*.xcuserstate
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.playground
 
-# Test outputs
-test_*.png
-base_*.png
-control_*.png# Large model files
-assets/models/smplx/*.npz
-assets/models/smplx/**/*.npz
+# iOS specific
+apps/ios/build/
+apps/ios/*.ipa
+apps/ios/*.dSYM.zip
+apps/ios/*.dSYM
+apps/ios/fastlane/report.xml
+apps/ios/fastlane/Preview.html
+apps/ios/fastlane/screenshots
+apps/ios/fastlane/test_output
+apps/ios/Pods/
+apps/ios/Podfile.lock
+
+# Config files with secrets
+apps/ios/LogYourBody/Config.xcconfig
+apps/ios/Supabase.xcconfig

@@ -1,5 +1,5 @@
 # Auto-version before push
 echo "🔄 Running auto-versioning..."
-node scripts/version-manager.cjs --skip-tag
+node apps/web/scripts/version-manager.cjs --skip-tag
 
 # The tag will be created by the GitHub Action to avoid conflicts
