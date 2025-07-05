@@ -51,7 +51,7 @@ export async function updateSession(request: NextRequest) {
     // Only redirect unauthenticated users away from protected routes
     // Don't redirect authenticated users from login pages (let client handle it)
     if (!user && isProtectedRoute) {
-      url.pathname = '/login'
+      url.pathname = '/signin'
       return NextResponse.redirect(url)
     }
 

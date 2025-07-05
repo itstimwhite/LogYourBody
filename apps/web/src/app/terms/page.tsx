@@ -18,7 +18,7 @@ export default function TermsPage() {
             <Link href="/" className="text-xl font-semibold">
               LogYourBody
             </Link>
-            <Link href="/login">
+            <Link href="/signin">
               <Button>Get Started</Button>
             </Link>
           </nav>

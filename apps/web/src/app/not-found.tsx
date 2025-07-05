@@ -58,7 +58,7 @@ export default function NotFound() {
                     </Button>
                   </Link>
                   
-                  <Link href="/login">
+                  <Link href="/signin">
                     <Button 
                       variant="ghost" 
                       className="text-linear-text-secondary hover:text-linear-text border border-linear-border hover:bg-linear-border/50 px-6 py-3"

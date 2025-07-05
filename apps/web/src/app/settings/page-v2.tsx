@@ -23,7 +23,7 @@ export default function SettingsPageV2() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login')
+      router.push('/signin')
     }
   }, [user, loading, router])
 

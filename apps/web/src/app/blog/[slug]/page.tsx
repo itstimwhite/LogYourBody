@@ -139,7 +139,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 Put this knowledge into action with LogYourBody&apos;s precision tracking tools. 
                 Monitor the metrics that actually matter for your fitness goals.
               </p>
-              <Link href="/login">
+              <Link href="/signin">
                 <Button className="bg-linear-text text-linear-bg hover:bg-linear-text/90">
                   Start Free Trial
                 </Button>

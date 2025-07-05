@@ -185,7 +185,7 @@ export function LandingPage() {
                 </>
               ) : (
                 <>
-                  <Link href="/login">
+                  <Link href="/signin">
                     <Button
                       variant="ghost"
                       className="text-sm text-linear-text-secondary hover:text-linear-text"

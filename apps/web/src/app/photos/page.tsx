@@ -59,7 +59,7 @@ export default function PhotosPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login')
+      router.push('/signin')
     } else if (user) {
       loadPhotos()
     }

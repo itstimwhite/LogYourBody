@@ -79,7 +79,7 @@ export default function ImportPage() {
   }
 
   if (!user) {
-    router.push('/login')
+    router.push('/signin')
     return null
   }
 

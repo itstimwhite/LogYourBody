@@ -54,7 +54,7 @@ export default function StepsPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login')
+      router.push('/signin')
     } else if (user) {
       loadStepData()
     }

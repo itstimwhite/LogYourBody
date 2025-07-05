@@ -304,7 +304,7 @@ export default function AboutPage() {
               Join thousands of people who have already discovered the difference accurate body composition tracking makes.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/login">
+              <Link href="/signin">
                 <Button className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-lg hover:bg-linear-text-secondary transition-colors">
                   Start Free Trial
                 </Button>

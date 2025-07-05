@@ -348,7 +348,7 @@ export default function MobilePage() {
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
               
-              <Link href="/login">
+              <Link href="/signin">
                 <Button
                   variant="outline"
                   className="border border-linear-border text-linear-text hover:bg-linear-border/30 px-8 py-4 text-base rounded-xl transition-all"

@@ -95,7 +95,7 @@ export default function DebugAuthPage() {
           <CardContent className="space-y-4">
             <div className="flex gap-4">
               <Button onClick={checkAuth}>Refresh Auth Status</Button>
-              <Button onClick={() => router.push('/login')}>Go to Login</Button>
+              <Button onClick={() => router.push('/signin')}>Go to Login</Button>
               <Button onClick={() => router.push('/dashboard')}>Go to Dashboard</Button>
               {(user || supabaseUser) && (
                 <Button variant="destructive" onClick={signOut}>Sign Out</Button>

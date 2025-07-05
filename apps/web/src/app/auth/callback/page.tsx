@@ -29,7 +29,7 @@ export default function AuthCallbackPage() {
           router.push('/onboarding')
         }
       } else {
-        router.push('/login')
+        router.push('/signin')
       }
     }
 

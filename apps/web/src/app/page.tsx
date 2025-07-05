@@ -185,7 +185,7 @@ export default function HomePage() {
                 </>
               ) : (
                 <>
-                  <Link href="/login">
+                  <Link href="/signin">
                     <Button
                       variant="ghost"
                       className="text-sm text-white/70 hover:text-white"
@@ -223,7 +223,7 @@ export default function HomePage() {
                   id="hero-heading"
                   className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.1]"
                 >
-                  Look better naked
+                  Upgrade yourself
                 </h1>
                 
                 <p className="text-xl text-white/70 mb-10 max-w-lg leading-relaxed">

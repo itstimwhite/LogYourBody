@@ -100,7 +100,7 @@ export default function MobileLogPage() {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login')
+      router.push('/signin')
     }
   }, [user, loading, router])
 

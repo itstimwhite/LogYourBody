@@ -1,7 +1,7 @@
-import { SignUp } from '@clerk/nextjs'
+import { SignIn } from '@clerk/nextjs'
 import { BarChart3 } from 'lucide-react'
 
-export default function SignupPage() {
+export default function SignInPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-bg p-4">
       <div className="w-full max-w-md">
@@ -9,13 +9,13 @@ export default function SignupPage() {
           <div className="flex items-center justify-center mb-4">
             <BarChart3 className="h-12 w-12 text-linear-purple" />
           </div>
-          <h1 className="text-3xl font-bold text-linear-text mb-2">Create your account</h1>
+          <h1 className="text-3xl font-bold text-linear-text mb-2">Welcome back</h1>
           <p className="text-linear-text-secondary">
-            Start tracking your fitness journey today
+            Sign in to continue your fitness journey
           </p>
         </div>
 
-        <SignUp
+        <SignIn 
           appearance={{
             baseTheme: undefined,
             variables: {
@@ -40,14 +40,16 @@ export default function SignupPage() {
               formFieldInput: 'bg-linear-bg border-linear-border text-linear-text',
               dividerLine: 'bg-linear-border',
               dividerText: 'text-linear-text-tertiary',
+              link: 'text-linear-purple hover:text-linear-purple/80',
+              formFieldAction: 'text-linear-purple hover:text-linear-purple/80',
+              footerAction: 'text-linear-text-secondary',
             }
           }}
           routing="path"
-          path="/signup"
-          signInUrl="/signin"
-          afterSignUpUrl="/onboarding"
+          path="/signin"
+          signUpUrl="/signup"
           afterSignInUrl="/dashboard"
-          forceRedirectUrl="/onboarding"
+          forceRedirectUrl="/dashboard"
         />
       </div>
     </div>
