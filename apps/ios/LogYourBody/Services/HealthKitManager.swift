@@ -625,8 +625,12 @@ class HealthKitManager: ObservableObject {
         let batchStartDate = Calendar.current.date(byAdding: .day, value: -days, to: endDate)!
         
         // Fetch weight and body fat data for the specified period
-        let weightHistory = try await fetchWeightHistory(from: batchStartDate, to: endDate)
-        let bodyFatHistory = try await fetchBodyFatHistory(startDate: batchStartDate, endDate: endDate)
+        // Calculate days between dates
+        let daysBetween = Calendar.current.dateComponents([.day], from: batchStartDate, to: endDate).day ?? 30
+        let weightHistory = try await fetchWeightHistory(days: daysBetween)
+            .filter { $0.date >= batchStartDate && $0.date <= endDate }
+        let bodyFatHistory = try await fetchBodyFatHistory(startDate: batchStartDate)
+            .filter { $0.date <= endDate }
         
         // Create a dictionary of body fat data by date for easy lookup
         var bodyFatByDate: [Date: Double] = [:]
