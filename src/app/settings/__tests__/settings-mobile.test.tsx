@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import SettingsPage from '../page'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/ClerkAuthContext'
 import { useRouter } from 'next/navigation'
 
 // Mock dependencies

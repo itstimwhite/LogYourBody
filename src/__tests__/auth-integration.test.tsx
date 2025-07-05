@@ -8,7 +8,7 @@ import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import LoginPage from '@/app/login/page'
 import SignupPage from '@/app/signup/page'
-import { AuthProvider } from '@/contexts/AuthContext'
+import { AuthProvider } from '@/contexts/ClerkAuthContext'
 
 // Mock Supabase client
 const mockSignIn = jest.fn()

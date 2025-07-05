@@ -1,11 +1,17 @@
-import { type NextRequest, NextResponse } from 'next/server'
-// import { updateSession } from '@/lib/supabase/middleware'
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
-export async function middleware(request: NextRequest) {
-  // Temporarily disable all middleware logic to fix redirect loop
-  return NextResponse.next()
-  // return await updateSession(request)
-}
+const isProtectedRoute = createRouteMatcher([
+  '/dashboard(.*)',
+  '/log(.*)',
+  '/api/weights(.*)',
+  '/api/auth/delete-account',
+])
+
+export default clerkMiddleware(async (auth, req) => {
+  if (isProtectedRoute(req)) {
+    await auth.protect()
+  }
+})
 
 export const config = {
   matcher: [

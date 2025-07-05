@@ -1,6 +1,6 @@
 'use client'
 
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/ClerkAuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, Suspense } from 'react'
 import { Button } from '@/components/ui/button'
@@ -39,6 +39,10 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { MobileNavbar } from '@/components/MobileNavbar'
+import { SyncStatus } from '@/components/SyncStatus'
+import { useSync } from '@/hooks/use-sync'
+import { syncManager } from '@/lib/sync/sync-manager'
+import { indexedDB } from '@/lib/db/indexed-db'
 
 // Mock data removed - not being used
 
@@ -641,6 +645,7 @@ export default function DashboardPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const isOnline = useNetworkStatus()
+  const syncState = useSync()
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [selectedDateIndex, setSelectedDateIndex] = useState(-1)
   const [_latestMetrics, setLatestMetrics] = useState<BodyMetrics | null>(null)
@@ -711,25 +716,44 @@ export default function DashboardPage() {
         setProfileLoading(false)
       })
 
-      // Load metrics data
+      // Load metrics data - first from local storage, then sync with server
+      const loadMetricsData = async () => {
+        // Load from local storage first
+        const localMetrics = await indexedDB.getBodyMetrics(user.id)
+        if (localMetrics.length > 0) {
+          setLatestMetrics(localMetrics[localMetrics.length - 1])
+          setMetricsHistory(localMetrics)
+        }
+        
+        // Then fetch from server
+        const supabase = createClient()
+        supabase
+          .from('body_metrics')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('date', { ascending: false })
+          .then(({ data, error }) => {
+            if (error) {
+              console.error('Error loading metrics:', error)
+            } else if (data && data.length > 0) {
+              setLatestMetrics(data[0])
+              setMetricsHistory(data.reverse()) // Reverse to have oldest first for timeline
+              
+              // Save to local storage
+              data.forEach(metric => {
+                indexedDB.saveBodyMetrics(metric, user.id)
+              })
+            }
+          })
+        
+        // Trigger sync to ensure we have latest data
+        syncManager.syncIfNeeded()
+      }
+      
+      loadMetricsData()
+      
+      // Load progress photos  
       const supabase = createClient()
-      
-      // Load body metrics
-      supabase
-        .from('body_metrics')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false })
-        .then(({ data, error }) => {
-          if (error) {
-            console.error('Error loading metrics:', error)
-          } else if (data && data.length > 0) {
-            setLatestMetrics(data[0])
-            setMetricsHistory(data.reverse()) // Reverse to have oldest first for timeline
-          }
-        })
-      
-      // Load progress photos
       supabase
         .from('progress_photos')
         .select('*')
@@ -880,6 +904,7 @@ export default function DashboardPage() {
               Offline
             </Badge>
           )}
+          <SyncStatus />
         </div>
         <div className="flex gap-3">
           <DropdownMenu>

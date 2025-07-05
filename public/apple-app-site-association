@@ -1,0 +1,14 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "G24T327LXT.LogYourBody.LogYourBody",
+        "paths": ["*"]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["G24T327LXT.LogYourBody.LogYourBody"]
+  }
+}

@@ -72,6 +72,16 @@ ENV/
 .DS_Store
 Thumbs.db
 
+# iOS/Xcode
+*.xcuserdata
+*.xcworkspace/xcshareddata/
+DerivedData/
+.build/
+*.swiftpm/
+*.playground
+*.xcodeproj/project.xcworkspace/
+*.xcodeproj/xcuserdata/
+
 # Test outputs
 test_*.png
 base_*.png

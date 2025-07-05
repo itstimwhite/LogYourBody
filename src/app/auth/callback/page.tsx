@@ -3,24 +3,29 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { useUser } from '@clerk/nextjs'
 import { getProfile } from '@/lib/supabase/profile'
 
 export default function AuthCallbackPage() {
   const router = useRouter()
+  const { isLoaded, isSignedIn, user } = useUser()
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
-      const supabase = createClient()
-      const { data: { user } } = await supabase.auth.getUser()
+      if (!isLoaded) return
       
-      if (user) {
-        const profile = await getProfile(user.id)
-        
-        // Check if onboarding is completed
-        if (profile?.onboarding_completed) {
-          router.push('/dashboard')
-        } else {
+      if (isSignedIn && user) {
+        try {
+          const profile = await getProfile(user.id)
+          
+          // Check if onboarding is completed
+          if (profile?.onboarding_completed) {
+            router.push('/dashboard')
+          } else {
+            router.push('/onboarding')
+          }
+        } catch (error) {
+          // If profile doesn't exist, redirect to onboarding
           router.push('/onboarding')
         }
       } else {
@@ -28,11 +33,8 @@ export default function AuthCallbackPage() {
       }
     }
 
-    // Give Supabase time to process the callback
-    const timer = setTimeout(checkOnboardingStatus, 1000)
-
-    return () => clearTimeout(timer)
-  }, [router])
+    checkOnboardingStatus()
+  }, [router, isLoaded, isSignedIn, user])
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-bg">

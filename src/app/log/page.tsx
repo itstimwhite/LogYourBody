@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/ClerkAuthContext'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -41,6 +41,9 @@ import { getProfile } from '@/lib/supabase/profile'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { useMediaQuery } from '@/hooks/use-media-query'
+import { useSync } from '@/hooks/use-sync'
+import { syncManager } from '@/lib/sync/sync-manager'
+import { indexedDB } from '@/lib/db/indexed-db'
 
 const MobileLogPage = dynamic(() => import('./mobile-page'), { ssr: false })
 
@@ -254,10 +257,18 @@ export default function LogWeightPage() {
         ? parseFloat(formData.weight) / 2.20462 
         : parseFloat(formData.weight)
       
-      // Save body metrics
+      // Save body metrics through sync manager for offline support
+      const metrics = await syncManager.logWeight(
+        weightInKg,
+        'kg',
+        formData.notes || undefined
+      )
+      
+      // Also save to Supabase directly for immediate sync if online
       const { error } = await supabase
         .from('body_metrics')
-        .insert({
+        .upsert({
+          id: metrics.id,
           user_id: user.id,
           date: format(new Date(), 'yyyy-MM-dd'),
           weight: weightInKg,
@@ -268,10 +279,15 @@ export default function LogWeightPage() {
           neck: formData.neck ? parseFloat(formData.neck) : null,
           hip: formData.hip ? parseFloat(formData.hip) : null,
           notes: formData.notes || null,
-          photo_url: photoUrl
+          photo_url: photoUrl,
+          created_at: new Date(metrics.created_at).toISOString(),
+          updated_at: new Date(metrics.updated_at).toISOString()
         })
       
-      if (error) throw error
+      // If online sync succeeded, mark as synced in IndexedDB
+      if (!error) {
+        await indexedDB.markAsSynced('bodyMetrics', metrics.id)
+      }
       
       toast({
         title: "Success!",

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/ClerkAuthContext'
 import { useRouter } from 'next/navigation'
 import { OnboardingProvider, useOnboarding } from '@/contexts/OnboardingContext'
 import { WelcomeStep } from './components/WelcomeStep'

@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import DashboardPage from '../page'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/ClerkAuthContext'
 import { useRouter } from 'next/navigation'
 import { getProfile } from '@/lib/supabase/profile'
 import { createClient } from '@/lib/supabase/client'

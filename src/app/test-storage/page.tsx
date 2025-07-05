@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { uploadToStorage } from '@/utils/storage-utils'
 import { createClient } from '@/lib/supabase/client'
-import { useAuth } from '@/contexts/AuthContext'
+import { useAuth } from '@/contexts/ClerkAuthContext'
 import { toast } from '@/hooks/use-toast'
 import { Upload, CheckCircle, XCircle } from 'lucide-react'
 

@@ -1,0 +1,28 @@
+//
+//  Font+Custom.swift
+//  LogYourBody
+//
+//  Created by Tim White on 7/1/25.
+//
+
+import SwiftUI
+
+extension Font {
+    // MARK: - Display Fonts
+    static let appDisplay = Font.system(size: 48, weight: .bold, design: .default)
+    static let appTitle = Font.system(size: 32, weight: .semibold, design: .default)
+    static let appHeadline = Font.system(size: 24, weight: .semibold, design: .default)
+    
+    // MARK: - Body Fonts
+    static let appBodyLarge = Font.system(size: 18, weight: .regular, design: .default)
+    static let appBody = Font.system(size: 16, weight: .regular, design: .default)
+    static let appBodySmall = Font.system(size: 14, weight: .regular, design: .default)
+    
+    // MARK: - Caption Fonts
+    static let appCaption = Font.system(size: 12, weight: .regular, design: .default)
+    static let appCaptionBold = Font.system(size: 12, weight: .semibold, design: .default)
+    
+    // MARK: - Monospace (for numbers)
+    static let appMonospace = Font.system(size: 16, weight: .regular, design: .monospaced)
+    static let appMonospaceLarge = Font.system(size: 24, weight: .semibold, design: .monospaced)
+}
