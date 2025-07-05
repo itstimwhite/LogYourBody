@@ -4,17 +4,22 @@ import { Webhook } from 'svix'
 import { WebhookEvent } from '@clerk/nextjs/server'
 import { createClient } from '@supabase/supabase-js'
 
-// Initialize Supabase Admin client
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
+// Initialize Supabase Admin client (lazy initialization to prevent build errors)
+function getSupabaseAdmin() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+  
+  if (!url || !key) {
+    throw new Error('Missing Supabase environment variables')
+  }
+  
+  return createClient(url, key, {
     auth: {
       autoRefreshToken: false,
       persistSession: false,
     },
-  }
-)
+  })
+}
 
 export async function POST(req: NextRequest) {
   // Get the headers
@@ -70,6 +75,8 @@ export async function POST(req: NextRequest) {
     }
 
     try {
+      const supabaseAdmin = getSupabaseAdmin()
+      
       // Upsert profile
       const { error: profileError } = await supabaseAdmin
         .from('profiles')
@@ -110,6 +117,8 @@ export async function POST(req: NextRequest) {
     const { id } = evt.data
 
     try {
+      const supabaseAdmin = getSupabaseAdmin()
+      
       // Delete user profile (cascade will handle related data)
       const { error } = await supabaseAdmin
         .from('profiles')

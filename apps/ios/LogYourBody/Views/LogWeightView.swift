@@ -13,13 +13,17 @@ struct LogWeightView: View {
     @StateObject private var healthKitManager = HealthKitManager.shared
     @State private var weight: String = ""
     @State private var bodyFat: String = ""
-    @State private var showBodyFatField = false
     @AppStorage(Constants.preferredMeasurementSystemKey) private var measurementSystem = PreferencesView.defaultMeasurementSystem
     @State private var isLoading = false
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var showSuccess = false
     @Environment(\.dismiss) var dismiss
-    @State private var selectedTab: Int = 0
+    @FocusState private var focusedField: Field?
+    
+    enum Field {
+        case weight, bodyFat
+    }
     
     var currentSystem: PreferencesView.MeasurementSystem {
         PreferencesView.MeasurementSystem(rawValue: measurementSystem) ?? .imperial
@@ -37,194 +41,213 @@ struct LogWeightView: View {
                     HStack {
                         Button(action: { dismiss() }) {
                             Image(systemName: "xmark")
-                                .font(.system(size: 20))
-                                .foregroundColor(.appText)
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundColor(.appTextSecondary)
                                 .frame(width: 44, height: 44)
                         }
                         
                         Spacer()
                         
-                        Text("Log Measurement")
+                        Text("Log Metrics")
                             .font(.system(size: 17, weight: .semibold))
                             .foregroundColor(.appText)
                         
                         Spacer()
                         
-                        // Invisible placeholder for balance
-                        Color.clear
-                            .frame(width: 44, height: 44)
+                        // Quick add button (optional)
+                        Button(action: quickAdd) {
+                            Text("Quick")
+                                .font(.system(size: 15, weight: .medium))
+                                .foregroundColor(.appPrimary)
+                        }
+                        .frame(width: 44, height: 44)
                     }
-                    .padding(.horizontal, 12)
+                    .padding(.horizontal, 16)
                     .padding(.top, 8)
                     
                     ScrollView {
-                        VStack(spacing: 40) {
-                            // Tab selector
-                            HStack(spacing: 0) {
-                                ForEach(0..<2) { index in
-                                    Button(action: { 
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            selectedTab = index
-                                        }
-                                    }) {
-                                        VStack(spacing: 8) {
-                                            Text(index == 0 ? "Weight" : "Body Fat")
-                                                .font(.appBody)
-                                                .foregroundColor(selectedTab == index ? .appText : .appTextSecondary)
-                                            
-                                            Rectangle()
-                                                .fill(selectedTab == index ? Color.appPrimary : Color.clear)
-                                                .frame(height: 2)
-                                        }
+                        VStack(spacing: 32) {
+                            // Hero section with both inputs
+                            VStack(spacing: 24) {
+                                // Weight input card
+                                VStack(spacing: 16) {
+                                    HStack {
+                                        Image(systemName: "scalemass.fill")
+                                            .font(.system(size: 20))
+                                            .foregroundColor(.blue)
+                                        Text("Weight")
+                                            .font(.system(size: 18, weight: .medium))
+                                            .foregroundColor(.appText)
+                                        Spacer()
                                     }
-                                    .frame(maxWidth: .infinity)
+                                    
+                                    HStack(alignment: .bottom, spacing: 8) {
+                                        TextField("--", text: $weight)
+                                            .font(.system(size: 40, weight: .bold, design: .rounded))
+                                            .foregroundColor(.appText)
+                                            .multilineTextAlignment(.center)
+                                            .keyboardType(.decimalPad)
+                                            .focused($focusedField, equals: .weight)
+                                            .frame(maxWidth: 150)
+                                        
+                                        Text(currentSystem.weightUnit)
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundColor(.appTextSecondary)
+                                            .padding(.bottom, 6)
+                                    }
+                                }
+                                .padding(20)
+                                .background(Color.appCard)
+                                .cornerRadius(16)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(focusedField == .weight ? Color.appPrimary : Color.appBorder, lineWidth: focusedField == .weight ? 2 : 1)
+                                )
+                                .onTapGesture {
+                                    focusedField = .weight
+                                }
+                                
+                                // Body fat input card
+                                VStack(spacing: 16) {
+                                    HStack {
+                                        Image(systemName: "percent")
+                                            .font(.system(size: 20))
+                                            .foregroundColor(.orange)
+                                        Text("Body Fat")
+                                            .font(.system(size: 18, weight: .medium))
+                                            .foregroundColor(.appText)
+                                        Spacer()
+                                        Text("Optional")
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(.appTextTertiary)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.appTextTertiary.opacity(0.1))
+                                            .cornerRadius(8)
+                                    }
+                                    
+                                    HStack(alignment: .bottom, spacing: 8) {
+                                        TextField("--", text: $bodyFat)
+                                            .font(.system(size: 40, weight: .bold, design: .rounded))
+                                            .foregroundColor(.appText)
+                                            .multilineTextAlignment(.center)
+                                            .keyboardType(.decimalPad)
+                                            .focused($focusedField, equals: .bodyFat)
+                                            .frame(maxWidth: 150)
+                                        
+                                        Text("%")
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundColor(.appTextSecondary)
+                                            .padding(.bottom, 6)
+                                    }
+                                }
+                                .padding(20)
+                                .background(Color.appCard)
+                                .cornerRadius(16)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(focusedField == .bodyFat ? Color.appPrimary : Color.appBorder, lineWidth: focusedField == .bodyFat ? 2 : 1)
+                                )
+                                .onTapGesture {
+                                    focusedField = .bodyFat
                                 }
                             }
-                            .padding(.horizontal, 24)
+                            .padding(.horizontal, 20)
                             .padding(.top, 20)
                             
-                            // Icon
-                            ZStack {
-                                Circle()
-                                    .fill(Color.appPrimary.opacity(0.1))
-                                    .frame(width: 80, height: 80)
+                            // Date and helpful info
+                            VStack(spacing: 12) {
+                                HStack {
+                                    Image(systemName: "calendar")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.appTextSecondary)
+                                    Text("Today, \(Date(), style: .date)")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.appTextSecondary)
+                                    Spacer()
+                                }
                                 
-                                Image(systemName: selectedTab == 0 ? "scalemass.fill" : "percent")
-                                    .font(.system(size: 40))
-                                    .foregroundColor(.appPrimary)
-                            }
-                            
-                            // Input fields
-                            VStack(spacing: 24) {
-                                if selectedTab == 0 {
-                                    // Weight input
-                                    VStack(spacing: 16) {
-                                        Text("Enter your weight")
-                                            .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.appText)
-                                        
-                                        HStack(alignment: .bottom, spacing: 8) {
-                                            TextField("0", text: $weight)
-                                                .font(.system(size: 48, weight: .bold, design: .rounded))
-                                                .foregroundColor(.appText)
-                                                .multilineTextAlignment(.center)
-                                                .keyboardType(.decimalPad)
-                                                .frame(maxWidth: 200)
-                                            
-                                            Text(currentSystem.weightUnit)
-                                                .font(.system(size: 24, weight: .medium))
-                                                .foregroundColor(.appTextSecondary)
-                                                .padding(.bottom, 8)
-                                        }
-                                        
-                                        // Optional body fat toggle
-                                        Button(action: {
-                                            withAnimation {
-                                                showBodyFatField.toggle()
-                                            }
-                                        }) {
+                                if !weight.isEmpty || !bodyFat.isEmpty {
+                                    VStack(spacing: 8) {
+                                        if !weight.isEmpty, let weightValue = Double(weight) {
+                                            let convertedWeight = currentSystem.weightUnit == "lbs" ? weightValue * 0.453592 : weightValue
                                             HStack {
-                                                Image(systemName: showBodyFatField ? "checkmark.square.fill" : "square")
-                                                    .foregroundColor(.appPrimary)
-                                                Text("Also log body fat %")
-                                                    .font(.appBody)
+                                                Text("Weight:")
+                                                    .foregroundColor(.appTextSecondary)
+                                                Spacer()
+                                                Text("\(convertedWeight, specifier: "%.1f") kg")
                                                     .foregroundColor(.appText)
                                             }
+                                            .font(.system(size: 14))
                                         }
-                                        .padding(.top, 8)
                                         
-                                        if showBodyFatField {
-                                            VStack(spacing: 8) {
-                                                Text("Body Fat Percentage")
-                                                    .font(.appBodySmall)
+                                        if !bodyFat.isEmpty, let bfValue = Double(bodyFat) {
+                                            HStack {
+                                                Text("Body Fat:")
                                                     .foregroundColor(.appTextSecondary)
-                                                
-                                                HStack(alignment: .bottom, spacing: 8) {
-                                                    TextField("0", text: $bodyFat)
-                                                        .font(.system(size: 32, weight: .semibold, design: .rounded))
-                                                        .foregroundColor(.appText)
-                                                        .multilineTextAlignment(.center)
-                                                        .keyboardType(.decimalPad)
-                                                        .frame(maxWidth: 120)
-                                                    
-                                                    Text("%")
-                                                        .font(.system(size: 20, weight: .medium))
-                                                        .foregroundColor(.appTextSecondary)
-                                                        .padding(.bottom, 6)
-                                                }
+                                                Spacer()
+                                                Text("\(bfValue, specifier: "%.1f")%")
+                                                    .foregroundColor(.appText)
                                             }
-                                            .padding(.top, 16)
-                                            .transition(.opacity)
+                                            .font(.system(size: 14))
                                         }
                                     }
-                                } else {
-                                    // Body fat input
-                                    VStack(spacing: 16) {
-                                        Text("Enter body fat percentage")
-                                            .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.appText)
-                                        
-                                        HStack(alignment: .bottom, spacing: 8) {
-                                            TextField("0", text: $bodyFat)
-                                                .font(.system(size: 48, weight: .bold, design: .rounded))
-                                                .foregroundColor(.appText)
-                                                .multilineTextAlignment(.center)
-                                                .keyboardType(.decimalPad)
-                                                .frame(maxWidth: 200)
-                                            
-                                            Text("%")
-                                                .font(.system(size: 24, weight: .medium))
-                                                .foregroundColor(.appTextSecondary)
-                                                .padding(.bottom, 8)
-                                        }
-                                    }
+                                    .padding(12)
+                                    .background(Color.appPrimary.opacity(0.05))
+                                    .cornerRadius(12)
+                                    .transition(.opacity.combined(with: .scale(scale: 0.95)))
                                 }
                             }
+                            .padding(.horizontal, 20)
                             
-                            // Today's date
-                            HStack {
-                                Image(systemName: "calendar")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.appTextSecondary)
-                                Text(Date(), style: .date)
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.appTextSecondary)
-                            }
-                            
-                            Spacer(minLength: 60)
+                            Spacer(minLength: 120)
                         }
-                        .padding(.bottom, 100)
                     }
                     
                     // Save button (fixed at bottom)
-                    VStack {
-                        Button(action: saveMeasurement) {
-                            if isLoading {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .scaleEffect(0.9)
-                                    .frame(height: 56)
-                                    .frame(maxWidth: .infinity)
-                                    .background(Color.appPrimary)
-                                    .cornerRadius(Constants.cornerRadius)
-                            } else {
-                                Text(getSaveButtonText())
-                                    .font(.system(size: 17, weight: .semibold))
-                                    .foregroundColor(.white)
-                                    .frame(height: 56)
-                                    .frame(maxWidth: .infinity)
-                                    .background(isFormValid() ? Color.appPrimary : Color.appBorder)
-                                    .cornerRadius(Constants.cornerRadius)
-                                    .animation(.easeInOut(duration: 0.2), value: isFormValid())
+                    VStack(spacing: 12) {
+                        if showSuccess {
+                            HStack {
+                                Image(systemName: "checkmark.circle.fill")
+                                    .foregroundColor(.green)
+                                Text("Saved successfully!")
+                                    .font(.system(size: 14, weight: .medium))
+                                    .foregroundColor(.green)
                             }
+                            .transition(.opacity.combined(with: .move(edge: .bottom)))
+                        }
+                        
+                        Button(action: saveMeasurement) {
+                            Group {
+                                if isLoading {
+                                    HStack(spacing: 12) {
+                                        ProgressView()
+                                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                            .scaleEffect(0.8)
+                                        Text("Saving...")
+                                            .font(.system(size: 17, weight: .semibold))
+                                            .foregroundColor(.white)
+                                    }
+                                } else {
+                                    Text("Save Measurement")
+                                        .font(.system(size: 17, weight: .semibold))
+                                        .foregroundColor(.white)
+                                }
+                            }
+                            .frame(height: 54)
+                            .frame(maxWidth: .infinity)
+                            .background(isFormValid() ? Color.appPrimary : Color.appBorder)
+                            .cornerRadius(16)
+                            .scaleEffect(isFormValid() ? 1.0 : 0.98)
+                            .animation(.spring(response: 0.3, dampingFraction: 0.7), value: isFormValid())
                         }
                         .disabled(!isFormValid() || isLoading)
-                        .padding(.horizontal, 24)
-                        .padding(.bottom, 50)
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 34)
                     }
                     .background(
                         Color.appBackground
-                            .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
+                            .shadow(color: .black.opacity(0.05), radius: 20, x: 0, y: -10)
                     )
                 }
             }
@@ -238,6 +261,12 @@ struct LogWeightView: View {
                 Text(errorMessage)
             }
         }
+        .onAppear {
+            // Auto-focus on weight field when view appears
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                focusedField = .weight
+            }
+        }
     }
     
     private func hideKeyboard() {
@@ -245,32 +274,38 @@ struct LogWeightView: View {
     }
     
     private func isFormValid() -> Bool {
-        if selectedTab == 0 {
-            return !weight.isEmpty
-        } else {
-            return !bodyFat.isEmpty
-        }
+        return !weight.isEmpty || !bodyFat.isEmpty
     }
     
-    private func getSaveButtonText() -> String {
-        if selectedTab == 0 {
-            if showBodyFatField && !bodyFat.isEmpty {
-                return "Save Weight & Body Fat"
+    private func quickAdd() {
+        // Get last logged values for quick entry
+        let recentMetrics = syncManager.fetchLocalBodyMetrics(
+            from: Calendar.current.date(byAdding: .day, value: -30, to: Date())
+        ).sorted { $0.date > $1.date }
+        
+        if let latest = recentMetrics.first {
+            if weight.isEmpty, let latestWeight = latest.weight {
+                let displayWeight = currentSystem.weightUnit == "lbs" ? latestWeight * 2.20462 : latestWeight
+                weight = String(format: "%.1f", displayWeight)
             }
-            return "Save Weight"
-        } else {
-            return "Save Body Fat"
+            if bodyFat.isEmpty, let latestBodyFat = latest.bodyFatPercentage {
+                bodyFat = String(format: "%.1f", latestBodyFat)
+            }
         }
     }
     
     private func saveMeasurement() {
         isLoading = true
+        hideKeyboard()
         
         Task {
             do {
-                if selectedTab == 0 {
-                    // Save weight (and optionally body fat)
-                    guard let weightValue = Double(weight) else {
+                var weightValue: Double? = nil
+                var bodyFatValue: Double? = nil
+                
+                // Parse weight if provided
+                if !weight.isEmpty {
+                    guard let w = Double(weight) else {
                         await MainActor.run {
                             errorMessage = "Please enter a valid weight"
                             showError = true
@@ -278,88 +313,84 @@ struct LogWeightView: View {
                         }
                         return
                     }
-                    
-                    // Convert weight to kg for storage
-                    let weightInKg = currentSystem.weightUnit == "lbs" ? weightValue * 0.453592 : weightValue
-                    
-                    // Parse body fat if provided
-                    let bodyFatValue = showBodyFatField && !bodyFat.isEmpty ? Double(bodyFat) : nil
-                    
-                    // Save to HealthKit if authorized
-                    if healthKitManager.isAuthorized {
-                        let weightInLbs = currentSystem.weightUnit == "kg" ? weightValue * 2.20462 : weightValue
-                        try await healthKitManager.saveWeight(weightInLbs, date: Date())
-                        
-                        if let bf = bodyFatValue {
-                            try await healthKitManager.saveBodyFatPercentage(bf / 100, date: Date())
-                        }
-                    }
-                    
-                    // Create body metrics
-                    let metrics = BodyMetrics(
-                        id: UUID().uuidString,
-                        userId: authManager.currentUser?.id ?? "",
-                        date: Date(),
-                        weight: weightInKg,
-                        weightUnit: "kg",
-                        bodyFatPercentage: bodyFatValue,
-                        bodyFatMethod: bodyFatValue != nil ? "Manual" : nil,
-                        muscleMass: nil,
-                        boneMass: nil,
-                        notes: nil,
-                        createdAt: Date(),
-                        updatedAt: Date()
-                    )
-                    
-                    // Save to local storage and sync
-                    syncManager.logBodyMetrics(metrics)
-                    
-                } else {
-                    // Save body fat only
-                    guard let bodyFatValue = Double(bodyFat) else {
+                    weightValue = w
+                }
+                
+                // Parse body fat if provided
+                if !bodyFat.isEmpty {
+                    guard let bf = Double(bodyFat), bf >= 0, bf <= 100 else {
                         await MainActor.run {
-                            errorMessage = "Please enter a valid body fat percentage"
+                            errorMessage = "Please enter a valid body fat percentage (0-100)"
                             showError = true
                             isLoading = false
                         }
                         return
                     }
+                    bodyFatValue = bf
+                }
+                
+                // At least one value must be provided
+                guard weightValue != nil || bodyFatValue != nil else {
+                    await MainActor.run {
+                        errorMessage = "Please enter at least one measurement"
+                        showError = true
+                        isLoading = false
+                    }
+                    return
+                }
+                
+                // Convert weight to kg for storage
+                let weightInKg = weightValue != nil ? (currentSystem.weightUnit == "lbs" ? weightValue! * 0.453592 : weightValue!) : nil
+                
+                // Save to HealthKit if authorized
+                if healthKitManager.isAuthorized {
+                    if let w = weightValue {
+                        let weightInLbs = currentSystem.weightUnit == "kg" ? w * 2.20462 : w
+                        try await healthKitManager.saveWeight(weightInLbs, date: Date())
+                    }
                     
-                    // Get the latest weight to update with body fat
+                    if let bf = bodyFatValue {
+                        try await healthKitManager.saveBodyFatPercentage(bf / 100, date: Date())
+                    }
+                }
+                
+                // If only body fat is provided, try to get latest weight
+                var finalWeight = weightInKg
+                if weightInKg == nil && bodyFatValue != nil {
                     let recentMetrics = syncManager.fetchLocalBodyMetrics(
                         from: Calendar.current.date(byAdding: .day, value: -7, to: Date())
                     ).sorted { $0.date > $1.date }
-                    
-                    let latestWeight = recentMetrics.first?.weight
-                    
-                    // Save to HealthKit if authorized
-                    if healthKitManager.isAuthorized {
-                        try await healthKitManager.saveBodyFatPercentage(bodyFatValue / 100, date: Date())
-                    }
-                    
-                    // Create body metrics with body fat
-                    let metrics = BodyMetrics(
-                        id: UUID().uuidString,
-                        userId: authManager.currentUser?.id ?? "",
-                        date: Date(),
-                        weight: latestWeight,
-                        weightUnit: latestWeight != nil ? "kg" : nil,
-                        bodyFatPercentage: bodyFatValue,
-                        bodyFatMethod: "Manual",
-                        muscleMass: nil,
-                        boneMass: nil,
-                        notes: nil,
-                        createdAt: Date(),
-                        updatedAt: Date()
-                    )
-                    
-                    // Save to local storage and sync
-                    syncManager.logBodyMetrics(metrics)
+                    finalWeight = recentMetrics.first?.weight
                 }
+                
+                // Create body metrics
+                let metrics = BodyMetrics(
+                    id: UUID().uuidString,
+                    userId: authManager.currentUser?.id ?? "",
+                    date: Date(),
+                    weight: finalWeight,
+                    weightUnit: finalWeight != nil ? "kg" : nil,
+                    bodyFatPercentage: bodyFatValue,
+                    bodyFatMethod: bodyFatValue != nil ? "Manual" : nil,
+                    muscleMass: nil,
+                    boneMass: nil,
+                    notes: nil,
+                    createdAt: Date(),
+                    updatedAt: Date()
+                )
+                
+                // Save to local storage and sync
+                syncManager.logBodyMetrics(metrics)
                 
                 await MainActor.run {
                     isLoading = false
-                    // Dismiss and return to dashboard
+                    showSuccess = true
+                }
+                
+                // Show success briefly then dismiss
+                try await Task.sleep(nanoseconds: 1_000_000_000) // 1 second
+                
+                await MainActor.run {
                     dismiss()
                 }
                 

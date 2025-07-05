@@ -23,18 +23,21 @@ class SyncManager {
 
   private listeners: Set<(state: SyncState) => void> = new Set();
   private syncInterval: NodeJS.Timeout | null = null;
-  private isOnline = navigator.onLine;
+  private isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
 
   constructor() {
-    // Listen for online/offline events
-    window.addEventListener('online', this.handleOnline);
-    window.addEventListener('offline', this.handleOffline);
-    
-    // Start periodic sync
-    this.startPeriodicSync();
-    
-    // Update pending count on initialization
-    this.updatePendingCount();
+    // Only setup browser-specific features on client side
+    if (typeof window !== 'undefined') {
+      // Listen for online/offline events
+      window.addEventListener('online', this.handleOnline);
+      window.addEventListener('offline', this.handleOffline);
+      
+      // Start periodic sync
+      this.startPeriodicSync();
+      
+      // Update pending count on initialization
+      this.updatePendingCount();
+    }
   }
 
   // State management

@@ -13,7 +13,6 @@
 		AD2C3D5F2E16B10A00234567 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2C3D5E2E16B10900234567 /* HealthKitManager.swift */; };
 		AD3E4F652E17A12300345678 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD3E4F642E17A12300345678 /* HealthKit.framework */; };
 		AD4F5E7B2E18C23500456789 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4F5E7A2E18C23400456789 /* PreferencesView.swift */; };
-		AD6A7B912E1BE45B00678902 /* LogYourBody.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = AD6A7B902E1BE45A00678902 /* LogYourBody.xcdatamodeld */; };
 		AD6F7F9D2E1AE45700678901 /* DailyLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6F7F9C2E1AE45600678901 /* DailyLog.swift */; };
 		AD723B152E15FA5D002376C6 /* delete_files.sh in Resources */ = {isa = PBXBuildFile; fileRef = AD722F0E2E15FA5A002376C6 /* delete_files.sh */; };
 		AD723B162E15FA5D002376C6 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = AD722F0F2E15FA5A002376C6 /* README.md */; };
@@ -609,7 +608,6 @@
 				AD6A7B8C2E1BE45600678902 /* BodyMetrics.swift */,
 				AD6F7F9C2E1AE45600678901 /* DailyLog.swift */,
 				AD6A7B8E2E1BE45800678902 /* DailyMetrics.swift */,
-				AD6A7B902E1BE45A00678902 /* LogYourBody.xcdatamodeld */,
 				AD1B2C3D2E15A00100123456 /* OnboardingData.swift */,
 				ADBD693D2E14A7B900921A30 /* User.swift */,
 				ADBD693E2E14A7B900921A30 /* WeightEntry.swift */,
@@ -860,7 +858,6 @@
 				AD2C3D5F2E16B10A00234567 /* HealthKitManager.swift in Sources */,
 				AD4F5E7B2E18C23500456789 /* PreferencesView.swift in Sources */,
 				AD6F7F9D2E1AE45700678901 /* DailyLog.swift in Sources */,
-				AD6A7B912E1BE45B00678902 /* LogYourBody.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1223,16 +1220,6 @@
 /* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
-		AD6A7B902E1BE45A00678902 /* LogYourBody.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				AD6A7B962E1BE46000678902 /* LogYourBody.xcdatamodel */,
-			);
-			currentVersion = AD6A7B962E1BE46000678902 /* LogYourBody.xcdatamodel */;
-			path = LogYourBody.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
 		AD723AD82E15FA5C002376C6 /* LogYourBody.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
@@ -1240,7 +1227,7 @@
 			);
 			currentVersion = AD723B142E15FA5C002376C6 /* LogYourBody.xcdatamodel */;
 			name = LogYourBody.xcdatamodeld;
-			path = "/Users/timwhite/Documents/GitHub/TBF/LogYourBody/ios-native/LogYourBody/Models/LogYourBody.xcdatamodeld";
+			path = LogYourBody.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

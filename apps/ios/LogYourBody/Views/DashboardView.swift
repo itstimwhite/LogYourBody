@@ -241,7 +241,7 @@ struct DashboardView: View {
                     .padding(.top, 50)
                 }
             }
-            .navigationTitle("Dashboard")
+            .navigationTitle("")
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
                 Task {
@@ -266,9 +266,9 @@ struct DashboardView: View {
     }
     
     private func loadBodyMetrics() async {
-        // Phase 1: Load recent data (last 30 days) for quick display
-        let recentDate = Calendar.current.date(byAdding: .day, value: -30, to: Date())
-        let recentMetrics = await fetchAndProcessMetrics(from: recentDate)
+        // Phase 1: Load recent data (last 7 days) for immediate display
+        let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date())
+        let recentMetrics = await fetchAndProcessMetrics(from: sevenDaysAgo)
         
         await MainActor.run {
             bodyMetrics = recentMetrics
@@ -278,17 +278,26 @@ struct DashboardView: View {
             isLoading = false
         }
         
-        // Try to sync with HealthKit if authorized and enabled
+        // Try to sync with HealthKit immediately for recent data if authorized and enabled
         if healthKitManager.isAuthorized && healthKitSyncEnabled {
             await syncHealthKitData()
+            
+            // Reload the 7-day view after HealthKit sync
+            let updatedRecentMetrics = await fetchAndProcessMetrics(from: sevenDaysAgo)
+            await MainActor.run {
+                bodyMetrics = updatedRecentMetrics
+                if !updatedRecentMetrics.isEmpty {
+                    selectedIndex = updatedRecentMetrics.count - 1
+                }
+            }
         }
         
         // Trigger sync to get latest data from server
         syncManager.syncIfNeeded()
         
-        // Phase 2: Load full history in background
+        // Phase 2: Load incremental history in background (30 days at a time)
         if !hasLoadedFullHistory {
-            await loadFullHistory()
+            await loadIncrementalHistory()
         }
     }
     
@@ -312,27 +321,51 @@ struct DashboardView: View {
         return uniqueMetrics
     }
     
-    private func loadFullHistory() async {
+    private func loadIncrementalHistory() async {
         await MainActor.run {
             isLoadingFullHistory = true
         }
         
-        // Load all historical data
-        let allMetrics = await fetchAndProcessMetrics(from: nil)
+        var currentStartDate = Calendar.current.date(byAdding: .day, value: -37, to: Date()) // Start from 37 days ago (7 + 30)
+        let batchSize = 30 // Days per batch
+        var hasMoreData = true
         
-        // Only update if we got more data than we already have
-        if allMetrics.count > bodyMetrics.count {
-            await MainActor.run {
-                let currentDate = bodyMetrics.indices.contains(selectedIndex) ? bodyMetrics[selectedIndex].date : nil
-                
-                bodyMetrics = allMetrics
-                
-                if let currentDate = currentDate,
-                   let newIndex = allMetrics.firstIndex(where: { $0.date == currentDate }) {
-                    selectedIndex = newIndex
-                } else if !allMetrics.isEmpty {
-                    selectedIndex = allMetrics.count - 1
+        while hasMoreData && !Task.isCancelled {
+            // Calculate end date for this batch (30 days before current start)
+            let batchEndDate = Calendar.current.date(byAdding: .day, value: -batchSize, to: currentStartDate!)
+            
+            // Fetch metrics for this 30-day batch
+            let batchMetrics = await fetchAndProcessMetrics(from: batchEndDate)
+                .filter { $0.date < currentStartDate! }
+            
+            if batchMetrics.isEmpty {
+                hasMoreData = false
+            } else {
+                // Add new metrics to the beginning of the array (older data)
+                await MainActor.run {
+                    let currentDate = bodyMetrics.indices.contains(selectedIndex) ? bodyMetrics[selectedIndex].date : nil
+                    
+                    // Merge new data with existing data, avoiding duplicates
+                    let allMetrics = (batchMetrics + bodyMetrics)
+                        .sorted { $0.date < $1.date }
+                        .removingDuplicatesBy { Calendar.current.startOfDay(for: $0.date) }
+                    
+                    bodyMetrics = allMetrics
+                    
+                    // Maintain the selected item position
+                    if let currentDate = currentDate,
+                       let newIndex = allMetrics.firstIndex(where: { $0.date == currentDate }) {
+                        selectedIndex = newIndex
+                    } else if !allMetrics.isEmpty {
+                        selectedIndex = allMetrics.count - 1
+                    }
                 }
+                
+                // Move to the next batch (30 days earlier)
+                currentStartDate = batchEndDate
+                
+                // Add a small delay to avoid overwhelming the UI
+                try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
             }
         }
         
@@ -485,5 +518,12 @@ struct DashboardView_Previews: PreviewProvider {
             .environmentObject(AuthManager.shared)
             .environmentObject(SyncManager.shared)
             .preferredColorScheme(.dark)
+    }
+}
+
+extension Array {
+    func removingDuplicatesBy<Key: Hashable>(_ keyPath: (Element) -> Key) -> [Element] {
+        var seen = Set<Key>()
+        return filter { seen.insert(keyPath($0)).inserted }
     }
 }

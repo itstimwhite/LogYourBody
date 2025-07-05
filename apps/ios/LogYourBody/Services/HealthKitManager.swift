@@ -514,7 +514,7 @@ class HealthKitManager: ObservableObject {
         }
     }
     
-    // Sync weight and body fat data from HealthKit to app
+    // Sync weight and body fat data from HealthKit to app (immediate 7-day sync)
     func syncWeightFromHealthKit() async throws {
         // Prevent concurrent syncs
         guard !isSyncingWeight else {
@@ -600,6 +600,101 @@ class HealthKitManager: ObservableObject {
                         muscleMass: nil,
                         boneMass: nil,
                         notes: "Body fat imported from HealthKit",
+                        createdAt: Date(),
+                        updatedAt: Date()
+                    )
+                    
+                    try await saveBodyMetrics(metrics)
+                }
+            }
+        }
+    }
+    
+    // Background incremental sync for longer time periods (30 days at a time)
+    func syncWeightFromHealthKitIncremental(days: Int = 30, startDate: Date? = nil) async throws {
+        // Prevent concurrent syncs
+        guard !isSyncingWeight else {
+            print("⚠️ Weight sync already in progress, skipping incremental sync")
+            return
+        }
+        
+        isSyncingWeight = true
+        defer { isSyncingWeight = false }
+        
+        let endDate = startDate ?? Date()
+        let batchStartDate = Calendar.current.date(byAdding: .day, value: -days, to: endDate)!
+        
+        // Fetch weight and body fat data for the specified period
+        let weightHistory = try await fetchWeightHistory(from: batchStartDate, to: endDate)
+        let bodyFatHistory = try await fetchBodyFatHistory(startDate: batchStartDate, endDate: endDate)
+        
+        // Create a dictionary of body fat data by date for easy lookup
+        var bodyFatByDate: [Date: Double] = [:]
+        for (percentage, date) in bodyFatHistory {
+            let normalizedDate = Calendar.current.startOfDay(for: date)
+            bodyFatByDate[normalizedDate] = percentage
+        }
+        
+        // Process weight entries and match with body fat if available
+        for (weight, date) in weightHistory {
+            // Check if this entry already exists (by date)
+            let exists = await MainActor.run {
+                SyncManager.shared.weightEntryExists(for: date)
+            }
+            
+            if !exists {
+                // Check if we have body fat data for the same day
+                let normalizedDate = Calendar.current.startOfDay(for: date)
+                let bodyFatPercentage = bodyFatByDate[normalizedDate]
+                
+                // Create body metrics with both weight and body fat
+                let metrics = BodyMetrics(
+                    id: UUID().uuidString,
+                    userId: "", // Will be filled by SyncManager
+                    date: date,
+                    weight: weight,  // Already in kg from fetchWeightHistory
+                    weightUnit: "kg",  // Always store in kg
+                    bodyFatPercentage: bodyFatPercentage,
+                    bodyFatMethod: bodyFatPercentage != nil ? "HealthKit" : nil,
+                    muscleMass: nil,
+                    boneMass: nil,
+                    notes: "Imported from HealthKit (incremental)",
+                    createdAt: Date(),
+                    updatedAt: Date()
+                )
+                
+                // Save to local storage and sync to backend
+                try await saveBodyMetrics(metrics)
+            }
+        }
+        
+        // Also check for standalone body fat entries (without weight)
+        for (percentage, date) in bodyFatHistory {
+            let normalizedDate = Calendar.current.startOfDay(for: date)
+            
+            // Check if we already processed this with weight data
+            let alreadyProcessed = weightHistory.contains { _, weightDate in
+                Calendar.current.startOfDay(for: weightDate) == normalizedDate
+            }
+            
+            if !alreadyProcessed {
+                let exists = await MainActor.run {
+                    SyncManager.shared.dailyMetricsExists(for: date)
+                }
+                
+                if !exists {
+                    // Create body metrics with just body fat
+                    let metrics = BodyMetrics(
+                        id: UUID().uuidString,
+                        userId: "", // Will be filled by SyncManager
+                        date: date,
+                        weight: nil,
+                        weightUnit: nil,
+                        bodyFatPercentage: percentage,
+                        bodyFatMethod: "HealthKit",
+                        muscleMass: nil,
+                        boneMass: nil,
+                        notes: "Body fat imported from HealthKit (incremental)",
                         createdAt: Date(),
                         updatedAt: Date()
                     )
