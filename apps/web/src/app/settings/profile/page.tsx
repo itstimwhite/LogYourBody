@@ -247,117 +247,98 @@ export default function ProfileSettingsPage() {
               <div className="relative group">
                 <Avatar className="h-20 w-20">
                   <AvatarImage src={profile.avatar_url || getProfileAvatarUrl(profile.username || user.id, 300)} />
-                  <AvatarFallback className="bg-linear-purple/10 text-linear-text text-lg">
+                  <AvatarFallback className="bg-linear-border text-linear-text-secondary text-lg">
                     {getInitials(profile.full_name || user.email || 'U')}
                   </AvatarFallback>
                 </Avatar>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-linear-card border border-linear-border opacity-0 group-hover:opacity-100 transition-opacity"
+                <button
+                  className="absolute bottom-0 right-0 h-8 w-8 rounded-full bg-linear-card border border-linear-border opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-linear-bg"
                   onClick={() => {
                     // Generate a new random avatar
                     const newAvatarUrl = getRandomAvatarUrl(300)
                     updateLocalProfile({ avatar_url: newAvatarUrl })
                   }}
                 >
-                  <Camera className="h-4 w-4" />
-                </Button>
+                  <Camera className="h-4 w-4 text-linear-text-secondary" />
+                </button>
               </div>
               
               <div className="flex-1 space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="fullName" className="text-linear-text">Full Name</Label>
+                  <Label htmlFor="fullName" className="text-linear-text-secondary text-sm">Full Name</Label>
                   <Input
                     id="fullName"
                     value={profile.full_name || ''}
                     onChange={(e) => updateLocalProfile({ full_name: e.target.value })}
-                    className="bg-linear-bg border-linear-border text-linear-text"
+                    className="bg-linear-bg border-linear-border text-linear-text focus:border-linear-text-tertiary"
                     placeholder="John Doe"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-linear-text">Email</Label>
+                  <Label htmlFor="email" className="text-linear-text-secondary text-sm">Email</Label>
                   <Input
                     id="email"
                     value={profile.email || user.email || ''}
                     disabled
-                    className="bg-linear-bg border-linear-border text-linear-text-secondary"
+                    className="bg-linear-bg border-linear-border text-linear-text-tertiary"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Biological Sex - inline with inputs */}
+            {/* Biological Sex - inline tabs */}
             <div className="space-y-2">
-              <Label className="text-linear-text">Biological Sex</Label>
-              <ToggleGroup 
-                type="single" 
-                value={profile.gender || 'male'}
-                onValueChange={(value) => {
-                  if (value) updateLocalProfile({ gender: value as 'male' | 'female' })
-                }}
-                className="justify-start"
-              >
-                <ToggleGroupItem 
-                  value="male" 
-                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+              <Label className="text-linear-text-secondary text-sm">Biological Sex</Label>
+              <div className="inline-flex bg-linear-bg rounded-md p-0.5">
+                <button
+                  onClick={() => updateLocalProfile({ gender: 'male' })}
+                  className={`px-4 py-1.5 text-sm font-medium rounded transition-all ${
+                    profile.gender === 'male'
+                      ? 'bg-linear-card text-linear-text shadow-sm'
+                      : 'text-linear-text-tertiary hover:text-linear-text-secondary'
+                  }`}
                 >
                   Male
-                </ToggleGroupItem>
-                <ToggleGroupItem 
-                  value="female"
-                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                </button>
+                <button
+                  onClick={() => updateLocalProfile({ gender: 'female' })}
+                  className={`px-4 py-1.5 text-sm font-medium rounded transition-all ${
+                    profile.gender === 'female'
+                      ? 'bg-linear-card text-linear-text shadow-sm'
+                      : 'text-linear-text-tertiary hover:text-linear-text-secondary'
+                  }`}
                 >
                   Female
-                </ToggleGroupItem>
-              </ToggleGroup>
+                </button>
+              </div>
             </div>
 
             {/* Height and Age Row */}
             <div className="grid grid-cols-2 gap-4">
               {/* Height */}
               <div className="space-y-2">
-                <Label className="text-linear-text">Height</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={formatHeight()}
-                    readOnly
-                    className="bg-linear-bg border-linear-border text-linear-text cursor-pointer"
-                    onClick={() => setShowHeightModal(true)}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowHeightModal(true)}
-                    className="text-linear-text-secondary hover:text-linear-text"
-                  >
-                    <Ruler className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Label className="text-linear-text-secondary text-sm">Height</Label>
+                <button
+                  onClick={() => setShowHeightModal(true)}
+                  className="w-full bg-linear-bg border border-linear-border rounded-md px-3 py-2 text-linear-text hover:border-linear-text-tertiary transition-colors flex items-center justify-between group"
+                >
+                  <span className="font-medium">{formatHeight()}</span>
+                  <Ruler className="h-4 w-4 text-linear-text-tertiary group-hover:text-linear-text-secondary transition-colors" />
+                </button>
               </div>
 
               {/* Date of Birth / Age */}
               <div className="space-y-2">
-                <Label className="text-linear-text">Age</Label>
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={calculateAge() ? `${calculateAge()} years` : 'Not set'}
-                    readOnly
-                    className="bg-linear-bg border-linear-border text-linear-text cursor-pointer"
-                    onClick={() => setShowDOBModal(true)}
-                    title={formatDOB()}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setShowDOBModal(true)}
-                    className="text-linear-text-secondary hover:text-linear-text"
-                  >
-                    <Calendar className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Label className="text-linear-text-secondary text-sm">Age</Label>
+                <button
+                  onClick={() => setShowDOBModal(true)}
+                  className="w-full bg-linear-bg border border-linear-border rounded-md px-3 py-2 text-linear-text hover:border-linear-text-tertiary transition-colors flex items-center justify-between group"
+                  title={formatDOB()}
+                >
+                  <span className="font-medium">{calculateAge() ? `${calculateAge()} years` : 'Not set'}</span>
+                  <Calendar className="h-4 w-4 text-linear-text-tertiary group-hover:text-linear-text-secondary transition-colors" />
+                </button>
               </div>
             </div>
           </CardContent>
@@ -373,31 +354,31 @@ export default function ProfileSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="activityLevel" className="text-linear-text">Activity Level</Label>
+              <Label htmlFor="activityLevel" className="text-linear-text-secondary text-sm">Activity Level</Label>
               <Select 
                 value={profile.activity_level || ''} 
                 onValueChange={(value) => updateLocalProfile({ activity_level: value as UserProfile['activity_level'] })}
               >
-                <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text">
+                <SelectTrigger className="bg-linear-bg border-linear-border text-linear-text hover:border-linear-text-tertiary">
                   <SelectValue placeholder="Select activity level" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sedentary">Sedentary (little to no exercise)</SelectItem>
-                  <SelectItem value="lightly_active">Lightly Active (1-3 days/week)</SelectItem>
-                  <SelectItem value="moderately_active">Moderately Active (3-5 days/week)</SelectItem>
-                  <SelectItem value="very_active">Very Active (6-7 days/week)</SelectItem>
-                  <SelectItem value="extremely_active">Extremely Active (2x per day)</SelectItem>
+                <SelectContent className="bg-linear-card border-linear-border">
+                  <SelectItem value="sedentary" className="hover:bg-linear-bg">Sedentary (little to no exercise)</SelectItem>
+                  <SelectItem value="lightly_active" className="hover:bg-linear-bg">Lightly Active (1-3 days/week)</SelectItem>
+                  <SelectItem value="moderately_active" className="hover:bg-linear-bg">Moderately Active (3-5 days/week)</SelectItem>
+                  <SelectItem value="very_active" className="hover:bg-linear-bg">Very Active (6-7 days/week)</SelectItem>
+                  <SelectItem value="extremely_active" className="hover:bg-linear-bg">Extremely Active (2x per day)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="bio" className="text-linear-text">Bio</Label>
+              <Label htmlFor="bio" className="text-linear-text-secondary text-sm">Bio</Label>
               <textarea
                 id="bio"
                 value={profile.bio || ''}
                 onChange={(e) => updateLocalProfile({ bio: e.target.value })}
-                className="w-full px-3 py-2 bg-linear-bg border border-linear-border text-linear-text rounded-md resize-none"
+                className="w-full px-3 py-2 bg-linear-bg border border-linear-border text-linear-text rounded-md resize-none hover:border-linear-text-tertiary focus:border-linear-text-tertiary focus:outline-none transition-colors"
                 placeholder="Share your fitness goals and journey..."
                 rows={3}
               />
@@ -412,12 +393,12 @@ export default function ProfileSettingsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-linear-text">Username</Label>
+              <Label htmlFor="username" className="text-linear-text-secondary text-sm">Username</Label>
               <Input
                 id="username"
                 value={profile.username || ''}
                 onChange={(e) => updateLocalProfile({ username: e.target.value })}
-                className="bg-linear-bg border-linear-border text-linear-text"
+                className="bg-linear-bg border-linear-border text-linear-text focus:border-linear-text-tertiary"
                 placeholder="@johndoe"
               />
               <p className="text-xs text-linear-text-tertiary">
@@ -426,10 +407,16 @@ export default function ProfileSettingsPage() {
             </div>
 
             <div className="pt-2">
-              <Button variant="outline" className="border-linear-border w-full">
+              <button
+                className="w-full px-4 py-2 border border-linear-border rounded-md text-linear-text-secondary hover:text-linear-text hover:border-linear-text-tertiary transition-colors flex items-center justify-center"
+                onClick={() => {
+                  const newAvatarUrl = getRandomAvatarUrl(300)
+                  updateLocalProfile({ avatar_url: newAvatarUrl })
+                }}
+              >
                 <Camera className="h-4 w-4 mr-2" />
                 Change Profile Photo
-              </Button>
+              </button>
             </div>
           </CardContent>
         </Card>
@@ -437,113 +424,140 @@ export default function ProfileSettingsPage() {
 
       {/* Date of Birth Modal */}
       <Dialog open={showDOBModal} onOpenChange={setShowDOBModal}>
-        <DialogContent className="bg-linear-card border-linear-border">
+        <DialogContent className="bg-linear-card border-linear-border max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-linear-text">Set Date of Birth</DialogTitle>
+            <DialogTitle className="text-linear-text text-center">Set Date of Birth</DialogTitle>
           </DialogHeader>
-          <div className="py-4">
-            <DateWheelPicker
-              date={dateOfBirthDate}
-              onDateChange={(date) => {
-                setDateOfBirthDate(date)
-                updateLocalProfile({ date_of_birth: format(date, 'yyyy-MM-dd') })
-              }}
-              className="bg-linear-bg rounded-lg"
-            />
+          <div className="space-y-4">
+            <div className="text-center py-4">
+              <div className="text-2xl font-medium text-linear-text mb-1">
+                {format(dateOfBirthDate, 'MMMM d, yyyy')}
+              </div>
+              <div className="text-sm text-linear-text-tertiary">
+                {calculateAge() ? `${calculateAge()} years old` : 'Age will be calculated'}
+              </div>
+            </div>
+            <div className="bg-linear-bg rounded-lg p-4">
+              <DateWheelPicker
+                date={dateOfBirthDate}
+                onDateChange={(date) => {
+                  setDateOfBirthDate(date)
+                  updateLocalProfile({ date_of_birth: format(date, 'yyyy-MM-dd') })
+                }}
+                className=""
+              />
+            </div>
           </div>
-          <div className="flex justify-end gap-2">
-            <Button
-              variant="outline"
+          <div className="flex gap-2 mt-6">
+            <button
               onClick={() => setShowDOBModal(false)}
-              className="border-linear-border"
+              className="flex-1 px-4 py-2 border border-linear-border rounded-md text-linear-text-secondary hover:text-linear-text hover:border-linear-text-tertiary transition-colors"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={() => setShowDOBModal(false)}
-              className="bg-linear-purple hover:bg-linear-purple/80"
+              className="flex-1 px-4 py-2 bg-white/10 rounded-md text-linear-text hover:bg-white/15 transition-colors"
             >
-              Save
-            </Button>
+              Done
+            </button>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Height Modal */}
       <Dialog open={showHeightModal} onOpenChange={setShowHeightModal}>
-        <DialogContent className="bg-linear-card border-linear-border">
+        <DialogContent className="bg-linear-card border-linear-border max-w-sm">
           <DialogHeader>
-            <DialogTitle className="text-linear-text">Set Height</DialogTitle>
+            <DialogTitle className="text-linear-text text-center">Set Height</DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
+          <div className="space-y-6">
             {/* Unit Toggle */}
             <div className="flex justify-center">
-              <ToggleGroup 
-                type="single" 
-                value={profile.height_unit || 'cm'}
-                onValueChange={(value) => {
-                  if (value) {
-                    const newUnit = value as 'cm' | 'ft'
-                    // Convert height when changing units
-                    if (newUnit === 'ft' && profile.height_unit === 'cm') {
-                      // Converting from cm to inches
-                      const totalInches = Math.round(heightInCm / 2.54)
-                      updateLocalProfile({ height: totalInches, height_unit: newUnit })
-                    } else if (newUnit === 'cm' && profile.height_unit === 'ft') {
-                      // Converting from inches to cm
+              <div className="inline-flex bg-linear-bg rounded-md p-0.5">
+                <button
+                  onClick={() => {
+                    const newUnit = 'cm'
+                    if (profile.height_unit === 'ft') {
                       updateLocalProfile({ height: heightInCm, height_unit: newUnit })
                     } else {
                       updateLocalProfile({ height_unit: newUnit })
                     }
-                  }
-                }}
-              >
-                <ToggleGroupItem 
-                  value="cm" 
-                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                  }}
+                  className={`px-4 py-1.5 text-sm font-medium rounded transition-all ${
+                    profile.height_unit === 'cm'
+                      ? 'bg-white/10 text-linear-text'
+                      : 'text-linear-text-tertiary hover:text-linear-text-secondary'
+                  }`}
                 >
                   Metric (cm)
-                </ToggleGroupItem>
-                <ToggleGroupItem 
-                  value="ft"
-                  className="data-[state=on]:bg-linear-purple data-[state=on]:text-white"
+                </button>
+                <button
+                  onClick={() => {
+                    const newUnit = 'ft'
+                    if (profile.height_unit === 'cm') {
+                      const totalInches = Math.round(heightInCm / 2.54)
+                      updateLocalProfile({ height: totalInches, height_unit: newUnit })
+                    } else {
+                      updateLocalProfile({ height_unit: newUnit })
+                    }
+                  }}
+                  className={`px-4 py-1.5 text-sm font-medium rounded transition-all ${
+                    profile.height_unit === 'ft'
+                      ? 'bg-white/10 text-linear-text'
+                      : 'text-linear-text-tertiary hover:text-linear-text-secondary'
+                  }`}
                 >
                   Imperial (ft/in)
-                </ToggleGroupItem>
-              </ToggleGroup>
+                </button>
+              </div>
+            </div>
+
+            {/* Height Display */}
+            <div className="text-center py-4">
+              <div className="text-4xl font-semibold text-linear-text mb-2">
+                {formatHeight()}
+              </div>
+              <div className="text-sm text-linear-text-tertiary">
+                {profile.height_unit === 'cm' 
+                  ? `${Math.floor(heightInCm / 30.48)}'${Math.round((heightInCm % 30.48) / 2.54)}" in imperial`
+                  : `${heightInCm} cm in metric`
+                }
+              </div>
             </div>
 
             {/* Height Picker */}
-            <HeightWheelPicker
-              heightInCm={heightInCm}
-              units={profile.height_unit === 'ft' ? 'imperial' : 'metric'}
-              onHeightChange={(newHeightInCm) => {
-                setHeightInCm(newHeightInCm)
-                // Update profile height based on unit
-                if (profile.height_unit === 'ft') {
-                  const totalInches = Math.round(newHeightInCm / 2.54)
-                  updateLocalProfile({ height: totalInches })
-                } else {
-                  updateLocalProfile({ height: newHeightInCm })
-                }
-              }}
-              className="bg-linear-bg rounded-lg"
-            />
+            <div className="bg-linear-bg rounded-lg p-4">
+              <HeightWheelPicker
+                heightInCm={heightInCm}
+                units={profile.height_unit === 'ft' ? 'imperial' : 'metric'}
+                onHeightChange={(newHeightInCm) => {
+                  setHeightInCm(newHeightInCm)
+                  // Update profile height based on unit
+                  if (profile.height_unit === 'ft') {
+                    const totalInches = Math.round(newHeightInCm / 2.54)
+                    updateLocalProfile({ height: totalInches })
+                  } else {
+                    updateLocalProfile({ height: newHeightInCm })
+                  }
+                }}
+                className=""
+              />
+            </div>
           </div>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button
-              variant="outline"
+          <div className="flex gap-2 mt-6">
+            <button
               onClick={() => setShowHeightModal(false)}
-              className="border-linear-border"
+              className="flex-1 px-4 py-2 border border-linear-border rounded-md text-linear-text-secondary hover:text-linear-text hover:border-linear-text-tertiary transition-colors"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={() => setShowHeightModal(false)}
-              className="bg-linear-purple hover:bg-linear-purple/80"
+              className="flex-1 px-4 py-2 bg-white/10 rounded-md text-linear-text hover:bg-white/15 transition-colors"
             >
-              Save
-            </Button>
+              Done
+            </button>
           </div>
         </DialogContent>
       </Dialog>
