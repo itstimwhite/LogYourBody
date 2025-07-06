@@ -4,30 +4,43 @@
  */
 
 import React from 'react'
-import { render, screen, waitFor, act } from '@testing-library/react'
+import { render, screen, waitFor, act, renderHook } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import LoginPage from '@/app/signin/page'
 import SignupPage from '@/app/signup/page'
-import { AuthProvider } from '@/contexts/ClerkAuthContext'
+import { AuthProvider, useAuth } from '@/contexts/ClerkAuthContext'
+import { useUser } from '@clerk/nextjs'
 
-// Mock Supabase client
+// Mock Clerk functions
 const mockSignIn = jest.fn()
 const mockSignUp = jest.fn()
 const mockSignOut = jest.fn()
-const mockOnAuthStateChange = jest.fn()
-const mockGetSession = jest.fn()
+const mockSetActive = jest.fn()
+const mockGetToken = jest.fn()
 
-jest.mock('@/lib/supabase/client', () => ({
-  createClient: () => ({
-    auth: {
-      signInWithPassword: mockSignIn,
-      signUp: mockSignUp,
-      signOut: mockSignOut,
-      onAuthStateChange: mockOnAuthStateChange,
-      getSession: mockGetSession,
-      signInWithOAuth: jest.fn(),
-    }
-  })
+jest.mock('@clerk/nextjs', () => ({
+  useUser: jest.fn(() => ({
+    user: null,
+    isLoaded: true,
+  })),
+  useAuth: jest.fn(() => ({
+    signOut: mockSignOut,
+    getToken: mockGetToken,
+  })),
+  useSignIn: jest.fn(() => ({
+    signIn: {
+      create: mockSignIn,
+      authenticateWithRedirect: jest.fn(),
+    },
+  })),
+  useSignUp: jest.fn(() => ({
+    signUp: {
+      create: mockSignUp,
+    },
+  })),
+  useClerk: jest.fn(() => ({
+    setActive: mockSetActive,
+  })),
 }))
 
 // Mock router
@@ -41,33 +54,15 @@ jest.mock('next/navigation', () => ({
 describe('Authentication Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockGetSession.mockResolvedValue({ data: { session: null } })
-    mockOnAuthStateChange.mockImplementation((callback) => {
-      // Immediately invoke the callback to simulate auth state change
-      setTimeout(() => callback('INITIAL', null), 0)
-      return {
-        data: { subscription: { unsubscribe: jest.fn() } }
-      }
-    })
+    mockGetToken.mockResolvedValue('test-token')
   })
 
   describe('Email Sign Up Flow', () => {
     it('should complete sign up flow successfully', async () => {
       const user = userEvent.setup()
       mockSignUp.mockResolvedValue({
-        data: {
-          user: { id: '123', email: 'test@example.com' },
-          session: null
-        },
-        error: null
-      })
-      // Mock sign in after signup
-      mockSignIn.mockResolvedValue({
-        data: {
-          user: { id: '123', email: 'test@example.com' },
-          session: { access_token: 'token', user: { id: '123', email: 'test@example.com' } }
-        },
-        error: null
+        status: 'complete',
+        createdSessionId: 'test-session-id'
       })
 
       await act(async () => {
@@ -88,16 +83,15 @@ describe('Authentication Integration Tests', () => {
       // Verify sign up was called
       await waitFor(() => {
         expect(mockSignUp).toHaveBeenCalledWith({
-          email: 'test@example.com',
+          emailAddress: 'test@example.com',
           password: 'password123',
-          options: {
-            emailRedirectTo: expect.stringContaining('/auth/callback'),
-          }
         })
       })
 
-      // Should auto-login and redirect to dashboard
-      expect(mockPush).toHaveBeenCalledWith('/dashboard')
+      // Should set active session
+      await waitFor(() => {
+        expect(mockSetActive).toHaveBeenCalledWith({ session: 'test-session-id' })
+      })
     })
 
     it('should validate password requirements', async () => {
@@ -135,8 +129,8 @@ describe('Authentication Integration Tests', () => {
       const mockSession = { user: mockUser, access_token: 'token' }
       
       mockSignIn.mockResolvedValue({
-        data: { user: mockUser, session: mockSession },
-        error: null
+        status: 'complete',
+        createdSessionId: 'test-session-id'
       })
 
       await act(async () => {
@@ -157,7 +151,7 @@ describe('Authentication Integration Tests', () => {
       // Verify sign in was called
       await waitFor(() => {
         expect(mockSignIn).toHaveBeenCalledWith({
-          email: 'test@example.com',
+          identifier: 'test@example.com',
           password: 'password123'
         })
       })
@@ -168,10 +162,7 @@ describe('Authentication Integration Tests', () => {
 
     it('should handle invalid credentials', async () => {
       const user = userEvent.setup()
-      mockSignIn.mockResolvedValue({
-        data: { user: null, session: null },
-        error: new Error('Invalid login credentials')
-      })
+      mockSignIn.mockRejectedValue(new Error('Invalid login credentials'))
 
       await act(async () => {
         render(
@@ -195,16 +186,14 @@ describe('Authentication Integration Tests', () => {
   })
 
   describe('Session Management', () => {
-    it('should handle existing session on mount', async () => {
-      const mockUser = { id: '123', email: 'test@example.com' }
-      const mockSession = { user: mockUser, access_token: 'token' }
+    it('should handle existing user on mount', async () => {
+      const mockUser = { id: '123', emailAddresses: [{ emailAddress: 'test@example.com' }] }
       
-      mockGetSession.mockResolvedValue({
-        data: { session: mockSession }
-      })
+      jest.mocked(useUser).mockReturnValue({
+        user: mockUser,
+        isLoaded: true,
+      } as any)
 
-      // Note: The middleware would handle this redirect in production
-      // This test verifies the AuthProvider correctly loads the session
       await act(async () => {
         render(
           <AuthProvider>
@@ -213,21 +202,13 @@ describe('Authentication Integration Tests', () => {
         )
       })
 
-      // Verify session is loaded
+      // Verify user is loaded
       await waitFor(() => {
-        expect(mockGetSession).toHaveBeenCalled()
+        expect(screen.getByTestId('test-content')).toBeInTheDocument()
       })
     })
 
-    it('should handle auth state changes', async () => {
-      let authChangeCallback: (event: string, session: { user: { id: string; email: string }, access_token: string } | null) => void
-      mockOnAuthStateChange.mockImplementation((callback) => {
-        authChangeCallback = callback
-        return {
-          data: { subscription: { unsubscribe: jest.fn() } }
-        }
-      })
-
+    it('should handle sign out', async () => {
       await act(async () => {
         render(
           <AuthProvider>
@@ -236,18 +217,18 @@ describe('Authentication Integration Tests', () => {
         )
       })
 
-      // Simulate auth state change
-      const mockUser = { id: '123', email: 'test@example.com' }
-      const mockSession = { user: mockUser, access_token: 'token' }
-      
-      await act(async () => {
-        authChangeCallback('SIGNED_IN', mockSession)
+      // Get auth context and trigger sign out
+      const { result } = renderHook(() => useAuth(), {
+        wrapper: AuthProvider,
       })
 
-      // Component should update with new auth state
-      await waitFor(() => {
-        expect(mockOnAuthStateChange).toHaveBeenCalled()
+      await act(async () => {
+        await result.current.signOut()
       })
+
+      // Verify sign out was called
+      expect(mockSignOut).toHaveBeenCalled()
+      expect(mockPush).toHaveBeenCalledWith('/')
     })
   })
 
