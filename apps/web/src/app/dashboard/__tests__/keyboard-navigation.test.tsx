@@ -8,7 +8,7 @@ jest.mock('next/navigation', () => ({
   useRouter: jest.fn()
 }))
 
-jest.mock('@/contexts/AuthContext', () => ({
+jest.mock('@/contexts/ClerkAuthContext', () => ({
   useAuth: jest.fn()
 }))
 

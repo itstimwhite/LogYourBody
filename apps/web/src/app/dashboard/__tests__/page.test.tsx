@@ -11,7 +11,7 @@ jest.mock('next/navigation', () => ({
   useParams: jest.fn(() => ({}))
 }))
 
-jest.mock('@/contexts/AuthContext', () => ({
+jest.mock('@/contexts/ClerkAuthContext', () => ({
   useAuth: jest.fn()
 }))
 

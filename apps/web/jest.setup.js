@@ -1,6 +1,64 @@
 // Learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom'
 
+// Mock Clerk Next.js - do this early before any components try to import it
+jest.mock('@clerk/nextjs', () => ({
+  useUser: jest.fn(() => ({
+    user: null,
+    isLoaded: true,
+  })),
+  useAuth: jest.fn(() => ({
+    signOut: jest.fn(),
+    getToken: jest.fn(() => Promise.resolve('test-token')),
+  })),
+  useSignIn: jest.fn(() => ({
+    signIn: {
+      create: jest.fn(() => Promise.resolve({
+        status: 'complete',
+        createdSessionId: 'test-session-id',
+      })),
+      authenticateWithRedirect: jest.fn(),
+    },
+  })),
+  useSignUp: jest.fn(() => ({
+    signUp: {
+      create: jest.fn(() => Promise.resolve({
+        status: 'complete',
+        createdSessionId: 'test-session-id',
+      })),
+    },
+  })),
+  useClerk: jest.fn(() => ({
+    setActive: jest.fn(),
+  })),
+  ClerkProvider: ({ children }) => children,
+  SignIn: ({ children }) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const React = require('react')
+    return React.createElement('div', { 'data-testid': 'clerk-signin' }, [
+      React.createElement('form', { key: 'form' }, [
+        React.createElement('input', { key: 'email', type: 'email', 'aria-label': 'Email', role: 'textbox' }),
+        React.createElement('input', { key: 'password', type: 'password', 'aria-label': 'Password' }),
+        React.createElement('button', { key: 'submit', type: 'submit' }, 'Sign in'),
+        React.createElement('a', { key: 'signup', href: '/signup' }, 'Sign up'),
+        React.createElement('a', { key: 'forgot', href: '/forgot-password' }, 'Forgot?')
+      ])
+    ])
+  },
+  SignUp: ({ children }) => {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const React = require('react')
+    return React.createElement('div', { 'data-testid': 'clerk-signup' }, [
+      React.createElement('form', { key: 'form' }, [
+        React.createElement('input', { key: 'email', type: 'email', 'aria-label': 'Email', role: 'textbox' }),
+        React.createElement('input', { key: 'password', type: 'password', 'aria-label': 'Password' }),
+        React.createElement('button', { key: 'submit', type: 'submit' }, 'Create account'),
+        React.createElement('a', { key: 'signin', href: '/login' }, 'Sign in')
+      ])
+    ])
+  },
+}))
+
 // Check if we're in Node environment
 const isNode = typeof window === 'undefined'
 
@@ -21,40 +79,7 @@ jest.mock('next/navigation', () => ({
   redirect: jest.fn(),
 }))
 
-// Mock Clerk Next.js only if not in Node environment
-if (!isNode) {
-  jest.mock('@clerk/nextjs', () => ({
-    useUser: jest.fn(() => ({
-      user: null,
-      isLoaded: true,
-    })),
-    useAuth: jest.fn(() => ({
-      signOut: jest.fn(),
-      getToken: jest.fn(() => Promise.resolve('test-token')),
-    })),
-    useSignIn: jest.fn(() => ({
-      signIn: {
-        create: jest.fn(() => Promise.resolve({
-          status: 'complete',
-          createdSessionId: 'test-session-id',
-        })),
-        authenticateWithRedirect: jest.fn(),
-      },
-    })),
-    useSignUp: jest.fn(() => ({
-      signUp: {
-        create: jest.fn(() => Promise.resolve({
-          status: 'complete',
-          createdSessionId: 'test-session-id',
-        })),
-      },
-    })),
-    useClerk: jest.fn(() => ({
-      setActive: jest.fn(),
-    })),
-    ClerkProvider: ({ children }: { children: React.ReactNode }) => children,
-  }))
-}
+// Clerk mock is already set up at the top of the file
 
 // Mock Supabase client
 jest.mock('@/lib/supabase/client', () => ({
@@ -97,7 +122,7 @@ if (typeof indexedDB === 'undefined' && typeof global !== 'undefined') {
       onerror: jest.fn(),
       onupgradeneeded: jest.fn(),
     })),
-  } as any
+  }
 }
 
 // Mock window.matchMedia only if window is defined
@@ -116,17 +141,14 @@ if (typeof window !== 'undefined') {
     })),
   })
   
-  // Also add window.location.origin for tests
-  Object.defineProperty(window, 'location', {
-    value: {
-      origin: 'http://localhost:3000',
-      href: 'http://localhost:3000',
-      pathname: '/',
-      search: '',
-      hash: '',
-    },
-    writable: true,
-  })
+  // Also add window.location.origin for tests - don't delete, just extend
+  if (!window.location.origin) {
+    Object.defineProperty(window.location, 'origin', {
+      value: 'http://localhost:3000',
+      writable: true,
+      configurable: true
+    })
+  }
 }
 
 // Add pointer events polyfill for Radix UI only if Element is defined
@@ -152,6 +174,30 @@ jest.mock('date-fns', () => ({
     }
     return actual.format(date, formatStr)
   }
+}))
+
+// Mock ClerkAuthContext - This should be before individual test mocks
+jest.mock('@/contexts/ClerkAuthContext', () => ({
+  ClerkAuthProvider: ({ children }) => children,
+  AuthProvider: ({ children }) => children,
+  useAuth: jest.fn(() => ({
+    user: null,
+    session: null,
+    loading: false,
+    signIn: jest.fn(),
+    signUp: jest.fn(),
+    signOut: jest.fn(),
+    signInWithProvider: jest.fn(),
+  })),
+}))
+
+// Mock lucide-react icons
+jest.mock('lucide-react', () => ({
+  BarChart3: function BarChart3() {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require('react').createElement('svg')
+  },
+  // Add other icons as needed
 }))
 
 // Mock framer-motion

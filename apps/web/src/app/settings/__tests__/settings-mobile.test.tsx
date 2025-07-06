@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/ClerkAuthContext'
 import { useRouter } from 'next/navigation'
 
 // Mock dependencies
-jest.mock('@/contexts/AuthContext')
+jest.mock('@/contexts/ClerkAuthContext')
 jest.mock('next/navigation')
 jest.mock('@/components/MobileNavbar', () => ({
   MobileNavbar: () => <div data-testid="mobile-navbar" />

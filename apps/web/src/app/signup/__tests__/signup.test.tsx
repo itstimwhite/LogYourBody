@@ -5,7 +5,7 @@ import SignupPage from '../page'
 import { useAuth } from '@/contexts/ClerkAuthContext'
 
 // Mock the auth context
-jest.mock('@/contexts/AuthContext')
+jest.mock('@/contexts/ClerkAuthContext')
 const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>
 
 // Mock the router

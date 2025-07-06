@@ -7,7 +7,7 @@ import { getProfile } from '@/lib/supabase/profile'
 import { createClient } from '@/lib/supabase/client'
 
 // Mock dependencies
-jest.mock('@/contexts/AuthContext')
+jest.mock('@/contexts/ClerkAuthContext')
 jest.mock('next/navigation')
 jest.mock('@/lib/supabase/profile')
 jest.mock('@/lib/supabase/client')

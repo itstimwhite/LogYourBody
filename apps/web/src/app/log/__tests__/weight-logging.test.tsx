@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation'
 import { useMediaQuery } from '@/hooks/use-media-query'
 
 // Mock dependencies
-jest.mock('@/contexts/AuthContext')
+jest.mock('@/contexts/ClerkAuthContext')
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn()
 }))

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { useAuth } from './AuthContext'
+import { useAuth } from './ClerkAuthContext'
 import { formatDateForDB } from '@/utils/date-utils'
 
 interface OnboardingData {

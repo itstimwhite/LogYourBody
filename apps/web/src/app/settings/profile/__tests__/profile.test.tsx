@@ -8,7 +8,7 @@ import * as profileApi from '@/lib/supabase/profile'
 // import { format } from 'date-fns' // Not used
 
 // Mock dependencies
-jest.mock('@/contexts/AuthContext')
+jest.mock('@/contexts/ClerkAuthContext')
 jest.mock('next/navigation', () => ({
   useRouter: jest.fn()
 }))
