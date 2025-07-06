@@ -12,14 +12,17 @@ struct DashboardView: View {
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var syncManager: SyncManager
     @StateObject private var healthKitManager = HealthKitManager.shared
+    @StateObject private var realtimeSync = RealtimeSyncManager.shared
     @State private var bodyMetrics: [BodyMetrics] = []
     @State private var selectedIndex: Int = 0
-    @State private var isLoading = true
+    @State private var isLoading = false  // Start with false to show cached data immediately
     @State private var isLoadingFullHistory = false
     @State private var showHealthKitPrompt = false
     @State private var hasCheckedHealthKit = false
     @State private var isRefreshing = false
     @State private var hasLoadedFullHistory = false
+    @State private var isSyncingHealthKit = false
+    @State private var hasInitialDataLoaded = false
     @AppStorage(Constants.preferredMeasurementSystemKey) private var measurementSystem = PreferencesView.defaultMeasurementSystem
     @AppStorage("healthKitSyncEnabled") private var healthKitSyncEnabled = true
     
@@ -63,8 +66,78 @@ struct DashboardView: View {
                 } else {
                     // Main Content
                     VStack(spacing: 0) {
+                        // Add spacer at top to push content down
+                        Spacer(minLength: 40)
+                        
                         ScrollView {
                             VStack(spacing: 24) {
+                                // Progress Photo Display
+                                VStack(spacing: 12) {
+                                    if let photoUrl = currentMetric?.photoUrl, !photoUrl.isEmpty {
+                                        AsyncImage(url: URL(string: photoUrl)) { image in
+                                            image
+                                                .resizable()
+                                                .aspectRatio(contentMode: .fit)
+                                                .frame(maxHeight: 300)
+                                                .cornerRadius(12)
+                                                .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
+                                        } placeholder: {
+                                            RoundedRectangle(cornerRadius: 12)
+                                                .fill(Color.appCard)
+                                                .frame(height: 300)
+                                                .overlay(
+                                                    ProgressView()
+                                                        .scaleEffect(1.2)
+                                                )
+                                        }
+                                    } else {
+                                        // Placeholder image
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .fill(
+                                                LinearGradient(
+                                                    gradient: Gradient(colors: [
+                                                        Color.appCard,
+                                                        Color.appCard.opacity(0.8)
+                                                    ]),
+                                                    startPoint: .top,
+                                                    endPoint: .bottom
+                                                )
+                                            )
+                                            .frame(height: 300)
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 12)
+                                                    .stroke(Color.appBorder, lineWidth: 1)
+                                            )
+                                            .overlay(
+                                                VStack(spacing: 16) {
+                                                    Circle()
+                                                        .fill(Color.appBackground)
+                                                        .frame(width: 80, height: 80)
+                                                        .overlay(
+                                                            Image(systemName: "camera.fill")
+                                                                .font(.system(size: 36))
+                                                                .foregroundColor(.appTextTertiary)
+                                                        )
+                                                    Text("No progress photo")
+                                                        .font(.appBodyLarge)
+                                                        .foregroundColor(.appTextSecondary)
+                                                    Text("Tap to add photo")
+                                                        .font(.appCaption)
+                                                        .foregroundColor(.appTextTertiary)
+                                                }
+                                            )
+                                            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
+                                    }
+                                    
+                                    // Date Display
+                                    if let date = currentMetric?.date {
+                                        Text(date, style: .date)
+                                            .font(.appBody)
+                                            .foregroundColor(.appTextSecondary)
+                                    }
+                                }
+                                .padding(.horizontal)
+                                
                                 // Main Body Fat Display
                                 VStack(spacing: 16) {
                                     if let bodyFat = currentMetric?.bodyFatPercentage {
@@ -94,13 +167,6 @@ struct DashboardView: View {
                                                 .foregroundColor(.appTextTertiary)
                                         }
                                         .padding(.vertical, 20)
-                                    }
-                                    
-                                    // Date Display
-                                    if let date = currentMetric?.date {
-                                        Text(date, style: .date)
-                                            .font(.appBody)
-                                            .foregroundColor(.appTextSecondary)
                                     }
                                 }
                                 .frame(maxWidth: .infinity)
@@ -207,45 +273,36 @@ struct DashboardView: View {
                     }
                 }
                 
-                // Sync Status Overlay (fixed position)
-                if syncManager.pendingSyncCount > 0 && !isLoading {
-                    VStack {
-                        HStack {
-                            Image(systemName: syncManager.isSyncing ? "arrow.triangle.2.circlepath" : "exclamationmark.icloud")
-                                .foregroundColor(syncManager.isSyncing ? .blue : .orange)
-                                .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
-                                .animation(syncManager.isSyncing ? .linear(duration: 1).repeatForever(autoreverses: false) : nil, value: syncManager.isSyncing)
-                            
-                            Text(syncManager.isSyncing ? "Syncing..." : "\(syncManager.pendingSyncCount) items pending sync")
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            
-                            Spacer()
-                            
-                            if !syncManager.isSyncing {
-                                Button("Sync Now") {
-                                    syncManager.syncAll()
-                                }
-                                .font(.caption)
-                                .buttonStyle(.bordered)
+            }
+            .navigationTitle("Dashboard")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if syncManager.pendingSyncCount > 0 {
+                        Button(action: {
+                            print("🚀 Manual sync triggered")
+                            syncManager.syncAll()
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: syncManager.isSyncing ? "arrow.triangle.2.circlepath" : "icloud.and.arrow.up")
+                                    .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
+                                    .animation(syncManager.isSyncing ? Animation.linear(duration: 1).repeatForever(autoreverses: false) : .default, value: syncManager.isSyncing)
+                                Text("\(syncManager.pendingSyncCount)")
+                                    .font(.caption)
                             }
+                            .foregroundColor(syncManager.isSyncing ? .gray : .blue)
                         }
-                        .padding()
-                        .background(Color.appCard)
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                        
-                        Spacer()
+                        .disabled(syncManager.isSyncing)
                     }
-                    .padding(.top, 50)
                 }
             }
-            .navigationTitle("")
-            .navigationBarTitleDisplayMode(.large)
             .onAppear {
+                // Load cached data immediately (synchronously)
+                loadCachedDataImmediately()
+                
+                // Then check for updates asynchronously
                 Task {
-                    await loadBodyMetrics()
+                    await loadBodyMetricsIncrementally()
                 }
                 checkHealthKitStatus()
             }
@@ -253,9 +310,25 @@ struct DashboardView: View {
                 bodyMetrics = []
                 selectedIndex = 0
                 hasLoadedFullHistory = false
-                isLoading = true
+                hasInitialDataLoaded = false
+                isLoading = false
+                // Load cached data immediately for new user
+                loadCachedDataImmediately()
                 Task {
-                    await loadBodyMetrics()
+                    await loadBodyMetricsIncrementally()
+                }
+            }
+            .onChange(of: realtimeSync.lastSyncDate) { _ in
+                // Only reload if we don't have data
+                if bodyMetrics.isEmpty {
+                    let updatedMetrics = fetchAndProcessMetrics(from: nil)
+                    if !updatedMetrics.isEmpty {
+                        bodyMetrics = updatedMetrics
+                        selectedIndex = updatedMetrics.count - 1
+                    }
+                } else {
+                    // Just update the sync status, don't reload all data
+                    print("📊 Sync completed, data already loaded")
                 }
             }
             .sheet(isPresented: $showHealthKitPrompt) {
@@ -265,56 +338,145 @@ struct DashboardView: View {
         }
     }
     
-    private func loadBodyMetrics() async {
-        // Phase 1: Load recent data (last 7 days) for immediate display
-        let sevenDaysAgo = Calendar.current.date(byAdding: .day, value: -7, to: Date())
-        let recentMetrics = await fetchAndProcessMetrics(from: sevenDaysAgo)
+    // Load cached data immediately on view appear (synchronous)
+    private func loadCachedDataImmediately() {
+        guard !hasInitialDataLoaded else { return }
+        hasInitialDataLoaded = true
         
-        await MainActor.run {
-            bodyMetrics = recentMetrics
-            if !recentMetrics.isEmpty {
-                selectedIndex = recentMetrics.count - 1
-            }
-            isLoading = false
+        // Load all cached data immediately
+        let allCachedMetrics = fetchAndProcessMetrics(from: nil)
+        
+        if !allCachedMetrics.isEmpty {
+            bodyMetrics = allCachedMetrics
+            selectedIndex = allCachedMetrics.count - 1
+            print("📊 Loaded \(allCachedMetrics.count) cached metrics immediately")
+        }
+    }
+    
+    private func loadBodyMetricsIncrementally() async {
+        // Only sync if we haven't synced recently
+        let shouldSyncHealthKit = healthKitManager.isAuthorized && 
+                                 healthKitSyncEnabled && 
+                                 !isSyncingHealthKit &&
+                                 shouldPerformHealthKitSync()
+        
+        if shouldSyncHealthKit {
+            // Sync only recent data (last 7 days) from HealthKit
+            await syncRecentHealthKitData()
         }
         
-        // Try to sync with HealthKit immediately for recent data if authorized and enabled
-        if healthKitManager.isAuthorized && healthKitSyncEnabled {
-            await syncHealthKitData()
-            
-            // Reload the 7-day view after HealthKit sync
-            let updatedRecentMetrics = await fetchAndProcessMetrics(from: sevenDaysAgo)
-            await MainActor.run {
-                bodyMetrics = updatedRecentMetrics
-                if !updatedRecentMetrics.isEmpty {
-                    selectedIndex = updatedRecentMetrics.count - 1
-                }
-            }
-        }
-        
-        // Trigger sync to get latest data from server
+        // Trigger sync to upload data to Supabase
         syncManager.syncIfNeeded()
         
-        // Phase 2: Load incremental history in background (30 days at a time)
-        if !hasLoadedFullHistory {
+        // Also trigger realtime sync
+        realtimeSync.syncIfNeeded()
+        
+        // Load incremental history in background only if needed
+        // Check if we actually need more historical data
+        let needsHistoricalData = !hasLoadedFullHistory && bodyMetrics.count < 30
+        let oldestEntry = bodyMetrics.first?.date ?? Date()
+        let daysSinceOldest = Calendar.current.dateComponents([.day], from: oldestEntry, to: Date()).day ?? 0
+        
+        if needsHistoricalData && daysSinceOldest < 180 { // Only load if we have less than 6 months of data
             await loadIncrementalHistory()
         }
     }
     
+    // Check if we should perform HealthKit sync (not more than once per hour)
+    private func shouldPerformHealthKitSync() -> Bool {
+        let lastSyncKey = "lastHealthKitSyncDate"
+        if let lastSync = UserDefaults.standard.object(forKey: lastSyncKey) as? Date {
+            let hoursSinceLastSync = Date().timeIntervalSince(lastSync) / 3600
+            return hoursSinceLastSync >= 1.0 // Only sync if more than 1 hour has passed
+        }
+        return true
+    }
+    
+    // Sync only recent HealthKit data
+    private func syncRecentHealthKitData() async {
+        guard !isSyncingHealthKit else { return }
+        
+        isSyncingHealthKit = true
+        defer { 
+            isSyncingHealthKit = false
+            UserDefaults.standard.set(Date(), forKey: "lastHealthKitSyncDate")
+        }
+        
+        do {
+            // Only sync last 7 days from HealthKit
+            try await healthKitManager.syncWeightFromHealthKitIncremental(days: 7)
+            
+            // Reload data after sync
+            let updatedMetrics = fetchAndProcessMetrics(from: nil)
+            await MainActor.run {
+                bodyMetrics = updatedMetrics
+                if !updatedMetrics.isEmpty && selectedIndex >= updatedMetrics.count {
+                    selectedIndex = updatedMetrics.count - 1
+                }
+            }
+        } catch {
+            print("HealthKit sync error: \(error)")
+        }
+    }
+    
+    private func loadBodyMetrics() async {
+        // This method is now replaced by loadCachedDataImmediately and loadBodyMetricsIncrementally
+        // Keeping for backward compatibility if called elsewhere
+        await loadBodyMetricsIncrementally()
+    }
+    
     private func fetchAndProcessMetrics(from startDate: Date?) -> [BodyMetrics] {
-        let metrics = syncManager.fetchLocalBodyMetrics(from: startDate)
-            .sorted { $0.date < $1.date }
+        guard let userId = authManager.currentUser?.id else { return [] }
         
-        // Remove duplicates by date (keep the latest for each date)
+        let cachedMetrics = CoreDataManager.shared.fetchBodyMetrics(for: userId, from: startDate)
+        let metrics = cachedMetrics.map { cached in
+            BodyMetrics(
+                id: cached.id ?? UUID().uuidString,
+                userId: cached.userId ?? "",
+                date: cached.date ?? Date(),
+                weight: cached.weight > 0 ? cached.weight : nil,
+                weightUnit: cached.weightUnit ?? "kg",
+                bodyFatPercentage: cached.bodyFatPercentage > 0 ? cached.bodyFatPercentage : nil,
+                bodyFatMethod: cached.bodyFatMethod,
+                muscleMass: cached.muscleMass > 0 ? cached.muscleMass : nil,
+                boneMass: cached.boneMass > 0 ? cached.boneMass : nil,
+                notes: cached.notes,
+                photoUrl: cached.photoUrl,
+                createdAt: cached.createdAt ?? Date(),
+                updatedAt: cached.updatedAt ?? Date()
+            )
+        }
+        .sorted { $0.date < $1.date }
+        
+        // Only print summary in debug mode
+        #if DEBUG
+        if metrics.count > 100 {
+            print("📊 Fetched \(metrics.count) body metrics from CoreData")
+        }
+        #endif
+        
+        // Remove duplicates more intelligently
         var uniqueMetrics: [BodyMetrics] = []
-        var seenDates = Set<Date>()
+        var processedEntries = Set<String>()
         
-        for metric in metrics.reversed() {
+        // Sort by date and updatedAt to get the most recent version of each entry
+        let sortedMetrics = metrics.sorted { (a, b) in
+            if a.date == b.date {
+                return a.updatedAt > b.updatedAt
+            }
+            return a.date < b.date
+        }
+        
+        for metric in sortedMetrics {
+            // Create a unique key based on date and time (rounded to nearest hour to handle minor time differences)
             let calendar = Calendar.current
-            let dateOnly = calendar.startOfDay(for: metric.date)
-            if !seenDates.contains(dateOnly) {
-                seenDates.insert(dateOnly)
-                uniqueMetrics.insert(metric, at: 0)
+            let components = calendar.dateComponents([.year, .month, .day, .hour], from: metric.date)
+            let roundedDate = calendar.date(from: components) ?? metric.date
+            let uniqueKey = "\(userId)-\(ISO8601DateFormatter().string(from: roundedDate))"
+            
+            if !processedEntries.contains(uniqueKey) {
+                processedEntries.insert(uniqueKey)
+                uniqueMetrics.append(metric)
             }
         }
         
@@ -393,28 +555,34 @@ struct DashboardView: View {
     }
     
     private func syncHealthKitData() async {
-        do {
-            try await healthKitManager.syncWeightFromHealthKit()
-            await loadBodyMetrics()
-        } catch {
-            print("HealthKit sync error: \(error)")
-        }
+        // This method is deprecated - use syncRecentHealthKitData instead
+        await syncRecentHealthKitData()
     }
     
     private func refreshData() async {
         isRefreshing = true
-        hasLoadedFullHistory = false
         
+        // Only sync recent data from HealthKit on manual refresh
         if healthKitManager.isAuthorized && healthKitSyncEnabled {
-            await syncHealthKitData()
+            await syncRecentHealthKitData()
         }
         
-        syncManager.syncAll()
-        await loadBodyMetrics()
+        // Sync with Supabase
+        realtimeSync.syncAll()
         
+        // Wait a bit for sync to complete
         try? await Task.sleep(nanoseconds: 500_000_000)
         
+        // Reload data from cache
+        let updatedMetrics = fetchAndProcessMetrics(from: nil)
+        
         await MainActor.run {
+            if !updatedMetrics.isEmpty {
+                bodyMetrics = updatedMetrics
+                if selectedIndex >= updatedMetrics.count {
+                    selectedIndex = updatedMetrics.count - 1
+                }
+            }
             isRefreshing = false
         }
     }

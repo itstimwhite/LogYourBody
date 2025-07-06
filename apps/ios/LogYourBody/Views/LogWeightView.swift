@@ -375,6 +375,7 @@ struct LogWeightView: View {
                     muscleMass: nil,
                     boneMass: nil,
                     notes: nil,
+                    photoUrl: nil,
                     createdAt: Date(),
                     updatedAt: Date()
                 )

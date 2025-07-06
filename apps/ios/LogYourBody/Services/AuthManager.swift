@@ -144,6 +144,7 @@ class AuthManager: NSObject, ObservableObject {
         var firstName: String?
         var lastName: String?
         var username: String?
+        var imageUrl: String?
         
         for child in mirror.children {
             switch child.label {
@@ -157,6 +158,8 @@ class AuthManager: NSObject, ObservableObject {
                 lastName = child.value as? String
             case "username":
                 username = child.value as? String
+            case "imageUrl":
+                imageUrl = child.value as? String
             default:
                 break
             }
@@ -192,6 +195,7 @@ class AuthManager: NSObject, ObservableObject {
             id: userId,
             email: email,
             name: displayName.isEmpty ? email.components(separatedBy: "@").first ?? "User" : displayName,
+            avatarUrl: imageUrl,
             profile: UserProfile(
                 id: userId,
                 email: email,
@@ -217,11 +221,10 @@ class AuthManager: NSObject, ObservableObject {
         
         print("✅ Updated local user: \(email)")
         
-        // TODO: Load full profile from Supabase when API is ready
-        // Disabled to prevent repeated failed API calls
-        // Task {
-        //     await self.loadUserProfile(userId: userId)
-        // }
+        // Create or update profile in Supabase
+        Task {
+            await self.createOrUpdateSupabaseProfile(user: localUser)
+        }
     }
     
     func login(email: String, password: String) async throws {
@@ -234,6 +237,7 @@ class AuthManager: NSObject, ObservableObject {
                 id: "mock_user_123",
                 email: email,
                 name: "Test User",
+                avatarUrl: nil,
                 profile: UserProfile(
                     id: "mock_user_123",
                     email: email,
@@ -289,6 +293,7 @@ class AuthManager: NSObject, ObservableObject {
                 id: "mock_user_123",
                 email: email,
                 name: name.isEmpty ? "Test User" : name,
+                avatarUrl: nil,
                 profile: UserProfile(
                     id: "mock_user_123",
                     email: email,
@@ -385,6 +390,7 @@ class AuthManager: NSObject, ObservableObject {
                     id: profile.id,
                     email: profile.email,
                     name: profile.fullName,
+                    avatarUrl: profile.avatarUrl,
                     profile: UserProfile(
                         id: profile.id,
                         email: profile.email,
@@ -683,6 +689,293 @@ class AuthManager: NSObject, ObservableObject {
         // In production, you'd want to exchange the Clerk token for a Supabase token
         // through your backend API
         return Constants.supabaseAnonKey
+    }
+    
+    // MARK: - Supabase Profile Sync
+    
+    private func createOrUpdateSupabaseProfile(user: LocalUser) async {
+        guard let session = clerkSession else {
+            print("❌ No Clerk session available for profile sync")
+            return
+        }
+        
+        do {
+            // Get JWT token from Clerk
+            let tokenResource = try await session.getToken()
+            guard let token = tokenResource?.jwt else {
+                print("❌ Failed to get JWT token for profile sync")
+                return
+            }
+            
+            // Prepare profile data
+            let profileData: [String: Any] = [
+                "id": user.id,
+                "email": user.email,
+                "name": user.name ?? NSNull(),
+                "avatar_url": user.avatarUrl ?? NSNull(),
+                "date_of_birth": user.profile?.dateOfBirth != nil ? ISO8601DateFormatter().string(from: user.profile!.dateOfBirth!) : NSNull(),
+                "gender": user.profile?.gender ?? NSNull(),
+                "weight_unit": user.profile?.goalWeightUnit ?? "kg",
+                "height_unit": user.profile?.heightUnit ?? "cm",
+                "height": user.profile?.height ?? NSNull(),
+                "activity_level": user.profile?.activityLevel ?? NSNull(),
+                "goal": user.profile?.goalWeight != nil ? "\(user.profile!.goalWeight!)" : NSNull(),
+                "onboarding_completed": user.onboardingCompleted,
+                "updated_at": ISO8601DateFormatter().string(from: Date())
+            ]
+            
+            // Create/update profile in Supabase
+            let url = URL(string: "\(Constants.supabaseURL)/rest/v1/profiles")!
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue(Constants.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("resolution=merge-duplicates", forHTTPHeaderField: "Prefer")
+            
+            let jsonData = try JSONSerialization.data(withJSONObject: [profileData])
+            request.httpBody = jsonData
+            
+            let (_, response) = try await URLSession.shared.data(for: request)
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                if (200...299).contains(httpResponse.statusCode) {
+                    print("✅ Profile synced to Supabase")
+                } else {
+                    print("❌ Profile sync failed: Status \(httpResponse.statusCode)")
+                }
+            }
+        } catch {
+            print("❌ Profile sync error: \(error)")
+        }
+    }
+    
+    func updateProfile(_ updates: [String: Any]) async {
+        guard var user = currentUser else { return }
+        
+        // Create a mutable copy of the profile or create a new one if it doesn't exist
+        var updatedProfile = user.profile ?? UserProfile(
+            id: user.id,
+            email: user.email,
+            username: nil,
+            fullName: user.name,
+            dateOfBirth: nil,
+            height: nil,
+            heightUnit: "cm",
+            gender: nil,
+            activityLevel: nil,
+            goalWeight: nil,
+            goalWeightUnit: "kg"
+        )
+        
+        // Update local user object
+        if let name = updates["name"] as? String {
+            user.name = name
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                username: updatedProfile.username,
+                fullName: name,
+                dateOfBirth: updatedProfile.dateOfBirth,
+                height: updatedProfile.height,
+                heightUnit: updatedProfile.heightUnit,
+                gender: updatedProfile.gender,
+                activityLevel: updatedProfile.activityLevel,
+                goalWeight: updatedProfile.goalWeight,
+                goalWeightUnit: updatedProfile.goalWeightUnit
+            )
+        }
+        
+        if let dateOfBirth = updates["dateOfBirth"] as? Date {
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                username: updatedProfile.username,
+                fullName: updatedProfile.fullName,
+                dateOfBirth: dateOfBirth,
+                height: updatedProfile.height,
+                heightUnit: updatedProfile.heightUnit,
+                gender: updatedProfile.gender,
+                activityLevel: updatedProfile.activityLevel,
+                goalWeight: updatedProfile.goalWeight,
+                goalWeightUnit: updatedProfile.goalWeightUnit
+            )
+        }
+        
+        if let gender = updates["gender"] as? String {
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                username: updatedProfile.username,
+                fullName: updatedProfile.fullName,
+                dateOfBirth: updatedProfile.dateOfBirth,
+                height: updatedProfile.height,
+                heightUnit: updatedProfile.heightUnit,
+                gender: gender,
+                activityLevel: updatedProfile.activityLevel,
+                goalWeight: updatedProfile.goalWeight,
+                goalWeightUnit: updatedProfile.goalWeightUnit
+            )
+        }
+        
+        if let height = updates["height"] as? Double {
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                username: updatedProfile.username,
+                fullName: updatedProfile.fullName,
+                dateOfBirth: updatedProfile.dateOfBirth,
+                height: height,
+                heightUnit: updatedProfile.heightUnit,
+                gender: updatedProfile.gender,
+                activityLevel: updatedProfile.activityLevel,
+                goalWeight: updatedProfile.goalWeight,
+                goalWeightUnit: updatedProfile.goalWeightUnit
+            )
+        }
+        
+        if let heightUnit = updates["heightUnit"] as? String {
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                username: updatedProfile.username,
+                fullName: updatedProfile.fullName,
+                dateOfBirth: updatedProfile.dateOfBirth,
+                height: updatedProfile.height,
+                heightUnit: heightUnit,
+                gender: updatedProfile.gender,
+                activityLevel: updatedProfile.activityLevel,
+                goalWeight: updatedProfile.goalWeight,
+                goalWeightUnit: updatedProfile.goalWeightUnit
+            )
+        }
+        
+        if let activityLevel = updates["activityLevel"] as? String {
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                username: updatedProfile.username,
+                fullName: updatedProfile.fullName,
+                dateOfBirth: updatedProfile.dateOfBirth,
+                height: updatedProfile.height,
+                heightUnit: updatedProfile.heightUnit,
+                gender: updatedProfile.gender,
+                activityLevel: activityLevel,
+                goalWeight: updatedProfile.goalWeight,
+                goalWeightUnit: updatedProfile.goalWeightUnit
+            )
+        }
+        
+        if let goalWeight = updates["goalWeight"] as? Double {
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                username: updatedProfile.username,
+                fullName: updatedProfile.fullName,
+                dateOfBirth: updatedProfile.dateOfBirth,
+                height: updatedProfile.height,
+                heightUnit: updatedProfile.heightUnit,
+                gender: updatedProfile.gender,
+                activityLevel: updatedProfile.activityLevel,
+                goalWeight: goalWeight,
+                goalWeightUnit: updatedProfile.goalWeightUnit
+            )
+        }
+        
+        if let goalWeightUnit = updates["goalWeightUnit"] as? String {
+            updatedProfile = UserProfile(
+                id: updatedProfile.id,
+                email: updatedProfile.email,
+                username: updatedProfile.username,
+                fullName: updatedProfile.fullName,
+                dateOfBirth: updatedProfile.dateOfBirth,
+                height: updatedProfile.height,
+                heightUnit: updatedProfile.heightUnit,
+                gender: updatedProfile.gender,
+                activityLevel: updatedProfile.activityLevel,
+                goalWeight: updatedProfile.goalWeight,
+                goalWeightUnit: goalWeightUnit
+            )
+        }
+        
+        // Update the user's profile
+        user.profile = updatedProfile
+        
+        if let onboardingCompleted = updates["onboardingCompleted"] as? Bool {
+            user.onboardingCompleted = onboardingCompleted
+        }
+        
+        // Save updated user locally
+        self.currentUser = user
+        if let encoded = try? JSONEncoder().encode(user) {
+            userDefaults.set(encoded, forKey: userKey)
+        }
+        
+        // Sync to Supabase
+        await createOrUpdateSupabaseProfile(user: user)
+    }
+    
+    // MARK: - Profile Picture Upload
+    
+    func uploadProfilePicture(_ image: UIImage) async throws -> String? {
+        guard let clerkUser = clerk.user else {
+            throw AuthError.clerkNotInitialized
+        }
+        
+        // Resize image to reasonable size (max 1000x1000)
+        let maxSize: CGFloat = 1000
+        let scale = min(maxSize / image.size.width, maxSize / image.size.height)
+        let newSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
+        
+        UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
+        image.draw(in: CGRect(origin: .zero, size: newSize))
+        let resizedImage = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        guard let imageData = resizedImage?.jpegData(compressionQuality: 0.8) else {
+            return nil
+        }
+        
+        // Update Clerk user profile with image
+        do {
+            // Use Clerk's setProfileImage method
+            let imageResource = try await clerkUser.setProfileImage(imageData: imageData)
+            
+            print("✅ Profile image uploaded: \(imageResource.id)")
+            
+            // Get updated user object
+            let updatedClerkUser = clerk.user
+            
+            // Update local user with new image URL
+            if var user = currentUser, let updatedClerkUser = updatedClerkUser {
+                // Use Mirror to get imageUrl from Clerk user
+                let mirror = Mirror(reflecting: updatedClerkUser)
+                for child in mirror.children {
+                    if child.label == "imageUrl" {
+                        if let newImageUrl = child.value as? String {
+                            user.avatarUrl = newImageUrl
+                            self.currentUser = user
+                            
+                            // Save locally
+                            if let encoded = try? JSONEncoder().encode(user) {
+                                userDefaults.set(encoded, forKey: userKey)
+                            }
+                            
+                            // Sync to Supabase
+                            await createOrUpdateSupabaseProfile(user: user)
+                            
+                            return newImageUrl
+                        }
+                        break
+                    }
+                }
+            }
+        } catch {
+            print("❌ Failed to upload profile picture: \(error)")
+            throw error
+        }
+        
+        return nil
     }
 }
 

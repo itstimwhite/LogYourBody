@@ -9,9 +9,15 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var authManager: AuthManager
-    @StateObject private var loadingManager = LoadingManager(authManager: AuthManager.shared)
+    @StateObject private var loadingManager: LoadingManager
     @State private var hasCompletedOnboarding = false
     @State private var isLoadingComplete = false
+    
+    init() {
+        // We need to initialize LoadingManager with a temporary AuthManager
+        // The actual authManager will be injected from environment
+        _loadingManager = StateObject(wrappedValue: LoadingManager(authManager: AuthManager.shared))
+    }
     
     var body: some View {
         ZStack {

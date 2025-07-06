@@ -144,6 +144,15 @@ class HealthKitManager: ObservableObject {
         let endDate = Date()
         let startDate = Calendar.current.date(byAdding: .day, value: -days, to: endDate)!
         
+        return try await fetchWeightHistoryInRange(startDate: startDate, endDate: endDate)
+    }
+    
+    // New function to fetch weight history in a specific date range
+    func fetchWeightHistoryInRange(startDate: Date, endDate: Date) async throws -> [(weight: Double, date: Date)] {
+        guard isAuthorized else {
+            throw HealthKitError.notAuthorized
+        }
+        
         let predicate = HKQuery.predicateForSamples(
             withStart: startDate,
             end: endDate,
@@ -514,7 +523,7 @@ class HealthKitManager: ObservableObject {
         }
     }
     
-    // Sync weight and body fat data from HealthKit to app (immediate 7-day sync)
+    // Sync ALL weight and body fat data from HealthKit to app
     func syncWeightFromHealthKit() async throws {
         // Prevent concurrent syncs
         guard !isSyncingWeight else {
@@ -522,90 +531,54 @@ class HealthKitManager: ObservableObject {
             return
         }
         
+        print("📊 Starting comprehensive weight sync from HealthKit...")
         isSyncingWeight = true
-        defer { isSyncingWeight = false }
+        defer { 
+            isSyncingWeight = false
+            print("✅ Weight sync completed")
+        }
         
-        // Fetch weight data for the last 7 days
+        // First, do a quick sync of recent data (last 30 days) for immediate UI update
         let endDate = Date()
-        let startDate = Calendar.current.date(byAdding: .day, value: -7, to: endDate)!
+        let recentStartDate = Calendar.current.date(byAdding: .day, value: -30, to: endDate)!
         
-        // Fetch weight and body fat data
-        let weightHistory = try await fetchWeightHistory(days: 7)
-        let bodyFatHistory = try await fetchBodyFatHistory(startDate: startDate)
+        print("📅 Phase 1: Fetching recent data (30 days)")
         
-        // Create a dictionary of body fat data by date for easy lookup
-        var bodyFatByDate: [Date: Double] = [:]
-        for (percentage, date) in bodyFatHistory {
-            let normalizedDate = Calendar.current.startOfDay(for: date)
-            bodyFatByDate[normalizedDate] = percentage
-        }
+        // Fetch recent weight and body fat data
+        let recentWeightHistory = try await fetchWeightHistory(days: 30)
+        let recentBodyFatHistory = try await fetchBodyFatHistory(startDate: recentStartDate)
         
-        // Process weight entries and match with body fat if available
-        for (weight, date) in weightHistory {
-            // Check if this entry already exists (by date)
-            let exists = await MainActor.run {
-                SyncManager.shared.weightEntryExists(for: date)
-            }
-            
-            if !exists {
-                // Check if we have body fat data for the same day
-                let normalizedDate = Calendar.current.startOfDay(for: date)
-                let bodyFatPercentage = bodyFatByDate[normalizedDate]
-                
-                // Create body metrics with both weight and body fat
-                let metrics = BodyMetrics(
-                    id: UUID().uuidString,
-                    userId: "", // Will be filled by SyncManager
-                    date: date,
-                    weight: weight,  // Already in kg from fetchWeightHistory
-                    weightUnit: "kg",  // Always store in kg
-                    bodyFatPercentage: bodyFatPercentage,
-                    bodyFatMethod: bodyFatPercentage != nil ? "HealthKit" : nil,
-                    muscleMass: nil,
-                    boneMass: nil,
-                    notes: "Imported from HealthKit",
-                    createdAt: Date(),
-                    updatedAt: Date()
-                )
-                
-                // Save to local storage and sync to backend
-                try await saveBodyMetrics(metrics)
+        print("📈 Found \(recentWeightHistory.count) weight entries and \(recentBodyFatHistory.count) body fat entries")
+        
+        if !recentWeightHistory.isEmpty {
+            print("  📅 Weight entries date range: \(recentWeightHistory.first?.date ?? Date()) to \(recentWeightHistory.last?.date ?? Date())")
+            for (index, (weight, date)) in recentWeightHistory.enumerated() {
+                if index < 5 {  // Show first 5 entries
+                    print("    - \(date): \(weight)kg")
+                }
             }
         }
         
-        // Also check for standalone body fat entries (without weight)
-        for (percentage, date) in bodyFatHistory {
-            let normalizedDate = Calendar.current.startOfDay(for: date)
-            
-            // Check if we already processed this with weight data
-            let alreadyProcessed = weightHistory.contains { _, weightDate in
-                Calendar.current.startOfDay(for: weightDate) == normalizedDate
-            }
-            
-            if !alreadyProcessed {
-                let exists = await MainActor.run {
-                    SyncManager.shared.dailyMetricsExists(for: date)
-                }
-                
-                if !exists {
-                    // Create body metrics with just body fat
-                    let metrics = BodyMetrics(
-                        id: UUID().uuidString,
-                        userId: "", // Will be filled by SyncManager
-                        date: date,
-                        weight: nil,
-                        weightUnit: nil,
-                        bodyFatPercentage: percentage,
-                        bodyFatMethod: "HealthKit",
-                        muscleMass: nil,
-                        boneMass: nil,
-                        notes: "Body fat imported from HealthKit",
-                        createdAt: Date(),
-                        updatedAt: Date()
-                    )
-                    
-                    try await saveBodyMetrics(metrics)
-                }
+        // Process recent data for immediate UI update
+        let (imported, skipped) = await processBatchHealthKitData(
+            weightHistory: recentWeightHistory,
+            bodyFatHistory: recentBodyFatHistory
+        )
+        
+        print("📊 Recent sync: \(imported) imported, \(skipped) skipped")
+        
+        // Only trigger full historical sync if this is truly the first time and we have very little data
+        let hasPerformedFullSync = UserDefaults.standard.bool(forKey: "hasPerformedFullHealthKitSync")
+        let totalCachedEntries = await MainActor.run {
+            guard let userId = AuthManager.shared.currentUser?.id else { return 0 }
+            return CoreDataManager.shared.fetchBodyMetrics(for: userId).count
+        }
+        
+        if !hasPerformedFullSync && imported > 0 && totalCachedEntries < 10 {
+            print("📊 First time sync detected (only \(totalCachedEntries) cached entries), scheduling full historical sync...")
+            Task.detached(priority: .background) {
+                await self.syncAllHistoricalHealthKitData()
+                UserDefaults.standard.set(true, forKey: "hasPerformedFullHealthKitSync")
             }
         }
     }
@@ -618,11 +591,17 @@ class HealthKitManager: ObservableObject {
             return
         }
         
+        print("📊 Starting incremental weight sync from HealthKit (\(days) days)...")
         isSyncingWeight = true
-        defer { isSyncingWeight = false }
+        defer { 
+            isSyncingWeight = false
+            print("✅ Incremental weight sync completed")
+        }
         
         let endDate = startDate ?? Date()
         let batchStartDate = Calendar.current.date(byAdding: .day, value: -days, to: endDate)!
+        
+        print("📅 Fetching data from \(batchStartDate) to \(endDate)")
         
         // Fetch weight and body fat data for the specified period
         // Calculate days between dates
@@ -632,6 +611,17 @@ class HealthKitManager: ObservableObject {
         let bodyFatHistory = try await fetchBodyFatHistory(startDate: batchStartDate)
             .filter { $0.date <= endDate }
         
+        print("📈 Found \(weightHistory.count) weight entries and \(bodyFatHistory.count) body fat entries")
+        
+        if !weightHistory.isEmpty {
+            print("  📅 Weight entries date range: \(weightHistory.first?.date ?? Date()) to \(weightHistory.last?.date ?? Date())")
+            for (index, (weight, date)) in weightHistory.enumerated() {
+                if index < 5 {  // Show first 5 entries
+                    print("    - \(date): \(weight)kg")
+                }
+            }
+        }
+        
         // Create a dictionary of body fat data by date for easy lookup
         var bodyFatByDate: [Date: Double] = [:]
         for (percentage, date) in bodyFatHistory {
@@ -640,6 +630,9 @@ class HealthKitManager: ObservableObject {
         }
         
         // Process weight entries and match with body fat if available
+        var newEntriesCount = 0
+        var skippedEntriesCount = 0
+        
         for (weight, date) in weightHistory {
             // Check if this entry already exists (by date)
             let exists = await MainActor.run {
@@ -647,6 +640,7 @@ class HealthKitManager: ObservableObject {
             }
             
             if !exists {
+                newEntriesCount += 1
                 // Check if we have body fat data for the same day
                 let normalizedDate = Calendar.current.startOfDay(for: date)
                 let bodyFatPercentage = bodyFatByDate[normalizedDate]
@@ -663,6 +657,7 @@ class HealthKitManager: ObservableObject {
                     muscleMass: nil,
                     boneMass: nil,
                     notes: "Imported from HealthKit (incremental)",
+                    photoUrl: nil,
                     createdAt: Date(),
                     updatedAt: Date()
                 )
@@ -699,6 +694,7 @@ class HealthKitManager: ObservableObject {
                         muscleMass: nil,
                         boneMass: nil,
                         notes: "Body fat imported from HealthKit (incremental)",
+                        photoUrl: nil,
                         createdAt: Date(),
                         updatedAt: Date()
                     )
@@ -707,6 +703,166 @@ class HealthKitManager: ObservableObject {
                 }
             }
         }
+    }
+    
+    // Sync ALL historical HealthKit data efficiently
+    func syncAllHistoricalHealthKitData() async {
+        print("📊 Starting full historical HealthKit sync...")
+        
+        do {
+            // Get the earliest available weight data date
+            let earliestDate = try await getEarliestWeightDate() ?? Date().addingTimeInterval(-10 * 365 * 24 * 60 * 60) // Default to 10 years ago
+            let endDate = Date()
+            
+            print("📅 Syncing data from \(earliestDate) to \(endDate)")
+            
+            // Process in monthly batches to avoid memory issues
+            var currentDate = earliestDate
+            var totalImported = 0
+            var totalSkipped = 0
+            
+            while currentDate < endDate {
+                let batchEndDate = Calendar.current.date(byAdding: .month, value: 1, to: currentDate) ?? endDate
+                let actualBatchEndDate = min(batchEndDate, endDate)
+                
+                print("📦 Processing batch: \(currentDate) to \(actualBatchEndDate)")
+                
+                // Fetch weight and body fat data for this month
+                let weightBatch = try await fetchWeightHistoryInRange(startDate: currentDate, endDate: actualBatchEndDate)
+                let bodyFatBatch = try await fetchBodyFatHistory(startDate: currentDate)
+                    .filter { $0.date < actualBatchEndDate }
+                
+                // Process this batch
+                let (imported, skipped) = await processBatchHealthKitData(
+                    weightHistory: weightBatch,
+                    bodyFatHistory: bodyFatBatch
+                )
+                
+                totalImported += imported
+                totalSkipped += skipped
+                
+                // Move to next month
+                currentDate = actualBatchEndDate
+                
+                // Small delay to avoid overwhelming the system
+                try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+            }
+            
+            print("✅ Historical sync completed: \(totalImported) imported, \(totalSkipped) skipped")
+            
+        } catch {
+            print("❌ Historical sync error: \(error)")
+        }
+    }
+    
+    // Get the earliest weight entry date from HealthKit
+    private func getEarliestWeightDate() async throws -> Date? {
+        return try await withCheckedThrowingContinuation { continuation in
+            let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
+            
+            let query = HKSampleQuery(
+                sampleType: weightType,
+                predicate: nil,
+                limit: 1,
+                sortDescriptors: [sortDescriptor]
+            ) { query, samples, error in
+                if let error = error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+                
+                if let sample = samples?.first as? HKQuantitySample {
+                    continuation.resume(returning: sample.startDate)
+                } else {
+                    continuation.resume(returning: nil)
+                }
+            }
+            
+            healthStore.execute(query)
+        }
+    }
+    
+    // Process a batch of HealthKit data and return (imported, skipped) counts
+    private func processBatchHealthKitData(
+        weightHistory: [(weight: Double, date: Date)],
+        bodyFatHistory: [(percentage: Double, date: Date)]
+    ) async -> (imported: Int, skipped: Int) {
+        var imported = 0
+        var skipped = 0
+        
+        // Create a dictionary of body fat data by date
+        var bodyFatByDate: [Date: Double] = [:]
+        for (percentage, date) in bodyFatHistory {
+            let normalizedDate = Calendar.current.startOfDay(for: date)
+            bodyFatByDate[normalizedDate] = percentage
+        }
+        
+        // Get existing entries for this date range to check for duplicates
+        guard let userId = await MainActor.run(body: { AuthManager.shared.currentUser?.id }) else {
+            return (0, 0)
+        }
+        
+        let dateRange = weightHistory.map { $0.date } + bodyFatHistory.map { $0.date }
+        let minDate = dateRange.min() ?? Date()
+        let maxDate = dateRange.max() ?? Date()
+        
+        let existingMetrics = await MainActor.run {
+            CoreDataManager.shared.fetchBodyMetrics(for: userId, from: minDate, to: maxDate)
+        }
+        
+        // Create a set of existing entries by date and hour for efficient lookup
+        var existingEntriesByHour = Set<String>()
+        for metric in existingMetrics {
+            if let date = metric.date {
+                let calendar = Calendar.current
+                let components = calendar.dateComponents([.year, .month, .day, .hour], from: date)
+                if let roundedDate = calendar.date(from: components) {
+                    let key = ISO8601DateFormatter().string(from: roundedDate)
+                    existingEntriesByHour.insert(key)
+                }
+            }
+        }
+        
+        for (weight, date) in weightHistory {
+            // Check if entry exists within the same hour
+            let calendar = Calendar.current
+            let components = calendar.dateComponents([.year, .month, .day, .hour], from: date)
+            let roundedDate = calendar.date(from: components) ?? date
+            let hourKey = ISO8601DateFormatter().string(from: roundedDate)
+            
+            if !existingEntriesByHour.contains(hourKey) {
+                let normalizedDate = calendar.startOfDay(for: date)
+                let bodyFatPercentage = bodyFatByDate[normalizedDate]
+                
+                let metrics = BodyMetrics(
+                    id: UUID().uuidString,
+                    userId: userId,
+                    date: date,
+                    weight: weight,
+                    weightUnit: "kg",
+                    bodyFatPercentage: bodyFatPercentage,
+                    bodyFatMethod: bodyFatPercentage != nil ? "HealthKit" : nil,
+                    muscleMass: nil,
+                    boneMass: nil,
+                    notes: "Imported from HealthKit",
+                    photoUrl: nil,
+                    createdAt: Date(),
+                    updatedAt: Date()
+                )
+                
+                do {
+                    try await saveBodyMetrics(metrics)
+                    imported += 1
+                    existingEntriesByHour.insert(hourKey) // Add to set to prevent duplicates in same batch
+                } catch {
+                    print("Failed to save entry: \(error)")
+                }
+            } else {
+                skipped += 1
+            }
+        }
+        
+        return (imported, skipped)
     }
     
     // Helper function to save body metrics
@@ -727,13 +883,16 @@ class HealthKitManager: ObservableObject {
             muscleMass: metrics.muscleMass,
             boneMass: metrics.boneMass,
             notes: metrics.notes,
+            photoUrl: metrics.photoUrl,
             createdAt: metrics.createdAt,
             updatedAt: metrics.updatedAt
         )
         
-        // Save through SyncManager
+        // Save to CoreData and let SyncManager handle syncing to Supabase
         await MainActor.run {
-            SyncManager.shared.logBodyMetrics(metricsWithUserId)
+            CoreDataManager.shared.saveBodyMetrics(metricsWithUserId, userId: userId, markAsSynced: false)
+            // Trigger sync to upload to Supabase
+            SyncManager.shared.syncIfNeeded()
         }
     }
     
@@ -760,12 +919,26 @@ class HealthKitManager: ObservableObject {
         
         let query = HKObserverQuery(sampleType: weightType, predicate: nil) { [weak self] query, completionHandler, error in
             if error == nil {
-                // Debounce sync requests to prevent multiple concurrent syncs
-                DispatchQueue.main.async { [weak self] in
-                    self?.syncDebounceTimer?.invalidate()
-                    self?.syncDebounceTimer = Timer.scheduledTimer(withTimeInterval: 2.0, repeats: false) { _ in
-                        Task { [weak self] in
-                            try? await self?.syncWeightFromHealthKit()
+                // Check if we should sync (not more than once per hour)
+                let lastSyncKey = "lastHealthKitObserverSyncDate"
+                let shouldSync: Bool = {
+                    if let lastSync = UserDefaults.standard.object(forKey: lastSyncKey) as? Date {
+                        let minutesSinceLastSync = Date().timeIntervalSince(lastSync) / 60
+                        return minutesSinceLastSync >= 60 // Only sync if more than 60 minutes have passed
+                    }
+                    return true
+                }()
+                
+                if shouldSync {
+                    // Debounce sync requests to prevent multiple concurrent syncs
+                    DispatchQueue.main.async { [weak self] in
+                        self?.syncDebounceTimer?.invalidate()
+                        self?.syncDebounceTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
+                            UserDefaults.standard.set(Date(), forKey: lastSyncKey)
+                            Task { [weak self] in
+                                // Only sync recent data (last 7 days) when observer triggers
+                                try? await self?.syncWeightFromHealthKitIncremental(days: 7)
+                            }
                         }
                     }
                 }

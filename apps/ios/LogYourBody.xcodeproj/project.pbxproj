@@ -56,6 +56,17 @@
 		AD7D30A72E1490810072AA5B /* LogYourBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30A62E1490810072AA5B /* LogYourBodyTests.swift */; };
 		AD7D30B12E1490810072AA5B /* LogYourBodyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30B02E1490810072AA5B /* LogYourBodyUITests.swift */; };
 		AD7D30B32E1490810072AA5B /* LogYourBodyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30B22E1490810072AA5B /* LogYourBodyUITestsLaunchTests.swift */; };
+		AD8552542E19A2A1003552EE /* ProfileSettingsViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552532E19A2A1003552EE /* ProfileSettingsViewV2.swift */; };
+		AD8552562E19A5B5003552EE /* RealtimeSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552552E19A5B5003552EE /* RealtimeSyncManager.swift */; };
+		AD85525E2E19DC01003552EE /* AppVersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85525D2E19DC01003552EE /* AppVersionManager.swift */; };
+		AD8552602E19DC44003552EE /* Changelog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85525F2E19DC44003552EE /* Changelog.swift */; };
+		AD8552622E19DC9C003552EE /* VersionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552612E19DC9C003552EE /* VersionInfo.swift */; };
+		AD8552662E19DCB6003552EE /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552632E19DCB6003552EE /* SyncStatusView.swift */; };
+		AD85526C2E19E4CD003552EE /* VersionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526A2E19E4CD003552EE /* VersionRow.swift */; };
+		AD85526D2E19E4CD003552EE /* WhatsNewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526B2E19E4CD003552EE /* WhatsNewRow.swift */; };
+		AD8552712E19E4DF003552EE /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552702E19E4DF003552EE /* WhatsNewView.swift */; };
+		AD8552722E19E4DF003552EE /* ProfileSettingsViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526E2E19E4DF003552EE /* ProfileSettingsViewV2.swift */; };
+		AD8552732E19E4DF003552EE /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526F2E19E4DF003552EE /* SyncStatusView.swift */; };
 		ADBD69472E14A7B900921A30 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692A2E14A7B900921A30 /* AuthManager.swift */; };
 		ADBD69482E14A7B900921A30 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692C2E14A7B900921A30 /* DashboardView.swift */; };
 		ADBD694A2E14A7B900921A30 /* LogWeightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692E2E14A7B900921A30 /* LogWeightView.swift */; };
@@ -121,7 +132,6 @@
 		AD6A7B8E2E1BE45800678902 /* DailyMetrics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyMetrics.swift; sourceTree = "<group>"; };
 		AD6A7B922E1BE45C00678902 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
 		AD6A7B942E1BE45E00678902 /* SyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncManager.swift; sourceTree = "<group>"; };
-		AD6A7B962E1BE46000678902 /* LogYourBody.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = LogYourBody.xcdatamodel; sourceTree = "<group>"; };
 		AD6F7F9C2E1AE45600678901 /* DailyLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyLog.swift; sourceTree = "<group>"; };
 		AD722F0E2E15FA5A002376C6 /* delete_files.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = delete_files.sh; sourceTree = "<group>"; };
 		AD722F0F2E15FA5A002376C6 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -196,6 +206,17 @@
 		AD7D30AC2E1490810072AA5B /* LogYourBodyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LogYourBodyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		AD7D30B02E1490810072AA5B /* LogYourBodyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogYourBodyUITests.swift; sourceTree = "<group>"; };
 		AD7D30B22E1490810072AA5B /* LogYourBodyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogYourBodyUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		AD8552532E19A2A1003552EE /* ProfileSettingsViewV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsViewV2.swift; sourceTree = "<group>"; };
+		AD8552552E19A5B5003552EE /* RealtimeSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeSyncManager.swift; sourceTree = "<group>"; };
+		AD85525D2E19DC01003552EE /* AppVersionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersionManager.swift; sourceTree = "<group>"; };
+		AD85525F2E19DC44003552EE /* Changelog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Changelog.swift; sourceTree = "<group>"; };
+		AD8552612E19DC9C003552EE /* VersionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionInfo.swift; sourceTree = "<group>"; };
+		AD8552632E19DCB6003552EE /* SyncStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusView.swift; sourceTree = "<group>"; };
+		AD85526A2E19E4CD003552EE /* VersionRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VersionRow.swift; sourceTree = "<group>"; };
+		AD85526B2E19E4CD003552EE /* WhatsNewRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewRow.swift; sourceTree = "<group>"; };
+		AD85526E2E19E4DF003552EE /* ProfileSettingsViewV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsViewV2.swift; sourceTree = "<group>"; };
+		AD85526F2E19E4DF003552EE /* SyncStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusView.swift; sourceTree = "<group>"; };
+		AD8552702E19E4DF003552EE /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
 		AD857D532E15EE7B00A6B57A /* SupabaseDataClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupabaseDataClient.swift; sourceTree = "<group>"; };
 		AD99F2982E1491FA00F5ECE4 /* AuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthManager.swift; path = Services/AuthManager.swift; sourceTree = "<group>"; };
 		AD99F29A2E14921400F5ECE4 /* LogWeightView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogWeightView.swift; path = LogYourBody/Views/LogWeightView.swift; sourceTree = "<group>"; };
@@ -316,6 +337,7 @@
 		AD723ADC2E15FA5C002376C6 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				AD85525F2E19DC44003552EE /* Changelog.swift */,
 				AD723AD52E15FA5C002376C6 /* BodyMetrics.swift */,
 				AD723AD62E15FA5C002376C6 /* DailyLog.swift */,
 				AD723AD72E15FA5C002376C6 /* DailyMetrics.swift */,
@@ -363,6 +385,8 @@
 		AD723AED2E15FA5C002376C6 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AD85525D2E19DC01003552EE /* AppVersionManager.swift */,
+				AD8552552E19A5B5003552EE /* RealtimeSyncManager.swift */,
 				ADFC6A232E187717004FCE40 /* SupabaseManager.swift */,
 				AD723AE42E15FA5C002376C6 /* AuthManager.swift */,
 				AD723AE62E15FA5C002376C6 /* CoreDataManager.swift */,
@@ -377,6 +401,7 @@
 		AD723AF02E15FA5C002376C6 /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				AD8552612E19DC9C003552EE /* VersionInfo.swift */,
 				AD723AEE2E15FA5C002376C6 /* Configuration.swift */,
 				AD723AEF2E15FA5C002376C6 /* Constants.swift */,
 			);
@@ -407,9 +432,11 @@
 		AD723B0A2E15FA5C002376C6 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AD8552532E19A2A1003552EE /* ProfileSettingsViewV2.swift */,
 				AD723AFB2E15FA5C002376C6 /* Onboarding */,
 				AD723AFC2E15FA5C002376C6 /* AppleSignInButton.swift */,
 				AD723AFD2E15FA5C002376C6 /* DashboardView.swift */,
+				AD8552632E19DCB6003552EE /* SyncStatusView.swift */,
 				AD723AFE2E15FA5C002376C6 /* DeleteAccountView.swift */,
 				AD723AFF2E15FA5C002376C6 /* EmailVerificationView.swift */,
 				AD723B002E15FA5C002376C6 /* ExportDataView.swift */,
@@ -563,6 +590,11 @@
 				AD7B8C992E1CE56600789012 /* LoadingView.swift */,
 				ADBD692D2E14A7B900921A30 /* LoginView.swift */,
 				ADBD692E2E14A7B900921A30 /* LogWeightView.swift */,
+				AD85526E2E19E4DF003552EE /* ProfileSettingsViewV2.swift */,
+				AD85526F2E19E4DF003552EE /* SyncStatusView.swift */,
+				AD8552702E19E4DF003552EE /* WhatsNewView.swift */,
+				AD85526A2E19E4CD003552EE /* VersionRow.swift */,
+				AD85526B2E19E4CD003552EE /* WhatsNewRow.swift */,
 				ADBD692F2E14A7B900921A30 /* MainTabView.swift */,
 				AD4F5E7A2E18C23400456789 /* PreferencesView.swift */,
 				AD5F6E8B2E19D34500567890 /* ProfileSettingsView.swift */,
@@ -812,10 +844,12 @@
 				AD7243482E15FA5E002376C6 /* WelcomeStepView.swift in Sources */,
 				ADFC6A1F2E185913004FCE40 /* NameInputView.swift in Sources */,
 				AD7243462E15FA5E002376C6 /* OnboardingContainerView.swift in Sources */,
+				AD85525E2E19DC01003552EE /* AppVersionManager.swift in Sources */,
 				AD7243522E15FA5E002376C6 /* MainTabView.swift in Sources */,
 				ADBD69502E14A7B900921A30 /* Constants.swift in Sources */,
 				AD7243392E15FA5D002376C6 /* LoadingManager.swift in Sources */,
 				ADBD69482E14A7B900921A30 /* DashboardView.swift in Sources */,
+				AD8552602E19DC44003552EE /* Changelog.swift in Sources */,
 				ADBD69532E14A7B900921A30 /* View+Styles.swift in Sources */,
 				ADBD69522E14A7B900921A30 /* Font+Custom.swift in Sources */,
 				ADBD69512E14A7B900921A30 /* Color+Theme.swift in Sources */,
@@ -831,6 +865,8 @@
 				AD7D30962E14907F0072AA5B /* LogYourBodyApp.swift in Sources */,
 				AD7243452E15FA5E002376C6 /* NotificationsStepView.swift in Sources */,
 				ADFC6A262E188F96004FCE40 /* OTPInputView.swift in Sources */,
+				AD85526C2E19E4CD003552EE /* VersionRow.swift in Sources */,
+				AD85526D2E19E4CD003552EE /* WhatsNewRow.swift in Sources */,
 				ADBD69472E14A7B900921A30 /* AuthManager.swift in Sources */,
 				AD72432E2E15FA5D002376C6 /* LogYourBody.xcdatamodeld in Sources */,
 				AD72432D2E15FA5D002376C6 /* DailyMetrics.swift in Sources */,
@@ -842,21 +878,28 @@
 				ADF287A72E14AC6300198D6F /* AppleSignInButton.swift in Sources */,
 				AD72432B2E15FA5D002376C6 /* BodyMetrics.swift in Sources */,
 				AD1B2C462E15A00A00123456 /* OnboardingData.swift in Sources */,
+				AD8552712E19E4DF003552EE /* WhatsNewView.swift in Sources */,
+				AD8552722E19E4DF003552EE /* ProfileSettingsViewV2.swift in Sources */,
+				AD8552732E19E4DF003552EE /* SyncStatusView.swift in Sources */,
 				AD1B2C472E15A00B00123456 /* OnboardingViewModel.swift in Sources */,
 				AD7243442E15FA5E002376C6 /* HealthKitStepView.swift in Sources */,
 				ADFC6A212E185913004FCE40 /* DateOfBirthInputView.swift in Sources */,
 				AD72434F2E15FA5E002376C6 /* LoadingView.swift in Sources */,
+				AD8552542E19A2A1003552EE /* ProfileSettingsViewV2.swift in Sources */,
 				AD72434B2E15FA5E002376C6 /* DeleteAccountView.swift in Sources */,
 				ADFC6A0E2E1858A3004FCE40 /* NotificationsStepView.swift in Sources */,
 				ADFC6A222E185913004FCE40 /* HeightInputView.swift in Sources */,
 				ADFC6A122E1858A3004FCE40 /* HealthKitStepView.swift in Sources */,
 				ADFC6A162E1858A3004FCE40 /* WelcomeStepView.swift in Sources */,
+				AD8552622E19DC9C003552EE /* VersionInfo.swift in Sources */,
 				ADFC6A182E1858A3004FCE40 /* CompletionStepView.swift in Sources */,
 				ADFC6A1A2E1858A3004FCE40 /* OnboardingContainerView.swift in Sources */,
 				ADFC6A242E187717004FCE40 /* SupabaseManager.swift in Sources */,
+				AD8552662E19DCB6003552EE /* SyncStatusView.swift in Sources */,
 				AD72433E2E15FA5E002376C6 /* Configuration.swift in Sources */,
 				AD2C3D5F2E16B10A00234567 /* HealthKitManager.swift in Sources */,
 				AD4F5E7B2E18C23500456789 /* PreferencesView.swift in Sources */,
+				AD8552562E19A5B5003552EE /* RealtimeSyncManager.swift in Sources */,
 				AD6F7F9D2E1AE45700678901 /* DailyLog.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1037,7 +1080,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBody;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1070,7 +1113,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBody;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1226,7 +1269,6 @@
 				AD723B142E15FA5C002376C6 /* LogYourBody.xcdatamodel */,
 			);
 			currentVersion = AD723B142E15FA5C002376C6 /* LogYourBody.xcdatamodel */;
-			name = LogYourBody.xcdatamodeld;
 			path = LogYourBody.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

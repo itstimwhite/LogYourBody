@@ -131,6 +131,8 @@ enum SupabaseError: LocalizedError {
     case networkError
     case unauthorized
     case httpError(Int)
+    case requestFailed
+    case invalidData
     
     var errorDescription: String? {
         switch self {
@@ -146,6 +148,10 @@ enum SupabaseError: LocalizedError {
             return "Unauthorized access"
         case .httpError(let code):
             return "Server error: \(code)"
+        case .requestFailed:
+            return "Request failed"
+        case .invalidData:
+            return "Invalid data"
         }
     }
 }

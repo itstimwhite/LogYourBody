@@ -11,6 +11,7 @@ struct BodyMetrics: Identifiable, Codable {
     let muscleMass: Double?
     let boneMass: Double?
     let notes: String?
+    let photoUrl: String?
     let createdAt: Date
     let updatedAt: Date
     
@@ -25,6 +26,7 @@ struct BodyMetrics: Identifiable, Codable {
         case muscleMass = "muscle_mass"
         case boneMass = "bone_mass"
         case notes
+        case photoUrl = "photo_url"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }

@@ -10,8 +10,10 @@ import Foundation
 struct User: Codable, Identifiable {
     let id: String
     let email: String
-    let name: String?
-    let profile: UserProfile?
+    var name: String?
+    var avatarUrl: String?
+    var profile: UserProfile?
+    var onboardingCompleted: Bool = false
     
     var displayName: String {
         name ?? email.components(separatedBy: "@").first ?? "User"

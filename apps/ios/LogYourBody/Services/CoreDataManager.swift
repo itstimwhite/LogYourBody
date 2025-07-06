@@ -31,13 +31,17 @@ class CoreDataManager: ObservableObject {
     private init() {}
     
     // MARK: - Save Context
-    func save() {
+    func save(completion: (() -> Void)? = nil) {
         saveQueue.async { [weak self] in
-            guard let self = self else { return }
+            guard let self = self else { 
+                completion?()
+                return 
+            }
             
             // Prevent recursive saves
             guard !self.isSaving else {
                 print("⚠️ Prevented recursive Core Data save")
+                completion?()
                 return
             }
             
@@ -51,16 +55,35 @@ class CoreDataManager: ObservableObject {
                 if context.hasChanges {
                     do {
                         try context.save()
+                        print("✅ Core Data context saved successfully")
                     } catch {
                         print("Failed to save Core Data context: \(error)")
                     }
+                }
+            }
+            
+            completion?()
+        }
+    }
+    
+    // Synchronous save for critical operations
+    func saveAndWait() {
+        let context = viewContext
+        
+        context.performAndWait {
+            if context.hasChanges {
+                do {
+                    try context.save()
+                    print("✅ Core Data context saved synchronously")
+                } catch {
+                    print("Failed to save Core Data context: \(error)")
                 }
             }
         }
     }
     
     // MARK: - Body Metrics Operations
-    func saveBodyMetrics(_ metrics: BodyMetrics, userId: String) {
+    func saveBodyMetrics(_ metrics: BodyMetrics, userId: String, markAsSynced: Bool = false) {
         let context = viewContext
         
         // Check if entry already exists
@@ -91,11 +114,14 @@ class CoreDataManager: ObservableObject {
             cached.notes = metrics.notes
             cached.updatedAt = Date()
             cached.lastModified = Date()
-            cached.isSynced = false
-            cached.syncStatus = "pending"
+            cached.isSynced = markAsSynced
+            cached.syncStatus = markAsSynced ? "synced" : "pending"
             cached.isMarkedDeleted = false
             
-            save()
+            // Debug logging
+            print("💾 Saving body metrics: ID: \(metrics.id), Weight: \(metrics.weight ?? 0)\(metrics.weightUnit ?? ""), isSynced: \(markAsSynced)")
+            
+            saveAndWait()  // Use synchronous save to ensure data is persisted before sync
         } catch {
             print("Failed to save body metrics: \(error)")
         }
@@ -156,7 +182,7 @@ class CoreDataManager: ObservableObject {
             cached.syncStatus = "pending"
             cached.isMarkedDeleted = false
             
-            save()
+            saveAndWait()  // Use synchronous save to ensure data is persisted before sync
         } catch {
             print("Failed to save daily metrics: \(error)")
         }
@@ -216,7 +242,7 @@ class CoreDataManager: ObservableObject {
             cached.syncStatus = "pending"
             cached.isMarkedDeleted = false
             
-            save()
+            saveAndWait()  // Use synchronous save to ensure data is persisted before sync
         } catch {
             print("Failed to save profile: \(error)")
         }
@@ -250,6 +276,15 @@ class CoreDataManager: ObservableObject {
             let bodyMetrics = try viewContext.fetch(bodyMetricsFetch)
             let dailyMetrics = try viewContext.fetch(dailyMetricsFetch)
             let profiles = try viewContext.fetch(profilesFetch)
+            
+            // Debug logging
+            print("🔍 Fetched unsynced entries:")
+            print("  - Body Metrics: \(bodyMetrics.count)")
+            for metric in bodyMetrics.prefix(3) {
+                print("    • ID: \(metric.id ?? "nil"), Weight: \(metric.weight), Date: \(metric.date ?? Date()), isSynced: \(metric.isSynced)")
+            }
+            print("  - Daily Metrics: \(dailyMetrics.count)")
+            print("  - Profiles: \(profiles.count)")
             
             return (bodyMetrics, dailyMetrics, profiles)
         } catch {
@@ -388,6 +423,222 @@ class CoreDataManager: ObservableObject {
         // Save changes
         save()
     }
+    
+    // MARK: - Update from Server Data
+    
+    func updateOrCreateBodyMetric(from data: [String: Any]) {
+        let id = data["id"] as? String ?? UUID().uuidString
+        
+        let request: NSFetchRequest<CachedBodyMetrics> = CachedBodyMetrics.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        request.fetchLimit = 1
+        
+        do {
+            let results = try viewContext.fetch(request)
+            let metric = results.first ?? CachedBodyMetrics(context: viewContext)
+            
+            // Update fields
+            metric.id = id
+            metric.userId = data["user_id"] as? String
+            metric.weight = data["weight"] as? Double ?? 0
+            metric.bodyFatPercentage = data["body_fat_percentage"] as? Double ?? 0
+            metric.muscleMass = data["muscle_mass"] as? Double ?? 0
+            metric.notes = data["notes"] as? String
+            // metric.source = data["source"] as? String ?? "manual" // source field not in Core Data model
+            
+            if let dateString = data["logged_at"] as? String {
+                metric.date = ISO8601DateFormatter().date(from: dateString)
+            }
+            
+            metric.syncStatus = "synced"
+            metric.isSynced = true
+            metric.lastModified = Date()
+            
+            save()
+        } catch {
+            print("Error updating body metric from server: \(error)")
+        }
+    }
+    
+    func updateOrCreateDailyMetric(from data: [String: Any]) {
+        let id = data["id"] as? String ?? UUID().uuidString
+        
+        let request: NSFetchRequest<CachedDailyMetrics> = CachedDailyMetrics.fetchRequest()
+        request.predicate = NSPredicate(format: "id == %@", id)
+        request.fetchLimit = 1
+        
+        do {
+            let results = try viewContext.fetch(request)
+            let metric = results.first ?? CachedDailyMetrics(context: viewContext)
+            
+            // Update fields
+            metric.id = id
+            metric.userId = data["user_id"] as? String
+            metric.steps = Int32(data["steps"] as? Int ?? 0)
+            metric.notes = data["notes"] as? String
+            
+            if let dateString = data["date"] as? String {
+                metric.date = ISO8601DateFormatter().date(from: dateString)
+            }
+            
+            metric.syncStatus = "synced"
+            metric.isSynced = true
+            metric.lastModified = Date()
+            
+            save()
+        } catch {
+            print("Error updating daily metric from server: \(error)")
+        }
+    }
+    
+    func updateOrCreateProfile(from data: [String: Any]) {
+        let userId = data["id"] as? String ?? ""
+        
+        let request: NSFetchRequest<CachedProfile> = CachedProfile.fetchRequest()
+        request.predicate = NSPredicate(format: "userId == %@", userId)
+        request.fetchLimit = 1
+        
+        do {
+            let results = try viewContext.fetch(request)
+            let profile = results.first ?? CachedProfile(context: viewContext)
+            
+            // Update fields
+            // profile.userId = userId // Using id field instead
+            profile.id = userId
+            profile.fullName = data["full_name"] as? String
+            profile.username = data["username"] as? String
+            // profile.avatarUrl = data["avatar_url"] as? String // avatarUrl field not in Core Data model
+            profile.height = data["height"] as? Double ?? 0
+            profile.heightUnit = data["height_unit"] as? String
+            profile.gender = data["gender"] as? String
+            profile.activityLevel = data["activity_level"] as? String
+            
+            if let dateString = data["date_of_birth"] as? String {
+                profile.dateOfBirth = ISO8601DateFormatter().date(from: dateString)
+            }
+            
+            profile.syncStatus = "synced"
+            profile.isSynced = true
+            profile.lastModified = Date()
+            
+            save()
+        } catch {
+            print("Error updating profile from server: \(error)")
+        }
+    }
+    
+    // MARK: - Debug Methods
+    
+    func debugPrintAllBodyMetrics() {
+        let fetchRequest: NSFetchRequest<CachedBodyMetrics> = CachedBodyMetrics.fetchRequest()
+        
+        do {
+            let allMetrics = try viewContext.fetch(fetchRequest)
+            print("🔍 DEBUG: Total body metrics in Core Data: \(allMetrics.count)")
+            for (index, metric) in allMetrics.enumerated() {
+                print("  [\(index)] ID: \(metric.id ?? "nil"), UserId: \(metric.userId ?? "nil"), Weight: \(metric.weight), Date: \(metric.date ?? Date()), isSynced: \(metric.isSynced), syncStatus: \(metric.syncStatus ?? "nil")")
+                if index >= 5 { 
+                    print("  ... and \(allMetrics.count - 5) more")
+                    break 
+                }
+            }
+        } catch {
+            print("Failed to fetch all body metrics: \(error)")
+        }
+    }
+    
+    // MARK: - Cleanup
+    
+    func cleanupOldData() {
+        // Delete body metrics older than 1 year
+        let oneYearAgo = Date().addingTimeInterval(-365 * 24 * 60 * 60)
+        
+        let bodyMetricsRequest: NSFetchRequest<NSFetchRequestResult> = CachedBodyMetrics.fetchRequest()
+        bodyMetricsRequest.predicate = NSPredicate(format: "date < %@ AND isMarkedDeleted == true", oneYearAgo as NSDate)
+        
+        let deleteRequest = NSBatchDeleteRequest(fetchRequest: bodyMetricsRequest)
+        deleteRequest.resultType = .resultTypeCount
+        
+        do {
+            let result = try viewContext.execute(deleteRequest) as? NSBatchDeleteResult
+            print("Deleted \(result?.result ?? 0) old body metrics")
+        } catch {
+            print("Error cleaning up old data: \(error)")
+        }
+    }
+    
+    // Mark all HealthKit imported entries as synced
+    func markHealthKitEntriesAsSynced() {
+        let fetchRequest: NSFetchRequest<CachedBodyMetrics> = CachedBodyMetrics.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "notes CONTAINS[c] %@", "HealthKit")
+        
+        do {
+            let entries = try viewContext.fetch(fetchRequest)
+            for entry in entries {
+                entry.isSynced = true
+                entry.syncStatus = "synced"
+            }
+            save()
+            print("✅ Marked \(entries.count) HealthKit entries as synced")
+        } catch {
+            print("Failed to mark HealthKit entries as synced: \(error)")
+        }
+    }
+    
+    // Optimize database (vacuum SQLite)
+    func optimizeDatabase() {
+        guard let storeURL = persistentContainer.persistentStoreDescriptions.first?.url else { return }
+        
+        do {
+            let options = [NSSQLitePragmasOption: ["journal_mode": "WAL", "auto_vacuum": "FULL"]]
+            try persistentContainer.persistentStoreCoordinator.replacePersistentStore(
+                at: storeURL,
+                destinationOptions: options,
+                withPersistentStoreFrom: storeURL,
+                sourceOptions: nil,
+                ofType: NSSQLiteStoreType
+            )
+            print("✅ Database optimized")
+        } catch {
+            print("Failed to optimize database: \(error)")
+        }
+    }
+    
+    // Save context helper
+    private func saveContext() {
+        save()
+    }
+    
+    // Clean up body metrics with invalid UUIDs
+    func cleanInvalidBodyMetrics() -> Int {
+        let context = persistentContainer.viewContext
+        let request: NSFetchRequest<CachedBodyMetrics> = CachedBodyMetrics.fetchRequest()
+        
+        do {
+            let allMetrics = try context.fetch(request)
+            var deletedCount = 0
+            
+            for metric in allMetrics {
+                if let id = metric.id {
+                    // Check if ID is not a valid UUID (contains "test-" or other invalid formats)
+                    if id.hasPrefix("test-") || UUID(uuidString: id) == nil {
+                        print("🗑️ Deleting invalid body metric with ID: \(id)")
+                        context.delete(metric)
+                        deletedCount += 1
+                    }
+                }
+            }
+            
+            if deletedCount > 0 {
+                try context.save()
+            }
+            
+            return deletedCount
+        } catch {
+            print("❌ Error cleaning invalid body metrics: \(error)")
+            return 0
+        }
+    }
 }
 
 // MARK: - Model Extensions for Conversion
@@ -404,6 +655,7 @@ extension CachedBodyMetrics {
             muscleMass: muscleMass > 0 ? muscleMass : nil,
             boneMass: boneMass > 0 ? boneMass : nil,
             notes: notes,
+            photoUrl: photoUrl,
             createdAt: createdAt ?? Date(),
             updatedAt: updatedAt ?? Date()
         )

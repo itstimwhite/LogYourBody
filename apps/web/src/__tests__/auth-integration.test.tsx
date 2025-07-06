@@ -6,7 +6,7 @@
 import React from 'react'
 import { render, screen, waitFor, act } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import LoginPage from '@/app/login/page'
+import LoginPage from '@/app/signin/page'
 import SignupPage from '@/app/signup/page'
 import { AuthProvider } from '@/contexts/ClerkAuthContext'
 

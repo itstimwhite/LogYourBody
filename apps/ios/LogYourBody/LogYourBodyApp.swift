@@ -25,6 +25,10 @@ struct LogYourBodyApp: App {
                 .environmentObject(syncManager)
                 .environment(clerk)
                 .task {
+                    // Perform app version management and cleanup
+                    // TODO: Add AppVersionManager.swift to Xcode project, then uncomment:
+                    // AppVersionManager.shared.performStartupMaintenance()
+                    
                     // Initialize Clerk
                     await authManager.initializeClerk()
                     

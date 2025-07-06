@@ -108,49 +108,32 @@ class OnboardingViewModel: ObservableObject {
     func completeOnboarding(authManager: AuthManager) async {
         isLoading = true
         
-        // Simulate saving data
-        // In production, this would save to your backend
-        try? await Task.sleep(nanoseconds: 1_000_000_000) // 1 second delay
-        
         await MainActor.run {
             // Mark onboarding as completed
             UserDefaults.standard.set(true, forKey: Constants.hasCompletedOnboardingKey)
             
             // Force notification to ensure UI updates
             NotificationCenter.default.post(name: UserDefaults.didChangeNotification, object: nil)
+        }
+        
+        // Update user profile
+        let currentUser = await MainActor.run { authManager.currentUser }
+        if let user = currentUser {
+            // Create profile update data
+            let updates: [String: Any] = [
+                "name": data.name.isEmpty ? user.name ?? "" : data.name,
+                "dateOfBirth": data.dateOfBirth as Any,
+                "height": Double(data.totalHeightInInches),
+                "heightUnit": "in",
+                "gender": data.gender?.rawValue as Any,
+                "onboardingCompleted": true
+            ]
             
-            // Update user profile if needed
-            if let user = authManager.currentUser {
-                let profile = UserProfile(
-                    id: user.id,
-                    email: user.email,
-                    username: nil,
-                    fullName: data.name.isEmpty ? nil : data.name,
-                    dateOfBirth: data.dateOfBirth,
-                    height: Double(data.totalHeightInInches),
-                    heightUnit: "in",
-                    gender: data.gender?.rawValue,
-                    activityLevel: nil,
-                    goalWeight: nil,
-                    goalWeightUnit: nil
-                )
-                
-                // Create updated user with profile
-                let updatedUser = User(
-                    id: user.id,
-                    email: user.email,
-                    name: data.name.isEmpty ? user.name : data.name,
-                    profile: profile
-                )
-                
-                authManager.currentUser = updatedUser
-                
-                // Save to UserDefaults
-                if let userData = try? JSONEncoder().encode(updatedUser) {
-                    UserDefaults.standard.set(userData, forKey: Constants.currentUserKey)
-                }
-            }
-            
+            // Update profile through AuthManager (which will sync to Supabase)
+            await authManager.updateProfile(updates)
+        }
+        
+        await MainActor.run {
             isLoading = false
         }
     }

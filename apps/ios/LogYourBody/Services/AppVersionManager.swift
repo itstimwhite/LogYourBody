@@ -99,7 +99,9 @@ class AppVersionManager {
         if lastMigration.compare("1.1.0", options: .numeric) == .orderedAscending {
             print("🔧 Running migration for v1.1.0")
             CoreDataManager.shared.markHealthKitEntriesAsSynced()
-            RealtimeSyncManager.shared.updatePendingSyncCount()
+            Task { @MainActor in
+                RealtimeSyncManager.shared.updatePendingSyncCount()
+            }
         }
         
         // Version 1.2.0 - Clear old cache data
@@ -223,9 +225,11 @@ class AppVersionManager {
         print("🔄 Resetting problematic states...")
         
         // Reset any sync flags that might be stuck
-        if RealtimeSyncManager.shared.pendingSyncCount > 1000 {
-            print("⚠️ Excessive pending sync count detected, marking HealthKit entries as synced")
-            CoreDataManager.shared.markHealthKitEntriesAsSynced()
+        Task { @MainActor in
+            if RealtimeSyncManager.shared.pendingSyncCount > 1000 {
+                print("⚠️ Excessive pending sync count detected, marking HealthKit entries as synced")
+                CoreDataManager.shared.markHealthKitEntriesAsSynced()
+            }
         }
         
         // Reset any other problematic states
@@ -308,6 +312,16 @@ class AppVersionManager {
     /// Get formatted version string for display
     func formattedVersionString() -> String {
         "Version \(currentVersion) (\(currentBuild))"
+    }
+    
+    /// Get just the version string
+    func versionString() -> String {
+        currentVersion
+    }
+    
+    /// Get just the build string  
+    func buildString() -> String {
+        currentBuild
     }
     
     /// Check if a specific feature should be enabled based on version
