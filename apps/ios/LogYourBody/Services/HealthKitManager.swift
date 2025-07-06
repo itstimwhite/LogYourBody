@@ -295,28 +295,29 @@ class HealthKitManager: ObservableObject {
     // Sync weight data with backend
     func syncWeightWithBackend(weight: Double, date: Date) async throws {
         let url = URL(string: "\(Constants.baseURL)/api/weight")!
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        // TODO: Implement proper Clerk token for API calls
         let token = Constants.supabaseAnonKey
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        
-        // Convert weight to kg for backend (matching web app)
+
         let weightInKg = weight * 0.453592
-        
+
         let body: [String: Any] = [
             "weight": weightInKg,
             "unit": "kg",
             "date": ISO8601DateFormatter().string(from: date)
         ]
-        
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-        
-        let (_, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse,
-              httpResponse.statusCode == 200 else {
+
+        let bodyData = try JSONSerialization.data(withJSONObject: body)
+
+        let (_, response) = try await HTTPClient.shared.sendRequest(
+            url: url,
+            method: "POST",
+            headers: [
+                "Content-Type": "application/json",
+                "Authorization": "Bearer \(token)"
+            ],
+            body: bodyData
+        )
+
+        guard response.statusCode == 200 else {
             throw HealthKitError.syncFailed
         }
     }

@@ -726,17 +726,19 @@ class AuthManager: NSObject, ObservableObject {
             
             // Create/update profile in Supabase
             let url = URL(string: "\(Constants.supabaseURL)/rest/v1/profiles")!
-            var request = URLRequest(url: url)
-            request.httpMethod = "POST"
-            request.setValue(Constants.supabaseAnonKey, forHTTPHeaderField: "apikey")
-            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-            request.setValue("resolution=merge-duplicates", forHTTPHeaderField: "Prefer")
-            
             let jsonData = try JSONSerialization.data(withJSONObject: [profileData])
-            request.httpBody = jsonData
-            
-            let (_, response) = try await URLSession.shared.data(for: request)
+
+            let (_, response) = try await HTTPClient.shared.sendRequest(
+                url: url,
+                method: "POST",
+                headers: [
+                    "apikey": Constants.supabaseAnonKey,
+                    "Authorization": "Bearer \(token)",
+                    "Content-Type": "application/json",
+                    "Prefer": "resolution=merge-duplicates"
+                ],
+                body: jsonData
+            )
             
             if let httpResponse = response as? HTTPURLResponse {
                 if (200...299).contains(httpResponse.statusCode) {
