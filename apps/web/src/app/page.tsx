@@ -36,7 +36,6 @@ import { LandingTimelineDemo } from "@/components/LandingTimelineDemo";
 import { StepTrackerSection } from "@/components/StepTrackerModule";
 import { LandingPredictionSection } from "@/components/LandingPredictionSection";
 import { FeaturesFlyout } from "@/components/FeaturesFlyout";
-import { SupabaseStatusBanner } from "@/components/SupabaseStatusBanner";
 
 export default function HomePage() {
   const [isAnnual, setIsAnnual] = useState(true);
@@ -132,7 +131,6 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#08090a] font-inter">
-      <SupabaseStatusBanner />
       
       {/* Header */}
       <header className="border-b border-[#1a1b1e]" role="banner">

@@ -171,6 +171,9 @@ struct LoginView: View {
     }
     
     private func login() {
+        // Prevent multiple submissions
+        guard !isLoading else { return }
+        
         focusedField = nil
         isLoading = true
         
@@ -180,6 +183,8 @@ struct LoginView: View {
                     email: self.email,
                     password: self.password
                 )
+                // Reset loading state on success
+                isLoading = false
             } catch {
                 errorMessage = "Invalid email or password. Please try again."
                 showError = true

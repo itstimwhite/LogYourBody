@@ -32,7 +32,6 @@ import { LandingTimelineDemo } from "./LandingTimelineDemo";
 import { StepTrackerSection } from "./StepTrackerModule";
 import { LandingPredictionSection } from "./LandingPredictionSection";
 import { FeaturesFlyout } from "./FeaturesFlyout";
-import { SupabaseStatusBanner } from "./SupabaseStatusBanner";
 
 export function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
@@ -122,8 +121,6 @@ export function LandingPage() {
 
   return (
     <div className="min-h-svh bg-linear-bg font-inter">
-      {/* Supabase Status Banner - Very Top of Page */}
-      <SupabaseStatusBanner />
       
       {/* Skip Links */}
       <div className="sr-only z-50 focus:not-sr-only focus:absolute focus:left-4 focus:top-4">

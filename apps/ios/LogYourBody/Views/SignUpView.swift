@@ -188,23 +188,25 @@ struct SignUpView: View {
     }
     
     private func signUp() {
+        // Prevent multiple submissions
+        guard !isLoading else { return }
+        
         focusedField = nil
         isLoading = true
         
-        Task {
+        Task { @MainActor in
             do {
                 try await authManager.signUp(email: email, password: password, name: "")
+                // Reset loading state on success
+                isLoading = false
             } catch {
-                // Check if email verification is needed
-                await MainActor.run {
-                    isLoading = false
-                    // If we need verification, the AuthManager will handle navigation
-                    if authManager.needsEmailVerification {
-                        // Email verification screen will show automatically
-                    } else {
-                        errorMessage = error.localizedDescription
-                        showError = true
-                    }
+                isLoading = false
+                // If we need verification, the AuthManager will handle navigation
+                if authManager.needsEmailVerification {
+                    // Email verification screen will show automatically
+                } else {
+                    errorMessage = error.localizedDescription
+                    showError = true
                 }
             }
         }

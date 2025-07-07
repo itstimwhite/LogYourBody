@@ -8,33 +8,51 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @State private var selectedTab = 0
+    
     init() {
-        // Configure tab bar appearance
+        // Configure tab bar appearance for translucent background
         let appearance = UITabBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = UIColor(Color.appCard)
+        appearance.configureWithTransparentBackground()
+        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+        
+        // Remove item positioning to make icons centered
+        appearance.stackedLayoutAppearance.normal.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 100)
+        appearance.stackedLayoutAppearance.selected.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 100)
         
         UITabBar.appearance().standardAppearance = appearance
         UITabBar.appearance().scrollEdgeAppearance = appearance
+        
+        // Set the tab bar height to 49pt
+        if #available(iOS 15.0, *) {
+            UITabBar.appearance().scrollEdgeAppearance = appearance
+        }
     }
     
     var body: some View {
-        TabView {
+        TabView(selection: $selectedTab) {
             DashboardView()
                 .tabItem {
-                    Label("Dashboard", systemImage: "chart.line.uptrend.xyaxis")
+                    Image(systemName: "house")
+                        .environment(\.symbolVariants, .none)
                 }
+                .tag(0)
             
             LogWeightView()
                 .tabItem {
-                    Label("Log", systemImage: "plus.circle.fill")
+                    Image(systemName: "plus.circle")
+                        .environment(\.symbolVariants, .none)
                 }
+                .tag(1)
             
             SettingsView()
                 .tabItem {
-                    Label("Settings", systemImage: "gear")
+                    Image(systemName: "gear")
+                        .environment(\.symbolVariants, .none)
                 }
+                .tag(2)
         }
+        .accentColor(.white)
     }
 }
 

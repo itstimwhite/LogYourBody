@@ -125,50 +125,46 @@ struct EmailVerificationView: View {
     }
     
     private func verifyCode() {
-        guard !verificationCode.isEmpty else { return }
+        guard !verificationCode.isEmpty, !isLoading else { return }
         
         isLoading = true
         errorMessage = nil
         successMessage = nil
         
-        Task {
+        Task { @MainActor in
             do {
                 try await authManager.verifyEmail(code: verificationCode)
-                await MainActor.run {
-                    successMessage = "Email verified! Logging you in..."
-                    // Keep loading state true as the session observer will handle navigation
-                }
+                successMessage = "Email verified! Logging you in..."
+                // Keep loading state true as the session observer will handle navigation
             } catch {
-                await MainActor.run {
-                    errorMessage = error.localizedDescription
-                    isLoading = false
-                }
+                errorMessage = error.localizedDescription
+                isLoading = false
+                // Clear the code on error for retry
+                verificationCode = ""
             }
         }
     }
     
     private func resendCode() {
+        guard !isLoading else { return }
+        
         isLoading = true
         errorMessage = nil
         successMessage = nil
         
-        Task {
+        Task { @MainActor in
             do {
                 try await authManager.resendVerificationEmail()
-                await MainActor.run {
-                    successMessage = "Verification code sent successfully"
-                    isLoading = false
-                    resendCooldown = 60  // 60 second cooldown
-                    // Clear success message after 3 seconds
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                        successMessage = nil
-                    }
+                successMessage = "Verification code sent successfully"
+                isLoading = false
+                resendCooldown = 60  // 60 second cooldown
+                // Clear success message after 3 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    successMessage = nil
                 }
             } catch {
-                await MainActor.run {
-                    errorMessage = error.localizedDescription
-                    isLoading = false
-                }
+                errorMessage = error.localizedDescription
+                isLoading = false
             }
         }
     }

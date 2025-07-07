@@ -68,6 +68,9 @@
 		AD8552722E19E4DF003552EE /* ProfileSettingsViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526E2E19E4DF003552EE /* ProfileSettingsViewV2.swift */; };
 		AD8552732E19E4DF003552EE /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526F2E19E4DF003552EE /* SyncStatusView.swift */; };
 		AD85527F2E1C3653003552EE /* PhotoUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85527E2E1C3653003552EE /* PhotoUploadManager.swift */; };
+		AD8552822E1C393D003552EE /* OptimizedProgressPhotoView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552812E1C393D003552EE /* OptimizedProgressPhotoView 2.swift */; };
+		AD8552832E1C393D003552EE /* CameraView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552802E1C393D003552EE /* CameraView 2.swift */; };
+		AD8552852E1C42B7003552EE /* BiometricLockView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552842E1C42B7003552EE /* BiometricLockView 2.swift */; };
 		ADBD69472E14A7B900921A30 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692A2E14A7B900921A30 /* AuthManager.swift */; };
 		ADBD69482E14A7B900921A30 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692C2E14A7B900921A30 /* DashboardView.swift */; };
 		ADBD694A2E14A7B900921A30 /* LogWeightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692E2E14A7B900921A30 /* LogWeightView.swift */; };
@@ -219,6 +222,9 @@
 		AD85526F2E19E4DF003552EE /* SyncStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusView.swift; sourceTree = "<group>"; };
 		AD8552702E19E4DF003552EE /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
 		AD85527E2E1C3653003552EE /* PhotoUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoUploadManager.swift; sourceTree = "<group>"; };
+		AD8552802E1C393D003552EE /* CameraView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CameraView 2.swift"; sourceTree = "<group>"; };
+		AD8552812E1C393D003552EE /* OptimizedProgressPhotoView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OptimizedProgressPhotoView 2.swift"; sourceTree = "<group>"; };
+		AD8552842E1C42B7003552EE /* BiometricLockView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BiometricLockView 2.swift"; sourceTree = "<group>"; };
 		AD857D532E15EE7B00A6B57A /* SupabaseDataClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupabaseDataClient.swift; sourceTree = "<group>"; };
 		AD99F2982E1491FA00F5ECE4 /* AuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthManager.swift; path = Services/AuthManager.swift; sourceTree = "<group>"; };
 		AD99F29A2E14921400F5ECE4 /* LogWeightView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogWeightView.swift; path = LogYourBody/Views/LogWeightView.swift; sourceTree = "<group>"; };
@@ -439,9 +445,12 @@
 				AD723AFB2E15FA5C002376C6 /* Onboarding */,
 				AD723AFC2E15FA5C002376C6 /* AppleSignInButton.swift */,
 				AD723AFD2E15FA5C002376C6 /* DashboardView.swift */,
+				AD8552842E1C42B7003552EE /* BiometricLockView 2.swift */,
 				AD8552632E19DCB6003552EE /* SyncStatusView.swift */,
 				AD723AFE2E15FA5C002376C6 /* DeleteAccountView.swift */,
 				AD723AFF2E15FA5C002376C6 /* EmailVerificationView.swift */,
+				AD8552802E1C393D003552EE /* CameraView 2.swift */,
+				AD8552812E1C393D003552EE /* OptimizedProgressPhotoView 2.swift */,
 				AD723B002E15FA5C002376C6 /* ExportDataView.swift */,
 				AD723B012E15FA5C002376C6 /* HealthKitPromptView.swift */,
 				AD723B022E15FA5C002376C6 /* LoadingView.swift */,
@@ -866,7 +875,10 @@
 				AD7243502E15FA5E002376C6 /* LoginView.swift in Sources */,
 				AD7243542E15FA5E002376C6 /* ProfileSettingsView.swift in Sources */,
 				AD7D30962E14907F0072AA5B /* LogYourBodyApp.swift in Sources */,
+				AD8552852E1C42B7003552EE /* BiometricLockView 2.swift in Sources */,
 				AD7243452E15FA5E002376C6 /* NotificationsStepView.swift in Sources */,
+				AD8552822E1C393D003552EE /* OptimizedProgressPhotoView 2.swift in Sources */,
+				AD8552832E1C393D003552EE /* CameraView 2.swift in Sources */,
 				ADFC6A262E188F96004FCE40 /* OTPInputView.swift in Sources */,
 				AD85526C2E19E4CD003552EE /* VersionRow.swift in Sources */,
 				AD85526D2E19E4CD003552EE /* WhatsNewRow.swift in Sources */,

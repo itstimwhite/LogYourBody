@@ -6,12 +6,17 @@
 //
 
 import SwiftUI
+import LocalAuthentication
 
 struct PreferencesView: View {
     @AppStorage(Constants.preferredMeasurementSystemKey) private var measurementSystem = PreferencesView.defaultMeasurementSystem
     @AppStorage("healthKitSyncEnabled") private var healthKitSyncEnabled = true
+    @AppStorage("biometricLockEnabled") private var biometricLockEnabled = false
     @StateObject private var healthKitManager = HealthKitManager.shared
     @State private var showHealthKitConnect = false
+    @State private var biometricType: LABiometryType = .none
+    
+    private let context = LAContext()
     
     enum MeasurementSystem: String, CaseIterable {
         case imperial = "Imperial"
@@ -46,6 +51,15 @@ struct PreferencesView: View {
     
     var currentSystem: MeasurementSystem {
         MeasurementSystem(rawValue: measurementSystem) ?? .imperial
+    }
+    
+    private func checkBiometricAvailability() {
+        var error: NSError?
+        if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
+            biometricType = context.biometryType
+        } else {
+            biometricType = .none
+        }
     }
     
     var body: some View {
@@ -138,6 +152,29 @@ struct PreferencesView: View {
                 }
             }
             
+            Section("Security") {
+                Toggle(isOn: $biometricLockEnabled) {
+                    HStack {
+                        Image(systemName: biometricType == .faceID ? "faceid" : "touchid")
+                            .foregroundColor(.appPrimary)
+                        Text(biometricType == .faceID ? "Face ID Lock" : "Touch ID Lock")
+                    }
+                }
+                .disabled(biometricType == .none)
+                
+                if biometricType == .none {
+                    Text("Biometric authentication is not available on this device")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                } else {
+                    Text(biometricLockEnabled ? 
+                         "Require \(biometricType == .faceID ? "Face ID" : "Touch ID") to open the app" :
+                         "App opens without authentication")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
             Section("Data & Privacy") {
                 NavigationLink("Export Data") {
                     ExportDataView()
@@ -153,6 +190,9 @@ struct PreferencesView: View {
         .navigationBarTitleDisplayMode(.inline)
         .sheet(isPresented: $showHealthKitConnect) {
             HealthKitConnectSheet(isPresented: $showHealthKitConnect)
+        }
+        .onAppear {
+            checkBiometricAvailability()
         }
     }
 }

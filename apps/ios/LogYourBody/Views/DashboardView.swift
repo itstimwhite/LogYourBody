@@ -44,6 +44,277 @@ struct DashboardView: View {
         return ageComponents.year
     }
     
+    @ViewBuilder
+    private var loadingView: some View {
+        Spacer()
+        VStack(spacing: 20) {
+            ProgressView()
+                .scaleEffect(1.5)
+            Text("Loading your data...")
+                .font(.appBody)
+                .foregroundColor(.appTextSecondary)
+        }
+        Spacer()
+    }
+    
+    @ViewBuilder
+    private var emptyStateView: some View {
+        Spacer()
+        VStack(spacing: 20) {
+            Image(systemName: "chart.line.downtrend.xyaxis")
+                .font(.system(size: 60))
+                .foregroundColor(.appTextTertiary)
+            Text("No body composition data yet")
+                .font(.appHeadline)
+                .foregroundColor(.appText)
+            Text("Log your first measurement to get started")
+                .font(.appBody)
+                .foregroundColor(.appTextSecondary)
+        }
+        Spacer()
+    }
+    
+    @ViewBuilder
+    private var mainContentView: some View {
+        ScrollView {
+            VStack(spacing: 16) {
+                // Progress Photo (1:1 square)
+                progressPhotoView
+                    .padding(.horizontal)
+                
+                // Core Metrics Row
+                coreMetricsRow
+                    .frame(height: 120)
+                    .padding(.horizontal)
+                
+                // Secondary Metrics Strip
+                secondaryMetricsStrip
+                    .frame(height: 60)
+                    .background(Color.appCard)
+                
+                // Timeline controls (if multiple entries)
+                if bodyMetrics.count > 1 {
+                    timelineControls
+                        .padding()
+                        .background(Color.appCard)
+                        .cornerRadius(12)
+                        .padding(.horizontal)
+                }
+                
+                Spacer(minLength: 20)
+            }
+            .padding(.top, 8)
+        }
+        .refreshable {
+            await refreshData()
+        }
+    }
+    
+    @ViewBuilder
+    private var progressPhotoView: some View {
+        ZStack {
+            if let photoUrl = currentMetric?.photoUrl, !photoUrl.isEmpty {
+                OptimizedProgressPhotoView(photoUrl: photoUrl, maxHeight: UIScreen.main.bounds.width)
+                    .aspectRatio(1, contentMode: .fill)
+                    .clipped()
+                    .cornerRadius(16)
+            } else {
+                Rectangle()
+                    .fill(Color.appCard)
+                    .aspectRatio(1, contentMode: .fit)
+                    .overlay(
+                        ZStack {
+                            Circle()
+                                .fill(Color.appBackground)
+                                .frame(width: 60, height: 60)
+                            
+                            Image(systemName: "plus")
+                                .font(.system(size: 24, weight: .medium))
+                                .foregroundColor(.appPrimary)
+                        }
+                    )
+                    .cornerRadius(16)
+                    .onTapGesture {
+                        showPhotoOptions = true
+                    }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var coreMetricsRow: some View {
+        HStack(spacing: 12) {
+            // Body Fat % with progress ring
+            CoreMetricCard(
+                value: currentMetric?.bodyFatPercentage,
+                label: "Body Fat %",
+                progress: currentMetric?.bodyFatPercentage != nil ? 
+                    (100 - currentMetric!.bodyFatPercentage!) / 100 : 0
+            )
+            
+            // FFMI with progress ring
+            CoreMetricCard(
+                value: calculateFFMI(),
+                label: "FFMI",
+                progress: calculateFFMI() != nil ? 
+                    min(calculateFFMI()! / 25, 1.0) : 0
+            )
+        }
+    }
+    
+    @ViewBuilder
+    private var secondaryMetricsStrip: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 0) {
+                SecondaryMetricItem(
+                    icon: "scalemass",
+                    value: currentMetric?.weight != nil ? 
+                        convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
+                    unit: currentSystem.weightUnit,
+                    label: "Weight"
+                )
+                
+                Divider()
+                    .frame(height: 40)
+                
+                SecondaryMetricItem(
+                    icon: "figure.walk",
+                    value: dailyMetrics?.steps != nil ? Double(dailyMetrics!.steps!) : nil,
+                    unit: "steps",
+                    label: "Steps",
+                    showDecimal: false
+                )
+                
+                Divider()
+                    .frame(height: 40)
+                
+                SecondaryMetricItem(
+                    icon: "figure.arms.open",
+                    value: calculateLeanMass() != nil ? 
+                        convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil,
+                    unit: currentSystem.weightUnit,
+                    label: "Lean Mass"
+                )
+            }
+            .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    private var timelineControls: some View {
+        VStack(spacing: 8) {
+            Slider(
+                value: Binding(
+                    get: { Double(selectedIndex) },
+                    set: { selectedIndex = Int($0) }
+                ),
+                in: 0...Double(max(0, bodyMetrics.count - 1)),
+                step: 1
+            )
+            .tint(.appPrimary)
+            
+            HStack {
+                if let date = currentMetric?.date {
+                    Text(date, style: .date)
+                        .font(.system(size: 12))
+                        .foregroundColor(.appTextSecondary)
+                }
+                
+                Spacer()
+                
+                Text("\(selectedIndex + 1) of \(bodyMetrics.count)")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.appText)
+                
+                Spacer()
+                
+                if let lastDate = bodyMetrics.last?.date {
+                    Text(lastDate, style: .date)
+                        .font(.system(size: 12))
+                        .foregroundColor(.appTextSecondary)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var toastView: some View {
+        if let message = toastMessage {
+            HStack {
+                Image(systemName: toastType == .error ? "exclamationmark.circle" : 
+                                toastType == .success ? "checkmark.circle" : "info.circle")
+                    .foregroundColor(toastType == .error ? .red : 
+                                   toastType == .success ? .green : .appPrimary)
+                Text(message)
+                    .font(.system(size: 14))
+                    .foregroundColor(.appText)
+            }
+            .padding(.horizontal, 16)
+            .frame(height: 32)
+            .frame(maxWidth: .infinity)
+            .background(Color.appCard)
+            .cornerRadius(8)
+            .padding(.horizontal)
+            .transition(.move(edge: .top).combined(with: .opacity))
+            .onAppear {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    withAnimation {
+                        toastMessage = nil
+                    }
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var headerView: some View {
+        HStack {
+            // User info
+            HStack(spacing: 8) {
+                if let name = authManager.currentUser?.profile?.fullName {
+                    Text(name)
+                        .font(.system(size: 14, weight: .regular, design: .default))
+                        .foregroundColor(.appText)
+                }
+                
+                if let age = userAge {
+                    Text("• \(age)")
+                        .font(.system(size: 14, weight: .regular, design: .default))
+                        .foregroundColor(.appTextSecondary)
+                }
+                
+                if let gender = authManager.currentUser?.profile?.gender {
+                    Image(systemName: gender.lowercased() == "male" ? "person.fill" : "person.dress.line.vertical.figure")
+                        .font(.system(size: 14))
+                        .foregroundColor(.appTextSecondary)
+                }
+                
+                if let height = authManager.currentUser?.profile?.height {
+                    let heightDisplay = currentSystem == .imperial ? 
+                        "\(Int(height / 12))'\(Int(height.truncatingRemainder(dividingBy: 12)))\"" : 
+                        "\(Int(height * 2.54))cm"
+                    Text("• \(heightDisplay)")
+                        .font(.system(size: 14, weight: .regular, design: .default))
+                        .foregroundColor(.appTextSecondary)
+                }
+            }
+            
+            Spacer()
+            
+            // Sync status
+            if syncManager.isSyncing {
+                Image(systemName: "arrow.triangle.2.circlepath")
+                    .font(.system(size: 16))
+                    .foregroundColor(.appPrimary)
+                    .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
+                    .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: syncManager.isSyncing)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+        .background(Color.appBackground)
+    }
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -52,246 +323,17 @@ struct DashboardView: View {
                 
                 VStack(spacing: 0) {
                     // Custom Header
-                    HStack {
-                        // User info
-                        HStack(spacing: 8) {
-                            if let name = authManager.currentUser?.profile?.fullName {
-                                Text(name)
-                                    .font(.system(size: 14, weight: .regular, design: .default))
-                                    .foregroundColor(.appText)
-                            }
-                            
-                            if let age = userAge {
-                                Text("• \(age)")
-                                    .font(.system(size: 14, weight: .regular, design: .default))
-                                    .foregroundColor(.appTextSecondary)
-                            }
-                            
-                            if let gender = authManager.currentUser?.profile?.gender {
-                                Image(systemName: gender.lowercased() == "male" ? "person.fill" : "person.dress.line.vertical.figure")
-                                    .font(.system(size: 14))
-                                    .foregroundColor(.appTextSecondary)
-                            }
-                            
-                            if let height = authManager.currentUser?.profile?.height {
-                                let heightDisplay = currentSystem == .imperial ? 
-                                    "\(Int(height / 12))'\(Int(height.truncatingRemainder(dividingBy: 12)))\"" : 
-                                    "\(Int(height * 2.54))cm"
-                                Text("• \(heightDisplay)")
-                                    .font(.system(size: 14, weight: .regular, design: .default))
-                                    .foregroundColor(.appTextSecondary)
-                            }
-                        }
-                        
-                        Spacer()
-                        
-                        // Sync status
-                        if syncManager.isSyncing {
-                            Image(systemName: "arrow.triangle.2.circlepath")
-                                .font(.system(size: 16))
-                                .foregroundColor(.appPrimary)
-                                .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
-                                .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: syncManager.isSyncing)
-                        }
-                    }
-                    .padding(.horizontal)
-                    .padding(.vertical, 12)
-                    .background(Color.appBackground)
+                    headerView
                     
                     // Toast container (32pt overlay)
-                    if let message = toastMessage {
-                        HStack {
-                            Image(systemName: toastType == .error ? "exclamationmark.circle" : 
-                                            toastType == .success ? "checkmark.circle" : "info.circle")
-                                .foregroundColor(toastType == .error ? .red : 
-                                               toastType == .success ? .green : .appPrimary)
-                            Text(message)
-                                .font(.system(size: 14))
-                                .foregroundColor(.appText)
-                        }
-                        .padding(.horizontal, 16)
-                        .frame(height: 32)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.appCard)
-                        .cornerRadius(8)
-                        .padding(.horizontal)
-                        .transition(.move(edge: .top).combined(with: .opacity))
-                        .onAppear {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                                withAnimation {
-                                    toastMessage = nil
-                                }
-                            }
-                        }
-                    }
+                    toastView
                     
                     if isLoading && bodyMetrics.isEmpty {
-                        // Loading State
-                        Spacer()
-                        VStack(spacing: 20) {
-                            ProgressView()
-                                .scaleEffect(1.5)
-                            Text("Loading your data...")
-                                .font(.appBody)
-                                .foregroundColor(.appTextSecondary)
-                        }
-                        Spacer()
+                        loadingView
                     } else if bodyMetrics.isEmpty {
-                        // Empty State
-                        Spacer()
-                        VStack(spacing: 20) {
-                            Image(systemName: "chart.line.downtrend.xyaxis")
-                                .font(.system(size: 60))
-                                .foregroundColor(.appTextTertiary)
-                            Text("No body composition data yet")
-                                .font(.appHeadline)
-                                .foregroundColor(.appText)
-                            Text("Log your first measurement to get started")
-                                .font(.appBody)
-                                .foregroundColor(.appTextSecondary)
-                        }
-                        Spacer()
+                        emptyStateView
                     } else {
-                        // Main Content
-                        ScrollView {
-                            VStack(spacing: 16) {
-                                // Progress Photo (1:1 square)
-                                ZStack {
-                                    if let photoUrl = currentMetric?.photoUrl, !photoUrl.isEmpty {
-                                        OptimizedProgressPhotoView(photoUrl: photoUrl)
-                                            .aspectRatio(1, contentMode: .fill)
-                                            .clipped()
-                                            .cornerRadius(16)
-                                    } else {
-                                        Rectangle()
-                                            .fill(Color.appCard)
-                                            .aspectRatio(1, contentMode: .fit)
-                                            .overlay(
-                                                ZStack {
-                                                    Circle()
-                                                        .fill(Color.appBackground)
-                                                        .frame(width: 60, height: 60)
-                                                    
-                                                    Image(systemName: "plus")
-                                                        .font(.system(size: 24, weight: .medium))
-                                                        .foregroundColor(.appPrimary)
-                                                }
-                                            )
-                                            .cornerRadius(16)
-                                            .onTapGesture {
-                                                showPhotoOptions = true
-                                            }
-                                    }
-                                }
-                                .padding(.horizontal)
-                                
-                                // Core Metrics Row
-                                HStack(spacing: 12) {
-                                    // Body Fat % with progress ring
-                                    CoreMetricCard(
-                                        value: currentMetric?.bodyFatPercentage,
-                                        label: "Body Fat %",
-                                        progress: currentMetric?.bodyFatPercentage != nil ? 
-                                            (100 - currentMetric!.bodyFatPercentage) / 100 : 0
-                                    )
-                                    
-                                    // FFMI with progress ring
-                                    CoreMetricCard(
-                                        value: calculateFFMI(),
-                                        label: "FFMI",
-                                        progress: calculateFFMI() != nil ? 
-                                            min(calculateFFMI()! / 25, 1.0) : 0
-                                    )
-                                }
-                                .frame(height: 120)
-                                .padding(.horizontal)
-                                
-                                // Secondary Metrics Strip
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    HStack(spacing: 0) {
-                                        SecondaryMetricItem(
-                                            icon: "scalemass",
-                                            value: currentMetric?.weight != nil ? 
-                                                convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
-                                            unit: currentSystem.weightUnit,
-                                            label: "Weight"
-                                        )
-                                        
-                                        Divider()
-                                            .frame(height: 40)
-                                        
-                                        SecondaryMetricItem(
-                                            icon: "figure.walk",
-                                            value: dailyMetrics?.steps != nil ? Double(dailyMetrics!.steps!) : nil,
-                                            unit: "steps",
-                                            label: "Steps",
-                                            showDecimal: false
-                                        )
-                                        
-                                        Divider()
-                                            .frame(height: 40)
-                                        
-                                        SecondaryMetricItem(
-                                            icon: "figure.arms.open",
-                                            value: calculateLeanMass() != nil ? 
-                                                convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil,
-                                            unit: currentSystem.weightUnit,
-                                            label: "Lean Mass"
-                                        )
-                                    }
-                                    .padding(.horizontal)
-                                }
-                                .frame(height: 60)
-                                .background(Color.appCard)
-                                
-                                // Timeline controls (if multiple entries)
-                                if bodyMetrics.count > 1 {
-                                    VStack(spacing: 8) {
-                                        Slider(
-                                            value: Binding(
-                                                get: { Double(selectedIndex) },
-                                                set: { selectedIndex = Int($0) }
-                                            ),
-                                            in: 0...Double(max(0, bodyMetrics.count - 1)),
-                                            step: 1
-                                        )
-                                        .tint(.appPrimary)
-                                        
-                                        HStack {
-                                            if let date = currentMetric?.date {
-                                                Text(date, style: .date)
-                                                    .font(.system(size: 12))
-                                                    .foregroundColor(.appTextSecondary)
-                                            }
-                                            
-                                            Spacer()
-                                            
-                                            Text("\(selectedIndex + 1) of \(bodyMetrics.count)")
-                                                .font(.system(size: 12, weight: .medium))
-                                                .foregroundColor(.appText)
-                                            
-                                            Spacer()
-                                            
-                                            if let lastDate = bodyMetrics.last?.date {
-                                                Text(lastDate, style: .date)
-                                                    .font(.system(size: 12))
-                                                    .foregroundColor(.appTextSecondary)
-                                            }
-                                        }
-                                    }
-                                    .padding()
-                                    .background(Color.appCard)
-                                    .cornerRadius(12)
-                                    .padding(.horizontal)
-                                }
-                                
-                                Spacer(minLength: 20)
-                            }
-                            .padding(.top, 8)
-                        }
-                        .refreshable {
-                            await refreshData()
-                        }
+                        mainContentView
                     }
                 }
             }
@@ -383,20 +425,32 @@ struct DashboardView: View {
     private func handlePhotoCapture(_ image: UIImage) async {
         guard let currentMetric = currentMetric else { return }
         
-        showToast("Uploading photo...", type: .info)
+        showToast("Saving photo...", type: .info)
         
-        // Save to photo library and get URL
-        var photoUrl: String?
-        await MainActor.run {
-            // Here we would normally upload to Supabase
-            // For now, just save locally
-            photoUrl = "local://photo_\(UUID().uuidString)"
-        }
+        // Save photo to documents directory
+        let photoId = UUID().uuidString
+        let photoUrl = savePhotoToDocuments(image, withId: photoId)
         
         if let photoUrl = photoUrl {
             // Update the current metric with the photo URL
-            if var updatedMetric = bodyMetrics.first(where: { $0.id == currentMetric.id }) {
-                updatedMetric.photoUrl = photoUrl
+            if let metricToUpdate = bodyMetrics.first(where: { $0.id == currentMetric.id }) {
+                // Create a new instance with the updated photoUrl
+                let updatedMetric = BodyMetrics(
+                    id: metricToUpdate.id,
+                    userId: metricToUpdate.userId,
+                    date: metricToUpdate.date,
+                    weight: metricToUpdate.weight,
+                    weightUnit: metricToUpdate.weightUnit,
+                    bodyFatPercentage: metricToUpdate.bodyFatPercentage,
+                    bodyFatMethod: metricToUpdate.bodyFatMethod,
+                    muscleMass: metricToUpdate.muscleMass,
+                    boneMass: metricToUpdate.boneMass,
+                    notes: metricToUpdate.notes,
+                    photoUrl: photoUrl,
+                    dataSource: metricToUpdate.dataSource,
+                    createdAt: metricToUpdate.createdAt,
+                    updatedAt: Date()
+                )
                 
                 // Save to Core Data
                 CoreDataManager.shared.saveBodyMetrics(updatedMetric, userId: authManager.currentUser?.id ?? "")
@@ -452,6 +506,34 @@ struct DashboardView: View {
         }
         
         return weight * (1 - bodyFatPercentage / 100)
+    }
+    
+    // MARK: - Photo Management
+    
+    private func savePhotoToDocuments(_ image: UIImage, withId photoId: String) -> String? {
+        guard let documentsDirectory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            return nil
+        }
+        
+        let photosDirectory = documentsDirectory.appendingPathComponent("progress_photos")
+        
+        // Create photos directory if it doesn't exist
+        try? FileManager.default.createDirectory(at: photosDirectory, withIntermediateDirectories: true)
+        
+        let fileURL = photosDirectory.appendingPathComponent("\(photoId).jpg")
+        
+        // Compress and save image
+        if let jpegData = image.jpegData(compressionQuality: 0.8) {
+            do {
+                try jpegData.write(to: fileURL)
+                return fileURL.absoluteString
+            } catch {
+                print("❌ Failed to save photo: \(error)")
+                return nil
+            }
+        }
+        
+        return nil
     }
 }
 

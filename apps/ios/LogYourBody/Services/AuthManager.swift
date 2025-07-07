@@ -312,6 +312,8 @@ class AuthManager: NSObject, ObservableObject {
             await MainActor.run {
                 self.currentUser = mockUser
                 self.isAuthenticated = true
+                // Clear onboarding status for new users
+                UserDefaults.standard.set(false, forKey: Constants.hasCompletedOnboardingKey)
                 print("✅ Mock sign up successful")
             }
             return
@@ -342,6 +344,8 @@ class AuthManager: NSObject, ObservableObject {
             
             await MainActor.run {
                 self.needsEmailVerification = true
+                // Clear onboarding status for new users
+                UserDefaults.standard.set(false, forKey: Constants.hasCompletedOnboardingKey)
             }
             
             print("✅ Sign up created, email verification required")
