@@ -39,6 +39,12 @@
 	<string>LogYourBody uses HealthKit to read your weight data and sync it with your profile.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>LogYourBody uses HealthKit to save your weight measurements.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>LogYourBody uses Face ID to secure your personal health data and progress photos.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>healthkit</string>
+	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
@@ -54,6 +60,8 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>LSApplicationCategoryType</key>
+	<string></string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationLandscapeLeft</string>

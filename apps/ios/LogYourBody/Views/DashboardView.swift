@@ -12,7 +12,9 @@ import PhotosUI
 struct DashboardView: View {
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var syncManager: SyncManager
+    @StateObject private var healthKitManager = HealthKitManager.shared
     @State private var dailyMetrics: DailyMetrics?
+    @State private var selectedDateMetrics: DailyMetrics?
     @State private var bodyMetrics: [BodyMetrics] = []
     @State private var selectedIndex: Int = 0
     @State private var isLoading = false
@@ -20,13 +22,8 @@ struct DashboardView: View {
     @State private var showCamera = false
     @State private var showPhotoPicker = false
     @State private var selectedPhoto: PhotosPickerItem?
-    @State private var toastMessage: String?
-    @State private var toastType: ToastType = .info
+    @Namespace private var namespace
     @AppStorage(Constants.preferredMeasurementSystemKey) private var measurementSystem = PreferencesView.defaultMeasurementSystem
-    
-    enum ToastType {
-        case info, success, error
-    }
     
     var currentSystem: PreferencesView.MeasurementSystem {
         PreferencesView.MeasurementSystem(rawValue: measurementSystem) ?? .imperial
@@ -113,30 +110,38 @@ struct DashboardView: View {
     @ViewBuilder
     private var progressPhotoView: some View {
         ZStack {
-            if let photoUrl = currentMetric?.photoUrl, !photoUrl.isEmpty {
-                OptimizedProgressPhotoView(photoUrl: photoUrl, maxHeight: UIScreen.main.bounds.width)
-                    .aspectRatio(1, contentMode: .fill)
-                    .clipped()
-                    .cornerRadius(16)
-            } else {
-                Rectangle()
-                    .fill(Color.appCard)
-                    .aspectRatio(1, contentMode: .fit)
-                    .overlay(
-                        ZStack {
-                            Circle()
-                                .fill(Color.appBackground)
-                                .frame(width: 60, height: 60)
-                            
-                            Image(systemName: "plus")
-                                .font(.system(size: 24, weight: .medium))
-                                .foregroundColor(.appPrimary)
+            // Use the new cutout view for photos
+            ProgressPhotoCutoutView(
+                currentMetric: currentMetric,
+                historicalMetrics: bodyMetrics
+            )
+            .frame(height: UIScreen.main.bounds.width)
+            .cornerRadius(16)
+            .clipped()
+            
+            // Add photo button overlay if no photo exists
+            if currentMetric?.photoUrl == nil || currentMetric?.photoUrl?.isEmpty == true {
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        Button(action: {
+                            showPhotoOptions = true
+                        }) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.appPrimary)
+                                    .frame(width: 56, height: 56)
+                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 24, weight: .medium))
+                                    .foregroundColor(.white)
+                            }
                         }
-                    )
-                    .cornerRadius(16)
-                    .onTapGesture {
-                        showPhotoOptions = true
+                        .padding(20)
                     }
+                }
             }
         }
     }
@@ -144,21 +149,51 @@ struct DashboardView: View {
     @ViewBuilder
     private var coreMetricsRow: some View {
         HStack(spacing: 12) {
-            // Body Fat % with progress ring
-            CoreMetricCard(
-                value: currentMetric?.bodyFatPercentage,
-                label: "Body Fat %",
-                progress: currentMetric?.bodyFatPercentage != nil ? 
-                    (100 - currentMetric!.bodyFatPercentage!) / 100 : 0
-            )
+            // Body Fat % with segmented progress ring
+            AnimatedCard(id: "bodyfat-metric", namespace: namespace) {
+                if let bodyFat = currentMetric?.bodyFatPercentage {
+                    SegmentedProgressRing(
+                        value: bodyFat,
+                        minValue: 0,
+                        maxValue: 25,
+                        optimalRange: getOptimalBodyFatRange(),
+                        idealValue: getIdealBodyFat(),
+                        size: 120,
+                        lineWidth: 8,
+                        label: "Body Fat",
+                        unit: "%"
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 140)
+                    .background(Color.appCard)
+                    .cornerRadius(12)
+                } else {
+                    EmptyMetricCard(label: "Body Fat %")
+                }
+            }
             
-            // FFMI with progress ring
-            CoreMetricCard(
-                value: calculateFFMI(),
-                label: "FFMI",
-                progress: calculateFFMI() != nil ? 
-                    min(calculateFFMI()! / 25, 1.0) : 0
-            )
+            // FFMI with segmented progress ring
+            AnimatedCard(id: "ffmi-metric", namespace: namespace) {
+                if let ffmi = calculateFFMI() {
+                    SegmentedProgressRing(
+                        value: ffmi,
+                        minValue: 15,
+                        maxValue: 30,
+                        optimalRange: getOptimalFFMIRange(),
+                        idealValue: getIdealFFMI(),
+                        size: 120,
+                        lineWidth: 8,
+                        label: "FFMI",
+                        unit: ""
+                    )
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 140)
+                    .background(Color.appCard)
+                    .cornerRadius(12)
+                } else {
+                    EmptyMetricCard(label: "FFMI")
+                }
+            }
         }
     }
     
@@ -166,35 +201,44 @@ struct DashboardView: View {
     private var secondaryMetricsStrip: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 0) {
-                SecondaryMetricItem(
-                    icon: "scalemass",
-                    value: currentMetric?.weight != nil ? 
-                        convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
-                    unit: currentSystem.weightUnit,
-                    label: "Weight"
-                )
+                AnimatedCard(id: "weight-metric", namespace: namespace) {
+                    SecondaryMetricItem(
+                        icon: "scalemass",
+                        value: currentMetric?.weight != nil ? 
+                            convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
+                        unit: currentSystem.weightUnit,
+                        label: "Weight",
+                        iconColor: Color(.systemGray)
+                    )
+                }
                 
                 Divider()
                     .frame(height: 40)
                 
-                SecondaryMetricItem(
-                    icon: "figure.walk",
-                    value: dailyMetrics?.steps != nil ? Double(dailyMetrics!.steps!) : nil,
-                    unit: "steps",
-                    label: "Steps",
-                    showDecimal: false
-                )
+                AnimatedCard(id: "steps-metric", namespace: namespace) {
+                    SecondaryMetricItem(
+                        icon: "figure.walk",
+                        value: selectedDateMetrics?.steps != nil ? Double(selectedDateMetrics!.steps!) : nil,
+                        unit: "steps",
+                        label: "Steps",
+                        showDecimal: false,
+                        iconColor: Color(.systemGreen)
+                    )
+                }
                 
                 Divider()
                     .frame(height: 40)
                 
-                SecondaryMetricItem(
-                    icon: "figure.arms.open",
-                    value: calculateLeanMass() != nil ? 
-                        convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil,
-                    unit: currentSystem.weightUnit,
-                    label: "Lean Mass"
-                )
+                AnimatedCard(id: "lean-mass-metric", namespace: namespace) {
+                    SecondaryMetricItem(
+                        icon: "figure.arms.open",
+                        value: calculateLeanMass() != nil ? 
+                            convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil,
+                        unit: currentSystem.weightUnit,
+                        label: "Lean Mass",
+                        iconColor: Color(.systemBlue)
+                    )
+                }
             }
             .padding(.horizontal)
         }
@@ -206,7 +250,10 @@ struct DashboardView: View {
             Slider(
                 value: Binding(
                     get: { Double(selectedIndex) },
-                    set: { selectedIndex = Int($0) }
+                    set: { newValue in
+                        selectedIndex = Int(newValue)
+                        loadMetricsForSelectedDate()
+                    }
                 ),
                 in: 0...Double(max(0, bodyMetrics.count - 1)),
                 step: 1
@@ -237,34 +284,6 @@ struct DashboardView: View {
         }
     }
     
-    @ViewBuilder
-    private var toastView: some View {
-        if let message = toastMessage {
-            HStack {
-                Image(systemName: toastType == .error ? "exclamationmark.circle" : 
-                                toastType == .success ? "checkmark.circle" : "info.circle")
-                    .foregroundColor(toastType == .error ? .red : 
-                                   toastType == .success ? .green : .appPrimary)
-                Text(message)
-                    .font(.system(size: 14))
-                    .foregroundColor(.appText)
-            }
-            .padding(.horizontal, 16)
-            .frame(height: 32)
-            .frame(maxWidth: .infinity)
-            .background(Color.appCard)
-            .cornerRadius(8)
-            .padding(.horizontal)
-            .transition(.move(edge: .top).combined(with: .opacity))
-            .onAppear {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    withAnimation {
-                        toastMessage = nil
-                    }
-                }
-            }
-        }
-    }
     
     @ViewBuilder
     private var headerView: some View {
@@ -308,6 +327,12 @@ struct DashboardView: View {
                     .foregroundColor(.appPrimary)
                     .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
                     .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: syncManager.isSyncing)
+                    .task {
+                        // Keep the animation running smoothly
+                        while syncManager.isSyncing {
+                            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
+                        }
+                    }
             }
         }
         .padding(.horizontal)
@@ -325,9 +350,6 @@ struct DashboardView: View {
                     // Custom Header
                     headerView
                     
-                    // Toast container (32pt overlay)
-                    toastView
-                    
                     if isLoading && bodyMetrics.isEmpty {
                         loadingView
                     } else if bodyMetrics.isEmpty {
@@ -342,7 +364,22 @@ struct DashboardView: View {
                 loadCachedDataImmediately()
                 loadDailyMetrics()
                 Task {
+                    // Sync today's steps from HealthKit if authorized
+                    if healthKitManager.isAuthorized {
+                        await syncStepsFromHealthKit()
+                        
+                        // On first launch, sync historical step data
+                        if !UserDefaults.standard.bool(forKey: "HasSyncedHistoricalSteps") {
+                            await syncHistoricalSteps()
+                        }
+                    }
                     await loadBodyMetrics()
+                }
+            }
+            .onReceive(healthKitManager.$todayStepCount) { newStepCount in
+                // Update UI when step count changes
+                Task {
+                    await updateStepCount(newStepCount)
                 }
             }
             .sheet(isPresented: $showPhotoOptions) {
@@ -374,13 +411,11 @@ struct DashboardView: View {
     
     // MARK: - Helper Methods
     
-    private func showToast(_ message: String, type: ToastType) {
-        withAnimation {
-            toastMessage = message
-            toastType = type
-        }
+    private func showToast(_ message: String, type: Toast.ToastType) {
+        ToastManager.shared.show(message, type: type)
     }
     
+    @MainActor
     private func loadCachedDataImmediately() {
         guard let userId = authManager.currentUser?.id else { return }
         
@@ -390,12 +425,25 @@ struct DashboardView: View {
         
         if !bodyMetrics.isEmpty {
             selectedIndex = bodyMetrics.count - 1
+            loadMetricsForSelectedDate()
         }
     }
     
+    @MainActor
     private func loadDailyMetrics() {
         guard let userId = authManager.currentUser?.id else { return }
         dailyMetrics = CoreDataManager.shared.fetchDailyMetrics(for: userId, date: Date())?.toDailyMetrics()
+        // Also set selectedDateMetrics for today initially
+        selectedDateMetrics = dailyMetrics
+    }
+    
+    @MainActor
+    private func loadMetricsForSelectedDate() {
+        guard let userId = authManager.currentUser?.id,
+              let selectedDate = currentMetric?.date else { return }
+        
+        // Load daily metrics for the selected date
+        selectedDateMetrics = CoreDataManager.shared.fetchDailyMetrics(for: userId, date: selectedDate)?.toDailyMetrics()
     }
     
     private func loadBodyMetrics() async {
@@ -408,9 +456,15 @@ struct DashboardView: View {
         // Reload from cache
         loadCachedDataImmediately()
         loadDailyMetrics()
+        loadMetricsForSelectedDate()
     }
     
     private func refreshData() async {
+        // Sync steps from HealthKit if authorized
+        if healthKitManager.isAuthorized {
+            await syncStepsFromHealthKit()
+        }
+        
         // Sync with remote
         syncManager.syncAll()
         
@@ -420,20 +474,30 @@ struct DashboardView: View {
         // Reload from cache
         loadCachedDataImmediately()
         loadDailyMetrics()
+        loadMetricsForSelectedDate()
     }
     
     private func handlePhotoCapture(_ image: UIImage) async {
-        guard let currentMetric = currentMetric else { return }
+        guard let currentMetric = currentMetric else { 
+            await MainActor.run {
+                showToast("Please log weight data first", type: .error)
+            }
+            return 
+        }
         
-        showToast("Saving photo...", type: .info)
+        await MainActor.run {
+            showToast("Saving photo...", type: .info)
+        }
         
-        // Save photo to documents directory
-        let photoId = UUID().uuidString
-        let photoUrl = savePhotoToDocuments(image, withId: photoId)
-        
-        if let photoUrl = photoUrl {
-            // Update the current metric with the photo URL
-            if let metricToUpdate = bodyMetrics.first(where: { $0.id == currentMetric.id }) {
+        // Process photo in background to avoid blocking UI
+        await Task.detached(priority: .userInitiated) {
+            // Save photo to documents directory
+            let photoId = UUID().uuidString
+            let photoUrl = self.savePhotoToDocuments(image, withId: photoId)
+            
+            if let photoUrl = photoUrl {
+                // Update the current metric with the photo URL
+                if let metricToUpdate = await MainActor.run(body: { self.bodyMetrics.first(where: { $0.id == currentMetric.id }) }) {
                 // Create a new instance with the updated photoUrl
                 let updatedMetric = BodyMetrics(
                     id: metricToUpdate.id,
@@ -452,20 +516,28 @@ struct DashboardView: View {
                     updatedAt: Date()
                 )
                 
-                // Save to Core Data
-                CoreDataManager.shared.saveBodyMetrics(updatedMetric, userId: authManager.currentUser?.id ?? "")
+                // Save to Core Data on background queue
+                await Task.detached {
+                    await CoreDataManager.shared.saveBodyMetrics(updatedMetric, userId: self.authManager.currentUser?.id ?? "")
+                }.value
                 
-                // Reload data
-                loadCachedDataImmediately()
-                
-                // Trigger sync
-                syncManager.syncIfNeeded()
-                
-                showToast("Photo saved successfully", type: .success)
+                // Reload data on main thread
+                await MainActor.run {
+                    loadCachedDataImmediately()
+                    showToast("Photo saved successfully", type: .success)
+                    }
+                    
+                    // Trigger sync in background
+                    Task.detached {
+                        await self.syncManager.syncIfNeeded()
+                    }
+                }
+            } else {
+                await MainActor.run {
+                    self.showToast("Failed to save photo", type: .error)
+                }
             }
-        } else {
-            showToast("Failed to save photo", type: .error)
-        }
+        }.value
     }
     
     private func handlePhotoSelection(_ item: PhotosPickerItem?) async {
@@ -508,6 +580,42 @@ struct DashboardView: View {
         return weight * (1 - bodyFatPercentage / 100)
     }
     
+    // MARK: - Color Calculations
+    
+    private func bodyFatProgressColor() -> Color {
+        guard let bodyFat = currentMetric?.bodyFatPercentage else {
+            return Color(.systemGray)
+        }
+        
+        // Green to red gradient based on body fat percentage
+        if bodyFat < 10 {
+            return Color(.systemGreen)
+        } else if bodyFat < 15 {
+            return Color(.systemTeal)
+        } else if bodyFat < 20 {
+            return Color(.systemOrange)
+        } else {
+            return Color(.systemRed)
+        }
+    }
+    
+    private func ffmiProgressColor() -> Color {
+        guard let ffmi = calculateFFMI() else {
+            return Color(.systemGray)
+        }
+        
+        // Blue gradient based on FFMI
+        if ffmi < 18 {
+            return Color(.systemBlue).opacity(0.6)
+        } else if ffmi < 22 {
+            return Color(.systemBlue)
+        } else if ffmi < 25 {
+            return Color(.systemIndigo)
+        } else {
+            return Color(.systemGray)
+        }
+    }
+    
     // MARK: - Photo Management
     
     private func savePhotoToDocuments(_ image: UIImage, withId photoId: String) -> String? {
@@ -535,35 +643,190 @@ struct DashboardView: View {
         
         return nil
     }
+    
+    // MARK: - HealthKit Integration
+    
+    private func syncStepsFromHealthKit() async {
+        // Run HealthKit operations on background to avoid blocking UI
+        await Task.detached(priority: .userInitiated) {
+            do {
+                // Fetch today's step count
+                try await self.healthKitManager.syncStepsFromHealthKit()
+                
+                // Get the step count
+                let steps = self.healthKitManager.todayStepCount
+                guard steps > 0 else { return }
+                
+                // Get or create today's daily metrics
+                guard let userId = await self.authManager.currentUser?.id else { return }
+                let today = Date()
+                
+                // Fetch existing daily metrics on background
+                var metrics = await Task.detached {
+                    CoreDataManager.shared.fetchDailyMetrics(for: userId, date: today)?.toDailyMetrics()
+                }.value
+                
+                if metrics == nil {
+                    // Create new daily metrics
+                    metrics = DailyMetrics(
+                        id: UUID().uuidString,
+                        userId: userId,
+                        date: today,
+                        steps: Int(steps),
+                        notes: nil,
+                        createdAt: today,
+                        updatedAt: today
+                    )
+                } else if var existingMetrics = metrics {
+                    // Update existing metrics with new step count
+                    metrics = DailyMetrics(
+                        id: existingMetrics.id,
+                        userId: existingMetrics.userId,
+                        date: existingMetrics.date,
+                        steps: Int(steps),
+                        notes: existingMetrics.notes,
+                        createdAt: existingMetrics.createdAt,
+                        updatedAt: Date()
+                    )
+                }
+                
+                // Save to Core Data on background
+                if let metrics = metrics {
+                    await CoreDataManager.shared.saveDailyMetrics(metrics, userId: userId)
+                }
+                
+                // Reload daily metrics on main thread
+                await MainActor.run {
+                    self.loadDailyMetrics()
+                }
+                
+            } catch {
+                print("❌ Failed to sync steps from HealthKit: \(error)")
+            }
+        }.value
+    }
+    
+    // Sync historical step data
+    private func syncHistoricalSteps() async {
+        guard let userId = authManager.currentUser?.id else { return }
+        
+        await MainActor.run {
+            showToast("Syncing step history...", type: .info)
+        }
+        
+        do {
+            // Sync last 30 days of step data
+            try await healthKitManager.syncHistoricalSteps(userId: userId, days: 30)
+            
+            // Mark as synced
+            UserDefaults.standard.set(true, forKey: "HasSyncedHistoricalSteps")
+            
+            // Reload metrics
+            await MainActor.run {
+                loadDailyMetrics()
+                showToast("Step history synced", type: .success)
+            }
+        } catch {
+            print("❌ Failed to sync historical steps: \(error)")
+            await MainActor.run {
+                showToast("Failed to sync step history", type: .error)
+            }
+        }
+    }
+    
+    // Update step count in real-time
+    private func updateStepCount(_ newStepCount: Int) async {
+        guard let userId = authManager.currentUser?.id else { return }
+        
+        // Update UI immediately
+        await MainActor.run {
+            // Check if daily metrics exists for today
+            if var metrics = dailyMetrics {
+                // Update steps in the existing metrics
+                dailyMetrics = DailyMetrics(
+                    id: metrics.id,
+                    userId: metrics.userId,
+                    date: metrics.date,
+                    steps: newStepCount,
+                    notes: metrics.notes,
+                    createdAt: metrics.createdAt,
+                    updatedAt: Date()
+                )
+            } else {
+                // Create new daily metrics
+                dailyMetrics = DailyMetrics(
+                    id: UUID().uuidString,
+                    userId: userId,
+                    date: Date(),
+                    steps: newStepCount,
+                    notes: nil,
+                    createdAt: Date(),
+                    updatedAt: Date()
+                )
+            }
+            
+            // If viewing today, also update the selected date metrics
+            if Calendar.current.isDateInToday(currentMetric?.date ?? Date()) {
+                selectedDateMetrics = dailyMetrics
+            }
+        }
+        
+        // Save to Core Data in background
+        await Task.detached(priority: .background) {
+            await self.healthKitManager.syncStepsToSupabase(userId: userId)
+        }.value
+    }
+    
+    // MARK: - Optimal Range Calculations
+    
+    private func getOptimalBodyFatRange() -> ClosedRange<Double> {
+        // TODO: Adjust based on gender and age
+        let gender = authManager.currentUser?.profile?.gender?.lowercased() ?? "male"
+        
+        if gender == "female" {
+            return 16...20  // Female optimal range
+        } else {
+            return 6...10   // Male optimal range
+        }
+    }
+    
+    private func getIdealBodyFat() -> Double {
+        let gender = authManager.currentUser?.profile?.gender?.lowercased() ?? "male"
+        return gender == "female" ? 18 : 8
+    }
+    
+    private func getOptimalFFMIRange() -> ClosedRange<Double> {
+        // TODO: Adjust based on gender
+        let gender = authManager.currentUser?.profile?.gender?.lowercased() ?? "male"
+        
+        if gender == "female" {
+            return 16...19  // Female optimal FFMI range
+        } else {
+            return 20...23  // Male optimal FFMI range
+        }
+    }
+    
+    private func getIdealFFMI() -> Double {
+        let gender = authManager.currentUser?.profile?.gender?.lowercased() ?? "male"
+        return gender == "female" ? 17.5 : 23
+    }
 }
 
 // MARK: - New UI Components
 
-struct CoreMetricCard: View {
-    let value: Double?
+struct EmptyMetricCard: View {
     let label: String
-    let progress: Double
     
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
-                // Background ring
                 Circle()
-                    .stroke(Color.appBorder, lineWidth: 6)
-                    .frame(width: 80, height: 80)
+                    .stroke(Color.appBorder, lineWidth: 8)
+                    .frame(width: 120, height: 120)
                 
-                // Progress ring
-                Circle()
-                    .trim(from: 0, to: progress)
-                    .stroke(Color.appPrimary, lineWidth: 6)
-                    .frame(width: 80, height: 80)
-                    .rotationEffect(.degrees(-90))
-                    .animation(.easeInOut(duration: 0.5), value: progress)
-                
-                // Value
-                Text(value != nil ? "\(Int(value!))" : "--")
+                Text("--")
                     .font(.system(size: 48, weight: .bold, design: .rounded))
-                    .foregroundColor(.appText)
+                    .foregroundColor(.appTextTertiary)
             }
             
             Text(label)
@@ -571,7 +834,7 @@ struct CoreMetricCard: View {
                 .foregroundColor(.appTextSecondary)
         }
         .frame(maxWidth: .infinity)
-        .frame(height: 120)
+        .frame(height: 140)
         .background(Color.appCard)
         .cornerRadius(12)
     }
@@ -583,12 +846,13 @@ struct SecondaryMetricItem: View {
     let unit: String
     let label: String
     var showDecimal: Bool = true
+    var iconColor: Color = Color(.systemGray)
     
     var body: some View {
         VStack(spacing: 4) {
             Image(systemName: icon)
                 .font(.system(size: 16))
-                .foregroundColor(.appPrimary)
+                .foregroundColor(iconColor)
             
             HStack(spacing: 2) {
                 if let value = value {
@@ -615,66 +879,395 @@ struct PhotoOptionsSheet: View {
     @Binding var showCamera: Bool
     @Binding var showPhotoPicker: Bool
     @Binding var isPresented: Bool
+    @Environment(\.colorScheme) var colorScheme
     
     var body: some View {
         VStack(spacing: 0) {
             // Handle
-            RoundedRectangle(cornerRadius: 2.5)
-                .fill(Color.appBorder)
-                .frame(width: 40, height: 5)
+            Capsule()
+                .fill(Color.appTextTertiary.opacity(0.3))
+                .frame(width: 36, height: 5)
                 .padding(.top, 8)
-                .padding(.bottom, 20)
+                .padding(.bottom, 16)
             
-            Text("Add Progress Photo")
-                .font(.appHeadline)
-                .foregroundColor(.appText)
-                .padding(.bottom, 24)
-            
+            // Title with icon
             VStack(spacing: 12) {
-                Button(action: {
-                    isPresented = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showCamera = true
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: "camera.fill")
-                            .font(.system(size: 20))
-                        Text("Take Photo")
-                            .font(.appBodyLarge)
-                        Spacer()
-                    }
-                    .foregroundColor(.appText)
-                    .padding()
-                    .background(Color.appCard)
-                    .cornerRadius(12)
+                ZStack {
+                    Circle()
+                        .fill(Color.appPrimary.opacity(0.1))
+                        .frame(width: 56, height: 56)
+                    
+                    Image(systemName: "camera.aperture")
+                        .font(.system(size: 24, weight: .medium))
+                        .foregroundColor(.appPrimary)
                 }
                 
+                Text("Add Progress Photo")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.appText)
+                
+                Text("Capture your transformation")
+                    .font(.system(size: 14))
+                    .foregroundColor(.appTextSecondary)
+            }
+            .padding(.bottom, 24)
+            
+            // Options
+            VStack(spacing: 0) {
+                // Take Photo Option
                 Button(action: {
                     isPresented = false
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        showPhotoPicker = true
+                    Task {
+                        try? await Task.sleep(nanoseconds: 300_000_000)
+                        await MainActor.run {
+                            showCamera = true
+                        }
                     }
                 }) {
-                    HStack {
-                        Image(systemName: "photo.fill")
-                            .font(.system(size: 20))
-                        Text("Choose from Library")
-                            .font(.appBodyLarge)
+                    HStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.blue.opacity(0.1))
+                                .frame(width: 44, height: 44)
+                            
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.blue)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Take Photo")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.appText)
+                            
+                            Text("Use camera for best results")
+                                .font(.system(size: 13))
+                                .foregroundColor(.appTextSecondary)
+                        }
+                        
                         Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.appTextTertiary)
                     }
-                    .foregroundColor(.appText)
-                    .padding()
-                    .background(Color.appCard)
-                    .cornerRadius(12)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
                 }
+                .buttonStyle(PlainButtonStyle())
+                
+                Divider()
+                    .background(Color.appBorder)
+                    .padding(.horizontal, 20)
+                
+                // Choose from Library Option
+                Button(action: {
+                    isPresented = false
+                    Task {
+                        try? await Task.sleep(nanoseconds: 300_000_000)
+                        await MainActor.run {
+                            showPhotoPicker = true
+                        }
+                    }
+                }) {
+                    HStack(spacing: 16) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.green.opacity(0.1))
+                                .frame(width: 44, height: 44)
+                            
+                            Image(systemName: "photo.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.green)
+                        }
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Choose from Library")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.appText)
+                            
+                            Text("Select from existing photos")
+                                .font(.system(size: 13))
+                                .foregroundColor(.appTextSecondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.system(size: 14, weight: .medium))
+                            .foregroundColor(.appTextTertiary)
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 12)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
-            .padding(.horizontal)
+            .background(Color.appCard)
+            .cornerRadius(16)
+            .padding(.horizontal, 16)
+            
+            // Cancel Button
+            Button(action: {
+                isPresented = false
+            }) {
+                Text("Cancel")
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundColor(.appTextSecondary)
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 50)
+            }
+            .padding(.top, 16)
+            .padding(.horizontal, 16)
             
             Spacer()
         }
-        .frame(maxHeight: 300)
+        .frame(maxHeight: 420)
         .background(Color.appBackground)
+        .cornerRadius(24, corners: [.topLeft, .topRight])
+        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: -5)
+    }
+}
+
+// Helper extension for custom corner radius
+extension View {
+    func cornerRadius(_ radius: CGFloat, corners: UIRectCorner) -> some View {
+        clipShape(RoundedCorner(radius: radius, corners: corners))
+    }
+}
+
+struct RoundedCorner: Shape {
+    var radius: CGFloat = .infinity
+    var corners: UIRectCorner = .allCorners
+    
+    func path(in rect: CGRect) -> Path {
+        let path = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: radius, height: radius))
+        return Path(path.cgPath)
+    }
+}
+
+// MARK: - Segmented Progress Ring
+
+struct SegmentedProgressRing: View {
+    let value: Double
+    let minValue: Double
+    let maxValue: Double
+    let optimalRange: ClosedRange<Double>
+    let idealValue: Double
+    let size: CGFloat
+    let lineWidth: CGFloat
+    let label: String
+    let unit: String
+    
+    @State private var animatedValue: Double = 0
+    @State private var showOnTarget = false
+    
+    // Calculate position on the ring (0-1)
+    private func normalizedPosition(for value: Double) -> Double {
+        (value - minValue) / (maxValue - minValue)
+    }
+    
+    // Convert value to angle (0 = top)
+    private func angle(for value: Double) -> Angle {
+        let normalized = normalizedPosition(for: value)
+        return .degrees(normalized * 360 - 90)
+    }
+    
+    // Get color for a given value
+    private func color(for value: Double) -> Color {
+        if optimalRange.contains(value) {
+            return Color(.systemGreen)
+        } else {
+            return Color(.systemRed).opacity(0.8)
+        }
+    }
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                // Background segments
+                backgroundSegments
+                
+                // Progress fill
+                progressFill
+                
+                // Ideal value tick mark
+                idealTick
+                
+                // Center content
+                centerContent
+            }
+            .frame(width: size, height: size)
+            
+            Text(label)
+                .font(.system(size: 12))
+                .foregroundColor(.appTextSecondary)
+        }
+        .onAppear {
+            withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
+                animatedValue = value
+            }
+            
+            // Show "On target" briefly if in optimal range
+            if optimalRange.contains(value) {
+                withAnimation(.easeIn(duration: 0.3).delay(0.5)) {
+                    showOnTarget = true
+                }
+                withAnimation(.easeOut(duration: 0.3).delay(2.0)) {
+                    showOnTarget = false
+                }
+            }
+        }
+        .onChange(of: value) { newValue in
+            withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
+                animatedValue = newValue
+            }
+            
+            // Check if we entered the optimal range
+            if optimalRange.contains(newValue) && !optimalRange.contains(value) {
+                withAnimation(.easeIn(duration: 0.3)) {
+                    showOnTarget = true
+                }
+                withAnimation(.easeOut(duration: 0.3).delay(2.0)) {
+                    showOnTarget = false
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var backgroundSegments: some View {
+        // Full background ring in neutral gray
+        Circle()
+            .stroke(Color.appBorder, lineWidth: lineWidth)
+        
+        // Colored segments overlay
+        ZStack {
+            // Below optimal range (red)
+            if minValue < optimalRange.lowerBound {
+                Arc(
+                    startAngle: angle(for: minValue),
+                    endAngle: angle(for: min(optimalRange.lowerBound, maxValue)),
+                    clockwise: true
+                )
+                .stroke(Color(.systemRed).opacity(0.3), lineWidth: lineWidth)
+            }
+            
+            // Optimal range (green)
+            Arc(
+                startAngle: angle(for: max(minValue, optimalRange.lowerBound)),
+                endAngle: angle(for: min(maxValue, optimalRange.upperBound)),
+                clockwise: true
+            )
+            .stroke(Color(.systemGreen).opacity(0.3), lineWidth: lineWidth)
+            
+            // Above optimal range (red)
+            if maxValue > optimalRange.upperBound {
+                Arc(
+                    startAngle: angle(for: max(minValue, optimalRange.upperBound)),
+                    endAngle: angle(for: maxValue),
+                    clockwise: true
+                )
+                .stroke(Color(.systemRed).opacity(0.3), lineWidth: lineWidth)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var progressFill: some View {
+        // Main progress arc
+        Arc(
+            startAngle: angle(for: minValue),
+            endAngle: angle(for: min(max(minValue, animatedValue), maxValue)),
+            clockwise: true
+        )
+        .stroke(
+            color(for: animatedValue),
+            style: StrokeStyle(
+                lineWidth: lineWidth,
+                lineCap: .round
+            )
+        )
+        .animation(.spring(response: 0.8, dampingFraction: 0.8), value: animatedValue)
+    }
+    
+    @ViewBuilder
+    private var idealTick: some View {
+        // Small tick mark at ideal value
+        let idealAngle = angle(for: idealValue)
+        let radius = size / 2
+        
+        Path { path in
+            let innerRadius = radius - lineWidth - 2
+            let outerRadius = radius + 2
+            
+            let innerPoint = CGPoint(
+                x: radius + innerRadius * cos(idealAngle.radians),
+                y: radius + innerRadius * sin(idealAngle.radians)
+            )
+            let outerPoint = CGPoint(
+                x: radius + outerRadius * cos(idealAngle.radians),
+                y: radius + outerRadius * sin(idealAngle.radians)
+            )
+            
+            path.move(to: innerPoint)
+            path.addLine(to: outerPoint)
+        }
+        .stroke(Color.white, lineWidth: 2)
+        .shadow(color: Color.black.opacity(0.3), radius: 1, x: 0, y: 1)
+    }
+    
+    @ViewBuilder
+    private var centerContent: some View {
+        VStack(spacing: 0) {
+            // Value
+            Text("\(Int(animatedValue))")
+                .font(.system(size: 48, weight: .bold, design: .rounded))
+                .foregroundColor(.appText)
+            
+            // Unit
+            Text(unit)
+                .font(.system(size: 14))
+                .foregroundColor(.appTextSecondary)
+                .offset(y: -4)
+            
+            // "On target" indicator
+            if showOnTarget {
+                Text("On target")
+                    .font(.system(size: 11, weight: .medium))
+                    .foregroundColor(.green)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                    .background(
+                        Capsule()
+                            .fill(Color.green.opacity(0.15))
+                    )
+                    .offset(y: 8)
+                    .transition(.scale.combined(with: .opacity))
+            }
+        }
+    }
+}
+
+// Custom Arc shape
+struct Arc: Shape {
+    var startAngle: Angle
+    var endAngle: Angle
+    var clockwise: Bool
+    
+    func path(in rect: CGRect) -> Path {
+        let center = CGPoint(x: rect.width / 2, y: rect.height / 2)
+        let radius = min(rect.width, rect.height) / 2
+        
+        var path = Path()
+        path.addArc(
+            center: center,
+            radius: radius,
+            startAngle: startAngle,
+            endAngle: endAngle,
+            clockwise: clockwise
+        )
+        
+        return path
     }
 }
 

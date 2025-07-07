@@ -112,7 +112,12 @@ struct PreferencesView: View {
                                 .labelStyle(.titleAndIcon)
                         } else {
                             Button("Connect") {
-                                showHealthKitConnect = true
+                                Task {
+                                    let authorized = await healthKitManager.requestAuthorization()
+                                    if !authorized {
+                                        showHealthKitConnect = true
+                                    }
+                                }
                             }
                             .font(.caption)
                             .foregroundColor(.blue)
@@ -124,12 +129,22 @@ struct PreferencesView: View {
                             .padding(.top, 8)
                             .onChange(of: healthKitSyncEnabled) { oldValue, newValue in
                                 if newValue {
-                                    // Start observing changes and sync existing data
+                                    // Check if we still have permissions
                                     Task {
-                                        healthKitManager.observeWeightChanges()
-                                        healthKitManager.observeStepChanges()
-                                        try? await healthKitManager.syncWeightFromHealthKit()
-                                        try? await healthKitManager.syncStepsFromHealthKit()
+                                        let authorized = await healthKitManager.requestAuthorization()
+                                        if authorized {
+                                            // Start observing changes and sync existing data
+                                            healthKitManager.observeWeightChanges()
+                                            healthKitManager.observeStepChanges()
+                                            try? await healthKitManager.syncWeightFromHealthKit()
+                                            try? await healthKitManager.syncStepsFromHealthKit()
+                                        } else {
+                                            // Reset the toggle if not authorized
+                                            await MainActor.run {
+                                                healthKitSyncEnabled = false
+                                                showHealthKitConnect = true
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -193,6 +208,8 @@ struct PreferencesView: View {
         }
         .onAppear {
             checkBiometricAvailability()
+            // Check HealthKit authorization status
+            healthKitManager.checkAuthorizationStatus()
         }
     }
 }

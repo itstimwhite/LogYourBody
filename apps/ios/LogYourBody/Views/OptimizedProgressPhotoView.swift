@@ -30,8 +30,6 @@ struct OptimizedProgressPhotoView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(maxHeight: maxHeight)
-                    .cornerRadius(12)
-                    .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
                     .transition(.opacity.combined(with: .scale(scale: 0.95)))
             } else if isLoading {
                 RoundedRectangle(cornerRadius: 12)
@@ -93,6 +91,12 @@ struct OptimizedProgressPhotoView: View {
             return
         }
         
+        // Check if it's a local file URL
+        if url.isFileURL {
+            await loadLocalFile(url: url, urlString: urlString)
+            return
+        }
+        
         do {
             // Configure URLSession for optimal image loading
             let config = URLSessionConfiguration.default
@@ -132,6 +136,37 @@ struct OptimizedProgressPhotoView: View {
             
         } catch {
             print("❌ Failed to load progress photo: \(error)")
+            isLoading = false
+            loadError = true
+        }
+    }
+    
+    @MainActor
+    private func loadLocalFile(url: URL, urlString: String) async {
+        do {
+            let data = try Data(contentsOf: url)
+            guard let image = UIImage(data: data) else {
+                isLoading = false
+                loadError = true
+                return
+            }
+            
+            // Process image on background queue
+            let processedImage = await Task.detached(priority: .userInitiated) {
+                return optimizeImage(image)
+            }.value
+            
+            // Cache the processed image
+            let cost = processedImage.pngData()?.count ?? 0
+            Self.imageCache.setObject(processedImage, forKey: NSString(string: urlString), cost: cost)
+            
+            // Update UI
+            withAnimation(.easeInOut(duration: 0.3)) {
+                self.loadedImage = processedImage
+                self.isLoading = false
+            }
+        } catch {
+            print("❌ Failed to load local photo: \(error)")
             isLoading = false
             loadError = true
         }

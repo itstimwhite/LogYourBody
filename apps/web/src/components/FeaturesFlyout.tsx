@@ -131,7 +131,7 @@ export function FeaturesFlyout({ onFeatureClick }: FeaturesFlyoutProps) {
                   <div className="grid gap-x-8 gap-y-1 p-8 lg:grid-cols-3">
                     {/* Tracking & Metrics */}
                     <div>
-                      <h4 className="mb-4 text-xs font-semibold uppercase tracking-wide text-linear-text-tertiary">
+                      <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/40">
                         Tracking & Metrics
                       </h4>
                       <div className="space-y-1">
@@ -147,7 +147,7 @@ export function FeaturesFlyout({ onFeatureClick }: FeaturesFlyoutProps) {
 
                     {/* Visual Progress */}
                     <div>
-                      <h4 className="mb-4 text-xs font-semibold uppercase tracking-wide text-linear-text-tertiary">
+                      <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/40">
                         Visual Progress
                       </h4>
                       <div className="space-y-1">
@@ -163,7 +163,7 @@ export function FeaturesFlyout({ onFeatureClick }: FeaturesFlyoutProps) {
 
                     {/* Integration & Experience */}
                     <div>
-                      <h4 className="mb-4 text-xs font-semibold uppercase tracking-wide text-linear-text-tertiary">
+                      <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-white/40">
                         Integration & Experience
                       </h4>
                       <div className="space-y-1">
@@ -187,7 +187,7 @@ export function FeaturesFlyout({ onFeatureClick }: FeaturesFlyoutProps) {
                       </p>
                       <button
                         onClick={() => onFeatureClick?.('step-tracking')}
-                        className="text-sm font-medium text-linear-purple hover:text-linear-purple/80 transition-colors"
+                        className="text-sm font-medium text-white hover:text-white/80 transition-colors"
                       >
                         Learn more →
                       </button>
@@ -215,26 +215,26 @@ function FeatureItem({ feature, onClick }: FeatureItemProps) {
     <Popover.Button
       as="button"
       onClick={onClick}
-      className="group relative -mx-3 flex w-full items-start gap-4 rounded-lg p-3 text-left transition-colors hover:bg-linear-border/30"
+      className="group relative -mx-3 flex w-full items-start gap-4 rounded-lg p-3 text-left transition-colors hover:bg-white/10"
     >
       {/* Icon */}
-      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-linear-purple/10 transition-colors group-hover:bg-linear-purple/20">
-        <Icon className="h-5 w-5 text-linear-purple" />
+      <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-white/10 transition-colors group-hover:bg-white/20">
+        <Icon className="h-5 w-5 text-white" />
       </div>
       
       {/* Content */}
       <div className="flex-1">
-        <h5 className="mb-0.5 text-sm font-medium text-linear-text group-hover:text-linear-text">
+        <h5 className="mb-0.5 text-sm font-medium text-white">
           {feature.title}
         </h5>
-        <p className="text-xs text-linear-text-secondary">
+        <p className="text-xs text-white/60">
           {feature.description}
         </p>
       </div>
 
       {/* Hover indicator */}
       <motion.div
-        className="absolute inset-y-0 left-0 w-0.5 bg-linear-purple opacity-0 transition-opacity group-hover:opacity-100"
+        className="absolute inset-y-0 left-0 w-0.5 bg-white opacity-0 transition-opacity group-hover:opacity-100"
         layoutId="activeFeature"
       />
     </Popover.Button>

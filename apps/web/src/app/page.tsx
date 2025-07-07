@@ -32,6 +32,7 @@ import {
   Percent,
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
+import { Header } from "@/components/Header";
 import { LandingTimelineDemo } from "@/components/LandingTimelineDemo";
 import { StepTrackerSection } from "@/components/StepTrackerModule";
 import { LandingPredictionSection } from "@/components/LandingPredictionSection";
@@ -131,79 +132,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-[#08090a] font-inter">
-      
-      {/* Header */}
-      <header className="border-b border-[#1a1b1e]" role="banner">
-        <div className="max-w-[1280px] mx-auto px-6 py-4">
-          <nav
-            className="flex items-center justify-between"
-            role="navigation"
-            aria-label="Main navigation"
-          >
-            <div className="flex items-center space-x-8">
-              <div className="text-lg font-semibold text-white">
-                LogYourBody
-              </div>
-              <div className="hidden md:flex items-center space-x-6">
-                <FeaturesFlyout onFeatureClick={handleFeatureClick} />
-                <button
-                  className="text-sm text-white/70 hover:text-white transition-colors"
-                  onClick={() => scrollToSection('pricing')}
-                >
-                  Pricing
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Link href="/about">
-                <Button
-                  variant="ghost"
-                  aria-label="Learn more"
-                  className="text-sm text-white/70 hover:text-white hidden sm:block"
-                >
-                  About
-                </Button>
-              </Link>
-              {user ? (
-                <>
-                  <Link href="/dashboard">
-                    <Button
-                      variant="ghost"
-                      className="text-sm text-white/70 hover:text-white"
-                    >
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <Button
-                    onClick={signOut}
-                    className="bg-white text-[#08090a] text-sm font-medium px-5 py-2 rounded-md hover:bg-white/90 transition-colors"
-                  >
-                    Sign Out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link href="/signin">
-                    <Button
-                      variant="ghost"
-                      className="text-sm text-white/70 hover:text-white"
-                    >
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link href="/signup">
-                    <Button
-                      className="bg-white text-[#08090a] text-sm font-medium px-5 py-2 rounded-md hover:bg-white/90 transition-colors"
-                    >
-                      Get Started
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header onFeatureClick={handleFeatureClick} showFeatures={true} />
 
       {/* Main Content */}
       <main id="main-content" tabIndex={-1}>
@@ -233,7 +162,7 @@ export default function HomePage() {
                 <div className="flex flex-col sm:flex-row gap-4 mb-10">
                   <Link href="/signup">
                     <Button
-                      className="bg-[#5E6AD2] text-white px-6 py-3 text-base font-medium rounded-md hover:bg-[#5E6AD2]/90 transition-all"
+                      className="bg-[#0095FF] text-white px-6 py-3 text-base font-medium rounded-md hover:bg-[#0095FF]/90 transition-all"
                     >
                       Start Free Trial
                     </Button>
@@ -302,133 +231,18 @@ export default function HomePage() {
                       <div className="bg-[#0f1011] rounded-md p-3 border border-[#1a1b1e]">
                         <div className="flex items-end justify-between h-20 gap-1">
                           {[40, 60, 45, 70, 65, 80, 75].map((height, i) => (
-                            <div key={i} className="flex-1 bg-[#5E6AD2]/20 rounded-t" style={{ height: `${height}%` }}></div>
+                            <div key={i} className="flex-1 bg-[#0095FF]/20 rounded-t" style={{ height: `${height}%` }}></div>
                           ))}
                         </div>
                       </div>
                     </div>
                     
                     {/* Floating badges */}
-                    <div className="absolute top-4 right-4 bg-green-500/90 text-white text-xs px-2 py-1 rounded-md">
+                    <div className="absolute top-4 right-4 bg-[#00C851]/90 text-white text-xs px-2 py-1 rounded-md">
                       Live data
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Problem/Solution Section - Apple style storytelling */}
-        <section className="py-20 md:py-32">
-          <div className="max-w-[1280px] mx-auto px-6">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-16">
-                <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4 leading-[1.2]">
-                  Your transformation data.
-                  <br />
-                  <span className="text-white/70">Finally unified.</span>
-                </h2>
-                <p className="text-lg text-white/70 max-w-3xl mx-auto leading-relaxed">
-                  Stop juggling PDFs, spreadsheets, and scattered apps. 
-                  See your complete body composition story in one intelligent timeline.
-                </p>
-              </div>
-
-              {/* Visual representation */}
-              <div className="relative mx-auto max-w-4xl">
-                <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                  {/* Before - Fragmented */}
-                  <div className="space-y-4">
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
-                        <span>DEXA scan PDFs</span>
-                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 bg-[#5E6AD2] rounded-full animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
-                        <span>Scale measurements</span>
-                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 bg-[#5E6AD2] rounded-full animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
-                        <span>Progress photos</span>
-                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 bg-[#5E6AD2] rounded-full animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
-                        <span>Gym measurements</span>
-                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 bg-[#5E6AD2] rounded-full animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* LogYourBody hub */}
-                  <div className="relative">
-                    <div className="mx-auto h-32 w-32 rounded-2xl bg-[#5E6AD2] flex items-center justify-center">
-                      <BarChart3 className="h-16 w-16 text-white" />
-                    </div>
-                    <p className="text-center mt-4 font-semibold text-white">LogYourBody</p>
-                  </div>
-
-                  {/* After - Unified insights */}
-                  <div className="space-y-4">
-                    <div className="text-left">
-                      <div className="inline-flex items-center gap-3 text-sm text-white">
-                        <div className="h-8 w-8 rounded-md bg-[#5E6AD2]/10 flex items-center justify-center">
-                          <Check className="h-4 w-4 text-[#5E6AD2]" />
-                        </div>
-                        <span>Complete timeline</span>
-                      </div>
-                    </div>
-                    <div className="text-left">
-                      <div className="inline-flex items-center gap-3 text-sm text-white">
-                        <div className="h-8 w-8 rounded-md bg-[#5E6AD2]/10 flex items-center justify-center">
-                          <Check className="h-4 w-4 text-[#5E6AD2]" />
-                        </div>
-                        <span>Aesthetic analytics</span>
-                      </div>
-                    </div>
-                    <div className="text-left">
-                      <div className="inline-flex items-center gap-3 text-sm text-white">
-                        <div className="h-8 w-8 rounded-md bg-[#5E6AD2]/10 flex items-center justify-center">
-                          <Check className="h-4 w-4 text-[#5E6AD2]" />
-                        </div>
-                        <span>Peak predictions</span>
-                      </div>
-                    </div>
-                    <div className="text-left">
-                      <div className="inline-flex items-center gap-3 text-sm text-white">
-                        <div className="h-8 w-8 rounded-md bg-[#5E6AD2]/10 flex items-center justify-center">
-                          <Check className="h-4 w-4 text-[#5E6AD2]" />
-                        </div>
-                        <span>Photo-ready alerts</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-center mt-16">
-                <p className="text-sm text-white/70 mb-4">
-                  The only app that shows you exactly how you'll look tomorrow.
-                </p>
-                <Link href="/signup">
-                  <Button className="bg-[#5E6AD2] text-white px-6 py-2.5 text-sm font-medium rounded-md hover:bg-[#5E6AD2]/90 transition-all">
-                    Start Tracking
-                  </Button>
-                </Link>
               </div>
             </div>
           </div>
@@ -477,11 +291,126 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Problem/Solution Section - Apple style storytelling */}
+        <section className="py-20 md:py-32">
+          <div className="max-w-[1280px] mx-auto px-6">
+            <div className="max-w-5xl mx-auto">
+              <div className="text-center mb-16">
+                <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4 leading-[1.2]">
+                  Your transformation data.
+                  <br />
+                  <span className="text-white/70">Finally unified.</span>
+                </h2>
+                <p className="text-lg text-white/70 max-w-3xl mx-auto leading-relaxed">
+                  Stop juggling PDFs, spreadsheets, and scattered apps. 
+                  See your complete body composition story in one intelligent timeline.
+                </p>
+              </div>
+
+              {/* Visual representation */}
+              <div className="relative mx-auto max-w-4xl">
+                <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                  {/* Before - Fragmented */}
+                  <div className="space-y-4">
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
+                        <span>DEXA scan PDFs</span>
+                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
+                        <span>Scale measurements</span>
+                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
+                        <span>Progress photos</span>
+                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
+                        <span>Gym measurements</span>
+                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
+                          <div className="h-1.5 w-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* LogYourBody hub */}
+                  <div className="relative">
+                    <div className="mx-auto h-32 w-32 rounded-2xl bg-[#7B61FF] flex items-center justify-center">
+                      <BarChart3 className="h-16 w-16 text-white" />
+                    </div>
+                    <p className="text-center mt-4 font-semibold text-white">LogYourBody</p>
+                  </div>
+
+                  {/* After - Unified insights */}
+                  <div className="space-y-4">
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-3 text-sm text-white">
+                        <div className="h-8 w-8 rounded-md bg-[#00C851]/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-[#00C851]" />
+                        </div>
+                        <span>Complete timeline</span>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-3 text-sm text-white">
+                        <div className="h-8 w-8 rounded-md bg-[#00C851]/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-[#00C851]" />
+                        </div>
+                        <span>Aesthetic analytics</span>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-3 text-sm text-white">
+                        <div className="h-8 w-8 rounded-md bg-[#00C851]/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-[#00C851]" />
+                        </div>
+                        <span>Peak predictions</span>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="inline-flex items-center gap-3 text-sm text-white">
+                        <div className="h-8 w-8 rounded-md bg-[#00C851]/10 flex items-center justify-center">
+                          <Check className="h-4 w-4 text-[#00C851]" />
+                        </div>
+                        <span>Photo-ready alerts</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="text-center mt-16">
+                <p className="text-sm text-white/70 mb-4">
+                  The only app that shows you exactly how you'll look tomorrow.
+                </p>
+                <Link href="/signup">
+                  <Button className="bg-[#7B61FF] text-white px-6 py-2.5 text-sm font-medium rounded-md hover:bg-[#7B61FF]/90 transition-all">
+                    Start Tracking
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Features Grid - Refined messaging */}
         <section id="features-grid" className="py-24 md:py-32" aria-labelledby="features-heading">
           <div className="max-w-[1280px] mx-auto px-6">
             <div className="mb-20 text-center">
-              <Badge className="mb-6 bg-[#5E6AD2]/10 text-white border-[#5E6AD2]/20">
+              <Badge className="mb-6 bg-[#FF6B6B]/10 text-white border-[#FF6B6B]/20">
                 Built for aesthetics
               </Badge>
               <h2 className="mb-6 text-4xl sm:text-5xl font-bold tracking-tight text-white leading-[1.2]">
@@ -505,8 +434,8 @@ export default function HomePage() {
                   role="listitem"
                 >
                   <div className="mb-6">
-                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-[#5E6AD2]/10 transition-colors group-hover:bg-[#5E6AD2]/20">
-                      <feature.icon className="h-6 w-6 text-[#5E6AD2]" aria-hidden="true" />
+                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-[#FF6B6B]/10 transition-colors group-hover:bg-[#FF6B6B]/20">
+                      <feature.icon className="h-6 w-6 text-[#FF6B6B]" aria-hidden="true" />
                     </div>
                   </div>
                   <h3 className="mb-3 text-lg font-semibold text-white">{feature.title}</h3>
@@ -524,7 +453,7 @@ export default function HomePage() {
           <div className="max-w-[1280px] mx-auto px-6">
             <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
               <div className="order-2 lg:order-1">
-                <Badge className="mb-4 bg-[#5E6AD2]/10 text-white border-[#5E6AD2]/20 inline-block">
+                <Badge className="mb-4 bg-[#00D4AA]/10 text-white border-[#00D4AA]/20 inline-block">
                   Revolutionary visualization
                 </Badge>
                 <h2 className="mb-6 text-4xl sm:text-5xl font-bold tracking-tight text-white leading-[1.2]">
@@ -537,8 +466,8 @@ export default function HomePage() {
                 
                 <div className="space-y-6">
                   <div className="flex gap-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#5E6AD2]/10">
-                      <Clock className="h-6 w-6 text-[#5E6AD2]" />
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#00D4AA]/10">
+                      <Clock className="h-6 w-6 text-[#00D4AA]" />
                     </div>
                     <div>
                       <h3 className="mb-1 text-lg font-semibold text-white">
@@ -551,8 +480,8 @@ export default function HomePage() {
                   </div>
                   
                   <div className="flex gap-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#5E6AD2]/10">
-                      <Camera className="h-6 w-6 text-[#5E6AD2]" />
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#00D4AA]/10">
+                      <Camera className="h-6 w-6 text-[#00D4AA]" />
                     </div>
                     <div>
                       <h3 className="mb-1 text-lg font-semibold text-white">
@@ -565,8 +494,8 @@ export default function HomePage() {
                   </div>
                   
                   <div className="flex gap-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#5E6AD2]/10">
-                      <TrendingUp className="h-6 w-6 text-[#5E6AD2]" />
+                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#00D4AA]/10">
+                      <TrendingUp className="h-6 w-6 text-[#00D4AA]" />
                     </div>
                     <div>
                       <h3 className="mb-1 text-lg font-semibold text-white">
@@ -622,7 +551,7 @@ export default function HomePage() {
             <Switch
               checked={isAnnual}
               onCheckedChange={setIsAnnual}
-              className="focus:ring-2 focus:ring-[#5E6AD2]/50 data-[state=checked]:bg-[#5E6AD2]"
+              className="focus:ring-2 focus:ring-[#00DC82]/50 data-[state=checked]:bg-[#00DC82]"
               aria-labelledby="monthly-label annual-label"
               aria-describedby="billing-savings"
             />
@@ -635,7 +564,7 @@ export default function HomePage() {
             {isAnnual && (
               <Badge
                 id="billing-savings"
-                className="ml-2 border-green-200 bg-green-100 text-green-800"
+                className="ml-2 border-[#00DC82]/20 bg-[#00DC82]/10 text-[#00DC82]"
                 role="status"
               >
                 Save {pricing.annual.savingsPercent}%
@@ -645,13 +574,13 @@ export default function HomePage() {
 
           <div className="not-prose mx-auto max-w-md">
             <Card
-              className="relative border-[#1a1b1e] bg-[#0f1011] ring-1 ring-[#1a1b1e] focus-within:ring-2 focus-within:ring-[#5E6AD2]/50"
+              className="relative border-[#1a1b1e] bg-[#0f1011] ring-1 ring-[#1a1b1e] focus-within:ring-2 focus-within:ring-[#00DC82]/50"
               role="region"
               aria-labelledby="pricing-title"
               aria-describedby="pricing-description"
             >
               <Badge
-                className="absolute -top-3 left-1/2 -translate-x-1/2 transform bg-[#5E6AD2] text-white"
+                className="absolute -top-3 left-1/2 -translate-x-1/2 transform bg-[#00DC82] text-black font-medium"
                 role="status"
               >
                 3-Day Free Trial
@@ -694,7 +623,7 @@ export default function HomePage() {
                       className="flex items-center text-white"
                     >
                       <Check
-                        className="mr-3 h-5 w-5 text-[#5E6AD2]"
+                        className="mr-3 h-5 w-5 text-[#00DC82]"
                         aria-hidden="true"
                       />
                       <span className="text-sm">{feature}</span>
@@ -703,7 +632,7 @@ export default function HomePage() {
                 </ul>
                 <Link href="/signup">
                   <Button
-                    className="w-full bg-white text-[#08090a] hover:bg-white/90 focus:ring-2 focus:ring-[#5E6AD2]/50 transition-colors"
+                    className="w-full bg-[#00DC82] text-black font-medium hover:bg-[#00DC82]/90 focus:ring-2 focus:ring-[#00DC82]/50 transition-colors"
                     aria-describedby="trial-terms"
                   >
                     Start Your Transformation
@@ -725,7 +654,7 @@ export default function HomePage() {
         <section className="relative py-24 md:py-32">
           <div className="max-w-[1280px] mx-auto px-6">
             <div className="mx-auto max-w-4xl text-center">
-              <Badge className="mb-8 bg-[#5E6AD2]/10 text-white border-[#5E6AD2]/20">
+              <Badge className="mb-8 bg-[#0095FF]/10 text-white border-[#0095FF]/20">
                 Ready to transform?
               </Badge>
               <h2 className="mb-6 text-4xl sm:text-5xl font-bold tracking-tight text-white leading-[1.2]">
@@ -760,15 +689,15 @@ export default function HomePage() {
               
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-white/50">
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-[#5E6AD2]" />
+                  <Check className="h-4 w-4 text-[#0095FF]" />
                   <span>No credit card required</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-[#5E6AD2]" />
+                  <Check className="h-4 w-4 text-[#0095FF]" />
                   <span>3-day free trial</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-[#5E6AD2]" />
+                  <Check className="h-4 w-4 text-[#0095FF]" />
                   <span>Cancel anytime</span>
                 </div>
               </div>
@@ -850,8 +779,8 @@ export default function HomePage() {
                 
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#5E6AD2]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-[#5E6AD2]" />
+                    <div className="w-8 h-8 rounded-full bg-[#9B59B6]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-[#9B59B6]" />
                     </div>
                     <div>
                       <h4 className="text-white font-medium mb-1">Secured by Clerk</h4>
@@ -862,8 +791,8 @@ export default function HomePage() {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#5E6AD2]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-[#5E6AD2]" />
+                    <div className="w-8 h-8 rounded-full bg-[#9B59B6]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-[#9B59B6]" />
                     </div>
                     <div>
                       <h4 className="text-white font-medium mb-1">HIPAA-compliant infrastructure</h4>
@@ -874,8 +803,8 @@ export default function HomePage() {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#5E6AD2]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-[#5E6AD2]" />
+                    <div className="w-8 h-8 rounded-full bg-[#9B59B6]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-[#9B59B6]" />
                     </div>
                     <div>
                       <h4 className="text-white font-medium mb-1">Zero-knowledge architecture</h4>
@@ -886,8 +815,8 @@ export default function HomePage() {
                   </div>
                   
                   <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#5E6AD2]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-[#5E6AD2]" />
+                    <div className="w-8 h-8 rounded-full bg-[#9B59B6]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-[#9B59B6]" />
                     </div>
                     <div>
                       <h4 className="text-white font-medium mb-1">Regular security audits</h4>

@@ -34,6 +34,7 @@ class HealthKitManager: ObservableObject {
     private var syncDebounceTimer: Timer?
     private var weightObserverQuery: HKObserverQuery?
     private var stepObserverQuery: HKObserverQuery?
+    private var activeQueries: [HKQuery] = []
     
     // Check if HealthKit is available
     var isHealthKitAvailable: Bool {
@@ -47,8 +48,29 @@ class HealthKitManager: ObservableObject {
             return
         }
         
-        let status = healthStore.authorizationStatus(for: weightType)
-        isAuthorized = (status == .sharingAuthorized)
+        // Check if we have any permissions for weight data
+        // Note: We can't check read permissions directly, but we can check write permissions
+        let writeStatus = healthStore.authorizationStatus(for: weightType)
+        
+        // If we have write permission, we're authorized
+        // If not, we check if we can read by trying to query
+        if writeStatus == .sharingAuthorized {
+            isAuthorized = true
+        } else {
+            // Try to read to check if we have read permission
+            Task {
+                do {
+                    _ = try await fetchLatestWeight()
+                    await MainActor.run {
+                        self.isAuthorized = true
+                    }
+                } catch {
+                    await MainActor.run {
+                        self.isAuthorized = false
+                    }
+                }
+            }
+        }
     }
     
     // Request authorization
@@ -957,17 +979,52 @@ class HealthKitManager: ObservableObject {
     func observeStepChanges() {
         guard isAuthorized else { return }
         
+        // Stop any existing step observer queries
+        activeQueries.filter { $0 is HKObserverQuery && ($0 as? HKObserverQuery)?.sampleType == stepCountType }.forEach { 
+            healthStore.stop($0)
+        }
+        activeQueries.removeAll { $0 is HKObserverQuery && ($0 as? HKObserverQuery)?.sampleType == stepCountType }
+        
         let query = HKObserverQuery(sampleType: stepCountType, predicate: nil) { [weak self] query, completionHandler, error in
             if error == nil {
                 // New step data available, sync it
-                Task { [weak self] in
-                    try? await self?.syncStepsFromHealthKit()
+                Task { @MainActor [weak self] in
+                    guard let self = self else { return }
+                    
+                    // Sync today's steps
+                    try? await self.syncStepsFromHealthKit()
+                    
+                    // Notify sync manager to sync with remote
+                    if let userId = AuthManager.shared.currentUser?.id {
+                        await self.syncStepsToSupabase(userId: userId)
+                    }
                 }
             }
             completionHandler()
         }
         
         healthStore.execute(query)
+        activeQueries.append(query)
+        
+        // Enable background delivery for real-time updates
+        Task {
+            await enableBackgroundStepDelivery()
+        }
+    }
+    
+    // Enable background delivery for steps
+    private func enableBackgroundStepDelivery() async {
+        guard isAuthorized else { return }
+        
+        do {
+            try await healthStore.enableBackgroundDelivery(
+                for: stepCountType,
+                frequency: .immediate
+            )
+            print("✅ Enabled background step delivery")
+        } catch {
+            print("❌ Failed to enable background step delivery: \(error)")
+        }
     }
     
     // Fetch step count history
@@ -1028,6 +1085,109 @@ class HealthKitManager: ObservableObject {
             for: stepCountType,
             frequency: .immediate
         )
+    }
+    
+    // MARK: - Step Syncing to Supabase
+    
+    func syncStepsToSupabase(userId: String) async {
+        // Get today's steps
+        let todaySteps = self.todayStepCount
+        guard todaySteps > 0 else { return }
+        
+        // Get or create today's daily metrics
+        let today = Date()
+        var metrics = await Task.detached {
+            CoreDataManager.shared.fetchDailyMetrics(for: userId, date: today)?.toDailyMetrics()
+        }.value
+        
+        if metrics == nil {
+            // Create new daily metrics
+            metrics = DailyMetrics(
+                id: UUID().uuidString,
+                userId: userId,
+                date: today,
+                steps: todaySteps,
+                notes: nil,
+                createdAt: today,
+                updatedAt: today
+            )
+        } else if var existingMetrics = metrics {
+            // Update existing metrics with new step count
+            metrics = DailyMetrics(
+                id: existingMetrics.id,
+                userId: existingMetrics.userId,
+                date: existingMetrics.date,
+                steps: todaySteps,
+                notes: existingMetrics.notes,
+                createdAt: existingMetrics.createdAt,
+                updatedAt: Date()
+            )
+        }
+        
+        // Save to Core Data
+        if let metrics = metrics {
+            await CoreDataManager.shared.saveDailyMetrics(metrics, userId: userId)
+            
+            // Trigger sync to remote
+            Task.detached {
+                await MainActor.run {
+                    SyncManager.shared.syncIfNeeded()
+                }
+            }
+        }
+    }
+    
+    // Sync historical step data
+    func syncHistoricalSteps(userId: String, days: Int = 30) async throws {
+        let historicalData = try await fetchStepCountHistory(days: days)
+        
+        for (stepCount, date) in historicalData {
+            guard stepCount > 0 else { continue }
+            
+            // Check if we already have data for this date
+            var metrics = await Task.detached {
+                CoreDataManager.shared.fetchDailyMetrics(for: userId, date: date)?.toDailyMetrics()
+            }.value
+            
+            if metrics == nil {
+                // Create new daily metrics for historical date
+                metrics = DailyMetrics(
+                    id: UUID().uuidString,
+                    userId: userId,
+                    date: date,
+                    steps: stepCount,
+                    notes: nil,
+                    createdAt: Date(),
+                    updatedAt: Date()
+                )
+            } else if var existingMetrics = metrics, existingMetrics.steps != stepCount {
+                // Update if step count is different
+                metrics = DailyMetrics(
+                    id: existingMetrics.id,
+                    userId: existingMetrics.userId,
+                    date: existingMetrics.date,
+                    steps: stepCount,
+                    notes: existingMetrics.notes,
+                    createdAt: existingMetrics.createdAt,
+                    updatedAt: Date()
+                )
+            } else {
+                // Skip if data is already up to date
+                continue
+            }
+            
+            // Save to Core Data
+            if let metrics = metrics {
+                await CoreDataManager.shared.saveDailyMetrics(metrics, userId: userId)
+            }
+        }
+        
+        // Sync all historical data to remote
+        Task.detached {
+            await MainActor.run {
+                SyncManager.shared.syncAll()
+            }
+        }
     }
 }
 

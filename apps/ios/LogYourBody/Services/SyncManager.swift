@@ -69,41 +69,45 @@ class SyncManager: ObservableObject {
     }
     
     func syncIfNeeded() {
-        guard networkMonitor.currentPath.status == .satisfied else { 
-            print("📵 Sync skipped: No network connection")
-            return 
-        }
-        guard authManager.isAuthenticated else { 
-            print("🔒 Sync skipped: Not authenticated")
-            return 
-        }
-        guard !isSyncing else { 
-            print("⏳ Sync skipped: Already syncing")
-            return 
-        }
-        
-        // Check if we synced recently (within last 5 minutes)
-        let lastSyncKey = "lastSupabaseSyncDate"
-        if let lastSync = UserDefaults.standard.object(forKey: lastSyncKey) as? Date {
-            let minutesSinceLastSync = Date().timeIntervalSince(lastSync) / 60
-            if minutesSinceLastSync < 5 {
-                print("⏰ Sync skipped: Synced \(Int(minutesSinceLastSync)) minutes ago")
-                return
+        Task.detached { [weak self] in
+            guard let self = self else { return }
+            
+            guard self.networkMonitor.currentPath.status == .satisfied else { 
+                print("📵 Sync skipped: No network connection")
+                return 
             }
-        }
-        
-        let unsynced = coreDataManager.fetchUnsyncedEntries()
-        let totalUnsynced = unsynced.bodyMetrics.count + unsynced.dailyMetrics.count + unsynced.profiles.count
-        
-        print("📊 Unsynced items: \(unsynced.bodyMetrics.count) body metrics, \(unsynced.dailyMetrics.count) daily metrics, \(unsynced.profiles.count) profiles")
-        
-        if totalUnsynced > 0 {
-            print("🚀 Starting sync for \(totalUnsynced) items...")
-            UserDefaults.standard.set(Date(), forKey: lastSyncKey)
-            syncAll()
-        } else {
-            print("✅ Everything is already synced")
-            updatePendingSyncCount()
+            guard await self.authManager.isAuthenticated else { 
+                print("🔒 Sync skipped: Not authenticated")
+                return 
+            }
+            guard await !self.isSyncing else { 
+                print("⏳ Sync skipped: Already syncing")
+                return 
+            }
+            
+            // Check if we synced recently (within last 5 minutes)
+            let lastSyncKey = "lastSupabaseSyncDate"
+            if let lastSync = UserDefaults.standard.object(forKey: lastSyncKey) as? Date {
+                let minutesSinceLastSync = Date().timeIntervalSince(lastSync) / 60
+                if minutesSinceLastSync < 5 {
+                    print("⏰ Sync skipped: Synced \(Int(minutesSinceLastSync)) minutes ago")
+                    return
+                }
+            }
+            
+            let unsynced = self.coreDataManager.fetchUnsyncedEntries()
+            let totalUnsynced = unsynced.bodyMetrics.count + unsynced.dailyMetrics.count + unsynced.profiles.count
+            
+            print("📊 Unsynced items: \(unsynced.bodyMetrics.count) body metrics, \(unsynced.dailyMetrics.count) daily metrics, \(unsynced.profiles.count) profiles")
+            
+            if totalUnsynced > 0 {
+                print("🚀 Starting sync for \(totalUnsynced) items...")
+                UserDefaults.standard.set(Date(), forKey: lastSyncKey)
+                await self.syncAll()
+            } else {
+                print("✅ Everything is already synced")
+                await self.updatePendingSyncCount()
+            }
         }
     }
     
@@ -111,7 +115,7 @@ class SyncManager: ObservableObject {
         guard !isSyncing else { return }
         guard authManager.isAuthenticated else { return }
         
-        DispatchQueue.main.async {
+        Task { @MainActor in
             self.isSyncing = true
             self.syncStatus = .syncing
         }
@@ -150,7 +154,8 @@ class SyncManager: ObservableObject {
     }
     
     private func performSync(token: String) {
-        Task {
+        Task.detached { [weak self] in
+            guard let self = self else { return }
             do {
                 let unsynced = coreDataManager.fetchUnsyncedEntries()
                 var hasErrors = false

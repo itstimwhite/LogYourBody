@@ -49,6 +49,23 @@ struct LogYourBodyApp: App {
                         
                         // Initial sync will be handled by the observers
                         // No need to call sync methods here to avoid concurrent saves
+                        
+                        // Enable background step delivery
+                        Task {
+                            try? await healthKitManager.setupStepCountBackgroundDelivery()
+                        }
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
+                    // App entering background - ensure sync is complete
+                    syncManager.syncIfNeeded()
+                }
+                .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+                    // App entering foreground - refresh data
+                    Task {
+                        if healthKitManager.isAuthorized {
+                            try? await healthKitManager.syncStepsFromHealthKit()
+                        }
                     }
                 }
         }

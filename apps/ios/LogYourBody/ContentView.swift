@@ -93,6 +93,7 @@ struct ContentView: View {
             }
         }
         .preferredColorScheme(.dark)
+        .toastPresenter() // Add global toast presenter
         .onAppear {
             // Initialize onboarding status
             hasCompletedOnboarding = UserDefaults.standard.bool(forKey: Constants.hasCompletedOnboardingKey)

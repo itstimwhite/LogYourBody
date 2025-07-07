@@ -8,51 +8,70 @@
 import SwiftUI
 
 struct MainTabView: View {
-    @State private var selectedTab = 0
+    @State private var selectedTab = AnimatedTabView.Tab.dashboard
+    @StateObject private var healthKitManager = HealthKitManager.shared
+    @AppStorage("healthKitSyncEnabled") private var healthKitSyncEnabled = true
+    @Namespace private var namespace
     
     init() {
-        // Configure tab bar appearance for translucent background
-        let appearance = UITabBarAppearance()
-        appearance.configureWithTransparentBackground()
-        appearance.backgroundEffect = UIBlurEffect(style: .systemUltraThinMaterial)
-        
-        // Remove item positioning to make icons centered
-        appearance.stackedLayoutAppearance.normal.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 100)
-        appearance.stackedLayoutAppearance.selected.titlePositionAdjustment = UIOffset(horizontal: 0, vertical: 100)
-        
-        UITabBar.appearance().standardAppearance = appearance
-        UITabBar.appearance().scrollEdgeAppearance = appearance
-        
-        // Set the tab bar height to 49pt
-        if #available(iOS 15.0, *) {
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
+        // Hide default tab bar since we're using custom one
+        UITabBar.appearance().isHidden = true
     }
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            DashboardView()
-                .tabItem {
-                    Image(systemName: "house")
-                        .environment(\.symbolVariants, .none)
+        ZStack(alignment: .bottom) {
+            // Content with smooth transitions
+            Group {
+                switch selectedTab {
+                case .dashboard:
+                    DashboardView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .leading).combined(with: .opacity),
+                            removal: .move(edge: .trailing).combined(with: .opacity)
+                        ))
+                case .log:
+                    LogWeightView()
+                        .transition(.asymmetric(
+                            insertion: .scale.combined(with: .opacity),
+                            removal: .scale.combined(with: .opacity)
+                        ))
+                case .settings:
+                    SettingsView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 }
-                .tag(0)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             
-            LogWeightView()
-                .tabItem {
-                    Image(systemName: "plus.circle")
-                        .environment(\.symbolVariants, .none)
-                }
-                .tag(1)
-            
-            SettingsView()
-                .tabItem {
-                    Image(systemName: "gear")
-                        .environment(\.symbolVariants, .none)
-                }
-                .tag(2)
+            // Custom Animated Tab Bar
+            VStack(spacing: 0) {
+                Spacer()
+                
+                AnimatedTabView(selectedTab: $selectedTab)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
+            }
         }
-        .accentColor(.white)
+        .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selectedTab)
+        .toastPresenter() // Add toast presenter to main view
+        .onAppear {
+            // Check HealthKit authorization status on app launch
+            healthKitManager.checkAuthorizationStatus()
+            
+            // If sync is enabled and we're authorized, start observers
+            if healthKitSyncEnabled && healthKitManager.isAuthorized {
+                Task {
+                    // Start observers for real-time updates
+                    healthKitManager.observeWeightChanges()
+                    healthKitManager.observeStepChanges()
+                    
+                    // Enable background step delivery
+                    try? await healthKitManager.setupStepCountBackgroundDelivery()
+                }
+            }
+        }
     }
 }
 

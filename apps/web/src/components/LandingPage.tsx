@@ -28,6 +28,7 @@ import {
   Download,
 } from "lucide-react";
 import { Footer } from "./Footer";
+import { Header } from "./Header";
 import { LandingTimelineDemo } from "./LandingTimelineDemo";
 import { StepTrackerSection } from "./StepTrackerModule";
 import { LandingPredictionSection } from "./LandingPredictionSection";
@@ -131,78 +132,7 @@ export function LandingPage() {
           Skip to main content
         </button>
       </div>
-      {/* Header */}
-      <header className="border-b border-linear-border" role="banner">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <nav
-            className="flex items-center justify-between"
-            role="navigation"
-            aria-label="Main navigation"
-          >
-            <div className="flex items-center space-x-6 sm:space-x-8">
-              <div className="text-lg sm:text-xl font-semibold text-linear-text">
-                LogYourBody
-              </div>
-              <div className="hidden md:flex items-center space-x-6">
-                <FeaturesFlyout onFeatureClick={handleFeatureClick} />
-                <button
-                  className="text-sm text-linear-text-secondary hover:text-linear-text transition-colors"
-                  onClick={() => scrollToSection('pricing')}
-                >
-                  Pricing
-                </button>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2 sm:space-x-4">
-              <Link href="/about">
-                <Button
-                  variant="ghost"
-                  aria-label="Learn more"
-                  className="text-sm text-linear-text-secondary hover:text-linear-text hidden sm:block"
-                >
-                  About
-                </Button>
-              </Link>
-              {user ? (
-                <>
-                  <Link href="/dashboard">
-                    <Button
-                      variant="ghost"
-                      className="text-sm text-linear-text-secondary hover:text-linear-text"
-                    >
-                      Dashboard
-                    </Button>
-                  </Link>
-                  <Button
-                    onClick={signOut}
-                    className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
-                  >
-                    Sign Out
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link href="/signin">
-                    <Button
-                      variant="ghost"
-                      className="text-sm text-linear-text-secondary hover:text-linear-text"
-                    >
-                      Sign In
-                    </Button>
-                  </Link>
-                  <Link href="/signup">
-                    <Button
-                      className="bg-linear-text text-linear-bg text-sm font-medium px-4 sm:px-5 py-2 rounded-lg hover:bg-linear-text-secondary transition-colors"
-                    >
-                      Get Started
-                    </Button>
-                  </Link>
-                </>
-              )}
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header onFeatureClick={handleFeatureClick} showFeatures={true} />
 
       {/* Main Content */}
       <main id="main-content" tabIndex={-1}>
