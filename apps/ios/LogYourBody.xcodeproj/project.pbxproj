@@ -67,6 +67,7 @@
 		AD8552712E19E4DF003552EE /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552702E19E4DF003552EE /* WhatsNewView.swift */; };
 		AD8552722E19E4DF003552EE /* ProfileSettingsViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526E2E19E4DF003552EE /* ProfileSettingsViewV2.swift */; };
 		AD8552732E19E4DF003552EE /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526F2E19E4DF003552EE /* SyncStatusView.swift */; };
+		AD85527F2E1C3653003552EE /* PhotoUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85527E2E1C3653003552EE /* PhotoUploadManager.swift */; };
 		ADBD69472E14A7B900921A30 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692A2E14A7B900921A30 /* AuthManager.swift */; };
 		ADBD69482E14A7B900921A30 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692C2E14A7B900921A30 /* DashboardView.swift */; };
 		ADBD694A2E14A7B900921A30 /* LogWeightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692E2E14A7B900921A30 /* LogWeightView.swift */; };
@@ -217,6 +218,7 @@
 		AD85526E2E19E4DF003552EE /* ProfileSettingsViewV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileSettingsViewV2.swift; sourceTree = "<group>"; };
 		AD85526F2E19E4DF003552EE /* SyncStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusView.swift; sourceTree = "<group>"; };
 		AD8552702E19E4DF003552EE /* WhatsNewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
+		AD85527E2E1C3653003552EE /* PhotoUploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoUploadManager.swift; sourceTree = "<group>"; };
 		AD857D532E15EE7B00A6B57A /* SupabaseDataClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SupabaseDataClient.swift; sourceTree = "<group>"; };
 		AD99F2982E1491FA00F5ECE4 /* AuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthManager.swift; path = Services/AuthManager.swift; sourceTree = "<group>"; };
 		AD99F29A2E14921400F5ECE4 /* LogWeightView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = LogWeightView.swift; path = LogYourBody/Views/LogWeightView.swift; sourceTree = "<group>"; };
@@ -388,6 +390,7 @@
 				AD85525D2E19DC01003552EE /* AppVersionManager.swift */,
 				AD8552552E19A5B5003552EE /* RealtimeSyncManager.swift */,
 				ADFC6A232E187717004FCE40 /* SupabaseManager.swift */,
+				AD85527E2E1C3653003552EE /* PhotoUploadManager.swift */,
 				AD723AE42E15FA5C002376C6 /* AuthManager.swift */,
 				AD723AE62E15FA5C002376C6 /* CoreDataManager.swift */,
 				AD723AE72E15FA5C002376C6 /* HealthKitManager.swift */,
@@ -895,6 +898,7 @@
 				ADFC6A182E1858A3004FCE40 /* CompletionStepView.swift in Sources */,
 				ADFC6A1A2E1858A3004FCE40 /* OnboardingContainerView.swift in Sources */,
 				ADFC6A242E187717004FCE40 /* SupabaseManager.swift in Sources */,
+				AD85527F2E1C3653003552EE /* PhotoUploadManager.swift in Sources */,
 				AD8552662E19DCB6003552EE /* SyncStatusView.swift in Sources */,
 				AD72433E2E15FA5E002376C6 /* Configuration.swift in Sources */,
 				AD2C3D5F2E16B10A00234567 /* HealthKitManager.swift in Sources */,

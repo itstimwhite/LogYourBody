@@ -7,24 +7,26 @@
 
 import SwiftUI
 import HealthKit
+import PhotosUI
 
 struct DashboardView: View {
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var syncManager: SyncManager
-    @StateObject private var healthKitManager = HealthKitManager.shared
-    @StateObject private var realtimeSync = RealtimeSyncManager.shared
+    @State private var dailyMetrics: DailyMetrics?
     @State private var bodyMetrics: [BodyMetrics] = []
     @State private var selectedIndex: Int = 0
-    @State private var isLoading = false  // Start with false to show cached data immediately
-    @State private var isLoadingFullHistory = false
-    @State private var showHealthKitPrompt = false
-    @State private var hasCheckedHealthKit = false
-    @State private var isRefreshing = false
-    @State private var hasLoadedFullHistory = false
-    @State private var isSyncingHealthKit = false
-    @State private var hasInitialDataLoaded = false
+    @State private var isLoading = false
+    @State private var showPhotoOptions = false
+    @State private var showCamera = false
+    @State private var showPhotoPicker = false
+    @State private var selectedPhoto: PhotosPickerItem?
+    @State private var toastMessage: String?
+    @State private var toastType: ToastType = .info
     @AppStorage(Constants.preferredMeasurementSystemKey) private var measurementSystem = PreferencesView.defaultMeasurementSystem
-    @AppStorage("healthKitSyncEnabled") private var healthKitSyncEnabled = true
+    
+    enum ToastType {
+        case info, success, error
+    }
     
     var currentSystem: PreferencesView.MeasurementSystem {
         PreferencesView.MeasurementSystem(rawValue: measurementSystem) ?? .imperial
@@ -35,557 +37,389 @@ struct DashboardView: View {
         return bodyMetrics[selectedIndex]
     }
     
+    var userAge: Int? {
+        guard let dateOfBirth = authManager.currentUser?.profile?.dateOfBirth else { return nil }
+        let calendar = Calendar.current
+        let ageComponents = calendar.dateComponents([.year], from: dateOfBirth, to: Date())
+        return ageComponents.year
+    }
+    
     var body: some View {
         NavigationView {
             ZStack {
                 Color.appBackground
                     .ignoresSafeArea()
                 
-                if isLoading {
-                    // Loading State
-                    VStack(spacing: 20) {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                        Text("Loading your data...")
-                            .font(.appBody)
-                            .foregroundColor(.appTextSecondary)
-                    }
-                } else if bodyMetrics.isEmpty {
-                    // Empty State
-                    VStack(spacing: 20) {
-                        Image(systemName: "chart.line.downtrend.xyaxis")
-                            .font(.system(size: 60))
-                            .foregroundColor(.appTextTertiary)
-                        Text("No body composition data yet")
-                            .font(.appHeadline)
-                            .foregroundColor(.appText)
-                        Text("Log your first measurement to get started")
-                            .font(.appBody)
-                            .foregroundColor(.appTextSecondary)
-                    }
-                } else {
-                    // Main Content
-                    VStack(spacing: 0) {
-                        // Add spacer at top to push content down
-                        Spacer(minLength: 40)
+                VStack(spacing: 0) {
+                    // Custom Header
+                    HStack {
+                        // User info
+                        HStack(spacing: 8) {
+                            if let name = authManager.currentUser?.profile?.fullName {
+                                Text(name)
+                                    .font(.system(size: 14, weight: .regular, design: .default))
+                                    .foregroundColor(.appText)
+                            }
+                            
+                            if let age = userAge {
+                                Text("• \(age)")
+                                    .font(.system(size: 14, weight: .regular, design: .default))
+                                    .foregroundColor(.appTextSecondary)
+                            }
+                            
+                            if let gender = authManager.currentUser?.profile?.gender {
+                                Image(systemName: gender.lowercased() == "male" ? "person.fill" : "person.dress.line.vertical.figure")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.appTextSecondary)
+                            }
+                            
+                            if let height = authManager.currentUser?.profile?.height {
+                                let heightDisplay = currentSystem == .imperial ? 
+                                    "\(Int(height / 12))'\(Int(height.truncatingRemainder(dividingBy: 12)))\"" : 
+                                    "\(Int(height * 2.54))cm"
+                                Text("• \(heightDisplay)")
+                                    .font(.system(size: 14, weight: .regular, design: .default))
+                                    .foregroundColor(.appTextSecondary)
+                            }
+                        }
                         
+                        Spacer()
+                        
+                        // Sync status
+                        if syncManager.isSyncing {
+                            Image(systemName: "arrow.triangle.2.circlepath")
+                                .font(.system(size: 16))
+                                .foregroundColor(.appPrimary)
+                                .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
+                                .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: syncManager.isSyncing)
+                        }
+                    }
+                    .padding(.horizontal)
+                    .padding(.vertical, 12)
+                    .background(Color.appBackground)
+                    
+                    // Toast container (32pt overlay)
+                    if let message = toastMessage {
+                        HStack {
+                            Image(systemName: toastType == .error ? "exclamationmark.circle" : 
+                                            toastType == .success ? "checkmark.circle" : "info.circle")
+                                .foregroundColor(toastType == .error ? .red : 
+                                               toastType == .success ? .green : .appPrimary)
+                            Text(message)
+                                .font(.system(size: 14))
+                                .foregroundColor(.appText)
+                        }
+                        .padding(.horizontal, 16)
+                        .frame(height: 32)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.appCard)
+                        .cornerRadius(8)
+                        .padding(.horizontal)
+                        .transition(.move(edge: .top).combined(with: .opacity))
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                withAnimation {
+                                    toastMessage = nil
+                                }
+                            }
+                        }
+                    }
+                    
+                    if isLoading && bodyMetrics.isEmpty {
+                        // Loading State
+                        Spacer()
+                        VStack(spacing: 20) {
+                            ProgressView()
+                                .scaleEffect(1.5)
+                            Text("Loading your data...")
+                                .font(.appBody)
+                                .foregroundColor(.appTextSecondary)
+                        }
+                        Spacer()
+                    } else if bodyMetrics.isEmpty {
+                        // Empty State
+                        Spacer()
+                        VStack(spacing: 20) {
+                            Image(systemName: "chart.line.downtrend.xyaxis")
+                                .font(.system(size: 60))
+                                .foregroundColor(.appTextTertiary)
+                            Text("No body composition data yet")
+                                .font(.appHeadline)
+                                .foregroundColor(.appText)
+                            Text("Log your first measurement to get started")
+                                .font(.appBody)
+                                .foregroundColor(.appTextSecondary)
+                        }
+                        Spacer()
+                    } else {
+                        // Main Content
                         ScrollView {
-                            VStack(spacing: 24) {
-                                // Progress Photo Display
-                                VStack(spacing: 12) {
+                            VStack(spacing: 16) {
+                                // Progress Photo (1:1 square)
+                                ZStack {
                                     if let photoUrl = currentMetric?.photoUrl, !photoUrl.isEmpty {
-                                        AsyncImage(url: URL(string: photoUrl)) { image in
-                                            image
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fit)
-                                                .frame(maxHeight: 300)
-                                                .cornerRadius(12)
-                                                .shadow(color: .black.opacity(0.1), radius: 5, x: 0, y: 2)
-                                        } placeholder: {
-                                            RoundedRectangle(cornerRadius: 12)
-                                                .fill(Color.appCard)
-                                                .frame(height: 300)
-                                                .overlay(
-                                                    ProgressView()
-                                                        .scaleEffect(1.2)
-                                                )
-                                        }
+                                        OptimizedProgressPhotoView(photoUrl: photoUrl)
+                                            .aspectRatio(1, contentMode: .fill)
+                                            .clipped()
+                                            .cornerRadius(16)
                                     } else {
-                                        // Placeholder image
-                                        RoundedRectangle(cornerRadius: 12)
-                                            .fill(
-                                                LinearGradient(
-                                                    gradient: Gradient(colors: [
-                                                        Color.appCard,
-                                                        Color.appCard.opacity(0.8)
-                                                    ]),
-                                                    startPoint: .top,
-                                                    endPoint: .bottom
-                                                )
-                                            )
-                                            .frame(height: 300)
+                                        Rectangle()
+                                            .fill(Color.appCard)
+                                            .aspectRatio(1, contentMode: .fit)
                                             .overlay(
-                                                RoundedRectangle(cornerRadius: 12)
-                                                    .stroke(Color.appBorder, lineWidth: 1)
-                                            )
-                                            .overlay(
-                                                VStack(spacing: 16) {
+                                                ZStack {
                                                     Circle()
                                                         .fill(Color.appBackground)
-                                                        .frame(width: 80, height: 80)
-                                                        .overlay(
-                                                            Image(systemName: "camera.fill")
-                                                                .font(.system(size: 36))
-                                                                .foregroundColor(.appTextTertiary)
-                                                        )
-                                                    Text("No progress photo")
-                                                        .font(.appBodyLarge)
-                                                        .foregroundColor(.appTextSecondary)
-                                                    Text("Tap to add photo")
-                                                        .font(.appCaption)
-                                                        .foregroundColor(.appTextTertiary)
+                                                        .frame(width: 60, height: 60)
+                                                    
+                                                    Image(systemName: "plus")
+                                                        .font(.system(size: 24, weight: .medium))
+                                                        .foregroundColor(.appPrimary)
                                                 }
                                             )
-                                            .shadow(color: .black.opacity(0.05), radius: 2, x: 0, y: 1)
-                                    }
-                                    
-                                    // Date Display
-                                    if let date = currentMetric?.date {
-                                        Text(date, style: .date)
-                                            .font(.appBody)
-                                            .foregroundColor(.appTextSecondary)
+                                            .cornerRadius(16)
+                                            .onTapGesture {
+                                                showPhotoOptions = true
+                                            }
                                     }
                                 }
                                 .padding(.horizontal)
                                 
-                                // Main Body Fat Display
-                                VStack(spacing: 16) {
-                                    if let bodyFat = currentMetric?.bodyFatPercentage {
-                                        VStack(spacing: 8) {
-                                            Text("Body Fat")
-                                                .font(.appBodyLarge)
-                                                .foregroundColor(.appTextSecondary)
+                                // Core Metrics Row
+                                HStack(spacing: 12) {
+                                    // Body Fat % with progress ring
+                                    CoreMetricCard(
+                                        value: currentMetric?.bodyFatPercentage,
+                                        label: "Body Fat %",
+                                        progress: currentMetric?.bodyFatPercentage != nil ? 
+                                            (100 - currentMetric!.bodyFatPercentage) / 100 : 0
+                                    )
+                                    
+                                    // FFMI with progress ring
+                                    CoreMetricCard(
+                                        value: calculateFFMI(),
+                                        label: "FFMI",
+                                        progress: calculateFFMI() != nil ? 
+                                            min(calculateFFMI()! / 25, 1.0) : 0
+                                    )
+                                }
+                                .frame(height: 120)
+                                .padding(.horizontal)
+                                
+                                // Secondary Metrics Strip
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 0) {
+                                        SecondaryMetricItem(
+                                            icon: "scalemass",
+                                            value: currentMetric?.weight != nil ? 
+                                                convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
+                                            unit: currentSystem.weightUnit,
+                                            label: "Weight"
+                                        )
+                                        
+                                        Divider()
+                                            .frame(height: 40)
+                                        
+                                        SecondaryMetricItem(
+                                            icon: "figure.walk",
+                                            value: dailyMetrics?.steps != nil ? Double(dailyMetrics!.steps!) : nil,
+                                            unit: "steps",
+                                            label: "Steps",
+                                            showDecimal: false
+                                        )
+                                        
+                                        Divider()
+                                            .frame(height: 40)
+                                        
+                                        SecondaryMetricItem(
+                                            icon: "figure.arms.open",
+                                            value: calculateLeanMass() != nil ? 
+                                                convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil,
+                                            unit: currentSystem.weightUnit,
+                                            label: "Lean Mass"
+                                        )
+                                    }
+                                    .padding(.horizontal)
+                                }
+                                .frame(height: 60)
+                                .background(Color.appCard)
+                                
+                                // Timeline controls (if multiple entries)
+                                if bodyMetrics.count > 1 {
+                                    VStack(spacing: 8) {
+                                        Slider(
+                                            value: Binding(
+                                                get: { Double(selectedIndex) },
+                                                set: { selectedIndex = Int($0) }
+                                            ),
+                                            in: 0...Double(max(0, bodyMetrics.count - 1)),
+                                            step: 1
+                                        )
+                                        .tint(.appPrimary)
+                                        
+                                        HStack {
+                                            if let date = currentMetric?.date {
+                                                Text(date, style: .date)
+                                                    .font(.system(size: 12))
+                                                    .foregroundColor(.appTextSecondary)
+                                            }
                                             
-                                            HStack(alignment: .firstTextBaseline, spacing: 2) {
-                                                Text("\(bodyFat, specifier: "%.1f")")
-                                                    .font(.system(size: 72, weight: .bold, design: .rounded))
-                                                    .foregroundColor(.appText)
-                                                Text("%")
-                                                    .font(.system(size: 36, weight: .medium, design: .rounded))
+                                            Spacer()
+                                            
+                                            Text("\(selectedIndex + 1) of \(bodyMetrics.count)")
+                                                .font(.system(size: 12, weight: .medium))
+                                                .foregroundColor(.appText)
+                                            
+                                            Spacer()
+                                            
+                                            if let lastDate = bodyMetrics.last?.date {
+                                                Text(lastDate, style: .date)
+                                                    .font(.system(size: 12))
                                                     .foregroundColor(.appTextSecondary)
                                             }
                                         }
-                                        .padding(.vertical, 20)
-                                    } else {
-                                        VStack(spacing: 8) {
-                                            Text("Body Fat")
-                                                .font(.appBodyLarge)
-                                                .foregroundColor(.appTextSecondary)
-                                            
-                                            Text("--")
-                                                .font(.system(size: 72, weight: .bold, design: .rounded))
-                                                .foregroundColor(.appTextTertiary)
-                                        }
-                                        .padding(.vertical, 20)
                                     }
+                                    .padding()
+                                    .background(Color.appCard)
+                                    .cornerRadius(12)
+                                    .padding(.horizontal)
                                 }
-                                .frame(maxWidth: .infinity)
-                                .padding(.horizontal)
                                 
-                                // Secondary Metrics Grid
-                                LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                                    MetricCard(
-                                        title: "Weight",
-                                        value: currentMetric?.weight != nil ? convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
-                                        unit: currentSystem.weightUnit,
-                                        icon: "scalemass",
-                                        color: .blue
-                                    )
-                                    
-                                    MetricCard(
-                                        title: "FFMI",
-                                        value: calculateFFMI(),
-                                        unit: "",
-                                        icon: "figure.strengthtraining.traditional",
-                                        color: .green
-                                    )
-                                    
-                                    MetricCard(
-                                        title: "Lean Mass",
-                                        value: calculateLeanMass() != nil ? convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil,
-                                        unit: currentSystem.weightUnit,
-                                        icon: "figure.arms.open",
-                                        color: .purple
-                                    )
-                                    
-                                    MetricCard(
-                                        title: "Fat Mass",
-                                        value: calculateFatMass() != nil ? convertWeight(calculateFatMass()!, from: "kg", to: currentSystem.weightUnit) : nil,
-                                        unit: currentSystem.weightUnit,
-                                        icon: "drop.fill",
-                                        color: .orange
-                                    )
-                                }
-                                .padding(.horizontal)
-                                
-                                Spacer(minLength: 100)
+                                Spacer(minLength: 20)
                             }
-                            .padding(.top)
+                            .padding(.top, 8)
                         }
                         .refreshable {
                             await refreshData()
                         }
-                        
-                        // Timeline Slider
-                        if bodyMetrics.count > 1 {
-                            VStack(spacing: 12) {
-                                Slider(
-                                    value: Binding(
-                                        get: { Double(selectedIndex) },
-                                        set: { selectedIndex = Int($0) }
-                                    ),
-                                    in: 0...Double(max(0, bodyMetrics.count - 1)),
-                                    step: 1
-                                )
-                                .tint(.appPrimary)
-                                .padding(.horizontal)
-                                
-                                HStack {
-                                    if let firstDate = bodyMetrics.first?.date {
-                                        Text(firstDate, style: .date)
-                                            .font(.appCaption)
-                                            .foregroundColor(.appTextTertiary)
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    VStack(spacing: 2) {
-                                        Text("\(selectedIndex + 1) of \(bodyMetrics.count)")
-                                            .font(.appCaptionBold)
-                                            .foregroundColor(.appTextSecondary)
-                                        
-                                        if isLoadingFullHistory {
-                                            Text("Loading history...")
-                                                .font(.appCaption)
-                                                .foregroundColor(.appTextTertiary)
-                                        }
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    if let lastDate = bodyMetrics.last?.date {
-                                        Text(lastDate, style: .date)
-                                            .font(.appCaption)
-                                            .foregroundColor(.appTextTertiary)
-                                    }
-                                }
-                                .padding(.horizontal)
-                            }
-                            .padding(.vertical)
-                            .background(Color.appCard)
-                            .overlay(
-                                Rectangle()
-                                    .fill(Color.appBorder)
-                                    .frame(height: 1),
-                                alignment: .top
-                            )
-                        }
-                    }
-                }
-                
-            }
-            .navigationTitle("Dashboard")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    if syncManager.pendingSyncCount > 0 {
-                        Button(action: {
-                            print("🚀 Manual sync triggered")
-                            syncManager.syncAll()
-                        }) {
-                            HStack(spacing: 4) {
-                                Image(systemName: syncManager.isSyncing ? "arrow.triangle.2.circlepath" : "icloud.and.arrow.up")
-                                    .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
-                                    .animation(syncManager.isSyncing ? Animation.linear(duration: 1).repeatForever(autoreverses: false) : .default, value: syncManager.isSyncing)
-                                Text("\(syncManager.pendingSyncCount)")
-                                    .font(.caption)
-                            }
-                            .foregroundColor(syncManager.isSyncing ? .gray : .blue)
-                        }
-                        .disabled(syncManager.isSyncing)
                     }
                 }
             }
+            .navigationBarHidden(true)
             .onAppear {
-                // Load cached data immediately (synchronously)
                 loadCachedDataImmediately()
-                
-                // Then check for updates asynchronously
+                loadDailyMetrics()
                 Task {
-                    await loadBodyMetricsIncrementally()
-                }
-                checkHealthKitStatus()
-            }
-            .onChange(of: authManager.currentUser?.id) { _ in
-                bodyMetrics = []
-                selectedIndex = 0
-                hasLoadedFullHistory = false
-                hasInitialDataLoaded = false
-                isLoading = false
-                // Load cached data immediately for new user
-                loadCachedDataImmediately()
-                Task {
-                    await loadBodyMetricsIncrementally()
+                    await loadBodyMetrics()
                 }
             }
-            .onChange(of: realtimeSync.lastSyncDate) { _ in
-                // Only reload if we don't have data
-                if bodyMetrics.isEmpty {
-                    let updatedMetrics = fetchAndProcessMetrics(from: nil)
-                    if !updatedMetrics.isEmpty {
-                        bodyMetrics = updatedMetrics
-                        selectedIndex = updatedMetrics.count - 1
+            .sheet(isPresented: $showPhotoOptions) {
+                PhotoOptionsSheet(
+                    showCamera: $showCamera,
+                    showPhotoPicker: $showPhotoPicker,
+                    isPresented: $showPhotoOptions
+                )
+            }
+            .sheet(isPresented: $showCamera) {
+                CameraView { image in
+                    Task {
+                        await handlePhotoCapture(image)
                     }
-                } else {
-                    // Just update the sync status, don't reload all data
-                    print("📊 Sync completed, data already loaded")
                 }
             }
-            .sheet(isPresented: $showHealthKitPrompt) {
-                HealthKitPromptView(isPresented: $showHealthKitPrompt)
-                    .environmentObject(authManager)
+            .photosPicker(
+                isPresented: $showPhotoPicker,
+                selection: $selectedPhoto,
+                matching: .images
+            )
+            .onChange(of: selectedPhoto) { newItem in
+                Task {
+                    await handlePhotoSelection(newItem)
+                }
             }
         }
     }
     
-    // Load cached data immediately on view appear (synchronous)
+    // MARK: - Helper Methods
+    
+    private func showToast(_ message: String, type: ToastType) {
+        withAnimation {
+            toastMessage = message
+            toastType = type
+        }
+    }
+    
     private func loadCachedDataImmediately() {
-        guard !hasInitialDataLoaded else { return }
-        hasInitialDataLoaded = true
+        guard let userId = authManager.currentUser?.id else { return }
         
-        // Load all cached data immediately
-        let allCachedMetrics = fetchAndProcessMetrics(from: nil)
+        let cached = CoreDataManager.shared.fetchBodyMetrics(for: userId)
+        bodyMetrics = cached.compactMap { $0.toBodyMetrics() }
+            .sorted { $0.date < $1.date }
         
-        if !allCachedMetrics.isEmpty {
-            bodyMetrics = allCachedMetrics
-            selectedIndex = allCachedMetrics.count - 1
-            print("📊 Loaded \(allCachedMetrics.count) cached metrics immediately")
+        if !bodyMetrics.isEmpty {
+            selectedIndex = bodyMetrics.count - 1
         }
     }
     
-    private func loadBodyMetricsIncrementally() async {
-        // Only sync if we haven't synced recently
-        let shouldSyncHealthKit = healthKitManager.isAuthorized && 
-                                 healthKitSyncEnabled && 
-                                 !isSyncingHealthKit &&
-                                 shouldPerformHealthKitSync()
-        
-        if shouldSyncHealthKit {
-            // Sync only recent data (last 7 days) from HealthKit
-            await syncRecentHealthKitData()
-        }
-        
-        // Trigger sync to upload data to Supabase
-        syncManager.syncIfNeeded()
-        
-        // Also trigger realtime sync
-        realtimeSync.syncIfNeeded()
-        
-        // Load incremental history in background only if needed
-        // Check if we actually need more historical data
-        let needsHistoricalData = !hasLoadedFullHistory && bodyMetrics.count < 30
-        let oldestEntry = bodyMetrics.first?.date ?? Date()
-        let daysSinceOldest = Calendar.current.dateComponents([.day], from: oldestEntry, to: Date()).day ?? 0
-        
-        if needsHistoricalData && daysSinceOldest < 180 { // Only load if we have less than 6 months of data
-            await loadIncrementalHistory()
-        }
-    }
-    
-    // Check if we should perform HealthKit sync (not more than once per hour)
-    private func shouldPerformHealthKitSync() -> Bool {
-        let lastSyncKey = "lastHealthKitSyncDate"
-        if let lastSync = UserDefaults.standard.object(forKey: lastSyncKey) as? Date {
-            let hoursSinceLastSync = Date().timeIntervalSince(lastSync) / 3600
-            return hoursSinceLastSync >= 1.0 // Only sync if more than 1 hour has passed
-        }
-        return true
-    }
-    
-    // Sync only recent HealthKit data
-    private func syncRecentHealthKitData() async {
-        guard !isSyncingHealthKit else { return }
-        
-        isSyncingHealthKit = true
-        defer { 
-            isSyncingHealthKit = false
-            UserDefaults.standard.set(Date(), forKey: "lastHealthKitSyncDate")
-        }
-        
-        do {
-            // Only sync last 7 days from HealthKit
-            try await healthKitManager.syncWeightFromHealthKitIncremental(days: 7)
-            
-            // Reload data after sync
-            let updatedMetrics = fetchAndProcessMetrics(from: nil)
-            await MainActor.run {
-                bodyMetrics = updatedMetrics
-                if !updatedMetrics.isEmpty && selectedIndex >= updatedMetrics.count {
-                    selectedIndex = updatedMetrics.count - 1
-                }
-            }
-        } catch {
-            print("HealthKit sync error: \(error)")
-        }
+    private func loadDailyMetrics() {
+        guard let userId = authManager.currentUser?.id else { return }
+        dailyMetrics = CoreDataManager.shared.fetchDailyMetrics(for: userId, date: Date())?.toDailyMetrics()
     }
     
     private func loadBodyMetrics() async {
-        // This method is now replaced by loadCachedDataImmediately and loadBodyMetricsIncrementally
-        // Keeping for backward compatibility if called elsewhere
-        await loadBodyMetricsIncrementally()
-    }
-    
-    private func fetchAndProcessMetrics(from startDate: Date?) -> [BodyMetrics] {
-        guard let userId = authManager.currentUser?.id else { return [] }
+        isLoading = true
+        defer { isLoading = false }
         
-        let cachedMetrics = CoreDataManager.shared.fetchBodyMetrics(for: userId, from: startDate)
-        let metrics = cachedMetrics.map { cached in
-            BodyMetrics(
-                id: cached.id ?? UUID().uuidString,
-                userId: cached.userId ?? "",
-                date: cached.date ?? Date(),
-                weight: cached.weight > 0 ? cached.weight : nil,
-                weightUnit: cached.weightUnit ?? "kg",
-                bodyFatPercentage: cached.bodyFatPercentage > 0 ? cached.bodyFatPercentage : nil,
-                bodyFatMethod: cached.bodyFatMethod,
-                muscleMass: cached.muscleMass > 0 ? cached.muscleMass : nil,
-                boneMass: cached.boneMass > 0 ? cached.boneMass : nil,
-                notes: cached.notes,
-                photoUrl: cached.photoUrl,
-                dataSource: cached.dataSource ?? "Manual",
-                createdAt: cached.createdAt ?? Date(),
-                updatedAt: cached.updatedAt ?? Date()
-            )
-        }
-        .sorted { $0.date < $1.date }
+        // Sync with remote if needed
+        syncManager.syncIfNeeded()
         
-        // Only print summary in debug mode
-        #if DEBUG
-        if metrics.count > 100 {
-            print("📊 Fetched \(metrics.count) body metrics from CoreData")
-        }
-        #endif
-        
-        // Remove duplicates more intelligently
-        var uniqueMetrics: [BodyMetrics] = []
-        var processedEntries = Set<String>()
-        
-        // Sort by date and updatedAt to get the most recent version of each entry
-        let sortedMetrics = metrics.sorted { (a, b) in
-            if a.date == b.date {
-                return a.updatedAt > b.updatedAt
-            }
-            return a.date < b.date
-        }
-        
-        for metric in sortedMetrics {
-            // Create a unique key based on date and time (rounded to nearest hour to handle minor time differences)
-            let calendar = Calendar.current
-            let components = calendar.dateComponents([.year, .month, .day, .hour], from: metric.date)
-            let roundedDate = calendar.date(from: components) ?? metric.date
-            let uniqueKey = "\(userId)-\(ISO8601DateFormatter().string(from: roundedDate))"
-            
-            if !processedEntries.contains(uniqueKey) {
-                processedEntries.insert(uniqueKey)
-                uniqueMetrics.append(metric)
-            }
-        }
-        
-        return uniqueMetrics
-    }
-    
-    private func loadIncrementalHistory() async {
-        await MainActor.run {
-            isLoadingFullHistory = true
-        }
-        
-        var currentStartDate = Calendar.current.date(byAdding: .day, value: -37, to: Date()) // Start from 37 days ago (7 + 30)
-        let batchSize = 30 // Days per batch
-        var hasMoreData = true
-        
-        while hasMoreData && !Task.isCancelled {
-            // Calculate end date for this batch (30 days before current start)
-            let batchEndDate = Calendar.current.date(byAdding: .day, value: -batchSize, to: currentStartDate!)
-            
-            // Fetch metrics for this 30-day batch
-            let batchMetrics = await fetchAndProcessMetrics(from: batchEndDate)
-                .filter { $0.date < currentStartDate! }
-            
-            if batchMetrics.isEmpty {
-                hasMoreData = false
-            } else {
-                // Add new metrics to the beginning of the array (older data)
-                await MainActor.run {
-                    let currentDate = bodyMetrics.indices.contains(selectedIndex) ? bodyMetrics[selectedIndex].date : nil
-                    
-                    // Merge new data with existing data, avoiding duplicates
-                    let allMetrics = (batchMetrics + bodyMetrics)
-                        .sorted { $0.date < $1.date }
-                        .removingDuplicatesBy { Calendar.current.startOfDay(for: $0.date) }
-                    
-                    bodyMetrics = allMetrics
-                    
-                    // Maintain the selected item position
-                    if let currentDate = currentDate,
-                       let newIndex = allMetrics.firstIndex(where: { $0.date == currentDate }) {
-                        selectedIndex = newIndex
-                    } else if !allMetrics.isEmpty {
-                        selectedIndex = allMetrics.count - 1
-                    }
-                }
-                
-                // Move to the next batch (30 days earlier)
-                currentStartDate = batchEndDate
-                
-                // Add a small delay to avoid overwhelming the UI
-                try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
-            }
-        }
-        
-        await MainActor.run {
-            hasLoadedFullHistory = true
-            isLoadingFullHistory = false
-        }
-    }
-    
-    private func checkHealthKitStatus() {
-        guard !hasCheckedHealthKit else { return }
-        hasCheckedHealthKit = true
-        
-        if healthKitManager.isHealthKitAvailable && !healthKitManager.isAuthorized && healthKitSyncEnabled {
-            let lastPromptDate = UserDefaults.standard.object(forKey: "lastHealthKitPromptDate") as? Date
-            let shouldShowPrompt = lastPromptDate == nil || 
-                Calendar.current.dateComponents([.day], from: lastPromptDate!, to: Date()).day! > 7
-            
-            if shouldShowPrompt {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                    showHealthKitPrompt = true
-                }
-            }
-        }
-    }
-    
-    private func syncHealthKitData() async {
-        // This method is deprecated - use syncRecentHealthKitData instead
-        await syncRecentHealthKitData()
+        // Reload from cache
+        loadCachedDataImmediately()
+        loadDailyMetrics()
     }
     
     private func refreshData() async {
-        isRefreshing = true
+        // Sync with remote
+        syncManager.syncAll()
         
-        // Only sync recent data from HealthKit on manual refresh
-        if healthKitManager.isAuthorized && healthKitSyncEnabled {
-            await syncRecentHealthKitData()
-        }
-        
-        // Sync with Supabase
-        realtimeSync.syncAll()
-        
-        // Wait a bit for sync to complete
+        // Wait a bit for sync
         try? await Task.sleep(nanoseconds: 500_000_000)
         
-        // Reload data from cache
-        let updatedMetrics = fetchAndProcessMetrics(from: nil)
+        // Reload from cache
+        loadCachedDataImmediately()
+        loadDailyMetrics()
+    }
+    
+    private func handlePhotoCapture(_ image: UIImage) async {
+        guard let currentMetric = currentMetric else { return }
         
+        showToast("Uploading photo...", type: .info)
+        
+        // Save to photo library and get URL
+        var photoUrl: String?
         await MainActor.run {
-            if !updatedMetrics.isEmpty {
-                bodyMetrics = updatedMetrics
-                if selectedIndex >= updatedMetrics.count {
-                    selectedIndex = updatedMetrics.count - 1
-                }
-            }
-            isRefreshing = false
+            // Here we would normally upload to Supabase
+            // For now, just save locally
+            photoUrl = "local://photo_\(UUID().uuidString)"
         }
+        
+        if let photoUrl = photoUrl {
+            // Update the current metric with the photo URL
+            if var updatedMetric = bodyMetrics.first(where: { $0.id == currentMetric.id }) {
+                updatedMetric.photoUrl = photoUrl
+                
+                // Save to Core Data
+                CoreDataManager.shared.saveBodyMetrics(updatedMetric, userId: authManager.currentUser?.id ?? "")
+                
+                // Reload data
+                loadCachedDataImmediately()
+                
+                // Trigger sync
+                syncManager.syncIfNeeded()
+                
+                showToast("Photo saved successfully", type: .success)
+            }
+        } else {
+            showToast("Failed to save photo", type: .error)
+        }
+    }
+    
+    private func handlePhotoSelection(_ item: PhotosPickerItem?) async {
+        guard let item = item,
+              let data = try? await item.loadTransferable(type: Data.self),
+              let image = UIImage(data: data) else { return }
+        
+        await handlePhotoCapture(image)
     }
     
     private func convertWeight(_ weight: Double, from: String, to: String) -> Double {
@@ -619,65 +453,146 @@ struct DashboardView: View {
         
         return weight * (1 - bodyFatPercentage / 100)
     }
+}
+
+// MARK: - New UI Components
+
+struct CoreMetricCard: View {
+    let value: Double?
+    let label: String
+    let progress: Double
     
-    private func calculateFatMass() -> Double? {
-        guard let weight = currentMetric?.weight,
-              let bodyFatPercentage = currentMetric?.bodyFatPercentage else {
-            return nil
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                // Background ring
+                Circle()
+                    .stroke(Color.appBorder, lineWidth: 6)
+                    .frame(width: 80, height: 80)
+                
+                // Progress ring
+                Circle()
+                    .trim(from: 0, to: progress)
+                    .stroke(Color.appPrimary, lineWidth: 6)
+                    .frame(width: 80, height: 80)
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeInOut(duration: 0.5), value: progress)
+                
+                // Value
+                Text(value != nil ? "\(Int(value!))" : "--")
+                    .font(.system(size: 48, weight: .bold, design: .rounded))
+                    .foregroundColor(.appText)
+            }
+            
+            Text(label)
+                .font(.system(size: 12))
+                .foregroundColor(.appTextSecondary)
         }
-        
-        return weight * (bodyFatPercentage / 100)
+        .frame(maxWidth: .infinity)
+        .frame(height: 120)
+        .background(Color.appCard)
+        .cornerRadius(12)
     }
 }
 
-struct MetricCard: View {
-    let title: String
+struct SecondaryMetricItem: View {
+    let icon: String
     let value: Double?
     let unit: String
-    let icon: String
-    let color: Color
+    let label: String
+    var showDecimal: Bool = true
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: icon)
-                    .font(.appBody)
-                    .foregroundColor(color)
-                
-                Text(title)
-                    .font(.appBodySmall)
-                    .foregroundColor(.appTextSecondary)
-                
-                Spacer()
-            }
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.system(size: 16))
+                .foregroundColor(.appPrimary)
             
-            HStack(alignment: .firstTextBaseline, spacing: 4) {
+            HStack(spacing: 2) {
                 if let value = value {
-                    Text("\(value, specifier: "%.1f")")
-                        .font(.appHeadline)
-                        .fontWeight(.semibold)
+                    Text(showDecimal ? "\(value, specifier: "%.1f")" : "\(Int(value))")
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.appText)
-                    if !unit.isEmpty {
-                        Text(unit)
-                            .font(.appBodySmall)
-                            .foregroundColor(.appTextSecondary)
-                    }
                 } else {
                     Text("--")
-                        .font(.appHeadline)
-                        .fontWeight(.semibold)
+                        .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.appTextTertiary)
                 }
             }
+            
+            Text(label)
+                .font(.system(size: 10))
+                .foregroundColor(.appTextSecondary)
         }
-        .padding()
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.appCard)
-        .cornerRadius(12)
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(Color.appBorder, lineWidth: 1)
-        )
+        .frame(minWidth: 100)
+        .padding(.horizontal, 16)
+    }
+}
+
+struct PhotoOptionsSheet: View {
+    @Binding var showCamera: Bool
+    @Binding var showPhotoPicker: Bool
+    @Binding var isPresented: Bool
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Handle
+            RoundedRectangle(cornerRadius: 2.5)
+                .fill(Color.appBorder)
+                .frame(width: 40, height: 5)
+                .padding(.top, 8)
+                .padding(.bottom, 20)
+            
+            Text("Add Progress Photo")
+                .font(.appHeadline)
+                .foregroundColor(.appText)
+                .padding(.bottom, 24)
+            
+            VStack(spacing: 12) {
+                Button(action: {
+                    isPresented = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showCamera = true
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "camera.fill")
+                            .font(.system(size: 20))
+                        Text("Take Photo")
+                            .font(.appBodyLarge)
+                        Spacer()
+                    }
+                    .foregroundColor(.appText)
+                    .padding()
+                    .background(Color.appCard)
+                    .cornerRadius(12)
+                }
+                
+                Button(action: {
+                    isPresented = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        showPhotoPicker = true
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "photo.fill")
+                            .font(.system(size: 20))
+                        Text("Choose from Library")
+                            .font(.appBodyLarge)
+                        Spacer()
+                    }
+                    .foregroundColor(.appText)
+                    .padding()
+                    .background(Color.appCard)
+                    .cornerRadius(12)
+                }
+            }
+            .padding(.horizontal)
+            
+            Spacer()
+        }
+        .frame(maxHeight: 300)
+        .background(Color.appBackground)
     }
 }
 
@@ -687,12 +602,5 @@ struct DashboardView_Previews: PreviewProvider {
             .environmentObject(AuthManager.shared)
             .environmentObject(SyncManager.shared)
             .preferredColorScheme(.dark)
-    }
-}
-
-extension Array {
-    func removingDuplicatesBy<Key: Hashable>(_ keyPath: (Element) -> Key) -> [Element] {
-        var seen = Set<Key>()
-        return filter { seen.insert(keyPath($0)).inserted }
     }
 }
