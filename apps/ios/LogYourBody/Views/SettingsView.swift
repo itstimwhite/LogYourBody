@@ -34,6 +34,7 @@ struct SettingsView: View {
             boneMass: nil,
             notes: "Test metric created for debugging sync",
             photoUrl: nil,
+            dataSource: "Manual",
             createdAt: Date(),
             updatedAt: Date()
         )
@@ -122,6 +123,13 @@ struct SettingsView: View {
                         print("🧹 Cleaned \(cleaned) invalid body metrics entries")
                     }
                     .foregroundColor(.red)
+                    
+                    Button("Repair Corrupted Entries") {
+                        // Repair entries with missing required fields
+                        let repaired = CoreDataManager.shared.repairCorruptedEntries()
+                        print("🔧 Repaired \(repaired) corrupted entries")
+                    }
+                    .foregroundColor(.orange)
                     
                     Button("Create Profile First") {
                         Task {

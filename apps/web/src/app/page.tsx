@@ -777,6 +777,146 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        {/* Privacy Section */}
+        <section className="py-24 md:py-32 bg-[#0a0b0d] relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#5E6AD2]/5 to-transparent opacity-30" />
+          
+          <div className="max-w-[1280px] mx-auto px-6 relative">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#5E6AD2]/10 rounded-2xl mb-6">
+                <Shield className="h-8 w-8 text-[#5E6AD2]" />
+              </div>
+              
+              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-6">
+                Your health data is yours.
+                <br />
+                <span className="text-white/70">And yours alone.</span>
+              </h2>
+              
+              <p className="max-w-2xl mx-auto text-lg text-white/70">
+                Privacy isn't just a feature—it's fundamental to how we built LogYourBody. 
+                Every decision prioritizes your security and control.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+              {/* Encryption Card */}
+              <div className="bg-[#1a1b1e]/50 backdrop-blur-sm border border-white/10 rounded-xl p-8">
+                <div className="w-12 h-12 bg-[#5E6AD2]/10 rounded-lg flex items-center justify-center mb-6">
+                  <Shield className="h-6 w-6 text-[#5E6AD2]" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  Bank-grade encryption
+                </h3>
+                <p className="text-white/60 leading-relaxed">
+                  All health data is encrypted using industry-standard AES-256 encryption, 
+                  both in transit and at rest. Your measurements are as secure as your bank account.
+                </p>
+              </div>
+
+              {/* Control Card */}
+              <div className="bg-[#1a1b1e]/50 backdrop-blur-sm border border-white/10 rounded-xl p-8">
+                <div className="w-12 h-12 bg-[#5E6AD2]/10 rounded-lg flex items-center justify-center mb-6">
+                  <Zap className="h-6 w-6 text-[#5E6AD2]" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  You're in control
+                </h3>
+                <p className="text-white/60 leading-relaxed">
+                  Delete your data anytime. Export everything with one click. 
+                  We never share, sell, or analyze your personal health information without explicit consent.
+                </p>
+              </div>
+
+              {/* Face ID Card */}
+              <div className="bg-[#1a1b1e]/50 backdrop-blur-sm border border-white/10 rounded-xl p-8">
+                <div className="w-12 h-12 bg-[#5E6AD2]/10 rounded-lg flex items-center justify-center mb-6">
+                  <Smartphone className="h-6 w-6 text-[#5E6AD2]" />
+                </div>
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  Face ID protection
+                </h3>
+                <p className="text-white/60 leading-relaxed">
+                  Enable biometric lock on iOS for an extra layer of privacy. 
+                  Your health data stays private, even if someone has access to your phone.
+                </p>
+              </div>
+            </div>
+
+            {/* Security Features */}
+            <div className="bg-gradient-to-r from-[#5E6AD2]/10 to-[#5E6AD2]/5 rounded-2xl p-8 md:p-12">
+              <div className="max-w-3xl mx-auto">
+                <h3 className="text-2xl font-semibold text-white mb-8 text-center">
+                  Enterprise security, personal privacy
+                </h3>
+                
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#5E6AD2]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-[#5E6AD2]" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-medium mb-1">Secured by Clerk</h4>
+                      <p className="text-white/60 text-sm">
+                        Authentication powered by Clerk's enterprise-grade security infrastructure
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#5E6AD2]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-[#5E6AD2]" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-medium mb-1">HIPAA-compliant infrastructure</h4>
+                      <p className="text-white/60 text-sm">
+                        Built on infrastructure that meets healthcare compliance standards
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#5E6AD2]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-[#5E6AD2]" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-medium mb-1">Zero-knowledge architecture</h4>
+                      <p className="text-white/60 text-sm">
+                        We can't see your health data—only you can decrypt and access it
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 rounded-full bg-[#5E6AD2]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check className="h-4 w-4 text-[#5E6AD2]" />
+                    </div>
+                    <div>
+                      <h4 className="text-white font-medium mb-1">Regular security audits</h4>
+                      <p className="text-white/60 text-sm">
+                        Third-party penetration testing and continuous security monitoring
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Privacy Promise */}
+            <div className="text-center mt-16">
+              <p className="text-white/70 mb-2">
+                Read our commitment to your privacy
+              </p>
+              <Link 
+                href="/privacy" 
+                className="text-[#5E6AD2] hover:text-[#5E6AD2]/80 font-medium inline-flex items-center gap-2 group"
+              >
+                Privacy Policy 
+                <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+              </Link>
+            </div>
+          </div>
+        </section>
       </main>
 
       <Footer />

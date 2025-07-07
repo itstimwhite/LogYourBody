@@ -12,7 +12,10 @@
         <attribute name="lastModified" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="muscleMass" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
+        <attribute name="originalPhotoUrl" optional="YES" attributeType="String"/>
+        <attribute name="photoProcessedAt" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="photoUrl" optional="YES" attributeType="String"/>
+        <attribute name="dataSource" optional="YES" attributeType="String" defaultValueString="Manual"/>
         <attribute name="syncStatus" attributeType="String" defaultValueString="pending"/>
         <attribute name="updatedAt" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="userId" attributeType="String"/>

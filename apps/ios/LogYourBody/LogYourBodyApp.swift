@@ -29,6 +29,12 @@ struct LogYourBodyApp: App {
                     // TODO: Add AppVersionManager.swift to Xcode project, then uncomment:
                     // AppVersionManager.shared.performStartupMaintenance()
                     
+                    // Repair any corrupted Core Data entries on startup
+                    let repairedCount = CoreDataManager.shared.repairCorruptedEntries()
+                    if repairedCount > 0 {
+                        print("🔧 App startup: Repaired \(repairedCount) corrupted entries")
+                    }
+                    
                     // Initialize Clerk
                     await authManager.initializeClerk()
                     

@@ -442,6 +442,7 @@ struct DashboardView: View {
                 boneMass: cached.boneMass > 0 ? cached.boneMass : nil,
                 notes: cached.notes,
                 photoUrl: cached.photoUrl,
+                dataSource: cached.dataSource ?? "Manual",
                 createdAt: cached.createdAt ?? Date(),
                 updatedAt: cached.updatedAt ?? Date()
             )

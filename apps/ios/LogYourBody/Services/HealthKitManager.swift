@@ -658,6 +658,7 @@ class HealthKitManager: ObservableObject {
                     boneMass: nil,
                     notes: "Imported from HealthKit (incremental)",
                     photoUrl: nil,
+                    dataSource: "HealthKit",
                     createdAt: Date(),
                     updatedAt: Date()
                 )
@@ -695,6 +696,7 @@ class HealthKitManager: ObservableObject {
                         boneMass: nil,
                         notes: "Body fat imported from HealthKit (incremental)",
                         photoUrl: nil,
+                        dataSource: "HealthKit",
                         createdAt: Date(),
                         updatedAt: Date()
                     )
@@ -846,6 +848,7 @@ class HealthKitManager: ObservableObject {
                     boneMass: nil,
                     notes: "Imported from HealthKit",
                     photoUrl: nil,
+                    dataSource: "HealthKit",
                     createdAt: Date(),
                     updatedAt: Date()
                 )
@@ -884,6 +887,7 @@ class HealthKitManager: ObservableObject {
             boneMass: metrics.boneMass,
             notes: metrics.notes,
             photoUrl: metrics.photoUrl,
+            dataSource: metrics.dataSource,
             createdAt: metrics.createdAt,
             updatedAt: metrics.updatedAt
         )

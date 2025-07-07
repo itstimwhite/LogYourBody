@@ -112,6 +112,8 @@ class CoreDataManager: ObservableObject {
             cached.muscleMass = metrics.muscleMass ?? 0
             cached.boneMass = metrics.boneMass ?? 0
             cached.notes = metrics.notes
+            cached.photoUrl = metrics.photoUrl
+            cached.dataSource = metrics.dataSource ?? "Manual"
             cached.updatedAt = Date()
             cached.lastModified = Date()
             cached.isSynced = markAsSynced
@@ -619,13 +621,40 @@ class CoreDataManager: ObservableObject {
             var deletedCount = 0
             
             for metric in allMetrics {
+                var shouldDelete = false
+                var reasons: [String] = []
+                
+                // Check for invalid ID
                 if let id = metric.id {
-                    // Check if ID is not a valid UUID (contains "test-" or other invalid formats)
                     if id.hasPrefix("test-") || UUID(uuidString: id) == nil {
-                        print("🗑️ Deleting invalid body metric with ID: \(id)")
-                        context.delete(metric)
-                        deletedCount += 1
+                        shouldDelete = true
+                        reasons.append("invalid ID: \(id)")
                     }
+                } else {
+                    shouldDelete = true
+                    reasons.append("missing ID")
+                }
+                
+                // Check for missing required fields
+                if metric.date == nil {
+                    shouldDelete = true
+                    reasons.append("missing date")
+                }
+                
+                if metric.createdAt == nil {
+                    shouldDelete = true
+                    reasons.append("missing createdAt")
+                }
+                
+                if metric.updatedAt == nil {
+                    shouldDelete = true
+                    reasons.append("missing updatedAt")
+                }
+                
+                if shouldDelete {
+                    print("🗑️ Deleting invalid body metric: \(reasons.joined(separator: ", "))")
+                    context.delete(metric)
+                    deletedCount += 1
                 }
             }
             
@@ -639,15 +668,72 @@ class CoreDataManager: ObservableObject {
             return 0
         }
     }
+    
+    func repairCorruptedEntries() -> Int {
+        let context = persistentContainer.viewContext
+        let request: NSFetchRequest<CachedBodyMetrics> = CachedBodyMetrics.fetchRequest()
+        
+        do {
+            let allMetrics = try context.fetch(request)
+            var repairedCount = 0
+            
+            for metric in allMetrics {
+                var wasRepaired = false
+                
+                // Repair missing dates with default values
+                if metric.date == nil {
+                    metric.date = Date()
+                    wasRepaired = true
+                    print("🔧 Repaired missing date for metric ID: \(metric.id ?? "unknown")")
+                }
+                
+                if metric.createdAt == nil {
+                    metric.createdAt = metric.date ?? Date()
+                    wasRepaired = true
+                    print("🔧 Repaired missing createdAt for metric ID: \(metric.id ?? "unknown")")
+                }
+                
+                if metric.updatedAt == nil {
+                    metric.updatedAt = metric.lastModified ?? metric.date ?? Date()
+                    wasRepaired = true
+                    print("🔧 Repaired missing updatedAt for metric ID: \(metric.id ?? "unknown")")
+                }
+                
+                if wasRepaired {
+                    repairedCount += 1
+                }
+            }
+            
+            if repairedCount > 0 {
+                try context.save()
+                print("✅ Repaired \(repairedCount) corrupted entries")
+            }
+            
+            return repairedCount
+        } catch {
+            print("❌ Error repairing corrupted entries: \(error)")
+            return 0
+        }
+    }
 }
 
 // MARK: - Model Extensions for Conversion
 extension CachedBodyMetrics {
-    func toBodyMetrics() -> BodyMetrics {
+    func toBodyMetrics() -> BodyMetrics? {
+        // Skip entries with missing required fields
+        guard let id = id,
+              let date = date,
+              let createdAt = createdAt,
+              let updatedAt = updatedAt,
+              let userId = userId else {
+            print("⚠️ Skipping corrupted body metric entry with missing required fields")
+            return nil
+        }
+        
         return BodyMetrics(
-            id: id ?? UUID().uuidString,
-            userId: userId ?? "",
-            date: date ?? Date(),
+            id: id,
+            userId: userId,
+            date: date,
             weight: weight > 0 ? weight : nil,
             weightUnit: weightUnit,
             bodyFatPercentage: bodyFatPercentage > 0 ? bodyFatPercentage : nil,
@@ -656,8 +742,9 @@ extension CachedBodyMetrics {
             boneMass: boneMass > 0 ? boneMass : nil,
             notes: notes,
             photoUrl: photoUrl,
-            createdAt: createdAt ?? Date(),
-            updatedAt: updatedAt ?? Date()
+            dataSource: dataSource ?? "Manual",
+            createdAt: createdAt,
+            updatedAt: updatedAt
         )
     }
 }

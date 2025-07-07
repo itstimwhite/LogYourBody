@@ -182,7 +182,10 @@ class SyncManager: ObservableObject {
                             "muscle_mass": cached.muscleMass > 0 ? cached.muscleMass : NSNull(),
                             "bone_mass": cached.boneMass > 0 ? cached.boneMass : NSNull(),
                             "notes": cached.notes ?? NSNull(),
-                            "photo_url": cached.photoUrl ?? NSNull()
+                            "photo_url": cached.photoUrl ?? NSNull(),
+                            "data_source": cached.dataSource ?? "Manual",
+                            "original_photo_url": cached.originalPhotoUrl ?? NSNull(),
+                            "photo_processed_at": cached.photoProcessedAt != nil ? ISO8601DateFormatter().string(from: cached.photoProcessedAt!) : NSNull()
                         ]
                         
                         return metrics
@@ -348,7 +351,10 @@ class SyncManager: ObservableObject {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let metrics = cached.toBodyMetrics()
+        guard let metrics = cached.toBodyMetrics() else {
+            print("⚠️ Skipping sync for corrupted body metric")
+            return false
+        }
         
         do {
             let encoder = JSONEncoder()
@@ -501,6 +507,7 @@ class SyncManager: ObservableObject {
             boneMass: nil,
             notes: notes,
             photoUrl: nil,
+            dataSource: "Manual",
             createdAt: now,
             updatedAt: now
         )
@@ -550,6 +557,7 @@ class SyncManager: ObservableObject {
             boneMass: nil,
             notes: entry.notes,
             photoUrl: nil,
+            dataSource: "Manual",
             createdAt: now,
             updatedAt: now
         )
@@ -581,6 +589,7 @@ class SyncManager: ObservableObject {
             boneMass: metrics.boneMass,
             notes: metrics.notes,
             photoUrl: metrics.photoUrl,
+            dataSource: metrics.dataSource,
             createdAt: metrics.createdAt,
             updatedAt: metrics.updatedAt
         )
@@ -659,7 +668,7 @@ class SyncManager: ObservableObject {
         guard let userId = authManager.currentUser?.id else { return [] }
         
         let cached = coreDataManager.fetchBodyMetrics(for: userId, from: startDate, to: endDate)
-        return cached.map { $0.toBodyMetrics() }
+        return cached.compactMap { $0.toBodyMetrics() }
     }
     
     func fetchLocalDailyMetrics(for date: Date) -> DailyMetrics? {
