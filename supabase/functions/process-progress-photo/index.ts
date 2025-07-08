@@ -36,19 +36,23 @@ serve(async (req) => {
     }
 
     // Build Cloudinary transformation URL
-    // Using simpler transformations that work with Cloudinary's free tier
-    // This will:
-    // 1. Standardize dimensions (600x800)
-    // 2. Center crop the image
-    // 3. Apply auto quality
-    // 4. Convert to WebP format for optimal delivery
+    // PNG with transparency already has background removed on device
+    // Now we optimize with Cloudinary:
+    // 1. Content-aware cropping to frame the person consistently
+    // 2. Auto color and lighting adjustments for consistency
+    // 3. Optimize size and convert to WebP with alpha channel
     const transformations = [
       'c_fill',               // Fill mode for consistent dimensions
-      'g_auto',               // Auto gravity to focus on the subject
+      'g_auto:subject',       // Content-aware gravity to focus on the person
       'w_600',                // Width
       'h_800',                // Height
-      'q_auto',               // Auto quality
-      'f_webp'                // WebP format
+      'e_auto_brightness',    // Auto brightness adjustment
+      'e_auto_contrast',      // Auto contrast adjustment
+      'e_auto_color',         // Auto color adjustment
+      'fl_preserve_transparency', // Keep alpha channel
+      'q_auto:best',          // Best auto quality
+      'f_webp',               // WebP format with alpha support
+      'fl_lossy'              // Allow lossy compression for smaller size
     ].join(',')
 
     // Create Cloudinary upload URL

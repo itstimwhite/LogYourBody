@@ -96,27 +96,34 @@ class PhotoUploadManager: ObservableObject {
         }
         
         do {
-            // Step 1: Prepare image (compress and convert to JPEG)
+            // Step 1: Remove background on device
             updateUploadStatus(.preparing, progress: 0.1)
+            print("📸 PhotoUploadManager: Removing background on device")
+            
+            let processedImage = try await BackgroundRemovalService.shared.removeBackground(from: image)
+            print("✅ PhotoUploadManager: Background removed successfully")
+            
+            // Step 2: Prepare image for upload (PNG to preserve transparency)
+            updateUploadStatus(.preparing, progress: 0.2)
             print("📸 PhotoUploadManager: Preparing image for upload")
-            guard let imageData = prepareImageForUpload(image) else {
+            guard let imageData = BackgroundRemovalService.shared.prepareForUpload(processedImage) else {
                 print("❌ PhotoUploadManager: Failed to prepare image")
                 throw PhotoError.imageConversionFailed
             }
             print("✅ PhotoUploadManager: Image prepared, size: \(imageData.count) bytes")
             
-            // Step 2: Upload to Supabase Storage
-            updateUploadStatus(.uploading, progress: 0.2)
-            let fileName = "\(userId)/\(metrics.id)_\(Date().timeIntervalSince1970).jpg"
+            // Step 3: Upload to Supabase Storage
+            updateUploadStatus(.uploading, progress: 0.3)
+            let fileName = "\(userId)/\(metrics.id)_\(Date().timeIntervalSince1970).png"
             print("📸 PhotoUploadManager: Uploading to Supabase Storage with fileName: \(fileName)")
             let originalUrl = try await uploadToSupabase(imageData: imageData, fileName: fileName)
             print("✅ PhotoUploadManager: Upload complete, URL: \(originalUrl)")
             
             updateUploadStatus(.uploading, progress: 0.5)
             
-            // Step 3: Trigger processing via edge function
+            // Step 4: Trigger Cloudinary optimization via edge function
             updateUploadStatus(.processing, progress: 0.6)
-            print("📸 PhotoUploadManager: Calling edge function for Cloudinary processing")
+            print("📸 PhotoUploadManager: Calling edge function for Cloudinary optimization")
             let processedUrl = try await processImageWithCloudinary(
                 originalUrl: originalUrl,
                 metricsId: metrics.id
@@ -235,9 +242,9 @@ class PhotoUploadManager: ObservableObject {
             
             updateUploadStatus(.uploading, progress: 0.5)
             
-            // Step 3: Trigger processing via edge function
+            // Step 4: Trigger Cloudinary optimization via edge function
             updateUploadStatus(.processing, progress: 0.6)
-            print("📸 PhotoUploadManager: Calling edge function for Cloudinary processing")
+            print("📸 PhotoUploadManager: Calling edge function for Cloudinary optimization")
             let processedUrl = try await processImageWithCloudinary(
                 originalUrl: originalUrl,
                 metricsId: metrics.id
@@ -289,7 +296,7 @@ class PhotoUploadManager: ObservableObject {
         request.httpMethod = "POST"
         request.setValue(Constants.supabaseAnonKey, forHTTPHeaderField: "apikey")
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
+        request.setValue("image/png", forHTTPHeaderField: "Content-Type")
         request.httpBody = imageData
         
         // Configure URLSession with longer timeout for photo uploads
