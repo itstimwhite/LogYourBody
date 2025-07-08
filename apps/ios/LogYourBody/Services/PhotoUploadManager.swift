@@ -69,8 +69,13 @@ class PhotoUploadManager: ObservableObject {
     
     func uploadProgressPhoto(for metrics: BodyMetrics, image: UIImage) async throws -> String {
         guard let userId = authManager.currentUser?.id else {
+            print("❌ PhotoUploadManager: No authenticated user")
             throw PhotoError.notAuthenticated
         }
+        
+        print("📸 PhotoUploadManager: Starting upload for metrics \(metrics.id)")
+        print("📸 PhotoUploadManager: Current user ID: \(userId)")
+        print("📸 PhotoUploadManager: Current user email: \(authManager.currentUser?.email ?? "nil")")
         
         isUploading = true
         uploadProgress = 0.0
@@ -93,23 +98,30 @@ class PhotoUploadManager: ObservableObject {
         do {
             // Step 1: Prepare image (compress and convert to JPEG)
             updateUploadStatus(.preparing, progress: 0.1)
+            print("📸 PhotoUploadManager: Preparing image for upload")
             guard let imageData = prepareImageForUpload(image) else {
+                print("❌ PhotoUploadManager: Failed to prepare image")
                 throw PhotoError.imageConversionFailed
             }
+            print("✅ PhotoUploadManager: Image prepared, size: \(imageData.count) bytes")
             
             // Step 2: Upload to Supabase Storage
             updateUploadStatus(.uploading, progress: 0.2)
             let fileName = "\(userId)/\(metrics.id)_\(Date().timeIntervalSince1970).jpg"
+            print("📸 PhotoUploadManager: Uploading to Supabase Storage with fileName: \(fileName)")
             let originalUrl = try await uploadToSupabase(imageData: imageData, fileName: fileName)
+            print("✅ PhotoUploadManager: Upload complete, URL: \(originalUrl)")
             
             updateUploadStatus(.uploading, progress: 0.5)
             
             // Step 3: Trigger processing via edge function
             updateUploadStatus(.processing, progress: 0.6)
+            print("📸 PhotoUploadManager: Calling edge function for Cloudinary processing")
             let processedUrl = try await processImageWithCloudinary(
                 originalUrl: originalUrl,
                 metricsId: metrics.id
             )
+            print("✅ PhotoUploadManager: Processing complete, URL: \(processedUrl)")
             
             updateUploadStatus(.processing, progress: 0.8)
             
@@ -225,10 +237,12 @@ class PhotoUploadManager: ObservableObject {
             
             // Step 3: Trigger processing via edge function
             updateUploadStatus(.processing, progress: 0.6)
+            print("📸 PhotoUploadManager: Calling edge function for Cloudinary processing")
             let processedUrl = try await processImageWithCloudinary(
                 originalUrl: originalUrl,
                 metricsId: metrics.id
             )
+            print("✅ PhotoUploadManager: Processing complete, URL: \(processedUrl)")
             
             updateUploadStatus(.processing, progress: 0.8)
             
@@ -257,12 +271,18 @@ class PhotoUploadManager: ObservableObject {
     }
     
     private func uploadToSupabase(imageData: Data, fileName: String) async throws -> String {
-        guard let session = authManager.clerkSession,
-              let tokenResource = try? await session.getToken() else {
+        guard let session = authManager.clerkSession else {
+            print("❌ PhotoUploadManager: No Clerk session for storage upload")
             throw PhotoError.notAuthenticated
         }
         
-        let token = tokenResource.jwt
+        let tokenResource = try await session.getToken()
+        guard let token = tokenResource?.jwt else {
+            print("❌ PhotoUploadManager: Failed to get JWT for storage upload")
+            throw PhotoError.notAuthenticated
+        }
+        
+        print("📸 PhotoUploadManager: Got JWT token for storage upload")
         
         let url = URL(string: "\(Constants.supabaseURL)/storage/v1/object/photos/\(fileName)")!
         var request = URLRequest(url: url)
@@ -274,9 +294,16 @@ class PhotoUploadManager: ObservableObject {
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            print("❌ PhotoUploadManager: Invalid response type")
+            throw PhotoError.uploadFailed("Invalid response")
+        }
+        
+        print("📸 PhotoUploadManager: Storage upload response: \(httpResponse.statusCode)")
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            print("❌ PhotoUploadManager: Storage upload failed: \(errorMessage)")
             throw PhotoError.uploadFailed(errorMessage)
         }
         
@@ -285,18 +312,14 @@ class PhotoUploadManager: ObservableObject {
     }
     
     private func processImageWithCloudinary(originalUrl: String, metricsId: String) async throws -> String {
-        guard let session = authManager.clerkSession,
-              let tokenResource = try? await session.getToken() else {
-            throw PhotoError.notAuthenticated
-        }
-        
-        let token = tokenResource.jwt
+        // Edge functions can be called with just the anon key
+        print("📸 PhotoUploadManager: Calling edge function with anon key")
         
         let url = URL(string: "\(Constants.supabaseURL)/functions/v1/process-progress-photo")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue(Constants.supabaseAnonKey, forHTTPHeaderField: "apikey")
-        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(Constants.supabaseAnonKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let body = [
@@ -307,14 +330,23 @@ class PhotoUploadManager: ObservableObject {
         
         let (data, response) = try await URLSession.shared.data(for: request)
         
-        guard let httpResponse = response as? HTTPURLResponse,
-              (200...299).contains(httpResponse.statusCode) else {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            print("❌ PhotoUploadManager: Invalid edge function response")
+            throw PhotoError.processingFailed("Invalid response")
+        }
+        
+        print("📸 PhotoUploadManager: Edge function response: \(httpResponse.statusCode)")
+        
+        guard (200...299).contains(httpResponse.statusCode) else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
+            print("❌ PhotoUploadManager: Edge function failed: \(errorMessage)")
             throw PhotoError.processingFailed(errorMessage)
         }
         
         guard let result = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let processedUrl = result["processedUrl"] as? String else {
+            let responseString = String(data: data, encoding: .utf8) ?? "No response data"
+            print("❌ PhotoUploadManager: Invalid edge function response format: \(responseString)")
             throw PhotoError.processingFailed("Invalid response format")
         }
         

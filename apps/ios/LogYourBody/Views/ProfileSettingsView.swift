@@ -29,12 +29,12 @@ struct ProfileSettingsView: View {
                         // Profile Avatar
                         ZStack {
                             Circle()
-                                .fill(Color.appPrimary.opacity(0.1))
+                                .fill(Color.appTextTertiary.opacity(0.2))
                                 .frame(width: 80, height: 80)
                             
                             Text(profileInitials)
                                 .font(.system(size: 32, weight: .semibold))
-                                .foregroundColor(.appPrimary)
+                                .foregroundColor(.appText)
                         }
                         
                         VStack(spacing: 4) {

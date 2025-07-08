@@ -372,8 +372,19 @@ class AuthManager: NSObject, ObservableObject {
             self.needsEmailVerification = false
         }
         
-        // Clear stored data
+        // Clear all stored user data
         userDefaults.removeObject(forKey: userKey)
+        userDefaults.removeObject(forKey: Constants.currentUserKey)
+        userDefaults.removeObject(forKey: Constants.authTokenKey)
+        
+        // Clear any cached step history flags
+        UserDefaults.standard.removeObject(forKey: "HasSyncedHistoricalSteps")
+        
+        // Clear last sync dates to force fresh sync on next login
+        UserDefaults.standard.removeObject(forKey: "lastSupabaseSyncDate")
+        UserDefaults.standard.removeObject(forKey: "lastHealthKitWeightSyncDate")
+        
+        print("🧹 Cleared all user data from UserDefaults")
     }
     
     private func loadUserProfile(userId: String) async {

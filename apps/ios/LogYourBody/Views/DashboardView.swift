@@ -201,20 +201,6 @@ struct DashboardView: View {
     private var secondaryMetricsStrip: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 0) {
-                AnimatedCard(id: "weight-metric", namespace: namespace) {
-                    SecondaryMetricItem(
-                        icon: "scalemass",
-                        value: currentMetric?.weight != nil ? 
-                            convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
-                        unit: currentSystem.weightUnit,
-                        label: "Weight",
-                        iconColor: Color(.systemGray)
-                    )
-                }
-                
-                Divider()
-                    .frame(height: 40)
-                
                 AnimatedCard(id: "steps-metric", namespace: namespace) {
                     SecondaryMetricItem(
                         icon: "figure.walk",
@@ -223,6 +209,20 @@ struct DashboardView: View {
                         label: "Steps",
                         showDecimal: false,
                         iconColor: Color(.systemGreen)
+                    )
+                }
+                
+                Divider()
+                    .frame(height: 40)
+                
+                AnimatedCard(id: "weight-metric", namespace: namespace) {
+                    SecondaryMetricItem(
+                        icon: "scalemass",
+                        value: currentMetric?.weight != nil ? 
+                            convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
+                        unit: currentSystem.weightUnit,
+                        label: "Weight",
+                        iconColor: Color(.systemGray)
                     )
                 }
                 
@@ -361,19 +361,30 @@ struct DashboardView: View {
             }
             .navigationBarHidden(true)
             .onAppear {
-                loadCachedDataImmediately()
-                loadDailyMetrics()
-                Task {
-                    // Sync today's steps from HealthKit if authorized
-                    if healthKitManager.isAuthorized {
-                        await syncStepsFromHealthKit()
-                        
-                        // On first launch, sync historical step data
-                        if !UserDefaults.standard.bool(forKey: "HasSyncedHistoricalSteps") {
-                            await syncHistoricalSteps()
+                // Log the current authentication state
+                print("🎯 DashboardView onAppear")
+                print("   - isAuthenticated: \(authManager.isAuthenticated)")
+                print("   - currentUser: \(authManager.currentUser?.id ?? "nil") (\(authManager.currentUser?.email ?? "nil"))")
+                print("   - clerkSession: \(authManager.clerkSession?.id ?? "nil")")
+                
+                // Only load data if we have a valid user
+                if authManager.currentUser?.id != nil {
+                    loadCachedDataImmediately()
+                    loadDailyMetrics()
+                    Task {
+                        // Sync today's steps from HealthKit if authorized
+                        if healthKitManager.isAuthorized {
+                            await syncStepsFromHealthKit()
+                            
+                            // On first launch, sync historical step data
+                            if !UserDefaults.standard.bool(forKey: "HasSyncedHistoricalSteps") {
+                                await syncHistoricalSteps()
+                            }
                         }
+                        await loadBodyMetrics()
                     }
-                    await loadBodyMetrics()
+                } else {
+                    print("⚠️ Skipping data load - no authenticated user")
                 }
             }
             .onReceive(healthKitManager.$todayStepCount) { newStepCount in
@@ -406,6 +417,27 @@ struct DashboardView: View {
                     await handlePhotoSelection(newItem)
                 }
             }
+            .onChange(of: authManager.currentUser?.id) { newUserId in
+                print("👤 User ID changed: \(authManager.currentUser?.id ?? "nil") -> \(newUserId ?? "nil")")
+                
+                // Clear existing data
+                bodyMetrics = []
+                dailyMetrics = nil
+                selectedDateMetrics = nil
+                selectedIndex = 0
+                
+                // Reload data for new user
+                if newUserId != nil {
+                    loadCachedDataImmediately()
+                    loadDailyMetrics()
+                    Task {
+                        if healthKitManager.isAuthorized {
+                            await syncStepsFromHealthKit()
+                        }
+                        await loadBodyMetrics()
+                    }
+                }
+            }
         }
     }
     
@@ -417,11 +449,18 @@ struct DashboardView: View {
     
     @MainActor
     private func loadCachedDataImmediately() {
-        guard let userId = authManager.currentUser?.id else { return }
+        guard let userId = authManager.currentUser?.id else { 
+            print("⚠️ loadCachedDataImmediately: No user ID available")
+            return 
+        }
+        
+        print("🔍 Loading cached data for user: \(userId)")
         
         let cached = CoreDataManager.shared.fetchBodyMetrics(for: userId)
         bodyMetrics = cached.compactMap { $0.toBodyMetrics() }
             .sorted { $0.date < $1.date }
+        
+        print("📊 Found \(bodyMetrics.count) body metrics for user \(userId)")
         
         if !bodyMetrics.isEmpty {
             selectedIndex = bodyMetrics.count - 1
@@ -431,10 +470,18 @@ struct DashboardView: View {
     
     @MainActor
     private func loadDailyMetrics() {
-        guard let userId = authManager.currentUser?.id else { return }
+        guard let userId = authManager.currentUser?.id else { 
+            print("⚠️ loadDailyMetrics: No user ID available")
+            return 
+        }
+        
+        print("🔍 Loading daily metrics for user: \(userId)")
+        
         dailyMetrics = CoreDataManager.shared.fetchDailyMetrics(for: userId, date: Date())?.toDailyMetrics()
         // Also set selectedDateMetrics for today initially
         selectedDateMetrics = dailyMetrics
+        
+        print("📊 Daily metrics loaded: \(dailyMetrics?.steps ?? 0) steps")
     }
     
     @MainActor
@@ -486,58 +533,29 @@ struct DashboardView: View {
         }
         
         await MainActor.run {
-            showToast("Saving photo...", type: .info)
+            showToast("Uploading photo...", type: .info)
         }
         
-        // Process photo in background to avoid blocking UI
-        await Task.detached(priority: .userInitiated) {
-            // Save photo to documents directory
-            let photoId = UUID().uuidString
-            let photoUrl = self.savePhotoToDocuments(image, withId: photoId)
+        do {
+            // Use PhotoUploadManager to handle the entire upload pipeline
+            let processedUrl = try await PhotoUploadManager.shared.uploadProgressPhoto(
+                for: currentMetric,
+                image: image
+            )
             
-            if let photoUrl = photoUrl {
-                // Update the current metric with the photo URL
-                if let metricToUpdate = await MainActor.run(body: { self.bodyMetrics.first(where: { $0.id == currentMetric.id }) }) {
-                // Create a new instance with the updated photoUrl
-                let updatedMetric = BodyMetrics(
-                    id: metricToUpdate.id,
-                    userId: metricToUpdate.userId,
-                    date: metricToUpdate.date,
-                    weight: metricToUpdate.weight,
-                    weightUnit: metricToUpdate.weightUnit,
-                    bodyFatPercentage: metricToUpdate.bodyFatPercentage,
-                    bodyFatMethod: metricToUpdate.bodyFatMethod,
-                    muscleMass: metricToUpdate.muscleMass,
-                    boneMass: metricToUpdate.boneMass,
-                    notes: metricToUpdate.notes,
-                    photoUrl: photoUrl,
-                    dataSource: metricToUpdate.dataSource,
-                    createdAt: metricToUpdate.createdAt,
-                    updatedAt: Date()
-                )
-                
-                // Save to Core Data on background queue
-                await Task.detached {
-                    await CoreDataManager.shared.saveBodyMetrics(updatedMetric, userId: self.authManager.currentUser?.id ?? "")
-                }.value
-                
-                // Reload data on main thread
-                await MainActor.run {
-                    loadCachedDataImmediately()
-                    showToast("Photo saved successfully", type: .success)
-                    }
-                    
-                    // Trigger sync in background
-                    Task.detached {
-                        await self.syncManager.syncIfNeeded()
-                    }
-                }
-            } else {
-                await MainActor.run {
-                    self.showToast("Failed to save photo", type: .error)
-                }
+            // Reload data to show the processed photo
+            await MainActor.run {
+                loadCachedDataImmediately()
+                showToast("Photo uploaded and processed successfully", type: .success)
             }
-        }.value
+            
+        } catch {
+            await MainActor.run {
+                let errorMessage = error.localizedDescription
+                print("❌ Photo upload error: \(errorMessage)")
+                self.showToast("Failed to upload photo: \(errorMessage)", type: .error)
+            }
+        }
     }
     
     private func handlePhotoSelection(_ item: PhotosPickerItem?) async {
@@ -927,12 +945,12 @@ struct PhotoOptionsSheet: View {
                     HStack(spacing: 16) {
                         ZStack {
                             Circle()
-                                .fill(Color.blue.opacity(0.1))
+                                .fill(Color(.systemBlue).opacity(0.1))
                                 .frame(width: 44, height: 44)
                             
                             Image(systemName: "camera.fill")
                                 .font(.system(size: 20))
-                                .foregroundColor(.blue)
+                                .foregroundColor(Color(.systemBlue))
                         }
                         
                         VStack(alignment: .leading, spacing: 2) {
@@ -973,12 +991,12 @@ struct PhotoOptionsSheet: View {
                     HStack(spacing: 16) {
                         ZStack {
                             Circle()
-                                .fill(Color.green.opacity(0.1))
+                                .fill(Color(.systemGreen).opacity(0.1))
                                 .frame(width: 44, height: 44)
                             
                             Image(systemName: "photo.fill")
                                 .font(.system(size: 20))
-                                .foregroundColor(.green)
+                                .foregroundColor(Color(.systemGreen))
                         }
                         
                         VStack(alignment: .leading, spacing: 2) {
@@ -1234,12 +1252,12 @@ struct SegmentedProgressRing: View {
             if showOnTarget {
                 Text("On target")
                     .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(.green)
+                    .foregroundColor(Color(.systemGreen))
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
                     .background(
                         Capsule()
-                            .fill(Color.green.opacity(0.15))
+                            .fill(Color(.systemGreen).opacity(0.15))
                     )
                     .offset(y: 8)
                     .transition(.scale.combined(with: .opacity))

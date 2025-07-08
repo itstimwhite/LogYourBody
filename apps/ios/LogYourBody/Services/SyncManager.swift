@@ -85,6 +85,10 @@ class SyncManager: ObservableObject {
                 return 
             }
             
+            // Log the current user ID
+            let userId = await self.authManager.currentUser?.id
+            print("🔄 SyncManager: Checking sync for user: \(userId ?? "nil")")
+            
             // Check if we synced recently (within last 5 minutes)
             let lastSyncKey = "lastSupabaseSyncDate"
             if let lastSync = UserDefaults.standard.object(forKey: lastSyncKey) as? Date {

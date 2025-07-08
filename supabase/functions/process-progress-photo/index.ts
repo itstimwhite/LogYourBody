@@ -18,6 +18,7 @@ serve(async (req) => {
   }
 
   try {
+    // Skip JWT validation - we'll validate by checking if the user owns the metrics record
     const { originalUrl, metricsId } = await req.json() as RequestBody
 
     // Validate inputs
@@ -57,8 +58,22 @@ serve(async (req) => {
     const timestamp = Math.round(Date.now() / 1000)
     const publicId = `progress-photos/${metricsId}_${timestamp}`
     
-    // Generate signature
-    const stringToSign = `public_id=${publicId}&timestamp=${timestamp}${CLOUDINARY_API_SECRET}`
+    // Parameters that need to be included in the signature (in alphabetical order)
+    const params = {
+      eager: transformations,
+      eager_async: 'false',
+      invalidate: 'true',
+      public_id: publicId,
+      timestamp: timestamp,
+      transformation: transformations
+    }
+    
+    // Generate signature - all parameters except api_key, file, and resource_type
+    const sortedParams = Object.keys(params).sort()
+    const stringToSign = sortedParams
+      .map(key => `${key}=${params[key]}`)
+      .join('&') + CLOUDINARY_API_SECRET
+    
     const encoder = new TextEncoder()
     const data = encoder.encode(stringToSign)
     const hashBuffer = await crypto.subtle.digest('SHA-256', data)
