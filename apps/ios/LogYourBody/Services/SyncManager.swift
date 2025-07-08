@@ -239,6 +239,7 @@ class SyncManager: ObservableObject {
                 
                 // Sync daily metrics in batches
                 if !unsynced.dailyMetrics.isEmpty {
+                    print("🔍 Processing \(unsynced.dailyMetrics.count) unsynced daily metrics...")
                     let dailyMetricsBatch = unsynced.dailyMetrics.compactMap { cached -> [String: Any]? in
                         guard let userId = cached.userId,
                               let id = cached.id,
@@ -263,18 +264,40 @@ class SyncManager: ObservableObject {
                         return metrics
                     }
                     
-                    do {
-                        let result = try await supabaseManager.upsertDailyMetricsBatch(dailyMetricsBatch, token: token)
-                        print("✅ Synced \(result.count) daily metrics")
+                    print("📊 After filtering: \(dailyMetricsBatch.count) daily metrics ready to sync")
+                    
+                    // Send in smaller batches to avoid timeouts
+                    let batchSize = 50 // Reduced from unlimited to 50 per batch
+                    var successCount = 0
+                    
+                    for i in stride(from: 0, to: dailyMetricsBatch.count, by: batchSize) {
+                        let endIndex = min(i + batchSize, dailyMetricsBatch.count)
+                        let batch = Array(dailyMetricsBatch[i..<endIndex])
                         
-                        // Mark synced items
-                        for cached in unsynced.dailyMetrics {
-                            if let id = cached.id {
-                                coreDataManager.markAsSynced(entityName: "CachedDailyMetrics", id: id)
+                        print("📦 Sending daily metrics batch \(i/batchSize + 1) of \((dailyMetricsBatch.count + batchSize - 1)/batchSize): \(batch.count) items")
+                        
+                        do {
+                            let result = try await supabaseManager.upsertDailyMetricsBatch(batch, token: token)
+                            successCount += result.count
+                            print("✅ Batch successful: \(result.count) items")
+                            
+                            // Mark synced items in this batch
+                            let syncedIds = Set(result.compactMap { $0["id"] as? String })
+                            for cached in unsynced.dailyMetrics {
+                                if let id = cached.id, syncedIds.contains(id) {
+                                    coreDataManager.markAsSynced(entityName: "CachedDailyMetrics", id: id)
+                                }
                             }
+                        } catch {
+                            print("❌ Daily metrics batch failed: \(error)")
+                            // Continue with next batch even if this one fails
                         }
-                    } catch {
-                        print("❌ Daily metrics sync error: \(error)")
+                    }
+                    
+                    if successCount > 0 {
+                        print("✅ Total synced: \(successCount) daily metrics")
+                    } else if dailyMetricsBatch.count > 0 {
+                        print("❌ Failed to sync any daily metrics")
                         hasErrors = true
                     }
                 }

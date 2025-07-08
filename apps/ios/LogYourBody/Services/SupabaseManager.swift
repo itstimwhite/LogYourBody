@@ -16,6 +16,15 @@ class SupabaseManager: ObservableObject {
     private let supabaseURL = Constants.supabaseURL
     private let supabaseAnonKey = Constants.supabaseAnonKey
     
+    // Custom URLSession with timeout configuration
+    private lazy var session: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 30.0 // 30 seconds per request
+        configuration.timeoutIntervalForResource = 60.0 // 60 seconds total
+        configuration.waitsForConnectivity = true
+        return URLSession(configuration: configuration)
+    }()
+    
     private init() {}
     
     // MARK: - JWT Token Management
@@ -55,7 +64,7 @@ class SupabaseManager: ObservableObject {
             print("📄 Request body preview: \(String(jsonString.prefix(500)))")
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.requestFailed
@@ -97,7 +106,7 @@ class SupabaseManager: ObservableObject {
             print("   Body: \(jsonString)")
         }
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
@@ -119,7 +128,7 @@ class SupabaseManager: ObservableObject {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
@@ -141,7 +150,7 @@ class SupabaseManager: ObservableObject {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
@@ -160,7 +169,7 @@ class SupabaseManager: ObservableObject {
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
@@ -184,7 +193,7 @@ class SupabaseManager: ObservableObject {
         let jsonData = try JSONSerialization.data(withJSONObject: profile)
         request.httpBody = jsonData
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
@@ -202,7 +211,7 @@ class SupabaseManager: ObservableObject {
         request.setValue("resolution=merge-duplicates", forHTTPHeaderField: "Prefer")
         request.httpBody = data
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
@@ -217,7 +226,7 @@ class SupabaseManager: ObservableObject {
         request.setValue(supabaseAnonKey, forHTTPHeaderField: "apikey")
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse,
               (200...299).contains(httpResponse.statusCode) else {
@@ -237,7 +246,7 @@ class SupabaseManager: ObservableObject {
         request.setValue("Bearer \(jwt)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.networkError
@@ -273,7 +282,7 @@ class SupabaseManager: ObservableObject {
         encoder.dateEncodingStrategy = .iso8601
         request.httpBody = try encoder.encode(profile)
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.networkError
@@ -300,7 +309,7 @@ class SupabaseManager: ObservableObject {
         request.setValue("Bearer \(jwt)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.networkError
@@ -358,7 +367,7 @@ class SupabaseManager: ObservableObject {
         encoder.dateEncodingStrategy = .iso8601
         request.httpBody = try encoder.encode(weightLog)
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.networkError
@@ -385,7 +394,7 @@ class SupabaseManager: ObservableObject {
         request.setValue("Bearer \(jwt)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.networkError
@@ -419,7 +428,7 @@ class SupabaseManager: ObservableObject {
         encoder.dateEncodingStrategy = .iso8601
         request.httpBody = try encoder.encode(metrics)
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.networkError
@@ -449,7 +458,7 @@ class SupabaseManager: ObservableObject {
         request.setValue("Bearer \(jwt)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.networkError
@@ -483,7 +492,7 @@ class SupabaseManager: ObservableObject {
         encoder.dateEncodingStrategy = .iso8601
         request.httpBody = try encoder.encode(metrics)
         
-        let (_, response) = try await URLSession.shared.data(for: request)
+        let (_, response) = try await self.session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.networkError

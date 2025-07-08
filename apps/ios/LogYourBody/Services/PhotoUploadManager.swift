@@ -292,7 +292,13 @@ class PhotoUploadManager: ObservableObject {
         request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
         request.httpBody = imageData
         
-        let (data, response) = try await URLSession.shared.data(for: request)
+        // Configure URLSession with longer timeout for photo uploads
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 60.0 // 60 seconds
+        configuration.timeoutIntervalForResource = 120.0 // 2 minutes
+        let session = URLSession(configuration: configuration)
+        
+        let (data, response) = try await session.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             print("❌ PhotoUploadManager: Invalid response type")
