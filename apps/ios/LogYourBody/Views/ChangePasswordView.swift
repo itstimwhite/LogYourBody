@@ -221,8 +221,8 @@ struct ChangePasswordView: View {
                 
                 // Update password using Clerk
                 try await user.updatePassword(.init(
-                    currentPassword: currentPassword,
                     newPassword: newPassword,
+                    currentPassword: currentPassword,
                     signOutOfOtherSessions: true
                 ))
                 
