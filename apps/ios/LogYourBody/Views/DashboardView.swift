@@ -877,6 +877,11 @@ struct SecondaryMetricItem: View {
                     Text(showDecimal ? "\(value, specifier: "%.1f")" : "\(Int(value))")
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.appText)
+                    if !unit.isEmpty {
+                        Text(unit)
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.appTextSecondary)
+                    }
                 } else {
                     Text("--")
                         .font(.system(size: 18, weight: .bold))

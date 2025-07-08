@@ -106,6 +106,15 @@ struct ProfileSettingsView: View {
                 }
             }
             
+            // Security Section
+            Section {
+                NavigationLink(destination: ChangePasswordView()) {
+                    Label("Change Password", systemImage: "lock.rotation")
+                }
+            } header: {
+                Text("Security")
+            }
+            
             // Additional Actions
             Section {
                 NavigationLink(destination: ExportDataView()) {
