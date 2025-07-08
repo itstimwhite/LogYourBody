@@ -36,22 +36,19 @@ serve(async (req) => {
     }
 
     // Build Cloudinary transformation URL
+    // Simplified transformations to avoid object-detection errors
     // This will:
-    // 1. Remove background using AI
-    // 2. Apply person-aware cropping to center the subject
-    // 3. Standardize dimensions (600x800)
-    // 4. Apply slight color corrections for consistency
-    // 5. Convert to WebP format for optimal delivery
+    // 1. Standardize dimensions (600x800)
+    // 2. Center crop the image
+    // 3. Apply auto quality
+    // 4. Convert to WebP format for optimal delivery
     const transformations = [
-      'e_background_removal',  // AI background removal
       'c_fill',               // Fill mode for consistent dimensions
-      'g_person',             // Person-aware gravity
+      'g_center',             // Center gravity (simpler than person detection)
       'w_600',                // Width
       'h_800',                // Height
-      'q_auto:best',          // Auto quality (best)
-      'f_webp',               // WebP format
-      'e_auto_brightness',    // Auto brightness adjustment
-      'e_auto_contrast',      // Auto contrast adjustment
+      'q_auto',               // Auto quality
+      'f_webp'                // WebP format
     ].join(',')
 
     // Create Cloudinary upload URL

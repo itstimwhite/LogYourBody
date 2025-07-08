@@ -1154,11 +1154,7 @@ struct SegmentedProgressRing: View {
     
     @ViewBuilder
     private var backgroundSegments: some View {
-        // Full background ring in neutral gray
-        Circle()
-            .stroke(Color.appBorder, lineWidth: lineWidth)
-        
-        // Colored segments overlay
+        // Colored segments only - no gray background ring
         ZStack {
             // Below optimal range (red)
             if minValue < optimalRange.lowerBound {
@@ -1167,7 +1163,7 @@ struct SegmentedProgressRing: View {
                     endAngle: angle(for: min(optimalRange.lowerBound, maxValue)),
                     clockwise: true
                 )
-                .stroke(Color(.systemRed).opacity(0.3), lineWidth: lineWidth)
+                .stroke(Color(.systemRed).opacity(0.2), lineWidth: lineWidth)
             }
             
             // Optimal range (green)
@@ -1176,7 +1172,7 @@ struct SegmentedProgressRing: View {
                 endAngle: angle(for: min(maxValue, optimalRange.upperBound)),
                 clockwise: true
             )
-            .stroke(Color(.systemGreen).opacity(0.3), lineWidth: lineWidth)
+            .stroke(Color(.systemGreen).opacity(0.2), lineWidth: lineWidth)
             
             // Above optimal range (red)
             if maxValue > optimalRange.upperBound {
@@ -1185,7 +1181,7 @@ struct SegmentedProgressRing: View {
                     endAngle: angle(for: maxValue),
                     clockwise: true
                 )
-                .stroke(Color(.systemRed).opacity(0.3), lineWidth: lineWidth)
+                .stroke(Color(.systemRed).opacity(0.2), lineWidth: lineWidth)
             }
         }
     }
