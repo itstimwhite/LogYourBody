@@ -93,9 +93,34 @@ struct SignUpView: View {
                                     }
                                 }
                             
-                            Text("At least 6 characters")
-                                .font(.appCaption)
-                                .foregroundColor(.linearTextTertiary)
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack(spacing: 4) {
+                                    Image(systemName: password.count >= 8 ? "checkmark.circle.fill" : "circle")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(password.count >= 8 ? .green : .linearTextTertiary)
+                                    Text("At least 8 characters")
+                                        .font(.appCaption)
+                                        .foregroundColor(password.count >= 8 ? .appTextSecondary : .linearTextTertiary)
+                                }
+                                
+                                HStack(spacing: 4) {
+                                    Image(systemName: hasUpperAndLower ? "checkmark.circle.fill" : "circle")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(hasUpperAndLower ? .green : .linearTextTertiary)
+                                    Text("Mix of uppercase and lowercase letters")
+                                        .font(.appCaption)
+                                        .foregroundColor(hasUpperAndLower ? .appTextSecondary : .linearTextTertiary)
+                                }
+                                
+                                HStack(spacing: 4) {
+                                    Image(systemName: hasNumberOrSymbol ? "checkmark.circle.fill" : "circle")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(hasNumberOrSymbol ? .green : .linearTextTertiary)
+                                    Text("At least one number or special character")
+                                        .font(.appCaption)
+                                        .foregroundColor(hasNumberOrSymbol ? .appTextSecondary : .linearTextTertiary)
+                                }
+                            }
                         }
                         
                         // Terms Text
@@ -184,7 +209,21 @@ struct SignUpView: View {
     private var isValidForm: Bool {
         !email.isEmpty &&
         email.contains("@") &&
-        password.count >= 6
+        password.count >= 8 &&
+        hasUpperAndLower &&
+        hasNumberOrSymbol
+    }
+    
+    private var hasUpperAndLower: Bool {
+        let hasUpper = password.rangeOfCharacter(from: .uppercaseLetters) != nil
+        let hasLower = password.rangeOfCharacter(from: .lowercaseLetters) != nil
+        return hasUpper && hasLower
+    }
+    
+    private var hasNumberOrSymbol: Bool {
+        let hasNumber = password.rangeOfCharacter(from: .decimalDigits) != nil
+        let hasSymbol = password.rangeOfCharacter(from: CharacterSet.alphanumerics.inverted) != nil
+        return hasNumber || hasSymbol
     }
     
     private func signUp() {
@@ -205,7 +244,12 @@ struct SignUpView: View {
                 if authManager.needsEmailVerification {
                     // Email verification screen will show automatically
                 } else {
-                    errorMessage = error.localizedDescription
+                    // Check if it's a password strength error
+                    if error.localizedDescription.contains("not strong enough") {
+                        errorMessage = "Please choose a stronger password. Use at least 8 characters with a mix of uppercase, lowercase, and numbers or symbols."
+                    } else {
+                        errorMessage = error.localizedDescription
+                    }
                     showError = true
                 }
             }
