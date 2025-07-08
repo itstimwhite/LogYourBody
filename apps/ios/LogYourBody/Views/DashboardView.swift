@@ -1154,34 +1154,40 @@ struct SegmentedProgressRing: View {
     
     @ViewBuilder
     private var backgroundSegments: some View {
-        // Colored segments only - no gray background ring
         ZStack {
-            // Below optimal range (red)
-            if minValue < optimalRange.lowerBound {
+            // Full gray background ring
+            Circle()
+                .stroke(Color.appBorder.opacity(0.3), lineWidth: lineWidth)
+            
+            // Colored segments overlay
+            Group {
+                // Below optimal range (red)
+                if minValue < optimalRange.lowerBound {
+                    Arc(
+                        startAngle: angle(for: minValue),
+                        endAngle: angle(for: min(optimalRange.lowerBound, maxValue)),
+                        clockwise: true
+                    )
+                    .stroke(Color(.systemRed).opacity(0.4), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+                }
+                
+                // Optimal range (green)
                 Arc(
-                    startAngle: angle(for: minValue),
-                    endAngle: angle(for: min(optimalRange.lowerBound, maxValue)),
+                    startAngle: angle(for: max(minValue, optimalRange.lowerBound)),
+                    endAngle: angle(for: min(maxValue, optimalRange.upperBound)),
                     clockwise: true
                 )
-                .stroke(Color(.systemRed).opacity(0.2), lineWidth: lineWidth)
-            }
-            
-            // Optimal range (green)
-            Arc(
-                startAngle: angle(for: max(minValue, optimalRange.lowerBound)),
-                endAngle: angle(for: min(maxValue, optimalRange.upperBound)),
-                clockwise: true
-            )
-            .stroke(Color(.systemGreen).opacity(0.2), lineWidth: lineWidth)
-            
-            // Above optimal range (red)
-            if maxValue > optimalRange.upperBound {
-                Arc(
-                    startAngle: angle(for: max(minValue, optimalRange.upperBound)),
-                    endAngle: angle(for: maxValue),
-                    clockwise: true
-                )
-                .stroke(Color(.systemRed).opacity(0.2), lineWidth: lineWidth)
+                .stroke(Color(.systemGreen).opacity(0.4), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+                
+                // Above optimal range (red)
+                if maxValue > optimalRange.upperBound {
+                    Arc(
+                        startAngle: angle(for: max(minValue, optimalRange.upperBound)),
+                        endAngle: angle(for: maxValue),
+                        clockwise: true
+                    )
+                    .stroke(Color(.systemRed).opacity(0.4), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+                }
             }
         }
     }
