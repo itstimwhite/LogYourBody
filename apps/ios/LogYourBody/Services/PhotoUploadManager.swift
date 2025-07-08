@@ -296,9 +296,9 @@ class PhotoUploadManager: ObservableObject {
         let configuration = URLSessionConfiguration.default
         configuration.timeoutIntervalForRequest = 60.0 // 60 seconds
         configuration.timeoutIntervalForResource = 120.0 // 2 minutes
-        let session = URLSession(configuration: configuration)
+        let uploadSession = URLSession(configuration: configuration)
         
-        let (data, response) = try await session.data(for: request)
+        let (data, response) = try await uploadSession.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
             print("❌ PhotoUploadManager: Invalid response type")
