@@ -99,7 +99,7 @@ class BackgroundRemovalService {
         // Create alpha mask by blending the original image with the mask
         let blendFilter = CIFilter.blendWithMask()
         blendFilter.inputImage = ciImage
-        blendFilter.backgroundImage = CIImage(color: .clear)
+        blendFilter.backgroundImage = CIImage.empty()
         blendFilter.maskImage = blurredMask
         
         guard let outputImage = blendFilter.outputImage else {
@@ -139,21 +139,3 @@ class BackgroundRemovalService {
     }
 }
 
-// Extension to create transparent CIImage
-extension CIImage {
-    convenience init(color: UIColor) {
-        let extent = CGRect(x: 0, y: 0, width: 1, height: 1)
-        let filter = CIFilter.constantColorGenerator()
-        
-        var r: CGFloat = 0
-        var g: CGFloat = 0
-        var b: CGFloat = 0
-        var a: CGFloat = 0
-        color.getRed(&r, green: &g, blue: &b, alpha: &a)
-        
-        filter.color = CIColor(red: r, green: g, blue: b, alpha: a)
-        
-        let outputImage = filter.outputImage!
-        self.init(cgImage: CIContext().createCGImage(outputImage, from: extent)!)
-    }
-}
