@@ -36,7 +36,7 @@ serve(async (req) => {
     }
 
     // Build Cloudinary transformation URL
-    // Simplified transformations to avoid object-detection errors
+    // Using simpler transformations that work with Cloudinary's free tier
     // This will:
     // 1. Standardize dimensions (600x800)
     // 2. Center crop the image
@@ -44,7 +44,7 @@ serve(async (req) => {
     // 4. Convert to WebP format for optimal delivery
     const transformations = [
       'c_fill',               // Fill mode for consistent dimensions
-      'g_center',             // Center gravity (simpler than person detection)
+      'g_auto',               // Auto gravity to focus on the subject
       'w_600',                // Width
       'h_800',                // Height
       'q_auto',               // Auto quality

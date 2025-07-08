@@ -127,14 +127,7 @@ struct ProgressPhotoCutoutView: View {
                     }
                 }
                 
-                // Metrics overlay
-                if let metric = currentMetric {
-                    VStack {
-                        Spacer()
-                        MetricsOverlayView(metric: metric)
-                            .padding(.bottom, 40)
-                    }
-                }
+                // Remove metrics overlay since they're shown in the rings below
             }
         }
     }
