@@ -13,7 +13,10 @@ struct LogYourBodyApp: App {
     @StateObject private var authManager = AuthManager.shared
     @StateObject private var healthKitManager = HealthKitManager.shared
     @StateObject private var syncManager = SyncManager.shared
+    @StateObject private var widgetDataManager = WidgetDataManager.shared
     @State private var clerk = Clerk.shared
+    @State private var showAddEntrySheet = false
+    @State private var selectedEntryTab = 0
     
     let persistenceController = CoreDataManager.shared
     
@@ -24,6 +27,20 @@ struct LogYourBodyApp: App {
                 .environmentObject(authManager)
                 .environmentObject(syncManager)
                 .environment(clerk)
+                .sheet(isPresented: $showAddEntrySheet) {
+                    AddEntrySheet(isPresented: $showAddEntrySheet)
+                        .environmentObject(authManager)
+                        .onAppear {
+                            // Set the selected tab based on deep link
+                            if let tab = UserDefaults.standard.object(forKey: "pendingEntryTab") as? Int {
+                                selectedEntryTab = tab
+                                UserDefaults.standard.removeObject(forKey: "pendingEntryTab")
+                            }
+                        }
+                }
+                .onOpenURL { url in
+                    handleDeepLink(url)
+                }
                 .task {
                     // Perform app version management and cleanup
                     // TODO: Add AppVersionManager.swift to Xcode project, then uncomment:
@@ -55,10 +72,19 @@ struct LogYourBodyApp: App {
                             try? await healthKitManager.setupStepCountBackgroundDelivery()
                         }
                     }
+                    
+                    // Setup widget data updates
+                    widgetDataManager.setupAutomaticUpdates()
+                    await widgetDataManager.updateWidgetData()
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.didEnterBackgroundNotification)) { _ in
                     // App entering background - ensure sync is complete
                     syncManager.syncIfNeeded()
+                    
+                    // Update widget data
+                    Task {
+                        await widgetDataManager.updateWidgetData()
+                    }
                 }
                 .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
                     // App entering foreground - refresh data
@@ -66,8 +92,36 @@ struct LogYourBodyApp: App {
                         if healthKitManager.isAuthorized {
                             try? await healthKitManager.syncStepsFromHealthKit()
                         }
+                        // Update widget with latest data
+                        await widgetDataManager.updateWidgetData()
                     }
                 }
+        }
+    }
+    
+    // MARK: - Deep Link Handling
+    
+    private func handleDeepLink(_ url: URL) {
+        guard url.scheme == "logyourbody" else { return }
+        
+        switch url.host {
+        case "log":
+            // Handle specific log types
+            if let path = url.pathComponents.dropFirst().first {
+                switch path {
+                case "weight":
+                    UserDefaults.standard.set(0, forKey: "pendingEntryTab")
+                case "bodyfat":
+                    UserDefaults.standard.set(1, forKey: "pendingEntryTab")
+                case "photo":
+                    UserDefaults.standard.set(2, forKey: "pendingEntryTab")
+                default:
+                    break
+                }
+            }
+            showAddEntrySheet = true
+        default:
+            break
         }
     }
 }

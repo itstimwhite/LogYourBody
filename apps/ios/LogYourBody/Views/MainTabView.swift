@@ -12,6 +12,8 @@ struct MainTabView: View {
     @StateObject private var healthKitManager = HealthKitManager.shared
     @AppStorage("healthKitSyncEnabled") private var healthKitSyncEnabled = true
     @Namespace private var namespace
+    @State private var showAddEntrySheet = false
+    @EnvironmentObject var authManager: AuthManager
     
     init() {
         // Hide default tab bar since we're using custom one
@@ -30,11 +32,14 @@ struct MainTabView: View {
                             removal: .move(edge: .trailing).combined(with: .opacity)
                         ))
                 case .log:
-                    LogWeightView()
-                        .transition(.asymmetric(
-                            insertion: .scale.combined(with: .opacity),
-                            removal: .scale.combined(with: .opacity)
-                        ))
+                    DashboardView() // Stay on dashboard when log is tapped
+                        .onAppear {
+                            showAddEntrySheet = true
+                            // Reset tab back to dashboard
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                selectedTab = .dashboard
+                            }
+                        }
                 case .settings:
                     SettingsView()
                         .transition(.asymmetric(
@@ -56,6 +61,10 @@ struct MainTabView: View {
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selectedTab)
         .toastPresenter() // Add toast presenter to main view
+        .sheet(isPresented: $showAddEntrySheet) {
+            AddEntrySheet(isPresented: $showAddEntrySheet)
+                .environmentObject(authManager)
+        }
         .onAppear {
             // Check HealthKit authorization status on app launch
             healthKitManager.checkAuthorizationStatus()

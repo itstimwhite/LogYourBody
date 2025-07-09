@@ -10,7 +10,6 @@ import UIKit
 import PhotosUI
 import Combine
 
-@MainActor
 class PhotoUploadManager: ObservableObject {
     static let shared = PhotoUploadManager()
     
@@ -77,18 +76,22 @@ class PhotoUploadManager: ObservableObject {
         print("📸 PhotoUploadManager: Current user ID: \(userId)")
         print("📸 PhotoUploadManager: Current user email: \(authManager.currentUser?.email ?? "nil")")
         
-        isUploading = true
-        uploadProgress = 0.0
-        uploadError = nil
+        await MainActor.run {
+            isUploading = true
+            uploadProgress = 0.0
+            uploadError = nil
+        }
         
         let uploadId = UUID().uuidString
-        currentUploadTask = UploadTask(
-            id: uploadId,
-            metricsId: metrics.id,
-            status: .preparing,
-            progress: 0.0,
-            error: nil
-        )
+        await MainActor.run {
+            currentUploadTask = UploadTask(
+                id: uploadId,
+                metricsId: metrics.id,
+                status: .preparing,
+                progress: 0.0,
+                error: nil
+            )
+        }
         
         defer {
             isUploading = false
@@ -384,15 +387,17 @@ class PhotoUploadManager: ObservableObject {
     }
     
     private func updateUploadStatus(_ status: UploadStatus, progress: Double) {
-        uploadProgress = progress
-        if let task = currentUploadTask {
-            currentUploadTask = UploadTask(
-                id: task.id,
-                metricsId: task.metricsId,
-                status: status,
-                progress: progress,
-                error: nil
-            )
+        Task { @MainActor in
+            uploadProgress = progress
+            if let task = currentUploadTask {
+                currentUploadTask = UploadTask(
+                    id: task.id,
+                    metricsId: task.metricsId,
+                    status: status,
+                    progress: progress,
+                    error: nil
+                )
+            }
         }
     }
 }

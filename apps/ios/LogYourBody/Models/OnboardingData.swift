@@ -15,6 +15,7 @@ struct OnboardingData {
     var gender: Gender?
     var notificationsEnabled: Bool = false
     var healthKitEnabled: Bool = false
+    var hasUploadedPhotos: Bool = false
     
     enum Gender: String, CaseIterable {
         case male = "Male"

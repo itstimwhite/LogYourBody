@@ -22,6 +22,7 @@ struct DashboardView: View {
     @State private var showCamera = false
     @State private var showPhotoPicker = false
     @State private var selectedPhoto: PhotosPickerItem?
+    @State private var showingModal = false
     @Namespace private var namespace
     @AppStorage(Constants.preferredMeasurementSystemKey) private var measurementSystem = PreferencesView.defaultMeasurementSystem
     
@@ -74,33 +75,26 @@ struct DashboardView: View {
     @ViewBuilder
     private var mainContentView: some View {
         ScrollView {
-            VStack(spacing: 16) {
+            VStack(spacing: 20) {
                 // Progress Photo (1:1 square)
                 progressPhotoView
                     .padding(.horizontal)
                 
                 // Core Metrics Row
                 coreMetricsRow
-                    .frame(height: 120)
                     .padding(.horizontal)
                 
                 // Secondary Metrics Strip
                 secondaryMetricsStrip
-                    .frame(height: 60)
+                    .frame(height: 80)
                     .background(Color.appCard)
+                    .padding(.horizontal)
+                    .cornerRadius(12)
                 
-                // Timeline controls (if multiple entries)
-                if bodyMetrics.count > 1 {
-                    timelineControls
-                        .padding()
-                        .background(Color.appCard)
-                        .cornerRadius(12)
-                        .padding(.horizontal)
-                }
-                
-                Spacer(minLength: 20)
+                // Bottom padding to prevent tab bar overlap
+                Color.clear.frame(height: 100)
             }
-            .padding(.top, 8)
+            .padding(.top, 12)
         }
         .refreshable {
             await refreshData()
@@ -113,9 +107,11 @@ struct DashboardView: View {
             // Use the new cutout view for photos
             ProgressPhotoCutoutView(
                 currentMetric: currentMetric,
-                historicalMetrics: bodyMetrics
+                historicalMetrics: bodyMetrics,
+                selectedMetricsIndex: $selectedIndex
             )
-            .frame(height: UIScreen.main.bounds.width)
+            .frame(height: UIScreen.main.bounds.width - 32) // Account for padding
+            .background(Color.appBackground)
             .cornerRadius(16)
             .clipped()
             
@@ -150,98 +146,94 @@ struct DashboardView: View {
     private var coreMetricsRow: some View {
         HStack(spacing: 12) {
             // Body Fat % with segmented progress ring
-            AnimatedCard(id: "bodyfat-metric", namespace: namespace) {
-                if let bodyFat = currentMetric?.bodyFatPercentage {
-                    SegmentedProgressRing(
-                        value: bodyFat,
-                        minValue: 0,
-                        maxValue: 25,
-                        optimalRange: getOptimalBodyFatRange(),
-                        idealValue: getIdealBodyFat(),
-                        size: 120,
-                        lineWidth: 8,
-                        label: "Body Fat",
-                        unit: "%"
-                    )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 140)
-                    .background(Color.appCard)
-                    .cornerRadius(12)
-                } else {
-                    EmptyMetricCard(label: "Body Fat %")
-                }
+            let estimatedBF = currentMetric?.bodyFatPercentage == nil && selectedIndex < bodyMetrics.count
+                ? PhotoMetadataService.shared.estimateBodyFat(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics)
+                : nil
+            
+            let bodyFatValue = currentMetric?.bodyFatPercentage ?? estimatedBF?.value
+            
+            if bodyFatValue != nil {
+                StandardizedProgressRing(
+                    value: bodyFatValue!,
+                    idealValue: getIdealBodyFat(),
+                    label: "Body Fat",
+                    unit: "%"
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 140)
+                .background(Color.appCard)
+                .cornerRadius(12)
+            } else {
+                EmptyMetricCard(label: "Body Fat %")
             }
             
             // FFMI with segmented progress ring
-            AnimatedCard(id: "ffmi-metric", namespace: namespace) {
-                if let ffmi = calculateFFMI() {
-                    SegmentedProgressRing(
-                        value: ffmi,
-                        minValue: 15,
-                        maxValue: 30,
-                        optimalRange: getOptimalFFMIRange(),
-                        idealValue: getIdealFFMI(),
-                        size: 120,
-                        lineWidth: 8,
-                        label: "FFMI",
-                        unit: ""
-                    )
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 140)
-                    .background(Color.appCard)
-                    .cornerRadius(12)
-                } else {
-                    EmptyMetricCard(label: "FFMI")
-                }
+            if let ffmi = calculateFFMI() {
+                StandardizedProgressRing(
+                    value: ffmi,
+                    idealValue: getIdealFFMI(),
+                    label: "FFMI",
+                    unit: "",
+                    isFFMI: true
+                )
+                .frame(maxWidth: .infinity)
+                .frame(height: 140)
+                .background(Color.appCard)
+                .cornerRadius(12)
+            } else {
+                EmptyMetricCard(label: "FFMI")
             }
         }
+        .frame(height: 140)
     }
     
     @ViewBuilder
     private var secondaryMetricsStrip: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 0) {
-                AnimatedCard(id: "steps-metric", namespace: namespace) {
-                    SecondaryMetricItem(
-                        icon: "figure.walk",
-                        value: selectedDateMetrics?.steps != nil ? Double(selectedDateMetrics!.steps!) : nil,
-                        unit: "steps",
-                        label: "Steps",
-                        showDecimal: false,
-                        iconColor: Color(.systemGreen)
-                    )
-                }
-                
-                Divider()
-                    .frame(height: 40)
-                
-                AnimatedCard(id: "weight-metric", namespace: namespace) {
-                    SecondaryMetricItem(
-                        icon: "scalemass",
-                        value: currentMetric?.weight != nil ? 
-                            convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) : nil,
-                        unit: currentSystem.weightUnit,
-                        label: "Weight",
-                        iconColor: Color(.systemGray)
-                    )
-                }
-                
-                Divider()
-                    .frame(height: 40)
-                
-                AnimatedCard(id: "lean-mass-metric", namespace: namespace) {
-                    SecondaryMetricItem(
-                        icon: "figure.arms.open",
-                        value: calculateLeanMass() != nil ? 
-                            convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil,
-                        unit: currentSystem.weightUnit,
-                        label: "Lean Mass",
-                        iconColor: Color(.systemBlue)
-                    )
-                }
-            }
-            .padding(.horizontal)
+        HStack(spacing: 0) {
+            // Steps
+            MetricStripItem(
+                icon: "figure.walk",
+                value: selectedDateMetrics?.steps != nil ? "\(selectedDateMetrics!.steps!)" : "––",
+                label: "Steps",
+                iconColor: .green
+            )
+            .frame(maxWidth: .infinity)
+            
+            Divider()
+                .frame(height: 40)
+            
+            // Weight
+            let estimatedWeight = currentMetric?.weight == nil && selectedIndex < bodyMetrics.count
+                ? PhotoMetadataService.shared.estimateWeight(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics)
+                : nil
+            let weightValue = currentMetric?.weight != nil ?
+                convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit) :
+                (estimatedWeight != nil ? convertWeight(estimatedWeight!.value, from: "kg", to: currentSystem.weightUnit) : nil)
+            
+            MetricStripItem(
+                icon: "scalemass",
+                value: weightValue != nil ? "\(Int(weightValue!))" : "––",
+                label: "Weight \(currentSystem.weightUnit)",
+                iconColor: .gray
+            )
+            .frame(maxWidth: .infinity)
+            
+            Divider()
+                .frame(height: 40)
+            
+            // Lean Mass
+            let leanMass = calculateLeanMass() != nil ?
+                convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil
+            
+            MetricStripItem(
+                icon: "figure.arms.open",
+                value: leanMass != nil ? "\(Int(leanMass!))" : "––",
+                label: "Lean Mass \(currentSystem.weightUnit)",
+                iconColor: .blue
+            )
+            .frame(maxWidth: .infinity)
         }
+        .padding(.horizontal)
     }
     
     @ViewBuilder
@@ -287,57 +279,174 @@ struct DashboardView: View {
     
     @ViewBuilder
     private var headerView: some View {
-        HStack {
-            // User info
-            HStack(spacing: 8) {
-                if let name = authManager.currentUser?.profile?.fullName {
-                    Text(name)
-                        .font(.system(size: 14, weight: .regular, design: .default))
-                        .foregroundColor(.appText)
-                }
+        VStack(spacing: 0) {
+            // Timeline slider (if multiple entries)
+            if bodyMetrics.count > 1 {
+                timelineSlider
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.appBackground)
+            }
+            
+            // Streamlined header row
+            HStack {
+                // User info in single row
+                Text(userInfoString)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundColor(.appText)
                 
-                if let age = userAge {
-                    Text("• \(age)")
-                        .font(.system(size: 14, weight: .regular, design: .default))
-                        .foregroundColor(.appTextSecondary)
-                }
+                Spacer()
                 
-                if let gender = authManager.currentUser?.profile?.gender {
-                    Image(systemName: gender.lowercased() == "male" ? "person.fill" : "person.dress.line.vertical.figure")
+                // Sync status
+                if syncManager.isSyncing {
+                    Image(systemName: "arrow.triangle.2.circlepath")
+                        .font(.system(size: 16))
+                        .foregroundColor(.appPrimary)
+                        .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
+                        .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: syncManager.isSyncing)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .background(Color.appBackground)
+            
+            // Estimated data indicator (if any metrics are estimated)
+            if hasEstimatedData {
+                HStack {
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 12))
+                        .foregroundColor(.orange)
+                    Text("Estimated values")
+                        .font(.system(size: 12))
+                        .foregroundColor(.orange)
+                    Spacer()
+                }
+                .padding(.horizontal, 16)
+                .padding(.bottom, 8)
+            }
+        }
+    }
+    
+    private var userInfoString: String {
+        var components: [String] = []
+        
+        if let name = authManager.currentUser?.profile?.fullName?.split(separator: " ").first {
+            components.append(String(name))
+        }
+        
+        if let age = userAge {
+            components.append("\(age)")
+        }
+        
+        if let gender = authManager.currentUser?.profile?.gender {
+            components.append(gender.lowercased() == "male" ? "♂" : "♀")
+        }
+        
+        if let height = authManager.currentUser?.profile?.height {
+            let heightDisplay = currentSystem == .imperial ? 
+                "\(Int(height / 12))′\(Int(height.truncatingRemainder(dividingBy: 12)))″" : 
+                "\(Int(height * 2.54))cm"
+            components.append(heightDisplay)
+        }
+        
+        return components.joined(separator: " · ")
+    }
+    
+    private var hasEstimatedData: Bool {
+        let hasEstimatedWeight = currentMetric?.weight == nil && selectedIndex < bodyMetrics.count &&
+            PhotoMetadataService.shared.estimateWeight(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics) != nil
+        
+        let hasEstimatedBF = currentMetric?.bodyFatPercentage == nil && selectedIndex < bodyMetrics.count &&
+            PhotoMetadataService.shared.estimateBodyFat(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics) != nil
+        
+        return hasEstimatedWeight || hasEstimatedBF
+    }
+    
+    @ViewBuilder
+    private var timelineSlider: some View {
+        VStack(spacing: 8) {
+            // Custom slider with dots
+            ZStack(alignment: .leading) {
+                // Track
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color.appBorder)
+                    .frame(height: 4)
+                
+                // Dots for each metric
+                GeometryReader { geometry in
+                    ForEach(0..<bodyMetrics.count, id: \.self) { index in
+                        Circle()
+                            .fill(index == selectedIndex ? Color.appPrimary : Color.appBorder)
+                            .frame(width: 8, height: 8)
+                            .position(
+                                x: CGFloat(index) / CGFloat(max(1, bodyMetrics.count - 1)) * geometry.size.width,
+                                y: geometry.size.height / 2
+                            )
+                    }
+                }
+                .frame(height: 8)
+                
+                // Custom thumb
+                GeometryReader { geometry in
+                    Circle()
+                        .fill(Color.appPrimary)
+                        .frame(width: 20, height: 20)
+                        .shadow(color: Color.black.opacity(0.2), radius: 2, x: 0, y: 1)
+                        .position(
+                            x: CGFloat(selectedIndex) / CGFloat(max(1, bodyMetrics.count - 1)) * geometry.size.width,
+                            y: geometry.size.height / 2
+                        )
+                        .gesture(
+                            DragGesture()
+                                .onChanged { value in
+                                    let percent = value.location.x / geometry.size.width
+                                    let index = Int(round(percent * Double(bodyMetrics.count - 1)))
+                                    let newIndex = max(0, min(bodyMetrics.count - 1, index))
+                                    
+                                    // Haptic feedback on change
+                                    if newIndex != selectedIndex {
+                                        HapticManager.shared.sliderChanged()
+                                        selectedIndex = newIndex
+                                        loadMetricsForSelectedDate()
+                                    }
+                                }
+                                .onEnded { _ in
+                                    HapticManager.shared.sliderEnded()
+                                }
+                        )
+                        .onTapGesture {
+                            HapticManager.shared.sliderStarted()
+                        }
+                }
+                .frame(height: 20)
+            }
+            .frame(height: 32)
+            
+            // Date labels
+            HStack {
+                if let date = bodyMetrics.first?.date {
+                    Text(date, style: .date)
                         .font(.system(size: 14))
                         .foregroundColor(.appTextSecondary)
                 }
                 
-                if let height = authManager.currentUser?.profile?.height {
-                    let heightDisplay = currentSystem == .imperial ? 
-                        "\(Int(height / 12))'\(Int(height.truncatingRemainder(dividingBy: 12)))\"" : 
-                        "\(Int(height * 2.54))cm"
-                    Text("• \(heightDisplay)")
-                        .font(.system(size: 14, weight: .regular, design: .default))
+                Spacer()
+                
+                if let date = currentMetric?.date {
+                    Text(date, style: .date)
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.appText)
+                }
+                
+                Spacer()
+                
+                if let date = bodyMetrics.last?.date {
+                    Text(date, style: .date)
+                        .font(.system(size: 14))
                         .foregroundColor(.appTextSecondary)
                 }
             }
-            
-            Spacer()
-            
-            // Sync status
-            if syncManager.isSyncing {
-                Image(systemName: "arrow.triangle.2.circlepath")
-                    .font(.system(size: 16))
-                    .foregroundColor(.appPrimary)
-                    .rotationEffect(.degrees(syncManager.isSyncing ? 360 : 0))
-                    .animation(Animation.linear(duration: 1).repeatForever(autoreverses: false), value: syncManager.isSyncing)
-                    .task {
-                        // Keep the animation running smoothly
-                        while syncManager.isSyncing {
-                            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 second
-                        }
-                    }
-            }
         }
-        .padding(.horizontal)
-        .padding(.vertical, 12)
-        .background(Color.appBackground)
     }
     
     var body: some View {
@@ -356,10 +465,20 @@ struct DashboardView: View {
                         emptyStateView
                     } else {
                         mainContentView
+                            .smartBlur(isPresented: showPhotoOptions || showCamera || showPhotoPicker || showingModal)
                     }
                 }
             }
             .navigationBarHidden(true)
+            .onChange(of: showPhotoOptions) { _, newValue in
+                showingModal = newValue
+            }
+            .onChange(of: showCamera) { _, newValue in
+                showingModal = newValue
+            }
+            .onChange(of: showPhotoPicker) { _, newValue in
+                showingModal = newValue
+            }
             .onAppear {
                 // Log the current authentication state
                 print("🎯 DashboardView onAppear")
@@ -412,12 +531,12 @@ struct DashboardView: View {
                 selection: $selectedPhoto,
                 matching: .images
             )
-            .onChange(of: selectedPhoto) { newItem in
+            .onChange(of: selectedPhoto) { _, newItem in
                 Task {
                     await handlePhotoSelection(newItem)
                 }
             }
-            .onChange(of: authManager.currentUser?.id) { newUserId in
+            .onChange(of: authManager.currentUser?.id) { _, newUserId in
                 print("👤 User ID changed: \(authManager.currentUser?.id ?? "nil") -> \(newUserId ?? "nil")")
                 
                 // Clear existing data
@@ -858,43 +977,31 @@ struct EmptyMetricCard: View {
     }
 }
 
-struct SecondaryMetricItem: View {
+struct MetricStripItem: View {
     let icon: String
-    let value: Double?
-    let unit: String
+    let value: String
     let label: String
-    var showDecimal: Bool = true
-    var iconColor: Color = Color(.systemGray)
+    let iconColor: Color
     
     var body: some View {
         VStack(spacing: 4) {
             Image(systemName: icon)
-                .font(.system(size: 16))
+                .font(.system(size: 18))
                 .foregroundColor(iconColor)
             
-            HStack(spacing: 2) {
-                if let value = value {
-                    Text(showDecimal ? "\(value, specifier: "%.1f")" : "\(Int(value))")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.appText)
-                    if !unit.isEmpty {
-                        Text(unit)
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundColor(.appTextSecondary)
-                    }
-                } else {
-                    Text("--")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.appTextTertiary)
-                }
-            }
+            Text(value)
+                .font(.system(size: 32, weight: .bold, design: .rounded))
+                .foregroundColor(.appText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
             
             Text(label)
-                .font(.system(size: 10))
+                .font(.system(size: 11))
                 .foregroundColor(.appTextSecondary)
+                .lineLimit(1)
         }
-        .frame(minWidth: 100)
-        .padding(.horizontal, 16)
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 16)
     }
 }
 
@@ -1068,23 +1175,55 @@ struct RoundedCorner: Shape {
     }
 }
 
-// MARK: - Segmented Progress Ring
+// MARK: - Standardized Progress Ring
 
-struct SegmentedProgressRing: View {
+struct StandardizedProgressRing: View {
     let value: Double
-    let minValue: Double
-    let maxValue: Double
-    let optimalRange: ClosedRange<Double>
     let idealValue: Double
-    let size: CGFloat
-    let lineWidth: CGFloat
     let label: String
     let unit: String
+    var isFFMI: Bool = false
     
     @State private var animatedValue: Double = 0
-    @State private var showOnTarget = false
+    @State private var previousZone: Color? = nil
     
-    // Calculate position on the ring (0-1)
+    private let size: CGFloat = 120
+    private let lineWidth: CGFloat = 8
+    
+    // Define zones based on ideal value
+    private var underZone: ClosedRange<Double> {
+        if isFFMI {
+            return 15...21
+        } else {
+            return 0...6
+        }
+    }
+    
+    private var targetZone: ClosedRange<Double> {
+        if isFFMI {
+            return 21...24
+        } else {
+            return 6...10
+        }
+    }
+    
+    private var overZone: ClosedRange<Double> {
+        if isFFMI {
+            return 24...30
+        } else {
+            return 10...25
+        }
+    }
+    
+    private var minValue: Double {
+        isFFMI ? 15 : 0
+    }
+    
+    private var maxValue: Double {
+        isFFMI ? 30 : 25
+    }
+    
+    // Calculate normalized position
     private func normalizedPosition(for value: Double) -> Double {
         (value - minValue) / (maxValue - minValue)
     }
@@ -1095,25 +1234,27 @@ struct SegmentedProgressRing: View {
         return .degrees(normalized * 360 - 90)
     }
     
-    // Get color for a given value
-    private func color(for value: Double) -> Color {
-        if optimalRange.contains(value) {
-            return Color(.systemGreen)
+    // Get color based on zone
+    private func zoneColor(for value: Double) -> Color {
+        if targetZone.contains(value) {
+            return .adaptiveGreen
+        } else if value < targetZone.lowerBound {
+            return .adaptiveGray
         } else {
-            return Color(.systemRed).opacity(0.8)
+            return .adaptiveOrange
         }
     }
     
     var body: some View {
         VStack(spacing: 8) {
             ZStack {
-                // Background segments
-                backgroundSegments
+                // Background zones
+                backgroundZones
                 
                 // Progress fill
                 progressFill
                 
-                // Ideal value tick mark
+                // Ideal value tick
                 idealTick
                 
                 // Center content
@@ -1129,95 +1270,76 @@ struct SegmentedProgressRing: View {
             withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
                 animatedValue = value
             }
-            
-            // Show "On target" briefly if in optimal range
-            if optimalRange.contains(value) {
-                withAnimation(.easeIn(duration: 0.3).delay(0.5)) {
-                    showOnTarget = true
-                }
-                withAnimation(.easeOut(duration: 0.3).delay(2.0)) {
-                    showOnTarget = false
-                }
-            }
         }
-        .onChange(of: value) { newValue in
+        .onChange(of: value) { _, newValue in
             withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
                 animatedValue = newValue
             }
             
-            // Check if we entered the optimal range
-            if optimalRange.contains(newValue) && !optimalRange.contains(value) {
-                withAnimation(.easeIn(duration: 0.3)) {
-                    showOnTarget = true
-                }
-                withAnimation(.easeOut(duration: 0.3).delay(2.0)) {
-                    showOnTarget = false
+            // Haptic feedback when crossing zones
+            let newZone = zoneColor(for: newValue)
+            if let prevZone = previousZone, prevZone != newZone {
+                if newZone == .adaptiveGreen {
+                    HapticManager.shared.ringThresholdCrossed(entering: true)
+                } else if prevZone == .adaptiveGreen {
+                    HapticManager.shared.ringThresholdCrossed(entering: false)
                 }
             }
+            previousZone = newZone
         }
     }
     
     @ViewBuilder
-    private var backgroundSegments: some View {
+    private var backgroundZones: some View {
         ZStack {
-            // Full gray background ring
+            // Full background
             Circle()
                 .stroke(Color.appBorder.opacity(0.3), lineWidth: lineWidth)
             
-            // Colored segments overlay
-            Group {
-                // Below optimal range (red)
-                if minValue < optimalRange.lowerBound {
-                    Arc(
-                        startAngle: angle(for: minValue),
-                        endAngle: angle(for: min(optimalRange.lowerBound, maxValue)),
-                        clockwise: true
-                    )
-                    .stroke(Color(.systemRed).opacity(0.4), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
-                }
-                
-                // Optimal range (green)
-                Arc(
-                    startAngle: angle(for: max(minValue, optimalRange.lowerBound)),
-                    endAngle: angle(for: min(maxValue, optimalRange.upperBound)),
-                    clockwise: true
-                )
-                .stroke(Color(.systemGreen).opacity(0.4), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
-                
-                // Above optimal range (red)
-                if maxValue > optimalRange.upperBound {
-                    Arc(
-                        startAngle: angle(for: max(minValue, optimalRange.upperBound)),
-                        endAngle: angle(for: maxValue),
-                        clockwise: true
-                    )
-                    .stroke(Color(.systemRed).opacity(0.4), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
-                }
-            }
+            // Under zone (gray)
+            Arc(
+                startAngle: angle(for: minValue),
+                endAngle: angle(for: underZone.upperBound),
+                clockwise: true
+            )
+            .stroke(Color(.systemGray).opacity(0.3), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+            
+            // Target zone (green)
+            Arc(
+                startAngle: angle(for: targetZone.lowerBound),
+                endAngle: angle(for: targetZone.upperBound),
+                clockwise: true
+            )
+            .stroke(Color(.systemGreen).opacity(0.3), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+            
+            // Over zone (red)
+            Arc(
+                startAngle: angle(for: overZone.lowerBound),
+                endAngle: angle(for: maxValue),
+                clockwise: true
+            )
+            .stroke(Color(.systemRed).opacity(0.3), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
         }
     }
     
     @ViewBuilder
     private var progressFill: some View {
-        // Main progress arc
         Arc(
             startAngle: angle(for: minValue),
             endAngle: angle(for: min(max(minValue, animatedValue), maxValue)),
             clockwise: true
         )
         .stroke(
-            color(for: animatedValue),
+            zoneColor(for: animatedValue),
             style: StrokeStyle(
                 lineWidth: lineWidth,
                 lineCap: .round
             )
         )
-        .animation(.spring(response: 0.8, dampingFraction: 0.8), value: animatedValue)
     }
     
     @ViewBuilder
     private var idealTick: some View {
-        // Small tick mark at ideal value
         let idealAngle = angle(for: idealValue)
         let radius = size / 2
         
@@ -1244,30 +1366,15 @@ struct SegmentedProgressRing: View {
     @ViewBuilder
     private var centerContent: some View {
         VStack(spacing: 0) {
-            // Value
-            Text("\(Int(animatedValue))")
+            Text("\(value, specifier: "%.1f")")
                 .font(.system(size: 48, weight: .bold, design: .rounded))
                 .foregroundColor(.appText)
             
-            // Unit
-            Text(unit)
-                .font(.system(size: 14))
-                .foregroundColor(.appTextSecondary)
-                .offset(y: -4)
-            
-            // "On target" indicator
-            if showOnTarget {
-                Text("On target")
-                    .font(.system(size: 11, weight: .medium))
-                    .foregroundColor(Color(.systemGreen))
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                    .background(
-                        Capsule()
-                            .fill(Color(.systemGreen).opacity(0.15))
-                    )
-                    .offset(y: 8)
-                    .transition(.scale.combined(with: .opacity))
+            if !unit.isEmpty {
+                Text(unit)
+                    .font(.system(size: 14))
+                    .foregroundColor(.appTextSecondary)
+                    .offset(y: -4)
             }
         }
     }

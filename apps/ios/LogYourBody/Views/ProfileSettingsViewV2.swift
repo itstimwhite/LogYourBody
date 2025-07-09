@@ -62,6 +62,9 @@ struct ProfileSettingsViewV2: View {
                     //     .padding(.horizontal)
                     // }
                     
+                    // Security Section
+                    securitySection
+                    
                     // Additional Actions
                     additionalActionsSection
                 }
@@ -248,6 +251,45 @@ struct ProfileSettingsViewV2: View {
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                            .foregroundColor(Color(.tertiaryLabel))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                }
+            }
+            .background(Color(.systemBackground))
+            .cornerRadius(10)
+        }
+    }
+    
+    private var securitySection: some View {
+        VStack(spacing: 0) {
+            sectionHeader("Security")
+            
+            VStack(spacing: 0) {
+                NavigationLink(destination: SecuritySessionsView()) {
+                    HStack {
+                        Label("Active Sessions", systemImage: "desktopcomputer")
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption2)
+                            .foregroundColor(Color(.tertiaryLabel))
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 12)
+                }
+                
+                Divider()
+                    .padding(.leading, 16)
+                
+                NavigationLink(destination: ChangePasswordView()) {
+                    HStack {
+                        Label("Change Password", systemImage: "lock.rotation")
+                            .foregroundColor(.primary)
+                        Spacer()
                         Image(systemName: "chevron.right")
                             .font(.caption2)
                             .foregroundColor(Color(.tertiaryLabel))

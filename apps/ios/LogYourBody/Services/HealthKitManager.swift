@@ -596,11 +596,18 @@ class HealthKitManager: ObservableObject {
             return CoreDataManager.shared.fetchBodyMetrics(for: userId).count
         }
         
-        if !hasPerformedFullSync && imported > 0 && totalCachedEntries < 10 {
-            print("📊 First time sync detected (only \(totalCachedEntries) cached entries), scheduling full historical sync...")
+        if !hasPerformedFullSync {
+            print("📊 First time sync detected, scheduling full historical sync...")
+            print("📊 Current cached entries: \(totalCachedEntries)")
             Task.detached(priority: .background) {
                 await self.syncAllHistoricalHealthKitData()
                 UserDefaults.standard.set(true, forKey: "hasPerformedFullHealthKitSync")
+            }
+        } else if totalCachedEntries < 50 && imported > 0 {
+            // Also trigger if we have very few entries despite having done a sync before
+            print("📊 Low entry count detected (\(totalCachedEntries)), triggering full sync...")
+            Task.detached(priority: .background) {
+                await self.syncAllHistoricalHealthKitData()
             }
         }
     }
@@ -740,21 +747,24 @@ class HealthKitManager: ObservableObject {
             
             print("📅 Syncing data from \(earliestDate) to \(endDate)")
             
-            // Process in monthly batches to avoid memory issues
+            // Process in larger batches (3 months at a time) for faster sync
             var currentDate = earliestDate
             var totalImported = 0
             var totalSkipped = 0
+            let batchSizeMonths = 3  // Process 3 months at a time
             
             while currentDate < endDate {
-                let batchEndDate = Calendar.current.date(byAdding: .month, value: 1, to: currentDate) ?? endDate
+                let batchEndDate = Calendar.current.date(byAdding: .month, value: batchSizeMonths, to: currentDate) ?? endDate
                 let actualBatchEndDate = min(batchEndDate, endDate)
                 
                 print("📦 Processing batch: \(currentDate) to \(actualBatchEndDate)")
                 
-                // Fetch weight and body fat data for this month
+                // Fetch weight and body fat data for this batch
                 let weightBatch = try await fetchWeightHistoryInRange(startDate: currentDate, endDate: actualBatchEndDate)
                 let bodyFatBatch = try await fetchBodyFatHistory(startDate: currentDate)
                     .filter { $0.date < actualBatchEndDate }
+                
+                print("  📊 Batch contains \(weightBatch.count) weight entries and \(bodyFatBatch.count) body fat entries")
                 
                 // Process this batch
                 let (imported, skipped) = await processBatchHealthKitData(
@@ -765,11 +775,13 @@ class HealthKitManager: ObservableObject {
                 totalImported += imported
                 totalSkipped += skipped
                 
-                // Move to next month
+                print("  ✅ Batch complete: \(imported) imported, \(skipped) skipped (Total: \(totalImported) imported)")
+                
+                // Move to next batch
                 currentDate = actualBatchEndDate
                 
-                // Small delay to avoid overwhelming the system
-                try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+                // Very small delay to avoid overwhelming the system
+                try? await Task.sleep(nanoseconds: 10_000_000) // 0.01 seconds
             }
             
             print("✅ Historical sync completed: \(totalImported) imported, \(totalSkipped) skipped")
@@ -1134,6 +1146,20 @@ class HealthKitManager: ObservableObject {
                     SyncManager.shared.syncIfNeeded()
                 }
             }
+        }
+    }
+    
+    // Force a full HealthKit sync
+    func forceFullHealthKitSync() async {
+        print("🔄 Force full HealthKit sync requested")
+        // Clear the flag to force a full sync
+        UserDefaults.standard.set(false, forKey: "hasPerformedFullHealthKitSync")
+        
+        // Trigger the sync
+        do {
+            try await syncWeightFromHealthKit()
+        } catch {
+            print("❌ Force sync failed: \(error)")
         }
     }
     

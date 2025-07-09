@@ -70,6 +70,17 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
           >
             About
           </Link>
+          <Link
+            href="/download/ios"
+            className={cn(
+              "text-sm font-medium transition-colors",
+              isActive("/download/ios") 
+                ? "text-white" 
+                : "text-white/60 hover:text-white"
+            )}
+          >
+            iOS App
+          </Link>
           {showFeatures && (
             <button
               className="text-sm font-medium text-white/60 transition-colors hover:text-white"
@@ -152,6 +163,18 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
             onClick={() => setMobileMenuOpen(false)}
           >
             About
+          </Link>
+          <Link
+            href="/download/ios"
+            className={cn(
+              "block px-3 py-2 text-base font-medium transition-colors",
+              isActive("/download/ios")
+                ? "text-white"
+                : "text-white/60 hover:text-white"
+            )}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            iOS App
           </Link>
           {showFeatures && (
             <button

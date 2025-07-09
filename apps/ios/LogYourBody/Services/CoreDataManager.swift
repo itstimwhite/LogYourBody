@@ -50,8 +50,8 @@ class CoreDataManager: ObservableObject {
             
             let context = self.viewContext
             
-            // Perform save on the context's queue
-            context.performAndWait {
+            // Perform save asynchronously on the context's queue
+            context.perform {
                 if context.hasChanges {
                     do {
                         try context.save()
@@ -60,26 +60,30 @@ class CoreDataManager: ObservableObject {
                         print("Failed to save Core Data context: \(error)")
                     }
                 }
+                completion?()
             }
-            
-            completion?()
         }
     }
     
-    // Synchronous save for critical operations
-    func saveAndWait() {
+    // Async save for critical operations
+    func saveAsync() async {
         let context = viewContext
         
-        context.performAndWait {
+        await context.perform {
             if context.hasChanges {
                 do {
                     try context.save()
-                    print("✅ Core Data context saved synchronously")
+                    print("✅ Core Data context saved asynchronously")
                 } catch {
                     print("Failed to save Core Data context: \(error)")
                 }
             }
         }
+    }
+    
+    // Legacy sync save - triggers async save in background
+    func saveAndWait() {
+        save()
     }
     
     // MARK: - Body Metrics Operations

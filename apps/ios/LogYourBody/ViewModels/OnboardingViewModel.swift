@@ -22,8 +22,10 @@ class OnboardingViewModel: ObservableObject {
         case dateOfBirth = 3
         case height = 4
         case gender = 5
-        case notifications = 6
-        case completion = 7
+        case progressPhotos = 6
+        case notifications = 7
+        case profilePreparation = 8
+        case completion = 9
         
         var title: String {
             switch self {
@@ -33,7 +35,9 @@ class OnboardingViewModel: ObservableObject {
             case .height: return "Height"
             case .gender: return "Gender"
             case .healthKit: return "Apple Health"
+            case .progressPhotos: return "Progress Photos"
             case .notifications: return "Notifications"
+            case .profilePreparation: return "Preparing Profile"
             case .completion: return "All Set!"
             }
         }
@@ -78,7 +82,7 @@ class OnboardingViewModel: ObservableObject {
     
     private func shouldShowStep(_ step: OnboardingStep) -> Bool {
         switch step {
-        case .welcome, .healthKit, .notifications, .completion:
+        case .welcome, .healthKit, .progressPhotos, .notifications, .profilePreparation, .completion:
             // Always show these steps
             return true
         case .name:

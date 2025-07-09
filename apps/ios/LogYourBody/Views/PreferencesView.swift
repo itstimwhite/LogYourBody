@@ -62,6 +62,10 @@ struct PreferencesView: View {
         }
     }
     
+    private func showToast(_ message: String, type: Toast.ToastType) {
+        ToastManager.shared.show(message, type: type)
+    }
+    
     var body: some View {
         List {
             Section("Units") {
@@ -155,6 +159,24 @@ struct PreferencesView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .padding(.top, 4)
+                        
+                        // Manual sync button
+                        Button(action: {
+                            Task {
+                                showToast("Syncing all historical data...", type: .info)
+                                await healthKitManager.forceFullHealthKitSync()
+                                showToast("HealthKit sync complete", type: .success)
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "arrow.triangle.2.circlepath")
+                                    .font(.system(size: 14))
+                                Text("Sync All Historical Data")
+                                    .font(.system(size: 14))
+                            }
+                            .foregroundColor(.appPrimary)
+                        }
+                        .padding(.top, 8)
                     }
                 } else {
                     HStack {

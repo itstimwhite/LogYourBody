@@ -10,6 +10,8 @@ import SwiftUI
 struct DateOfBirthInputView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @State private var selectedDate = Date()
+    @State private var isEditing = false
+    @State private var hasHealthKitData = false
     
     private var age: Int? {
         guard let dob = viewModel.data.dateOfBirth else { return nil }
@@ -52,25 +54,92 @@ struct DateOfBirthInputView: View {
                 }
                 .padding(.top, 60)
                 
-                // Date picker with modern card style
-                VStack(spacing: 16) {
-                    DatePicker("", selection: Binding(
-                        get: { viewModel.data.dateOfBirth ?? Date() },
-                        set: { viewModel.data.dateOfBirth = $0 }
-                    ), displayedComponents: .date)
-                    .datePickerStyle(.wheel)
-                    .labelsHidden()
-                    .frame(maxHeight: 200)
-                    
-                    if let age = age {
-                        Text("\(age) years old")
-                            .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.appPrimary)
-                            .padding(.top, 8)
-                            .transition(.opacity)
+                // Show pre-populated data or picker
+                if hasHealthKitData && !isEditing {
+                    // Read-only summary view
+                    VStack(spacing: 20) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Date of Birth")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.appTextSecondary)
+                                
+                                if let dob = viewModel.data.dateOfBirth {
+                                    Text(dob, style: .date)
+                                        .font(.system(size: 24, weight: .semibold))
+                                        .foregroundColor(.appText)
+                                }
+                                
+                                if let age = age {
+                                    Text("\(age) years old")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.adaptiveGreen)
+                                }
+                            }
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                withAnimation(.spring(response: 0.3)) {
+                                    isEditing = true
+                                }
+                                HapticManager.shared.buttonTapped()
+                            }) {
+                                Text("Edit")
+                                    .font(.system(size: 15, weight: .medium))
+                                    .foregroundColor(.appPrimary)
+                            }
+                        }
+                        .padding(20)
+                        .background(Color.appCard)
+                        .cornerRadius(12)
+                        
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.adaptiveGreen)
+                            Text("Imported from Apple Health")
+                                .font(.system(size: 14))
+                                .foregroundColor(.appTextSecondary)
+                        }
                     }
+                    .padding(.horizontal, 24)
+                    .transition(.opacity.combined(with: .scale))
+                } else {
+                    // Date picker for manual entry or editing
+                    VStack(spacing: 16) {
+                        DatePicker("", selection: Binding(
+                            get: { viewModel.data.dateOfBirth ?? Date() },
+                            set: { viewModel.data.dateOfBirth = $0 }
+                        ), displayedComponents: .date)
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                        .frame(maxHeight: 200)
+                        
+                        if let age = age {
+                            Text("\(age) years old")
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(.appPrimary)
+                                .padding(.top, 8)
+                                .transition(.opacity)
+                        }
+                        
+                        if hasHealthKitData && isEditing {
+                            Button(action: {
+                                withAnimation(.spring(response: 0.3)) {
+                                    isEditing = false
+                                }
+                            }) {
+                                Text("Cancel")
+                                    .font(.system(size: 15))
+                                    .foregroundColor(.appTextSecondary)
+                            }
+                            .padding(.top, 8)
+                        }
+                    }
+                    .padding(.horizontal, 24)
+                    .transition(.opacity.combined(with: .scale))
                 }
-                .padding(.horizontal, 24)
             }
             
             Spacer()
@@ -98,10 +167,13 @@ struct DateOfBirthInputView: View {
             // Initialize with user's date if available
             if let dob = viewModel.data.dateOfBirth {
                 selectedDate = dob
+                // Check if this came from HealthKit (we have it pre-populated)
+                hasHealthKitData = viewModel.data.healthKitEnabled
             } else {
                 // Default to 25 years ago
                 selectedDate = Calendar.current.date(byAdding: .year, value: -25, to: Date()) ?? Date()
                 viewModel.data.dateOfBirth = selectedDate
+                hasHealthKitData = false
             }
         }
     }

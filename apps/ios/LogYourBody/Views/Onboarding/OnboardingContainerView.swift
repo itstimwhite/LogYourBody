@@ -21,11 +21,11 @@ struct OnboardingContainerView: View {
             
             VStack(spacing: 0) {
                 // Modern progress indicator
-                if viewModel.currentStep != .welcome && viewModel.currentStep != .completion {
+                if viewModel.currentStep != .welcome && viewModel.currentStep != .completion && viewModel.currentStep != .profilePreparation {
                     VStack(spacing: 0) {
                         // Step dots indicator
                         HStack(spacing: 6) {
-                            ForEach(OnboardingViewModel.OnboardingStep.allCases.filter { $0 != .welcome && $0 != .completion }, id: \.self) { step in
+                            ForEach(OnboardingViewModel.OnboardingStep.allCases.filter { $0 != .welcome && $0 != .completion && $0 != .profilePreparation }, id: \.self) { step in
                                 StepIndicator(
                                     isActive: step == viewModel.currentStep,
                                     isCompleted: step.rawValue < viewModel.currentStep.rawValue
@@ -58,8 +58,19 @@ struct OnboardingContainerView: View {
                         GenderInputView()
                     case .healthKit:
                         HealthKitStepView()
+                    case .progressPhotos:
+                        ProgressPhotosStepView(
+                            onboardingData: $viewModel.data,
+                            onNext: viewModel.nextStep,
+                            onSkip: viewModel.nextStep
+                        )
                     case .notifications:
                         NotificationsStepView()
+                    case .profilePreparation:
+                        ProfilePreparationView(
+                            onboardingData: $viewModel.data,
+                            onComplete: viewModel.nextStep
+                        )
                     case .completion:
                         CompletionStepView()
                     }

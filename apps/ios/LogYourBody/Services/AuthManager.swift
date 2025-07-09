@@ -30,6 +30,18 @@ enum AuthError: LocalizedError {
     }
 }
 
+// Session information for active sessions management
+struct SessionInfo: Identifiable {
+    let id: String
+    let deviceName: String
+    let deviceType: String
+    let location: String
+    let ipAddress: String
+    let lastActiveAt: Date
+    let createdAt: Date
+    let isCurrentSession: Bool
+}
+
 @MainActor
 class AuthManager: NSObject, ObservableObject {
     static let shared = AuthManager()
@@ -928,6 +940,177 @@ class AuthManager: NSObject, ObservableObject {
         
         // Sync to Supabase
         await createOrUpdateSupabaseProfile(user: user)
+    }
+    
+    // MARK: - Session Management
+    
+    func fetchActiveSessions() async throws -> [SessionInfo] {
+        guard let clerkUser = clerk.user else {
+            throw AuthError.clerkNotInitialized
+        }
+        
+        do {
+            // Get all sessions from Clerk
+            let sessions = try await clerkUser.getSessions()
+            
+            // Map Clerk sessions to our SessionInfo model
+            return sessions.compactMap { clerkSession in
+                // Use Mirror to access session properties
+                let mirror = Mirror(reflecting: clerkSession)
+                
+                var sessionId = ""
+                var lastActiveAt = Date()
+                var createdAt = Date()
+                var status = ""
+                
+                for child in mirror.children {
+                    switch child.label {
+                    case "id":
+                        sessionId = child.value as? String ?? ""
+                    case "lastActiveAt":
+                        if let timestamp = child.value as? TimeInterval {
+                            lastActiveAt = Date(timeIntervalSince1970: timestamp / 1000)
+                        }
+                    case "createdAt":
+                        if let timestamp = child.value as? TimeInterval {
+                            createdAt = Date(timeIntervalSince1970: timestamp / 1000)
+                        }
+                    case "status":
+                        status = child.value as? String ?? ""
+                    default:
+                        break
+                    }
+                }
+                
+                // Only include active sessions
+                guard status == "active" else { return nil }
+                
+                // Parse user agent and location (this is simplified - in production you'd parse the actual data)
+                let deviceInfo = parseDeviceInfo(from: clerkSession)
+                
+                return SessionInfo(
+                    id: sessionId,
+                    deviceName: deviceInfo.deviceName,
+                    deviceType: deviceInfo.deviceType,
+                    location: deviceInfo.location,
+                    ipAddress: deviceInfo.ipAddress,
+                    lastActiveAt: lastActiveAt,
+                    createdAt: createdAt,
+                    isCurrentSession: sessionId == self.clerkSession?.id
+                )
+            }
+        } catch {
+            print("❌ Failed to fetch sessions: \(error)")
+            throw error
+        }
+    }
+    
+    func revokeSession(sessionId: String) async throws {
+        // Don't allow revoking current session
+        guard sessionId != clerkSession?.id else {
+            throw NSError(
+                domain: "AuthManager",
+                code: 1002,
+                userInfo: [NSLocalizedDescriptionKey: "Cannot revoke current session"]
+            )
+        }
+        
+        guard let clerkUser = clerk.user else {
+            throw AuthError.clerkNotInitialized
+        }
+        
+        do {
+            // Get all sessions and find the one to revoke
+            let sessions = try await clerkUser.getSessions()
+            
+            // Find the session to revoke
+            guard let sessionToRevoke = sessions.first(where: { session in
+                let mirror = Mirror(reflecting: session)
+                for child in mirror.children {
+                    if child.label == "id", let id = child.value as? String {
+                        return id == sessionId
+                    }
+                }
+                return false
+            }) else {
+                throw NSError(
+                    domain: "AuthManager",
+                    code: 1003,
+                    userInfo: [NSLocalizedDescriptionKey: "Session not found"]
+                )
+            }
+            
+            // Use the session's revoke method
+            try await sessionToRevoke.revoke()
+            print("✅ Session \(sessionId) revoked successfully")
+        } catch {
+            print("❌ Failed to revoke session: \(error)")
+            throw error
+        }
+    }
+    
+    private func parseDeviceInfo(from session: Any) -> (deviceName: String, deviceType: String, location: String, ipAddress: String) {
+        // In a real implementation, you would parse the session's client info
+        // For now, we'll use placeholder data based on the session
+        
+        let mirror = Mirror(reflecting: session)
+        var clientInfo: [String: Any] = [:]
+        
+        for child in mirror.children {
+            if child.label == "latestActivity" {
+                // Parse activity data for location and device info
+                let activityMirror = Mirror(reflecting: child.value)
+                for activityChild in activityMirror.children {
+                    switch activityChild.label {
+                    case "browserName":
+                        clientInfo["browser"] = activityChild.value
+                    case "browserVersion":
+                        clientInfo["browserVersion"] = activityChild.value
+                    case "deviceType":
+                        clientInfo["deviceType"] = activityChild.value
+                    case "ipAddress":
+                        clientInfo["ipAddress"] = activityChild.value
+                    case "city":
+                        clientInfo["city"] = activityChild.value
+                    case "country":
+                        clientInfo["country"] = activityChild.value
+                    default:
+                        break
+                    }
+                }
+            }
+        }
+        
+        // Determine device type
+        let deviceTypeString = clientInfo["deviceType"] as? String ?? ""
+        let deviceType: String = {
+            switch deviceTypeString.lowercased() {
+            case "mobile": return "iPhone"
+            case "tablet": return "iPad"
+            case "desktop": return "Mac"
+            case "web": return "Web"
+            default: return "Unknown"
+            }
+        }()
+        
+        // Format device name
+        let browser = clientInfo["browser"] as? String ?? "Unknown Browser"
+        let deviceName = deviceType == "Web" ? browser : deviceType
+        
+        // Format location
+        let city = clientInfo["city"] as? String ?? ""
+        let country = clientInfo["country"] as? String ?? ""
+        let location = [city, country].filter { !$0.isEmpty }.joined(separator: ", ")
+        
+        // Get IP address
+        let ipAddress = clientInfo["ipAddress"] as? String ?? "Unknown"
+        
+        return (
+            deviceName: deviceName.isEmpty ? "Unknown Device" : deviceName,
+            deviceType: deviceType,
+            location: location.isEmpty ? "Unknown Location" : location,
+            ipAddress: ipAddress
+        )
     }
     
     // MARK: - Profile Picture Upload

@@ -173,12 +173,15 @@ struct OptimizedProgressPhotoView: View {
     }
     
     private func optimizeImage(_ image: UIImage) -> UIImage {
+        // First fix orientation if needed
+        let orientedImage = image.fixedOrientation()
+        
         // Optimize for display
         let maxDimension: CGFloat = UIScreen.main.bounds.width * UIScreen.main.scale
-        let size = image.size
+        let size = orientedImage.size
         
         guard size.width > maxDimension || size.height > maxDimension else {
-            return image
+            return orientedImage
         }
         
         let scale = min(maxDimension / size.width, maxDimension / size.height)
@@ -190,8 +193,21 @@ struct OptimizedProgressPhotoView: View {
         
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
         return renderer.image { context in
-            image.draw(in: CGRect(origin: .zero, size: targetSize))
+            orientedImage.draw(in: CGRect(origin: .zero, size: targetSize))
         }
+    }
+}
+
+// Extension to fix image orientation
+extension UIImage {
+    func fixedOrientation() -> UIImage {
+        guard imageOrientation != .up else { return self }
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        defer { UIGraphicsEndImageContext() }
+        
+        draw(in: CGRect(origin: .zero, size: size))
+        return UIGraphicsGetImageFromCurrentImageContext() ?? self
     }
 }
 

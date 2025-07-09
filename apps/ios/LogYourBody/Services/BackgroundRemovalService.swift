@@ -117,25 +117,33 @@ class BackgroundRemovalService {
     
     /// Prepare image data for upload (convert to PNG to preserve alpha channel)
     func prepareForUpload(_ image: UIImage, maxSize: CGSize = CGSize(width: 1200, height: 1600)) -> Data? {
-        // Resize if needed while maintaining aspect ratio
-        let resizedImage: UIImage
-        if image.size.width > maxSize.width || image.size.height > maxSize.height {
-            let scale = min(maxSize.width / image.size.width, maxSize.height / image.size.height)
-            let newSize = CGSize(
-                width: image.size.width * scale,
-                height: image.size.height * scale
-            )
+        // Process on background queue to avoid blocking main thread
+        return DispatchQueue.global(qos: .userInitiated).sync {
+            // Resize if needed while maintaining aspect ratio
+            let resizedImage: UIImage
+            if image.size.width > maxSize.width || image.size.height > maxSize.height {
+                let scale = min(maxSize.width / image.size.width, maxSize.height / image.size.height)
+                let newSize = CGSize(
+                    width: image.size.width * scale,
+                    height: image.size.height * scale
+                )
+                
+                // Use modern UIGraphicsImageRenderer instead of deprecated API
+                let format = UIGraphicsImageRendererFormat()
+                format.scale = 1.0
+                format.opaque = false // Important for transparency
+                
+                let renderer = UIGraphicsImageRenderer(size: newSize, format: format)
+                resizedImage = renderer.image { context in
+                    image.draw(in: CGRect(origin: .zero, size: newSize))
+                }
+            } else {
+                resizedImage = image
+            }
             
-            UIGraphicsBeginImageContextWithOptions(newSize, false, 1.0)
-            image.draw(in: CGRect(origin: .zero, size: newSize))
-            resizedImage = UIGraphicsGetImageFromCurrentImageContext() ?? image
-            UIGraphicsEndImageContext()
-        } else {
-            resizedImage = image
+            // Convert to PNG to preserve alpha channel
+            return resizedImage.pngData()
         }
-        
-        // Convert to PNG to preserve alpha channel
-        return resizedImage.pngData()
     }
 }
 

@@ -10,6 +10,8 @@ import SwiftUI
 struct HeightInputView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @State private var showingPicker = false
+    @State private var isEditing = false
+    @State private var hasHealthKitData = false
     
     private var heightDisplay: String {
         if viewModel.data.heightFeet > 0 || viewModel.data.heightInches > 0 {
@@ -52,38 +54,88 @@ struct HeightInputView: View {
                 }
                 .padding(.top, 60)
                 
-                // Height input button
-                Button(action: {
-                    showingPicker = true
-                }) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Height")
-                                .font(.system(size: 13, weight: .medium))
-                                .foregroundColor(.appTextSecondary)
+                // Show pre-populated data or picker
+                if hasHealthKitData && !isEditing {
+                    // Read-only summary view
+                    VStack(spacing: 20) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Height")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.appTextSecondary)
+                                
+                                Text(heightDisplay)
+                                    .font(.system(size: 24, weight: .semibold))
+                                    .foregroundColor(.appText)
+                                
+                                Text("\(viewModel.data.totalHeightInInches) inches")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.adaptiveGreen)
+                            }
                             
-                            Text(heightDisplay)
-                                .font(.system(size: 22, weight: .medium))
-                                .foregroundColor(viewModel.data.totalHeightInInches > 0 ? .appText : .appTextTertiary)
+                            Spacer()
+                            
+                            Button(action: {
+                                withAnimation(.spring(response: 0.3)) {
+                                    isEditing = true
+                                    showingPicker = true
+                                }
+                                HapticManager.shared.buttonTapped()
+                            }) {
+                                Text("Edit")
+                                    .font(.system(size: 15, weight: .medium))
+                                    .foregroundColor(.appPrimary)
+                            }
                         }
+                        .padding(20)
+                        .background(Color.appCard)
+                        .cornerRadius(12)
                         
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.appTextSecondary)
+                        HStack(spacing: 8) {
+                            Image(systemName: "checkmark.circle.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.adaptiveGreen)
+                            Text("Imported from Apple Health")
+                                .font(.system(size: 14))
+                                .foregroundColor(.appTextSecondary)
+                        }
                     }
-                    .padding(20)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.appCard.opacity(0.3))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color.appBorder.opacity(0.2), lineWidth: 1)
-                            )
-                    )
+                    .padding(.horizontal, 24)
+                    .transition(.opacity.combined(with: .scale))
+                } else {
+                    // Height input button for manual entry
+                    Button(action: {
+                        showingPicker = true
+                    }) {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Height")
+                                    .font(.system(size: 13, weight: .medium))
+                                    .foregroundColor(.appTextSecondary)
+                                
+                                Text(heightDisplay)
+                                    .font(.system(size: 22, weight: .medium))
+                                    .foregroundColor(viewModel.data.totalHeightInInches > 0 ? .appText : .appTextTertiary)
+                            }
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 16, weight: .regular))
+                                .foregroundColor(.appTextSecondary)
+                        }
+                        .padding(20)
+                        .background(
+                            RoundedRectangle(cornerRadius: 12)
+                                .fill(Color.appCard.opacity(0.3))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color.appBorder.opacity(0.2), lineWidth: 1)
+                                )
+                        )
+                    }
+                    .padding(.horizontal, 24)
                 }
-                .padding(.horizontal, 24)
                 
                 // Visual representation
                 if viewModel.data.totalHeightInInches > 0 {
@@ -127,6 +179,18 @@ struct HeightInputView: View {
                 inches: $viewModel.data.heightInches,
                 isPresented: $showingPicker
             )
+        }
+        .onChange(of: showingPicker) { _, isShowing in
+            if !isShowing && hasHealthKitData {
+                // Reset editing state when sheet dismisses
+                withAnimation(.spring(response: 0.3)) {
+                    isEditing = false
+                }
+            }
+        }
+        .onAppear {
+            // Check if we have HealthKit data
+            hasHealthKitData = viewModel.data.healthKitEnabled && viewModel.data.totalHeightInInches > 0
         }
     }
 }

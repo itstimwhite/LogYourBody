@@ -42,17 +42,21 @@ serve(async (req) => {
     // 2. Auto color and lighting adjustments for consistency
     // 3. Optimize size and convert to WebP with alpha channel
     const transformations = [
-      'c_fill',               // Fill mode for consistent dimensions
+      'a_auto_right',         // Auto-rotate based on EXIF orientation
+      'c_pad',                // Pad mode to ensure full body is visible
       'g_auto:subject',       // Content-aware gravity to focus on the person
       'w_600',                // Width
       'h_800',                // Height
+      'b_rgb:000000',        // Black background for padding areas
       'e_auto_brightness',    // Auto brightness adjustment
       'e_auto_contrast',      // Auto contrast adjustment
       'e_auto_color',         // Auto color adjustment
       'fl_preserve_transparency', // Keep alpha channel
       'q_auto:best',          // Best auto quality
       'f_webp',               // WebP format with alpha support
-      'fl_lossy'              // Allow lossy compression for smaller size
+      'fl_lossy',             // Allow lossy compression for smaller size
+      // Additional transformations for consistent body framing
+      'z_0.85'                // Zoom out slightly to ensure full body is captured
     ].join(',')
 
     // Create Cloudinary upload URL

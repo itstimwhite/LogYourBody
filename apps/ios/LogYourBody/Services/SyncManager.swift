@@ -319,7 +319,7 @@ class SyncManager: ObservableObject {
         }
     }
     
-    private func syncProfile(_ cached: CachedProfile, token: String) -> Bool {
+    private func syncProfile(_ cached: CachedProfile, token: String) async -> Bool {
         guard let url = URL(string: "\(Constants.baseURL)/api/users/profile") else { return false }
         
         var request = URLRequest(url: url)
@@ -333,49 +333,45 @@ class SyncManager: ObservableObject {
             let data = try JSONEncoder().encode(profile)
             request.httpBody = data
             
-            class SyncResultWrapper {
-                var value = false
-            }
-            let syncResult = SyncResultWrapper()
-            let semaphore = DispatchSemaphore(value: 0)
+            let (_, response) = try await URLSession.shared.data(for: request)
             
-            URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-                defer { semaphore.signal() }
-                
-                if let httpResponse = response as? HTTPURLResponse,
-                   httpResponse.statusCode == 200 {
-                    self?.coreDataManager.markAsSynced(entityName: "CachedProfile", id: cached.id ?? "")
-                    self?.coreDataManager.updateSyncStatus(
+            if let httpResponse = response as? HTTPURLResponse,
+               httpResponse.statusCode == 200 {
+                await Task { @MainActor in
+                    coreDataManager.markAsSynced(entityName: "CachedProfile", id: cached.id ?? "")
+                    coreDataManager.updateSyncStatus(
                         entityName: "CachedProfile",
                         id: cached.id ?? "",
                         status: "synced"
                     )
-                    syncResult.value = true
-                } else {
-                    self?.coreDataManager.updateSyncStatus(
+                }.value
+                return true
+            } else {
+                await Task { @MainActor in
+                    coreDataManager.updateSyncStatus(
                         entityName: "CachedProfile",
                         id: cached.id ?? "",
                         status: "error",
-                        error: error?.localizedDescription ?? "Unknown error"
+                        error: "HTTP error"
                     )
-                }
-            }.resume()
-            
-            semaphore.wait()
-            return syncResult.value
+                }.value
+                return false
+            }
             
         } catch {
-            coreDataManager.updateSyncStatus(
-                entityName: "CachedProfile",
-                id: cached.id ?? "",
-                status: "error",
-                error: error.localizedDescription
-            )
+            await Task { @MainActor in
+                coreDataManager.updateSyncStatus(
+                    entityName: "CachedProfile",
+                    id: cached.id ?? "",
+                    status: "error",
+                    error: error.localizedDescription
+                )
+            }.value
             return false
         }
     }
     
-    private func syncBodyMetrics(_ cached: CachedBodyMetrics, token: String) -> Bool {
+    private func syncBodyMetrics(_ cached: CachedBodyMetrics, token: String) async -> Bool {
         guard let url = URL(string: "\(Constants.baseURL)/api/weights") else { return false }
         
         var request = URLRequest(url: url)
@@ -394,67 +390,48 @@ class SyncManager: ObservableObject {
             let data = try encoder.encode(metrics)
             request.httpBody = data
             
-            class SyncResultWrapper {
-                var value = false
-            }
-            let syncResult = SyncResultWrapper()
-            let semaphore = DispatchSemaphore(value: 0)
+            let (_, response) = try await URLSession.shared.data(for: request)
             
-            URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-                defer { semaphore.signal() }
-                
-                if let httpResponse = response as? HTTPURLResponse {
-                    if (200...299).contains(httpResponse.statusCode) {
-                        self?.coreDataManager.markAsSynced(entityName: "CachedBodyMetrics", id: cached.id ?? "")
-                        self?.coreDataManager.updateSyncStatus(
+            if let httpResponse = response as? HTTPURLResponse {
+                if (200...299).contains(httpResponse.statusCode) || httpResponse.statusCode == 409 {
+                    await Task { @MainActor in
+                        coreDataManager.markAsSynced(entityName: "CachedBodyMetrics", id: cached.id ?? "")
+                        coreDataManager.updateSyncStatus(
                             entityName: "CachedBodyMetrics",
                             id: cached.id ?? "",
                             status: "synced"
                         )
-                        syncResult.value = true
-                    } else if httpResponse.statusCode == 409 {
-                        // Conflict - implement last-write-wins strategy
-                        // Server will handle the conflict resolution
-                        self?.coreDataManager.markAsSynced(entityName: "CachedBodyMetrics", id: cached.id ?? "")
-                        self?.coreDataManager.updateSyncStatus(
-                            entityName: "CachedBodyMetrics",
-                            id: cached.id ?? "",
-                            status: "synced"
-                        )
-                        syncResult.value = true
-                    } else {
-                        self?.coreDataManager.updateSyncStatus(
+                    }.value
+                    return true
+                } else {
+                    await Task { @MainActor in
+                        coreDataManager.updateSyncStatus(
                             entityName: "CachedBodyMetrics",
                             id: cached.id ?? "",
                             status: "error",
                             error: "HTTP \(httpResponse.statusCode)"
                         )
-                    }
-                } else {
-                    self?.coreDataManager.updateSyncStatus(
-                        entityName: "CachedBodyMetrics",
-                        id: cached.id ?? "",
-                        status: "error",
-                        error: error?.localizedDescription ?? "Unknown error"
-                    )
+                    }.value
+                    return false
                 }
-            }.resume()
-            
-            semaphore.wait()
-            return syncResult.value
+            } else {
+                return false
+            }
             
         } catch {
-            coreDataManager.updateSyncStatus(
-                entityName: "CachedBodyMetrics",
-                id: cached.id ?? "",
-                status: "error",
-                error: error.localizedDescription
-            )
+            await Task { @MainActor in
+                coreDataManager.updateSyncStatus(
+                    entityName: "CachedBodyMetrics",
+                    id: cached.id ?? "",
+                    status: "error",
+                    error: error.localizedDescription
+                )
+            }.value
             return false
         }
     }
     
-    private func syncDailyMetrics(_ cached: CachedDailyMetrics, token: String) -> Bool {
+    private func syncDailyMetrics(_ cached: CachedDailyMetrics, token: String) async -> Bool {
         guard let url = URL(string: "\(Constants.baseURL)/api/daily-metrics") else { return false }
         
         var request = URLRequest(url: url)
@@ -468,54 +445,53 @@ class SyncManager: ObservableObject {
             let data = try JSONEncoder().encode(metrics)
             request.httpBody = data
             
-            class SyncResultWrapper {
-                var value = false
-            }
-            let syncResult = SyncResultWrapper()
-            let semaphore = DispatchSemaphore(value: 0)
+            let (_, response) = try await URLSession.shared.data(for: request)
             
-            URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
-                defer { semaphore.signal() }
-                
-                if let httpResponse = response as? HTTPURLResponse,
-                   (200...299).contains(httpResponse.statusCode) {
-                    self?.coreDataManager.markAsSynced(entityName: "CachedDailyMetrics", id: cached.id ?? "")
-                    self?.coreDataManager.updateSyncStatus(
+            if let httpResponse = response as? HTTPURLResponse,
+               (200...299).contains(httpResponse.statusCode) {
+                await Task { @MainActor in
+                    coreDataManager.markAsSynced(entityName: "CachedDailyMetrics", id: cached.id ?? "")
+                    coreDataManager.updateSyncStatus(
                         entityName: "CachedDailyMetrics",
                         id: cached.id ?? "",
                         status: "synced"
                     )
-                    syncResult.value = true
-                } else {
-                    self?.coreDataManager.updateSyncStatus(
+                }.value
+                return true
+            } else {
+                await Task { @MainActor in
+                    coreDataManager.updateSyncStatus(
                         entityName: "CachedDailyMetrics",
                         id: cached.id ?? "",
                         status: "error",
-                        error: error?.localizedDescription ?? "Unknown error"
+                        error: "HTTP error"
                     )
-                }
-            }.resume()
-            
-            semaphore.wait()
-            return syncResult.value
+                }.value
+                return false
+            }
             
         } catch {
-            coreDataManager.updateSyncStatus(
-                entityName: "CachedDailyMetrics",
-                id: cached.id ?? "",
-                status: "error",
-                error: error.localizedDescription
-            )
+            await Task { @MainActor in
+                coreDataManager.updateSyncStatus(
+                    entityName: "CachedDailyMetrics",
+                    id: cached.id ?? "",
+                    status: "error",
+                    error: error.localizedDescription
+                )
+            }.value
             return false
         }
     }
     
     func updatePendingSyncCount() {
-        let unsynced = coreDataManager.fetchUnsyncedEntries()
-        let count = unsynced.bodyMetrics.count + unsynced.dailyMetrics.count + unsynced.profiles.count
-        
-        DispatchQueue.main.async {
-            self.pendingSyncCount = count
+        Task.detached { [weak self] in
+            guard let self = self else { return }
+            let unsynced = self.coreDataManager.fetchUnsyncedEntries()
+            let count = unsynced.bodyMetrics.count + unsynced.dailyMetrics.count + unsynced.profiles.count
+            
+            await MainActor.run {
+                self.pendingSyncCount = count
+            }
         }
     }
     

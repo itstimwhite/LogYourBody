@@ -10,7 +10,8 @@ import SwiftUI
 struct ProgressPhotoCutoutView: View {
     let currentMetric: BodyMetrics?
     let historicalMetrics: [BodyMetrics]
-    @State private var selectedIndex: Int = 0
+    @Binding var selectedMetricsIndex: Int
+    @State private var selectedPhotoIndex: Int = 0
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging = false
     @EnvironmentObject var authManager: AuthManager
@@ -22,6 +23,20 @@ struct ProgressPhotoCutoutView: View {
     
     private var currentBodyFat: Double {
         currentMetric?.bodyFatPercentage ?? 20.0
+    }
+    
+    // Map photo index to metrics index
+    private func metricsIndex(for photoIndex: Int) -> Int? {
+        guard photoIndex < displayMetrics.count else { return nil }
+        let photoMetric = displayMetrics[photoIndex]
+        return historicalMetrics.firstIndex { $0.id == photoMetric.id }
+    }
+    
+    // Map metrics index to photo index
+    private func photoIndex(for metricsIndex: Int) -> Int? {
+        guard metricsIndex < historicalMetrics.count else { return nil }
+        let metric = historicalMetrics[metricsIndex]
+        return displayMetrics.firstIndex { $0.id == metric.id }
     }
     
     private var spotlightGradient: LinearGradient {
@@ -62,64 +77,63 @@ struct ProgressPhotoCutoutView: View {
                     .blur(radius: 40)
                     .offset(y: geometry.size.height * 0.3)
                     .animation(.easeInOut(duration: 1.0), value: currentBodyFat)
+                    .edgeToEdge()
                 
                 if displayMetrics.isEmpty {
                     // Placeholder when no photos
                     PlaceholderSilhouetteView(gender: authManager.currentUser?.profile?.gender ?? "male")
                 } else {
-                    // Progress stack and carousel
+                    // Clean photo stack with depth cues
                     ZStack {
-                        // Historical photos stack (behind current)
-                        ForEach(Array(displayMetrics.suffix(3).enumerated()), id: \.element.id) { index, metric in
-                            if index < displayMetrics.count - 1 {
+                        // Show up to 3 photos behind current
+                        ForEach(0..<min(3, selectedPhotoIndex), id: \.self) { offset in
+                            let photoIndex = selectedPhotoIndex - offset - 1
+                            if photoIndex >= 0 && photoIndex < displayMetrics.count {
                                 CutoutPhotoView(
-                                    photoUrl: metric.photoUrl,
-                                    scale: 0.92 + (Double(index) * 0.02),
+                                    photoUrl: displayMetrics[photoIndex].photoUrl,
+                                    scale: 0.95 - (Double(offset) * 0.03),
                                     offset: CGSize(
-                                        width: 0,
-                                        height: -20 * Double(displayMetrics.count - 1 - index)
+                                        width: -Double(offset + 1) * 15,
+                                        height: -Double(offset + 1) * 10
                                     ),
-                                    opacity: 0.3 + (Double(index) * 0.2),
-                                    tintColor: Color.appPrimary.opacity(0.1)
+                                    opacity: 0.7 - (Double(offset) * 0.2),
+                                    blur: Double(offset) * 0.5
                                 )
                                 .allowsHitTesting(false)
                             }
                         }
                         
                         // Current photo (interactive carousel)
-                        if selectedIndex < displayMetrics.count {
-                            HStack(spacing: -geometry.size.width * 0.6) {
+                        if selectedPhotoIndex < displayMetrics.count {
+                            TabView(selection: $selectedPhotoIndex) {
                                 ForEach(Array(displayMetrics.enumerated()), id: \.element.id) { index, metric in
                                     CutoutPhotoView(
                                         photoUrl: metric.photoUrl,
-                                        scale: index == selectedIndex ? 1.0 : 0.8,
+                                        scale: 1.0,
                                         offset: .zero,
-                                        opacity: index == selectedIndex ? 1.0 : 0.3,
-                                        showShadow: index == selectedIndex
+                                        opacity: 1.0,
+                                        showShadow: true
                                     )
-                                    .frame(width: geometry.size.width * 0.8)
-                                    .scaleEffect(index == selectedIndex ? 1.0 : 0.8)
-                                    .opacity(abs(Double(index - selectedIndex)) <= 1 ? 1.0 : 0.0)
+                                    .tag(index)
+                                    .frame(width: geometry.size.width * 0.9)
+                                    .frame(maxHeight: geometry.size.height)
                                 }
                             }
-                            .offset(x: CGFloat(-selectedIndex) * (geometry.size.width * 0.2) + dragOffset.width)
-                            .animation(.interactiveSpring(), value: selectedIndex)
+                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                            .frame(height: geometry.size.height)
+                            .animation(.easeInOut, value: selectedPhotoIndex)
+                            .onChange(of: selectedPhotoIndex) { _, newIndex in
+                                // Update timeline when photo changes
+                                if let metricsIdx = metricsIndex(for: newIndex) {
+                                    selectedMetricsIndex = metricsIdx
+                                }
+                            }
                             .gesture(
                                 DragGesture()
-                                    .onChanged { value in
-                                        dragOffset = value.translation
+                                    .onChanged { _ in
                                         isDragging = true
                                     }
-                                    .onEnded { value in
-                                        let threshold: CGFloat = 50
-                                        withAnimation(.spring()) {
-                                            if value.translation.width > threshold && selectedIndex > 0 {
-                                                selectedIndex -= 1
-                                            } else if value.translation.width < -threshold && selectedIndex < displayMetrics.count - 1 {
-                                                selectedIndex += 1
-                                            }
-                                            dragOffset = .zero
-                                        }
+                                    .onEnded { _ in
                                         isDragging = false
                                     }
                             )
@@ -130,6 +144,20 @@ struct ProgressPhotoCutoutView: View {
                 // Remove metrics overlay since they're shown in the rings below
             }
         }
+        .onAppear {
+            // Initialize photo index based on current timeline selection
+            if let photoIdx = photoIndex(for: selectedMetricsIndex) {
+                selectedPhotoIndex = photoIdx
+            }
+        }
+        .onChange(of: selectedMetricsIndex) { _, newIndex in
+            // Update photo when timeline changes
+            if !isDragging, let photoIdx = photoIndex(for: newIndex) {
+                withAnimation(.spring()) {
+                    selectedPhotoIndex = photoIdx
+                }
+            }
+        }
     }
 }
 
@@ -138,25 +166,30 @@ struct CutoutPhotoView: View {
     var scale: Double = 1.0
     var offset: CGSize = .zero
     var opacity: Double = 1.0
+    var blur: Double = 0
     var tintColor: Color? = nil
     var showShadow: Bool = true
     
     var body: some View {
-        OptimizedProgressPhotoView(
-            photoUrl: photoUrl,
-            maxHeight: UIScreen.main.bounds.height * 0.6
-        )
-        .scaleEffect(scale)
-        .offset(offset)
-        .opacity(opacity)
-        .overlay(tintColor)
-        .if(showShadow) { view in
-            view.shadow(
-                color: Color.black.opacity(0.15),
-                radius: 8,
-                x: 0,
-                y: 4
+        GeometryReader { geometry in
+            OptimizedProgressPhotoView(
+                photoUrl: photoUrl,
+                maxHeight: geometry.size.height
             )
+            .frame(width: geometry.size.width, height: geometry.size.height)
+            .scaleEffect(scale)
+            .offset(offset)
+            .opacity(opacity)
+            .blur(radius: blur)
+            .overlay(tintColor)
+            .if(showShadow) { view in
+                view.shadow(
+                    color: Color.black.opacity(0.15),
+                    radius: 8,
+                    x: 0,
+                    y: 4
+                )
+            }
         }
     }
 }
@@ -269,7 +302,8 @@ extension View {
             createdAt: Date(),
             updatedAt: Date()
         ),
-        historicalMetrics: []
+        historicalMetrics: [],
+        selectedMetricsIndex: .constant(0)
     )
     .environmentObject(AuthManager.shared)
     .preferredColorScheme(.dark)

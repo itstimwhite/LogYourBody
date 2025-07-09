@@ -19,5 +19,9 @@
 		<string>applinks:www.logyourbody.com</string>
 		<string>webcredentials:www.logyourbody.com</string>
 	</array>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.com.logyourbody.shared</string>
+	</array>
 </dict>
 </plist>
