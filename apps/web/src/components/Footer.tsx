@@ -1,8 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import { Github, Twitter, Mail, ExternalLink } from "lucide-react";
+import { Github, Twitter, Mail, ExternalLink, Download } from "lucide-react";
 import { Button } from "./ui/button";
 import { VersionDisplay } from "./VersionDisplay";
+import { APP_CONFIG, getContactEmail, getSocialUrl } from "@/constants/app";
 
 type FooterLink = {
   label: string;
@@ -24,34 +25,29 @@ export function Footer() {
       links: [
         { label: "Features", href: "/#features-grid" },
         { label: "Pricing", href: "/#pricing" },
-        { label: "Changelog", href: "/changelog" },
+        { label: "iOS App", href: "/download/ios" },
       ]
     },
     {
       title: "Company",
       links: [
         { label: "About", href: "/about" },
-        { label: "Careers", href: "/careers" },
-        { label: "Privacy Policy", href: "/privacy" },
-        { label: "Terms of Service", href: "/terms" },
-        { label: "Security", href: "/security" },
-        { label: "Contact", href: "mailto:support@logyourbody.com", external: true },
+        { label: "Privacy", href: "/privacy" },
+        { label: "Terms", href: "/terms" },
+        { label: "Contact", href: `mailto:${getContactEmail('support')}`, external: true },
       ]
     },
     {
       title: "Resources",
       links: [
         { label: "Blog", href: "/blog" },
-        { label: "Brand", href: "/brand" },
-        { label: "Support", href: "mailto:support@logyourbody.com", external: true },
-        { label: "Status", href: "https://status.logyourbody.com", external: true },
+        { label: "Support", href: `mailto:${getContactEmail('support')}`, external: true },
       ]
     },
     {
       title: "Developers",
       links: [
-        { label: "GitHub", href: "https://github.com/itstimwhite/LogYourBody", icon: Github, external: true },
-        { label: "Open Source", href: "https://github.com/itstimwhite/LogYourBody", external: true },
+        { label: "GitHub", href: getSocialUrl('github'), icon: Github, external: true },
       ]
     }
   ];
@@ -64,7 +60,7 @@ export function Footer() {
           {/* Brand Column */}
           <div className="col-span-2 lg:col-span-1">
             <div className="mb-6">
-              <h3 className="text-xl font-semibold text-white mb-3">LogYourBody</h3>
+              <h3 className="text-xl font-semibold text-white mb-3">{APP_CONFIG.appName}</h3>
               <p className="text-sm text-white/70 leading-relaxed mb-6">
                 Track real progress. Not just weight.
               </p>
@@ -72,7 +68,7 @@ export function Footer() {
               {/* Social Links */}
               <div className="flex gap-4">
                 <a
-                  href="https://github.com/itstimwhite/LogYourBody"
+                  href={getSocialUrl('github')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white/50 hover:text-white transition-colors p-1"
@@ -81,7 +77,7 @@ export function Footer() {
                   <Github className="h-5 w-5" />
                 </a>
                 <a
-                  href="https://twitter.com/logyourbody"
+                  href={getSocialUrl('twitter')}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-white/50 hover:text-white transition-colors p-1"
@@ -90,7 +86,7 @@ export function Footer() {
                   <Twitter className="h-5 w-5" />
                 </a>
                 <a
-                  href="mailto:support@logyourbody.com"
+                  href={`mailto:${getContactEmail('support')}`}
                   className="text-white/50 hover:text-white transition-colors p-1"
                   aria-label="Email"
                 >
@@ -145,7 +141,7 @@ export function Footer() {
         <div className="border-t border-[#1a1b1e] mt-16 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <p className="text-sm text-white/50">
-              © {new Date().getFullYear()} LogYourBody
+              © {new Date().getFullYear()} {APP_CONFIG.appName}
             </p>
             <VersionDisplay />
           </div>
@@ -155,9 +151,13 @@ export function Footer() {
             <span className="text-sm text-white/70 hidden sm:block">
               Track what really matters
             </span>
-            <Link href="/signup">
-              <Button className="bg-white text-[#08090a] px-6 py-2 text-sm font-medium rounded-md hover:bg-white/90 transition-colors">
-                Start Free Trial
+            <Link href="/download/ios">
+              <Button 
+                variant="outline" 
+                className="border-white/20 text-white hover:bg-white/10 transition-colors flex items-center gap-2"
+              >
+                <Download className="h-4 w-4" />
+                Download iOS App
               </Button>
             </Link>
           </div>

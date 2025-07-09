@@ -1,7 +1,6 @@
 import { Metadata } from 'next'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy - LogYourBody',
@@ -11,19 +10,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex items-center justify-between">
-            <Link href="/" className="text-xl font-semibold">
-              LogYourBody
-            </Link>
-            <Link href="/signin">
-              <Button>Get Started</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <Header />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-16 max-w-4xl">
@@ -54,6 +41,17 @@ export default function PrivacyPage() {
           <p>
             With your permission, we may access health data from Apple Health or Google Fit to automatically import weight measurements. This data never leaves your device without your explicit consent.
           </p>
+
+          <h3 className="text-xl font-semibold mt-6">Progress Photos</h3>
+          <p className="font-semibold">
+            Built for the privacy-obsessed: keep your progress photos under lock and key, where they belong.
+          </p>
+          <ul className="list-disc pl-6 space-y-2">
+            <li>All photos are encrypted before upload</li>
+            <li>Optional "Remove Originals" feature automatically deletes photos from your camera roll after secure vault storage</li>
+            <li>Face blurring technology for additional privacy</li>
+            <li>Your photos are never used for any purpose other than showing your progress</li>
+          </ul>
 
           <h2 className="text-2xl font-semibold mt-8">How We Use Your Information</h2>
           <ul className="list-disc pl-6 space-y-2">

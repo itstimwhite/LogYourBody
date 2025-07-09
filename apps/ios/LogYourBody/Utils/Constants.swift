@@ -64,4 +64,23 @@ struct Constants {
     static let animationDuration: Double = 0.3
     static let springAnimation = SwiftUI.Animation.spring(response: 0.4, dampingFraction: 0.8)
     static let smoothAnimation = SwiftUI.Animation.easeInOut(duration: 0.3)
+    
+    // MARK: - Body Composition Ideal Ranges
+    struct BodyComposition {
+        // Body Fat Percentage
+        struct BodyFat {
+            static let maleOptimalRange: ClosedRange<Double> = 6...10
+            static let maleIdealValue: Double = 8
+            static let femaleOptimalRange: ClosedRange<Double> = 16...20
+            static let femaleIdealValue: Double = 18
+        }
+        
+        // Fat-Free Mass Index (FFMI)
+        struct FFMI {
+            static let maleOptimalRange: ClosedRange<Double> = 20...23
+            static let maleIdealValue: Double = 23
+            static let femaleOptimalRange: ClosedRange<Double> = 16...19
+            static let femaleIdealValue: Double = 17.5
+        }
+    }
 }

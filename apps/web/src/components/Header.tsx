@@ -48,17 +48,14 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
           {showFeatures && (
             <FeaturesFlyout onFeatureClick={handleFeatureClick} />
           )}
-          <Link
-            href="/blog"
-            className={cn(
-              "text-sm font-medium transition-colors",
-              isActive("/blog") 
-                ? "text-white" 
-                : "text-white/60 hover:text-white"
-            )}
-          >
-            Blog
-          </Link>
+          {showFeatures && (
+            <button
+              className="text-sm font-medium text-white/60 transition-colors hover:text-white"
+              onClick={() => scrollToSection('pricing')}
+            >
+              Pricing
+            </button>
+          )}
           <Link
             href="/about"
             className={cn(
@@ -71,6 +68,17 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
             About
           </Link>
           <Link
+            href="/blog"
+            className={cn(
+              "text-sm font-medium transition-colors",
+              isActive("/blog") 
+                ? "text-white" 
+                : "text-white/60 hover:text-white"
+            )}
+          >
+            Blog
+          </Link>
+          <Link
             href="/download/ios"
             className={cn(
               "text-sm font-medium transition-colors",
@@ -79,16 +87,8 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
                 : "text-white/60 hover:text-white"
             )}
           >
-            iOS App
+            iOS
           </Link>
-          {showFeatures && (
-            <button
-              className="text-sm font-medium text-white/60 transition-colors hover:text-white"
-              onClick={() => scrollToSection('pricing')}
-            >
-              Pricing
-            </button>
-          )}
           </div>
         </div>
 
@@ -111,16 +111,10 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
         {/* Desktop CTA buttons */}
         <div className="hidden lg:flex lg:items-center lg:gap-x-4">
           <Link
-            href="/login"
-            className="text-sm font-medium text-white/60 transition-colors hover:text-white"
-          >
-            Log in
-          </Link>
-          <Link
-            href="/signup"
+            href="/download/ios"
             className="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-all hover:bg-white/90"
           >
-            Get started
+            Download App
           </Link>
         </div>
         </nav>
@@ -140,18 +134,14 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
               <span className="block text-sm font-medium text-white/60">Features</span>
             </div>
           )}
-          <Link
-            href="/blog"
-            className={cn(
-              "block px-3 py-2 text-base font-medium transition-colors",
-              isActive("/blog")
-                ? "text-white"
-                : "text-white/60 hover:text-white"
-            )}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Blog
-          </Link>
+          {showFeatures && (
+            <button
+              className="block px-3 py-2 text-base font-medium text-white/60 transition-colors hover:text-white"
+              onClick={() => scrollToSection('pricing')}
+            >
+              Pricing
+            </button>
+          )}
           <Link
             href="/about"
             className={cn(
@@ -165,6 +155,18 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
             About
           </Link>
           <Link
+            href="/blog"
+            className={cn(
+              "block px-3 py-2 text-base font-medium transition-colors",
+              isActive("/blog")
+                ? "text-white"
+                : "text-white/60 hover:text-white"
+            )}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            Blog
+          </Link>
+          <Link
             href="/download/ios"
             className={cn(
               "block px-3 py-2 text-base font-medium transition-colors",
@@ -174,30 +176,15 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
             )}
             onClick={() => setMobileMenuOpen(false)}
           >
-            iOS App
+            iOS
           </Link>
-          {showFeatures && (
-            <button
-              className="block px-3 py-2 text-base font-medium text-white/60 transition-colors hover:text-white"
-              onClick={() => scrollToSection('pricing')}
-            >
-              Pricing
-            </button>
-          )}
           <div className="mt-6 space-y-2">
             <Link
-              href="/login"
-              className="block px-3 py-2 text-base font-medium text-white/60 transition-colors hover:text-white"
-              onClick={() => setMobileMenuOpen(false)}
-            >
-              Log in
-            </Link>
-            <Link
-              href="/signup"
+              href="/download/ios"
               className="block rounded-full bg-white px-3 py-2 text-center text-base font-medium text-black transition-all hover:bg-gray-100"
               onClick={() => setMobileMenuOpen(false)}
             >
-              Get started
+              Download App
             </Link>
           </div>
         </div>

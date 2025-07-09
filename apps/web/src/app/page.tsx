@@ -14,7 +14,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Switch } from "@/components/ui/switch";
 import {
   BarChart3,
   Camera,
@@ -24,23 +23,18 @@ import {
   Clock,
   Check,
   ArrowRight,
-  Monitor,
-  Tablet,
-  Zap,
-  Download,
-  Scale,
-  Percent,
+  Sparkles,
 } from "lucide-react";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { LandingTimelineDemo } from "@/components/LandingTimelineDemo";
 import { StepTrackerSection } from "@/components/StepTrackerModule";
 import { LandingPredictionSection } from "@/components/LandingPredictionSection";
-import { FeaturesFlyout } from "@/components/FeaturesFlyout";
+import { APP_CONFIG } from "@/constants/app";
 
 export default function HomePage() {
   const [isAnnual, setIsAnnual] = useState(true);
-  const { user, signOut } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -49,23 +43,7 @@ export default function HomePage() {
     }
   }, [user, router]);
 
-  const slugify = (text: string) =>
-    text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-
-  const pricing = {
-    monthly: {
-      price: 9.99,
-      period: "month",
-      yearlyTotal: 119.88,
-    },
-    annual: {
-      price: 69.99,
-      period: "year",
-      monthlyEquivalent: 5.83,
-      savings: 49.89,
-      savingsPercent: 42,
-    },
-  };
+  const pricing = APP_CONFIG.pricing;
 
   const appFeatures = [
     {
@@ -96,7 +74,7 @@ export default function HomePage() {
       icon: Shield,
       title: "Privacy First",
       description:
-        "Your transformation is personal. Encrypted, exportable, deletable.",
+        "Built for the privacy-obsessed: keep your progress photos under lock and key, where they belong.",
     },
     {
       icon: Clock,
@@ -136,110 +114,126 @@ export default function HomePage() {
 
       {/* Main Content */}
       <main id="main-content" tabIndex={-1}>
-        {/* Hero Section - F-Layout Pattern */}
+        {/* Hero Section - Linear Style */}
         <section
-          className="relative py-20 md:py-32"
+          className="relative pt-32 pb-20"
           role="banner"
           aria-labelledby="hero-heading"
         >
-          <div className="max-w-[1280px] mx-auto px-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-              {/* Left Column - Content (F-pattern primary scan area) */}
-              <div className="text-left">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center">
+              {/* Hero Content */}
+              <div className="max-w-4xl mx-auto">
                 <h1
                   id="hero-heading"
-                  className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.1]"
+                  className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.05]"
                 >
-                  Upgrade yourself
+                  Track your body.
+                  <br />
+                  Transform your life.
                 </h1>
                 
-                <p className="text-xl text-white/70 mb-10 max-w-lg leading-relaxed">
-                  Professional body composition tracking for people who care about aesthetics. 
-                  Track what matters, predict your peak, achieve your ideal physique.
+                <p className="text-xl md:text-2xl text-white/60 mb-10 max-w-2xl mx-auto leading-[1.5] font-normal">
+                  Professional body composition tracking that shows you exactly how you're transforming.
                 </p>
-                
-                {/* CTAs - Horizontal for F-pattern */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-10">
-                  <Link href="/signup">
+
+                {/* CTAs - Linear Style */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                  <Link href="/download/ios">
                     <Button
-                      className="bg-[#0095FF] text-white px-6 py-3 text-base font-medium rounded-md hover:bg-[#0095FF]/90 transition-all"
+                      size="lg"
+                      className="bg-white text-black px-8 py-6 text-base font-medium rounded-full hover:bg-white/90 transition-all shadow-2xl"
                     >
-                      Start Free Trial
+                      Download for iOS
                     </Button>
                   </Link>
                   <Link href="#timeline-feature">
                     <Button
+                      size="lg"
                       variant="outline"
-                      className="border-[#1a1b1e] text-white/70 hover:bg-[#1a1b1e]/30 hover:text-white px-6 py-3 text-base rounded-md"
+                      className="border-white/10 text-white hover:bg-white/5 px-8 py-6 text-base rounded-full"
                     >
                       See it in action
                     </Button>
                   </Link>
                 </div>
-                
-                {/* Trust indicators - Supporting F-pattern scan */}
-                <div className="flex flex-wrap items-center gap-6 text-sm text-white/50">
+
+                {/* Trust indicators - Linear Style */}
+                <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4" />
-                    <span>No credit card required</span>
+                    <span>Free to try</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4" />
-                    <span>10,000+ transformations</span>
+                    <span>{APP_CONFIG.metadata.totalUsers} users</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4" />
-                    <span>4.9★ App Store</span>
+                    <span>{APP_CONFIG.metadata.appStoreRating}★ App Store</span>
                   </div>
                 </div>
               </div>
-              
-              {/* Right Column - Visual (F-pattern secondary area) */}
-              <div className="relative">
-                <div className="rounded-md bg-[#0f1011] border border-[#1a1b1e] p-6">
-                  <div className="aspect-[4/3] bg-[#08090a] rounded-md border border-[#1a1b1e] relative overflow-hidden">
-                    {/* Mock dashboard preview */}
-                    <div className="absolute inset-0 p-6">
-                      {/* Header */}
-                      <div className="flex items-center justify-between mb-6">
-                        <div className="h-2 w-24 bg-[#1a1b1e] rounded"></div>
-                        <div className="flex gap-2">
-                          <div className="h-6 w-6 bg-[#1a1b1e] rounded"></div>
-                          <div className="h-6 w-6 bg-[#1a1b1e] rounded"></div>
-                        </div>
-                      </div>
-                      
-                      {/* Stats Grid */}
-                      <div className="grid grid-cols-2 gap-3 mb-6">
-                        <div className="bg-[#0f1011] rounded-md p-3 border border-[#1a1b1e]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Scale className="h-3 w-3 text-white/50" />
-                            <div className="h-1.5 w-12 bg-[#1a1b1e] rounded"></div>
-                          </div>
-                          <div className="h-6 w-16 bg-[#1a1b1e] rounded"></div>
-                        </div>
-                        <div className="bg-[#0f1011] rounded-md p-3 border border-[#1a1b1e]">
-                          <div className="flex items-center gap-2 mb-2">
-                            <Percent className="h-3 w-3 text-white/50" />
-                            <div className="h-1.5 w-12 bg-[#1a1b1e] rounded"></div>
-                          </div>
-                          <div className="h-6 w-16 bg-[#1a1b1e] rounded"></div>
-                        </div>
-                      </div>
-                      
-                      {/* Chart Area */}
-                      <div className="bg-[#0f1011] rounded-md p-3 border border-[#1a1b1e]">
-                        <div className="flex items-end justify-between h-20 gap-1">
-                          {[40, 60, 45, 70, 65, 80, 75].map((height, i) => (
-                            <div key={i} className="flex-1 bg-[#0095FF]/20 rounded-t" style={{ height: `${height}%` }}></div>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Floating badges */}
-                    <div className="absolute top-4 right-4 bg-[#00C851]/90 text-white text-xs px-2 py-1 rounded-md">
-                      Live data
+            </div>
+          </div>
+        </section>
+
+        {/* AI Auto-Edit Section */}
+        <section className="py-20 bg-gradient-to-b from-transparent to-white/[0.02]">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-16">
+              <Badge variant="secondary" className="mb-4 bg-purple-500/10 text-purple-400 border-purple-500/20">
+                <Sparkles className="h-3 w-3 mr-1" />
+                AI-Powered Feature
+              </Badge>
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                Zero-Click Progress Photos
+              </h2>
+              <p className="text-xl text-white/60 max-w-2xl mx-auto">
+                Upload once. Our AI-AutoEdit™ instantly crops, aligns, color-corrects & removes backgrounds for flawless, uniform shots—every time.
+              </p>
+            </div>
+
+            {/* Feature showcase */}
+            <div className="rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 p-8 md:p-12">
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                  <h3 className="text-2xl font-semibold text-white mb-6">
+                    Why We're Different
+                  </h3>
+                  <ul className="space-y-4 text-lg">
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-purple-400 mt-1" />
+                      <span className="text-white/80">
+                        <strong className="text-white">No Manual Cropping</strong>—perfection happens automatically
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-purple-400 mt-1" />
+                      <span className="text-white/80">
+                        <strong className="text-white">Consistent Angles</strong>—AI ensures perfect alignment every time
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-purple-400 mt-1" />
+                      <span className="text-white/80">
+                        <strong className="text-white">Privacy First</strong>—optional "Remove Originals" deletes photos from camera roll
+                      </span>
+                    </li>
+                    <li className="flex items-start gap-3">
+                      <Check className="h-5 w-5 text-purple-400 mt-1" />
+                      <span className="text-white/80">
+                        <strong className="text-white">Face Blurring (Coming Soon)</strong>—protect your identity while tracking progress
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+                <div className="relative">
+                  {/* Visual representation */}
+                  <div className="aspect-square bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-2xl border border-purple-500/20 flex items-center justify-center">
+                    <div className="text-center">
+                      <Camera className="h-16 w-16 text-purple-400 mx-auto mb-4" />
+                      <p className="text-white/60">AI-powered photo processing</p>
                     </div>
                   </div>
                 </div>
@@ -248,42 +242,35 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Social Proof - Refined */}
+        {/* Social Proof */}
         <section className="py-16 border-y border-[#1a1b1e]">
           <div className="max-w-[1280px] mx-auto px-6">
             <div className="mb-12 text-center">
               <p className="text-sm text-white/50 mb-6">Trusted by fitness professionals and aesthetic athletes worldwide</p>
-              <div className="flex justify-center items-center gap-8">
-                <div className="text-lg font-semibold text-white/70">10K+ Users</div>
-                <div className="h-1 w-1 bg-white/50 rounded-full"></div>
-                <div className="text-lg font-semibold text-white/70">2M+ Logs</div>
-                <div className="h-1 w-1 bg-white/50 rounded-full"></div>
-                <div className="text-lg font-semibold text-white/70">4.9★ Rating</div>
-              </div>
             </div>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
               <div className="group">
                 <div className="text-4xl md:text-5xl font-bold mb-2 text-white">
-                  10,000+
+                  {APP_CONFIG.metadata.totalUsers}
                 </div>
                 <div className="text-sm text-white/70">Active transformations</div>
               </div>
               <div className="group">
                 <div className="text-4xl md:text-5xl font-bold mb-2 text-white">
-                  93%
+                  {APP_CONFIG.metadata.successRate}
                 </div>
                 <div className="text-sm text-white/70">Hit their goals</div>
               </div>
               <div className="group">
                 <div className="text-4xl md:text-5xl font-bold mb-2 text-white">
-                  4.9/5
+                  {APP_CONFIG.metadata.appStoreRating}/5
                 </div>
                 <div className="text-sm text-white/70">App Store rating</div>
               </div>
               <div className="group">
                 <div className="text-4xl md:text-5xl font-bold mb-2 text-white">
-                  30 sec
+                  30s
                 </div>
                 <div className="text-sm text-white/70">Average log time</div>
               </div>
@@ -291,557 +278,178 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Problem/Solution Section - Apple style storytelling */}
-        <section className="py-20 md:py-32">
+        {/* Features Grid */}
+        <section className="py-20">
           <div className="max-w-[1280px] mx-auto px-6">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-16">
-                <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-4 leading-[1.2]">
-                  Your transformation data.
-                  <br />
-                  <span className="text-white/70">Finally unified.</span>
-                </h2>
-                <p className="text-lg text-white/70 max-w-3xl mx-auto leading-relaxed">
-                  Stop juggling PDFs, spreadsheets, and scattered apps. 
-                  See your complete body composition story in one intelligent timeline.
-                </p>
-              </div>
-
-              {/* Visual representation */}
-              <div className="relative mx-auto max-w-4xl">
-                <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                  {/* Before - Fragmented */}
-                  <div className="space-y-4">
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
-                        <span>DEXA scan PDFs</span>
-                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
-                        <span>Scale measurements</span>
-                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
-                        <span>Progress photos</span>
-                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="inline-flex items-center gap-3 text-sm text-white/70">
-                        <span>Gym measurements</span>
-                        <div className="h-8 w-8 rounded-md bg-[#0f1011] border border-[#1a1b1e] flex items-center justify-center">
-                          <div className="h-1.5 w-1.5 bg-[#FF6B6B] rounded-full animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* LogYourBody hub */}
-                  <div className="relative">
-                    <div className="mx-auto h-32 w-32 rounded-2xl bg-[#7B61FF] flex items-center justify-center">
-                      <BarChart3 className="h-16 w-16 text-white" />
-                    </div>
-                    <p className="text-center mt-4 font-semibold text-white">LogYourBody</p>
-                  </div>
-
-                  {/* After - Unified insights */}
-                  <div className="space-y-4">
-                    <div className="text-left">
-                      <div className="inline-flex items-center gap-3 text-sm text-white">
-                        <div className="h-8 w-8 rounded-md bg-[#00C851]/10 flex items-center justify-center">
-                          <Check className="h-4 w-4 text-[#00C851]" />
-                        </div>
-                        <span>Complete timeline</span>
-                      </div>
-                    </div>
-                    <div className="text-left">
-                      <div className="inline-flex items-center gap-3 text-sm text-white">
-                        <div className="h-8 w-8 rounded-md bg-[#00C851]/10 flex items-center justify-center">
-                          <Check className="h-4 w-4 text-[#00C851]" />
-                        </div>
-                        <span>Aesthetic analytics</span>
-                      </div>
-                    </div>
-                    <div className="text-left">
-                      <div className="inline-flex items-center gap-3 text-sm text-white">
-                        <div className="h-8 w-8 rounded-md bg-[#00C851]/10 flex items-center justify-center">
-                          <Check className="h-4 w-4 text-[#00C851]" />
-                        </div>
-                        <span>Peak predictions</span>
-                      </div>
-                    </div>
-                    <div className="text-left">
-                      <div className="inline-flex items-center gap-3 text-sm text-white">
-                        <div className="h-8 w-8 rounded-md bg-[#00C851]/10 flex items-center justify-center">
-                          <Check className="h-4 w-4 text-[#00C851]" />
-                        </div>
-                        <span>Photo-ready alerts</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-center mt-16">
-                <p className="text-sm text-white/70 mb-4">
-                  The only app that shows you exactly how you'll look tomorrow.
-                </p>
-                <Link href="/signup">
-                  <Button className="bg-[#7B61FF] text-white px-6 py-2.5 text-sm font-medium rounded-md hover:bg-[#7B61FF]/90 transition-all">
-                    Start Tracking
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Grid - Refined messaging */}
-        <section id="features-grid" className="py-24 md:py-32" aria-labelledby="features-heading">
-          <div className="max-w-[1280px] mx-auto px-6">
-            <div className="mb-20 text-center">
-              <Badge className="mb-6 bg-[#FF6B6B]/10 text-white border-[#FF6B6B]/20">
-                Built for aesthetics
-              </Badge>
-              <h2 className="mb-6 text-4xl sm:text-5xl font-bold tracking-tight text-white leading-[1.2]">
-                Everything you need to
-                <br />
-                <span className="text-white/70">
-                  achieve your ideal physique
-                </span>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                Everything you need. Nothing you don't.
               </h2>
-              <p className="mx-auto max-w-2xl text-lg text-white/70">
-                Professional tools. Consumer simplicity. Aesthetic results.
+              <p className="text-xl text-white/60 max-w-2xl mx-auto">
+                Professional tools designed for serious transformations.
               </p>
             </div>
-            
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3" role="list">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {appFeatures.map((feature, index) => (
-                <div
-                  key={index}
-                  id={slugify(feature.title)}
-                  className="group relative rounded-md border border-[#1a1b1e] bg-[#0f1011] p-8 transition-all duration-300 hover:border-[#5E6AD2]/30"
-                  role="listitem"
+                <Card 
+                  key={index} 
+                  className="bg-[#0f1011] border-[#1a1b1e] hover:border-[#2a2b2e] transition-all group"
                 >
-                  <div className="mb-6">
-                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-md bg-[#FF6B6B]/10 transition-colors group-hover:bg-[#FF6B6B]/20">
-                      <feature.icon className="h-6 w-6 text-[#FF6B6B]" aria-hidden="true" />
+                  <CardHeader>
+                    <div className="mb-4 p-3 bg-[#1a1b1e] rounded-lg w-fit group-hover:bg-[#2a2b2e] transition-colors">
+                      <feature.icon className="h-6 w-6 text-white" />
                     </div>
-                  </div>
-                  <h3 className="mb-3 text-lg font-semibold text-white">{feature.title}</h3>
-                  <p className="text-sm text-white/70 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </div>
+                    <CardTitle className="text-white text-xl">
+                      {feature.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-white/60 text-base">
+                      {feature.description}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Timeline Feature Section */}
-        <section id="timeline-feature" className="relative py-20 md:py-32">
+        {/* Interactive Demo Section */}
+        <section 
+          id="timeline-feature" 
+          className="py-20 bg-gradient-to-b from-transparent to-[#0f1011]"
+          aria-labelledby="timeline-heading"
+        >
           <div className="max-w-[1280px] mx-auto px-6">
-            <div className="grid gap-16 lg:grid-cols-2 lg:items-center">
-              <div className="order-2 lg:order-1">
-                <Badge className="mb-4 bg-[#00D4AA]/10 text-white border-[#00D4AA]/20 inline-block">
-                  Revolutionary visualization
-                </Badge>
-                <h2 className="mb-6 text-4xl sm:text-5xl font-bold tracking-tight text-white leading-[1.2]">
-                  Your transformation, visualized
-                </h2>
-                <p className="mb-8 text-lg sm:text-xl text-white/70">
-                  Slide through time to see your exact physique on any date. 
-                  Compare progress photos with precision metrics. Know exactly when you peaked.
-                </p>
-                
-                <div className="space-y-6">
-                  <div className="flex gap-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#00D4AA]/10">
-                      <Clock className="h-6 w-6 text-[#00D4AA]" />
-                    </div>
-                    <div>
-                      <h3 className="mb-1 text-lg font-semibold text-white">
-                        Time-travel your physique
-                      </h3>
-                      <p className="text-white/70">
-                        See exactly how you looked on any date. Photos paired with precise metrics.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#00D4AA]/10">
-                      <Camera className="h-6 w-6 text-[#00D4AA]" />
-                    </div>
-                    <div>
-                      <h3 className="mb-1 text-lg font-semibold text-white">
-                        Photo-ready confidence
-                      </h3>
-                      <p className="text-white/70">
-                        Know your best angles and peak condition. Never be surprised by how you look.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex gap-4">
-                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-md bg-[#00D4AA]/10">
-                      <TrendingUp className="h-6 w-6 text-[#00D4AA]" />
-                    </div>
-                    <div>
-                      <h3 className="mb-1 text-lg font-semibold text-white">
-                        Predict your peak
-                      </h3>
-                      <p className="text-white/70">
-                        AI-powered predictions show exactly when you'll hit your aesthetic goals.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="order-1 lg:order-2">
-                <div className="relative">
-                  <LandingTimelineDemo />
-                </div>
-              </div>
+            <div className="text-center mb-16">
+              <h2 id="timeline-heading" className="text-4xl md:text-5xl font-bold text-white mb-4">
+                See your transformation unfold
+              </h2>
+              <p className="text-xl text-white/60 max-w-2xl mx-auto">
+                Track every milestone. Visualize your journey. Celebrate your progress.
+              </p>
             </div>
+            <LandingTimelineDemo />
           </div>
         </section>
 
-        <StepTrackerSection />
+        {/* Step Tracker Section */}
+        <section id="steps-feature" className="py-20">
+          <StepTrackerSection />
+        </section>
 
-        <LandingPredictionSection />
+        {/* Prediction Section */}
+        <section className="py-20 bg-gradient-to-b from-[#0f1011] to-transparent">
+          <LandingPredictionSection />
+        </section>
 
-        {/* Pricing Section - Refined */}
+        {/* Pricing Section */}
         <section id="pricing" className="py-20">
           <div className="max-w-[1280px] mx-auto px-6">
-          <div className="mb-16 text-center">
-            <h2 className="mb-4 text-4xl sm:text-5xl font-bold tracking-tight text-white leading-[1.2]">
-              Invest in your transformation
-            </h2>
-            <p className="text-lg text-white/70">
-              Less than a protein shake. More valuable than a personal trainer.
-            </p>
-          </div>
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+                Start your transformation today
+              </h2>
+              <p className="text-xl text-white/60 max-w-2xl mx-auto mb-8">
+                Join thousands achieving their ideal physique with professional tracking.
+              </p>
+              
+              {/* Pricing Toggle */}
+              <div className="inline-flex items-center gap-4 p-1 bg-[#1a1b1e] rounded-full">
+                <button
+                  onClick={() => setIsAnnual(false)}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                    !isAnnual 
+                      ? 'bg-white text-black' 
+                      : 'text-white/60 hover:text-white'
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  onClick={() => setIsAnnual(true)}
+                  className={`px-6 py-2 rounded-full text-sm font-medium transition-all ${
+                    isAnnual 
+                      ? 'bg-white text-black' 
+                      : 'text-white/60 hover:text-white'
+                  }`}
+                >
+                  Annual
+                  {isAnnual && (
+                    <Badge className="ml-2 bg-green-500/20 text-green-400 border-0">
+                      Save {APP_CONFIG.pricing.annual.savingsPercent}%
+                    </Badge>
+                  )}
+                </button>
+              </div>
+            </div>
 
-          <div
-            className="not-prose mb-12 flex items-center justify-center gap-4"
-            role="group"
-            aria-labelledby="billing-toggle-label"
-          >
-            <span id="billing-toggle-label" className="sr-only">
-              Choose billing frequency
-            </span>
-            <span
-              className={`text-lg font-medium ${!isAnnual ? "text-white" : "text-white/50"}`}
-              id="monthly-label"
-            >
-              Monthly
-            </span>
-            <Switch
-              checked={isAnnual}
-              onCheckedChange={setIsAnnual}
-              className="focus:ring-2 focus:ring-[#00DC82]/50 data-[state=checked]:bg-[#00DC82]"
-              aria-labelledby="monthly-label annual-label"
-              aria-describedby="billing-savings"
-            />
-            <span
-              className={`text-lg font-medium ${isAnnual ? "text-white" : "text-white/50"}`}
-              id="annual-label"
-            >
-              Annual
-            </span>
-            {isAnnual && (
-              <Badge
-                id="billing-savings"
-                className="ml-2 border-[#00DC82]/20 bg-[#00DC82]/10 text-[#00DC82]"
-                role="status"
-              >
-                Save {pricing.annual.savingsPercent}%
-              </Badge>
-            )}
-          </div>
-
-          <div className="not-prose mx-auto max-w-md">
-            <Card
-              className="relative border-[#1a1b1e] bg-[#0f1011] ring-1 ring-[#1a1b1e] focus-within:ring-2 focus-within:ring-[#00DC82]/50"
-              role="region"
-              aria-labelledby="pricing-title"
-              aria-describedby="pricing-description"
-            >
-              <Badge
-                className="absolute -top-3 left-1/2 -translate-x-1/2 transform bg-[#00DC82] text-black font-medium"
-                role="status"
-              >
-                3-Day Free Trial
-              </Badge>
-              <CardHeader className="text-center">
-                <CardTitle id="pricing-title" className="text-2xl text-white">
-                  Full Access
-                </CardTitle>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-white transition-all duration-300 ease-in-out">
-                    <span className="sr-only">Price: </span>${currentPlan.price}
-                  </span>
-                  <span className="text-white/70 transition-all duration-300 ease-in-out">
-                    /{currentPlan.period}
-                  </span>
-                </div>
+            {/* Pricing Card */}
+            <div className="max-w-md mx-auto">
+              <Card className="bg-[#0f1011] border-[#1a1b1e] relative overflow-hidden">
                 {isAnnual && (
-                  <div className="mt-2 transition-all duration-300 ease-in-out">
-                    <span className="text-sm text-white/50">
-                      ${pricing.annual.monthlyEquivalent}/month when billed
-                      annually
-                    </span>
-                    <div className="text-sm font-medium text-green-500">
-                      Save ${pricing.annual.savings} vs monthly billing
-                    </div>
+                  <div className="absolute top-0 right-0 bg-green-500 text-white text-xs px-3 py-1 rounded-bl-lg">
+                    BEST VALUE
                   </div>
                 )}
-                <CardDescription
-                  id="pricing-description"
-                  className="mt-4 text-base text-white/70"
-                >
-                  Everything you need to achieve your ideal physique
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ul className="mb-6 space-y-3">
-                  {features.map((feature, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center text-white"
-                    >
-                      <Check
-                        className="mr-3 h-5 w-5 text-[#00DC82]"
-                        aria-hidden="true"
-                      />
-                      <span className="text-sm">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link href="/signup">
-                  <Button
-                    className="w-full bg-[#00DC82] text-black font-medium hover:bg-[#00DC82]/90 focus:ring-2 focus:ring-[#00DC82]/50 transition-colors"
-                    aria-describedby="trial-terms"
-                  >
-                    Start Your Transformation
-                  </Button>
-                </Link>
-                <p
-                  id="trial-terms"
-                  className="mt-3 text-center text-xs text-white/50"
-                >
-                  No credit card required • Cancel anytime
-                </p>
-              </CardContent>
-            </Card>
-          </div>
+                <CardHeader className="text-center pb-8">
+                  <div className="mb-4">
+                    <span className="text-5xl font-bold text-white">
+                      ${currentPlan.price}
+                    </span>
+                    <span className="text-white/60 ml-2">/{currentPlan.period}</span>
+                  </div>
+                  {isAnnual && (
+                    <p className="text-sm text-white/60">
+                      Just ${APP_CONFIG.pricing.annual.monthlyEquivalent}/month
+                    </p>
+                  )}
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <ul className="space-y-4">
+                    {features.map((feature, index) => (
+                      <li key={index} className="flex items-start gap-3">
+                        <Check className="h-5 w-5 text-green-500 mt-0.5" />
+                        <span className="text-white/80">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  <Link href="/download/ios" className="block">
+                    <Button className="w-full bg-white text-black hover:bg-white/90 py-6 text-base font-medium">
+                      Start Free Trial
+                      <ArrowRight className="ml-2 h-5 w-5" />
+                    </Button>
+                  </Link>
+                  
+                  <p className="text-center text-sm text-white/50">
+                    {APP_CONFIG.trialLengthText}. Cancel anytime.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </section>
 
-        {/* CTA Section - Refined */}
-        <section className="relative py-24 md:py-32">
-          <div className="max-w-[1280px] mx-auto px-6">
-            <div className="mx-auto max-w-4xl text-center">
-              <Badge className="mb-8 bg-[#0095FF]/10 text-white border-[#0095FF]/20">
-                Ready to transform?
-              </Badge>
-              <h2 className="mb-6 text-4xl sm:text-5xl font-bold tracking-tight text-white leading-[1.2]">
-                Start tracking what 
-                <br />
-                <span className="text-white/70">
-                  actually matters
-                </span>
-              </h2>
-              <p className="mx-auto mb-12 max-w-2xl text-lg sm:text-xl text-white/70 leading-relaxed">
-                Join thousands who've discovered the power of professional body composition tracking.
-                Your best physique is waiting.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-                <Link href="/signup">
-                  <Button
-                    className="bg-white text-[#08090a] px-6 py-3 text-base font-medium rounded-md hover:bg-white/90 transition-all"
-                  >
-                    Start Free Trial
-                  </Button>
-                </Link>
-                <Link href="/about">
-                  <Button
-                    variant="ghost"
-                    className="border border-[#1a1b1e] text-white/70 hover:bg-[#1a1b1e]/30 hover:text-white px-6 py-3 text-base rounded-md transition-all"
-                  >
-                    Learn more
-                  </Button>
-                </Link>
-              </div>
-              
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-6 text-sm text-white/50">
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-[#0095FF]" />
-                  <span>No credit card required</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-[#0095FF]" />
-                  <span>3-day free trial</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-[#0095FF]" />
-                  <span>Cancel anytime</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-        {/* Privacy Section */}
-        <section className="py-24 md:py-32 bg-[#0a0b0d] relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#5E6AD2]/5 to-transparent opacity-30" />
-          
-          <div className="max-w-[1280px] mx-auto px-6 relative">
-            <div className="text-center mb-16">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-[#5E6AD2]/10 rounded-2xl mb-6">
-                <Shield className="h-8 w-8 text-[#5E6AD2]" />
-              </div>
-              
-              <h2 className="text-4xl sm:text-5xl font-bold tracking-tight text-white mb-6">
-                Your health data is yours.
-                <br />
-                <span className="text-white/70">And yours alone.</span>
-              </h2>
-              
-              <p className="max-w-2xl mx-auto text-lg text-white/70">
-                Privacy isn't just a feature—it's fundamental to how we built LogYourBody. 
-                Every decision prioritizes your security and control.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-              {/* Encryption Card */}
-              <div className="bg-[#1a1b1e]/50 backdrop-blur-sm border border-white/10 rounded-xl p-8">
-                <div className="w-12 h-12 bg-[#5E6AD2]/10 rounded-lg flex items-center justify-center mb-6">
-                  <Shield className="h-6 w-6 text-[#5E6AD2]" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-3">
-                  Bank-grade encryption
-                </h3>
-                <p className="text-white/60 leading-relaxed">
-                  All health data is encrypted using industry-standard AES-256 encryption, 
-                  both in transit and at rest. Your measurements are as secure as your bank account.
-                </p>
-              </div>
-
-              {/* Control Card */}
-              <div className="bg-[#1a1b1e]/50 backdrop-blur-sm border border-white/10 rounded-xl p-8">
-                <div className="w-12 h-12 bg-[#5E6AD2]/10 rounded-lg flex items-center justify-center mb-6">
-                  <Zap className="h-6 w-6 text-[#5E6AD2]" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-3">
-                  You're in control
-                </h3>
-                <p className="text-white/60 leading-relaxed">
-                  Delete your data anytime. Export everything with one click. 
-                  We never share, sell, or analyze your personal health information without explicit consent.
-                </p>
-              </div>
-
-              {/* Face ID Card */}
-              <div className="bg-[#1a1b1e]/50 backdrop-blur-sm border border-white/10 rounded-xl p-8">
-                <div className="w-12 h-12 bg-[#5E6AD2]/10 rounded-lg flex items-center justify-center mb-6">
-                  <Smartphone className="h-6 w-6 text-[#5E6AD2]" />
-                </div>
-                <h3 className="text-xl font-semibold text-white mb-3">
-                  Face ID protection
-                </h3>
-                <p className="text-white/60 leading-relaxed">
-                  Enable biometric lock on iOS for an extra layer of privacy. 
-                  Your health data stays private, even if someone has access to your phone.
-                </p>
-              </div>
-            </div>
-
-            {/* Security Features */}
-            <div className="bg-gradient-to-r from-[#5E6AD2]/10 to-[#5E6AD2]/5 rounded-2xl p-8 md:p-12">
-              <div className="max-w-3xl mx-auto">
-                <h3 className="text-2xl font-semibold text-white mb-8 text-center">
-                  Enterprise security, personal privacy
-                </h3>
-                
-                <div className="grid sm:grid-cols-2 gap-6">
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#9B59B6]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-[#9B59B6]" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-medium mb-1">Secured by Clerk</h4>
-                      <p className="text-white/60 text-sm">
-                        Authentication powered by Clerk's enterprise-grade security infrastructure
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#9B59B6]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-[#9B59B6]" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-medium mb-1">HIPAA-compliant infrastructure</h4>
-                      <p className="text-white/60 text-sm">
-                        Built on infrastructure that meets healthcare compliance standards
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#9B59B6]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-[#9B59B6]" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-medium mb-1">Zero-knowledge architecture</h4>
-                      <p className="text-white/60 text-sm">
-                        We can't see your health data—only you can decrypt and access it
-                      </p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 rounded-full bg-[#9B59B6]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check className="h-4 w-4 text-[#9B59B6]" />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-medium mb-1">Regular security audits</h4>
-                      <p className="text-white/60 text-sm">
-                        Third-party penetration testing and continuous security monitoring
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Privacy Promise */}
-            <div className="text-center mt-16">
-              <p className="text-white/70 mb-2">
-                Read our commitment to your privacy
-              </p>
-              <Link 
-                href="/privacy" 
-                className="text-[#5E6AD2] hover:text-[#5E6AD2]/80 font-medium inline-flex items-center gap-2 group"
+        {/* Final CTA */}
+        <section className="py-20 border-t border-[#1a1b1e]">
+          <div className="max-w-4xl mx-auto px-6 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Ready to see what you're really made of?
+            </h2>
+            <p className="text-xl text-white/60 mb-10 max-w-2xl mx-auto">
+              Professional body composition tracking. Real results. Private and secure.
+            </p>
+            <Link href="/download/ios">
+              <Button
+                size="lg"
+                className="bg-white text-black px-8 py-6 text-base font-medium rounded-full hover:bg-white/90 transition-all shadow-2xl"
               >
-                Privacy Policy 
-                <ArrowRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
-              </Link>
-            </div>
+                Download LogYourBody
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
         </section>
       </main>

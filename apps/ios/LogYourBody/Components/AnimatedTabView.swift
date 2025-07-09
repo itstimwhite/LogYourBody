@@ -18,9 +18,9 @@ struct AnimatedTabView: View {
         
         var icon: String {
             switch self {
-            case .dashboard: return "house.fill"
-            case .log: return "plus.circle.fill"
-            case .settings: return "gearshape.fill"
+            case .dashboard: return "house"
+            case .log: return "plus"
+            case .settings: return "gearshape"
             }
         }
         
@@ -50,18 +50,14 @@ struct AnimatedTabView: View {
         .padding(.horizontal, 8)
         .frame(height: 49)
         .background(
-            ZStack {
-                // Background blur
-                Color.clear
-                    .background(.ultraThinMaterial)
-                    .cornerRadius(25)
-                
-                // Border
-                RoundedRectangle(cornerRadius: 25)
-                    .stroke(Color.appBorder.opacity(0.3), lineWidth: 0.5)
-            }
+            Color.appCard
+                .cornerRadius(25)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 25)
+                        .stroke(Color.appBorder.opacity(0.2), lineWidth: 0.5)
+                )
         )
-        .shadow(color: Color.black.opacity(0.1), radius: 10, x: 0, y: 5)
+        .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 2)
     }
 }
 
@@ -75,18 +71,12 @@ struct TabButton: View {
     var body: some View {
         VStack(spacing: 4) {
             ZStack {
-                // Selection indicator
-                if isSelected {
-                    Circle()
-                        .fill(Color.white.opacity(0.1))
-                        .frame(width: 44, height: 44)
-                        .matchedGeometryEffect(id: "tabIndicator", in: namespace)
-                }
+                // Selection indicator - removed for cleaner look
                 
                 Image(systemName: tab.icon)
-                    .font(.system(size: 24, weight: isSelected ? .semibold : .regular))
-                    .foregroundColor(isSelected ? .white : .appTextTertiary)
-                    .scaleEffect(isSelected ? 1.1 : 1.0)
+                    .font(.system(size: 24, weight: isSelected ? .medium : .regular))
+                    .foregroundColor(isSelected ? .white : Color(white: 0.5))
+                    .scaleEffect(isSelected ? 1.0 : 1.0)
             }
             .frame(height: 44)
         }

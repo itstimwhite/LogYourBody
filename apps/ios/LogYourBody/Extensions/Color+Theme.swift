@@ -14,9 +14,9 @@ extension Color {
     static let linearAccent = Color(hex: "#7C7CEA")
     
     // MARK: - Background Colors
-    static let linearBg = Color(hex: "#0A0B0D")
-    static let linearCard = Color(hex: "#111113")
-    static let linearBorder = Color(hex: "#1F2023")
+    static let linearBg = Color(hex: "#111111")  // Premium near-black
+    static let linearCard = Color(hex: "#1A1A1A")  // Slightly lighter for cards
+    static let linearBorder = Color(hex: "#2A2A2A")  // Subtle borders
     
     // MARK: - Text Colors
     static let linearText = Color(hex: "#F7F8F8")

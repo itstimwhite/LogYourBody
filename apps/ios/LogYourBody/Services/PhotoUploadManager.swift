@@ -10,6 +10,7 @@ import UIKit
 import PhotosUI
 import Combine
 
+@MainActor
 class PhotoUploadManager: ObservableObject {
     static let shared = PhotoUploadManager()
     
@@ -74,28 +75,25 @@ class PhotoUploadManager: ObservableObject {
         
         print("📸 PhotoUploadManager: Starting upload for metrics \(metrics.id)")
         print("📸 PhotoUploadManager: Current user ID: \(userId)")
-        print("📸 PhotoUploadManager: Current user email: \(authManager.currentUser?.email ?? "nil")")
+        let userEmail = authManager.currentUser?.email ?? "nil"
+        print("📸 PhotoUploadManager: Current user email: \(userEmail)")
         
-        await MainActor.run {
-            isUploading = true
-            uploadProgress = 0.0
-            uploadError = nil
-        }
+        self.isUploading = true
+        self.uploadProgress = 0.0
+        self.uploadError = nil
         
         let uploadId = UUID().uuidString
-        await MainActor.run {
-            currentUploadTask = UploadTask(
-                id: uploadId,
-                metricsId: metrics.id,
-                status: .preparing,
-                progress: 0.0,
-                error: nil
-            )
-        }
+        self.currentUploadTask = UploadTask(
+            id: uploadId,
+            metricsId: metrics.id,
+            status: .preparing,
+            progress: 0.0,
+            error: nil
+        )
         
         defer {
-            isUploading = false
-            currentUploadTask = nil
+            self.isUploading = false
+            self.currentUploadTask = nil
         }
         
         do {
@@ -147,12 +145,12 @@ class PhotoUploadManager: ObservableObject {
             return processedUrl
             
         } catch {
-            uploadError = error.localizedDescription
-            currentUploadTask = UploadTask(
+            self.uploadError = error.localizedDescription
+            self.currentUploadTask = UploadTask(
                 id: uploadId,
                 metricsId: metrics.id,
                 status: .failed,
-                progress: uploadProgress,
+                progress: self.uploadProgress,
                 error: error.localizedDescription
             )
             throw error
@@ -195,12 +193,12 @@ class PhotoUploadManager: ObservableObject {
             throw PhotoError.notAuthenticated
         }
         
-        isUploading = true
-        uploadProgress = 0.0
-        uploadError = nil
+        self.isUploading = true
+        self.uploadProgress = 0.0
+        self.uploadError = nil
         
         let uploadId = UUID().uuidString
-        currentUploadTask = UploadTask(
+        self.currentUploadTask = UploadTask(
             id: uploadId,
             metricsId: metrics.id,
             status: .preparing,
@@ -209,8 +207,8 @@ class PhotoUploadManager: ObservableObject {
         )
         
         defer {
-            isUploading = false
-            currentUploadTask = nil
+            self.isUploading = false
+            self.currentUploadTask = nil
         }
         
         do {
@@ -268,12 +266,12 @@ class PhotoUploadManager: ObservableObject {
             return processedUrl
             
         } catch {
-            uploadError = error.localizedDescription
-            currentUploadTask = UploadTask(
+            self.uploadError = error.localizedDescription
+            self.currentUploadTask = UploadTask(
                 id: uploadId,
                 metricsId: metrics.id,
                 status: .failed,
-                progress: uploadProgress,
+                progress: self.uploadProgress,
                 error: error.localizedDescription
             )
             throw error
@@ -371,15 +369,14 @@ class PhotoUploadManager: ObservableObject {
     
     private func updateMetricsWithPhoto(metricsId: String, originalUrl: String, processedUrl: String) async throws {
         // Update local CoreData
-        await MainActor.run {
-            if let cachedMetrics = coreDataManager.fetchBodyMetrics(for: authManager.currentUser?.id ?? "")
-                .first(where: { $0.id == metricsId }) {
-                cachedMetrics.photoUrl = processedUrl
-                cachedMetrics.originalPhotoUrl = originalUrl
-                cachedMetrics.lastModified = Date()
-                cachedMetrics.isSynced = false
-                coreDataManager.save()
-            }
+        guard let userId = authManager.currentUser?.id else { return }
+        if let cachedMetrics = coreDataManager.fetchBodyMetrics(for: userId)
+            .first(where: { $0.id == metricsId }) {
+            cachedMetrics.photoUrl = processedUrl
+            cachedMetrics.originalPhotoUrl = originalUrl
+            cachedMetrics.lastModified = Date()
+            cachedMetrics.isSynced = false
+            coreDataManager.save()
         }
         
         // Trigger sync to update remote
@@ -387,17 +384,15 @@ class PhotoUploadManager: ObservableObject {
     }
     
     private func updateUploadStatus(_ status: UploadStatus, progress: Double) {
-        Task { @MainActor in
-            uploadProgress = progress
-            if let task = currentUploadTask {
-                currentUploadTask = UploadTask(
-                    id: task.id,
-                    metricsId: task.metricsId,
-                    status: status,
-                    progress: progress,
-                    error: nil
-                )
-            }
+        self.uploadProgress = progress
+        if let task = self.currentUploadTask {
+            self.currentUploadTask = UploadTask(
+                id: task.id,
+                metricsId: task.metricsId,
+                status: status,
+                progress: progress,
+                error: nil
+            )
         }
     }
 }

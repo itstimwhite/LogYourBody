@@ -7,11 +7,14 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Switch } from '@/components/ui/switch'
 import { toast } from '@/hooks/use-toast'
 import { 
   Loader2, 
   ArrowLeft,
-  Save
+  Save,
+  Camera,
+  Sparkles
 } from 'lucide-react'
 import Link from 'next/link'
 import { UserSettings } from '@/types/body-metrics'
@@ -30,6 +33,7 @@ export default function PreferencesSettingsPage() {
     }
   })
   const [measurementSystem, setMeasurementSystem] = useState<'imperial' | 'metric'>('imperial')
+  const [faceBlurring, setFaceBlurring] = useState(false)
 
   useEffect(() => {
     if (!loading && !user) {
@@ -168,6 +172,53 @@ export default function PreferencesSettingsPage() {
                     <p>• Measurements: Centimeters (cm)</p>
                   </>
                 )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Privacy Features */}
+        <Card className="bg-linear-card border-linear-border">
+          <CardHeader>
+            <CardTitle className="text-linear-text flex items-center gap-2">
+              <Camera className="h-5 w-5" />
+              Privacy Features
+            </CardTitle>
+            <CardDescription className="text-linear-text-secondary">
+              Control how your progress photos are processed
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <Label htmlFor="face-blur" className="text-linear-text font-medium">
+                      Face Blurring
+                    </Label>
+                    <div className="inline-flex items-center gap-1 px-2 py-0.5 bg-purple-500/10 text-purple-400 text-xs font-medium rounded-full border border-purple-500/20">
+                      <Sparkles className="h-3 w-3" />
+                      Coming Soon
+                    </div>
+                  </div>
+                  <p className="text-sm text-linear-text-secondary">
+                    Automatically blur your face in progress photos for additional privacy. 
+                    Your face will be detected and blurred before photos are stored.
+                  </p>
+                </div>
+                <Switch
+                  id="face-blur"
+                  checked={faceBlurring}
+                  onCheckedChange={setFaceBlurring}
+                  disabled={true}
+                  className="data-[state=checked]:bg-linear-purple"
+                />
+              </div>
+              <div className="p-3 bg-purple-500/5 border border-purple-500/10 rounded-lg">
+                <p className="text-xs text-purple-400/80">
+                  This feature is currently in development and will be available soon. 
+                  When enabled, it will use on-device AI to detect and blur faces automatically.
+                </p>
               </div>
             </div>
           </CardContent>

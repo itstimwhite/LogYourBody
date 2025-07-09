@@ -3,12 +3,18 @@ import 'server-only';
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { getTeamMemberByName } from './team';
 
 export interface BlogPost {
   slug: string;
   title: string;
   date: string;
   author: string;
+  authorId?: string;
+  authorRole?: string;
+  authorStats?: {
+    bodyFat: number;
+  };
   tags: string[];
   excerpt: string;
   readTime: string;
@@ -58,11 +64,20 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     // Generate excerpt from content if not provided
     const excerpt = data.excerpt || content.substring(0, 200).replace(/[#*`]/g, '') + '...';
     
+    // Get author details from team data
+    const authorName = data.author || 'LogYourBody Team';
+    const teamMember = getTeamMemberByName(authorName);
+    
     return {
       slug,
       title: data.title || slug.replace(/-/g, ' '),
       date: data.date || new Date().toISOString().split('T')[0],
-      author: data.author || 'LogYourBody Team',
+      author: authorName,
+      authorId: teamMember?.id,
+      authorRole: teamMember?.role,
+      authorStats: teamMember ? {
+        bodyFat: teamMember.bodyStats.bodyFat
+      } : undefined,
       tags: data.tags || [],
       excerpt,
       readTime: `${readTime} min read`,

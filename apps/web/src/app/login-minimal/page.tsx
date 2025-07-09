@@ -84,8 +84,8 @@ export default function LoginMinimal() {
 
         <p className="mt-4 text-center text-sm text-gray-400">
           Don't have an account?{' '}
-          <a href="/signup" className="text-blue-400 hover:text-blue-300">
-            Sign up
+          <a href="/download/ios" className="text-blue-400 hover:text-blue-300">
+            Download App
           </a>
         </p>
       </div>

@@ -386,14 +386,14 @@ struct SessionRowView: View {
     }
     
     private var deviceIcon: String {
-        switch session.deviceType {
-        case .iPhone:
+        switch session.deviceType.lowercased() {
+        case "iphone":
             return "iphone"
-        case .iPad:
+        case "ipad":
             return "ipad"
-        case .mac:
+        case "mac":
             return "desktopcomputer"
-        case .web:
+        case "web":
             return "globe"
         default:
             return "questionmark.circle"
@@ -415,22 +415,6 @@ struct SessionRowView: View {
     }
 }
 
-// MARK: - Session Info Model
-
-struct SessionInfo: Identifiable {
-    let id: String
-    let deviceName: String
-    let deviceType: DeviceType
-    let location: String
-    let ipAddress: String
-    let lastActiveAt: Date
-    let createdAt: Date
-    let isCurrentSession: Bool
-    
-    enum DeviceType {
-        case iPhone, iPad, mac, web, unknown
-    }
-}
 
 // MARK: - Preview
 

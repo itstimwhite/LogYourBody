@@ -76,21 +76,29 @@ export default function SecurityPage() {
       icon: Lock,
       title: "End-to-End Encryption",
       description: "All personal health data is encrypted both in transit and at rest using industry-standard AES-256 encryption.",
+      bgColor: "bg-blue-100",
+      iconColor: "text-blue-600",
     },
     {
       icon: Eye,
       title: "Privacy by Design",
       description: "We collect only the minimum data necessary and give you full control over your information.",
+      bgColor: "bg-purple-100",
+      iconColor: "text-purple-600",
     },
     {
       icon: Shield,
       title: "Regular Security Audits",
       description: "Our systems undergo regular security assessments and penetration testing by third-party experts.",
+      bgColor: "bg-orange-100",
+      iconColor: "text-orange-600",
     },
     {
       icon: CheckCircle,
       title: "SOC 2 Compliance",
       description: "We maintain SOC 2 Type II compliance for security, availability, and confidentiality.",
+      bgColor: "bg-green-100",
+      iconColor: "text-green-600",
     },
   ];
 
@@ -499,8 +507,8 @@ export default function SecurityPage() {
                     key={index}
                     className="rounded-lg border border-linear-border bg-linear-bg p-6 text-center"
                   >
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
-                      <IconComponent className="h-6 w-6 text-green-600" />
+                    <div className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg ${feature.bgColor}`}>
+                      <IconComponent className={`h-6 w-6 ${feature.iconColor}`} />
                     </div>
                     <h3 className="mb-2 text-lg font-semibold text-linear-text">
                       {feature.title}

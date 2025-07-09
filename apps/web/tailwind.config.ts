@@ -19,12 +19,19 @@ export default {
       colors: {
         // Linear-inspired design system
         'linear-purple': '#5E6AD2',
+        'linear-cyan': '#5de7ff',  // Beautiful Linear accent color
         'linear-bg': '#0A0B0D',
         'linear-card': '#111113',
         'linear-border': '#1F2023',
         'linear-text': '#F7F8F8',
         'linear-text-secondary': '#9CA0A8',
         'linear-text-tertiary': '#6E7178',
+        // Core accent colors for rotation
+        'accent-cyan': '#5de7ff',    // Linear cyan
+        'accent-purple': '#5E6AD2',  // Linear purple
+        'accent-green': '#10b981',   // Success green
+        'accent-orange': '#f97316',  // Warning orange
+        'accent-pink': '#ec4899',    // Pink accent
         // Legacy colors (kept for backward compatibility)
         'magic-blue': '#5E6AD2',
         'mercury-white': '#F4F5F8',

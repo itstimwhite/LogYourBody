@@ -67,7 +67,7 @@ class LoadingManager: ObservableObject {
         
         // Step 1: Initialize
         await updateProgress(for: .initialize)
-        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2s
+        // Removed artificial 0.2s delay
         
         // Step 2: Check Authentication
         await updateProgress(for: .checkAuth, partial: 0.5)
@@ -77,21 +77,12 @@ class LoadingManager: ObservableObject {
             try? await Task.sleep(nanoseconds: 100_000_000) // 0.1s
         }
         
-        // Add timeout for auth check
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask {
-                // Auth status is automatically updated by the session observer
-                // Just wait a moment for it to complete
-                try? await Task.sleep(nanoseconds: 200_000_000) // 0.2s
-            }
-            
-            group.addTask {
-                try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 second timeout
-            }
-            
-            // Wait for first to complete (either auth check or timeout)
-            await group.next()
-            group.cancelAll()
+        // Add timeout for auth check with minimal wait
+        let startTime = Date()
+        let maxWaitTime: TimeInterval = 0.5 // Quick timeout - auth can complete in background
+        
+        while !authManager.isClerkLoaded && Date().timeIntervalSince(startTime) < maxWaitTime {
+            try? await Task.sleep(nanoseconds: 20_000_000) // 0.02s polling interval
         }
         
         await updateProgress(for: .checkAuth)
@@ -123,33 +114,45 @@ class LoadingManager: ObservableObject {
             
             await updateProgress(for: .loadProfile)
             
-            // Step 4: Setup HealthKit
-            await updateProgress(for: .setupHealthKit, partial: 0.3)
-            healthKitManager.checkAuthorizationStatus()
-            
-            if healthKitManager.isAuthorized {
-                // Request fresh data from HealthKit
-                Task {
-                    try? await healthKitManager.fetchTodayStepCount()
+            // Run HealthKit, Local Data, and Sync concurrently
+            await withTaskGroup(of: Void.self) { group in
+                // Step 4: Setup HealthKit
+                group.addTask { @MainActor [weak self] in
+                    guard let self = self else { return }
+                    await self.updateProgress(for: .setupHealthKit, partial: 0.3)
+                    self.healthKitManager.checkAuthorizationStatus()
+                    
+                    if self.healthKitManager.isAuthorized {
+                        // Request fresh data from HealthKit in background
+                        Task.detached {
+                            try? await self.healthKitManager.fetchTodayStepCount()
+                        }
+                    }
+                    await self.updateProgress(for: .setupHealthKit)
                 }
+                
+                // Step 5: Load Local Data
+                group.addTask { @MainActor [weak self] in
+                    guard let self = self else { return }
+                    await self.updateProgress(for: .loadLocalData, partial: 0.5)
+                    self.syncManager.updatePendingSyncCount()
+                    await self.updateProgress(for: .loadLocalData)
+                }
+                
+                // Step 6: Start Sync (non-blocking)
+                group.addTask { @MainActor [weak self] in
+                    guard let self = self else { return }
+                    await self.updateProgress(for: .syncData, partial: 0.3)
+                    
+                    // Start sync in background - don't wait for completion
+                    self.syncManager.syncIfNeeded()
+                    
+                    await self.updateProgress(for: .syncData)
+                }
+                
+                // Wait for all concurrent tasks to complete
+                await group.waitForAll()
             }
-            await updateProgress(for: .setupHealthKit)
-            
-            // Step 5: Load Local Data
-            await updateProgress(for: .loadLocalData, partial: 0.5)
-            syncManager.updatePendingSyncCount()
-            await updateProgress(for: .loadLocalData)
-            
-            // Step 6: Sync Data (if online)
-            await updateProgress(for: .syncData, partial: 0.3)
-            
-            // Start sync in background
-            Task {
-                syncManager.syncIfNeeded()
-            }
-            
-            try? await Task.sleep(nanoseconds: 300_000_000) // 0.3s
-            await updateProgress(for: .syncData)
         } else {
             // Skip profile, healthkit, and sync steps if not authenticated
             completedWeight += LoadingStep.loadProfile.weight
@@ -164,7 +167,8 @@ class LoadingManager: ObservableObject {
         progress = 1.0
         loadingStatus = "Ready!"
         
-        try? await Task.sleep(nanoseconds: 200_000_000) // 0.2s
+        // Minimal delay just for UI transition
+        try? await Task.sleep(nanoseconds: 100_000_000) // 0.1s
         isLoading = false
     }
     
@@ -175,11 +179,11 @@ class LoadingManager: ObservableObject {
         completedWeight += stepProgress
         
         // Animate progress update
-        withAnimation(.easeInOut(duration: 0.3)) {
+        withAnimation(.easeInOut(duration: 0.2)) { // Faster animation
             progress = min(completedWeight, 0.99) // Keep at 99% until truly complete
         }
         
-        // Small delay to make the progress visible
-        try? await Task.sleep(nanoseconds: 50_000_000) // 0.05s
+        // Minimal delay only for UI responsiveness
+        try? await Task.sleep(nanoseconds: 10_000_000) // 0.01s
     }
 }

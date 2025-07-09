@@ -8,19 +8,19 @@
 import SwiftUI
 
 extension Font {
-    // MARK: - Display Fonts
-    static let appDisplay = Font.system(size: 48, weight: .bold, design: .default)
-    static let appTitle = Font.system(size: 32, weight: .semibold, design: .default)
-    static let appHeadline = Font.system(size: 24, weight: .semibold, design: .default)
+    // MARK: - Display Fonts (SF Pro Rounded)
+    static let appDisplay = Font.system(size: 48, weight: .bold, design: .rounded)
+    static let appTitle = Font.system(size: 32, weight: .semibold, design: .rounded)
+    static let appHeadline = Font.system(size: 24, weight: .semibold, design: .rounded)
     
-    // MARK: - Body Fonts
-    static let appBodyLarge = Font.system(size: 18, weight: .regular, design: .default)
-    static let appBody = Font.system(size: 16, weight: .regular, design: .default)
-    static let appBodySmall = Font.system(size: 14, weight: .regular, design: .default)
+    // MARK: - Body Fonts (SF Pro Rounded)
+    static let appBodyLarge = Font.system(size: 18, weight: .regular, design: .rounded)
+    static let appBody = Font.system(size: 16, weight: .regular, design: .rounded)
+    static let appBodySmall = Font.system(size: 14, weight: .regular, design: .rounded)
     
-    // MARK: - Caption Fonts
-    static let appCaption = Font.system(size: 12, weight: .regular, design: .default)
-    static let appCaptionBold = Font.system(size: 12, weight: .semibold, design: .default)
+    // MARK: - Caption Fonts (SF Pro Rounded)
+    static let appCaption = Font.system(size: 12, weight: .regular, design: .rounded)
+    static let appCaptionBold = Font.system(size: 12, weight: .semibold, design: .rounded)
     
     // MARK: - Monospace (for numbers)
     static let appMonospace = Font.system(size: 16, weight: .regular, design: .monospaced)

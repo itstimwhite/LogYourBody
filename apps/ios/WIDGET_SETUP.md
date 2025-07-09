@@ -10,7 +10,7 @@ The widget files have been created. To add the widget to your Xcode project:
 4. Configure:
    - Product Name: `LogYourBodyWidget`
    - Team: Select your development team
-   - Organization Identifier: Same as main app
+cl   - Organization Identifier: Same as main app
    - Language: Swift
    - Include Configuration Intent: NO
    - Project: LogYourBody

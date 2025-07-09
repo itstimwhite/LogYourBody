@@ -1,366 +1,558 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card } from '@/components/ui/card'
 import {
+  Apple,
   Smartphone,
   Download,
-  Apple,
-  QrCode,
-  Star,
+  CheckCircle2,
   ArrowRight,
-  BarChart3,
-  Camera,
   Zap,
   Shield,
+  Camera,
+  BarChart3,
   TrendingUp,
-  Clock,
-  ExternalLink,
+  Sparkles,
+  QrCode,
+  Bell,
+  Target,
+  Calendar,
+  Activity,
+  Timer,
+  Swipe,
+  Tap,
 } from 'lucide-react'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
-import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
 export default function MobilePage() {
+  const [isIOS, setIsIOS] = useState(false)
   const [showQR, setShowQR] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const userAgent = navigator.userAgent || navigator.vendor
+    const isIOSDevice = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream
+    const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(userAgent)
+    
+    setIsIOS(isIOSDevice)
+    setIsMobile(isMobileDevice)
+    // Show QR code by default on desktop
+    setShowQR(!isMobileDevice)
+  }, [])
+
+  const handleDownload = () => {
+    window.open('/api/app-store-redirect?platform=ios&source=mobile', '_blank')
+  }
 
   const features = [
     {
-      icon: BarChart3,
-      title: 'FFMI Tracking',
-      description: 'Know your genetic potential with accurate fat-free mass index calculations',
+      icon: Camera,
+      title: 'Screenshot to track',
+      description: 'Snap any scale reading. Our AI extracts and logs the numbers instantly.',
     },
     {
-      icon: Camera,
-      title: 'Progress Photos',
-      description: 'Automated reminders with consistent angles to see changes over time',
+      icon: Bell,
+      title: 'Smart reminders',
+      description: 'Available 24/7. Or just 9-5. Notifications that respect your schedule.',
     },
+    {
+      icon: Tap,
+      title: 'Tap to log',
+      description: 'Body metrics in 30 seconds. Swipe to see trends. No fluff.',
+    },
+    {
+      icon: Target,
+      title: 'Palm-perfect design',
+      description: 'Every button, every gesture optimized for one-handed use.',
+    },
+  ]
+
+  const workflows = [
+    {
+      title: 'Morning weigh-in',
+      time: '7:00 AM',
+      description: 'Step on scale. Open app. Weight synced. Body fat calculated.',
+      icon: Timer,
+    },
+    {
+      title: 'Progress photo',
+      time: '7:30 AM',
+      description: 'AI-guided angles. Background removed. Side-by-side comparison ready.',
+      icon: Camera,
+    },
+    {
+      title: 'Evening review',
+      time: '10:00 PM',
+      description: 'FFMI trend analyzed. Tomorrow\'s targets set. Sleep confident.',
+      icon: TrendingUp,
+    },
+  ]
+
+  const techSpecs = [
     {
       icon: Zap,
-      title: '30-Second Logging',
-      description: 'Complete body composition metrics faster than tying your shoes',
-    },
-    {
-      icon: TrendingUp,
-      title: 'Advanced Analytics',
-      description: 'Trend predictions and weekly reports to optimize your progress',
+      title: 'Fully native',
+      value: 'Swift',
+      description: 'Buttery smooth 120fps animations on ProMotion displays',
+      color: 'text-orange-500',
     },
     {
       icon: Shield,
-      title: 'Privacy First',
-      description: 'Your data stays yours. Export anytime, delete anytime',
+      title: 'Privacy first',
+      value: 'On-device',
+      description: 'Photo processing happens locally. Your data never leaves without encryption',
+      color: 'text-green-500',
     },
     {
-      icon: Clock,
-      title: 'Health Sync',
-      description: 'Seamless integration with Apple Health and Google Fit',
+      icon: Sparkles,
+      title: 'AI-powered',
+      value: 'CoreML',
+      description: 'Instant body fat calculations. Smart meal suggestions. Predictive insights',
+      color: 'text-purple-500',
     },
   ]
-
-  const testimonials = [
-    {
-      name: 'Alex Chen',
-      role: 'Software Engineer',
-      content: 'Finally found an app that tracks what actually matters for body composition.',
-      rating: 5,
-    },
-    {
-      name: 'Sarah Miller',
-      role: 'Personal Trainer',
-      content: 'I recommend this to all my clients. The FFMI tracking is game-changing.',
-      rating: 5,
-    },
-    {
-      name: 'Mike Rodriguez',
-      role: 'Fitness Enthusiast',
-      content: 'Love how it integrates with Apple Health. Makes logging effortless.',
-      rating: 5,
-    },
-  ]
-
-  // Generate QR code data URL (placeholder - in real app this would be actual QR)
-  const generateQRCode = () => {
-    return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSIyMCIgeT0iMjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iNjAiIHk9IjIwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjEwMCIgeT0iMjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iMTQwIiB5PSIyMCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayIvPgo8cmVjdCB4PSIxNjAiIHk9IjIwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjIwIiB5PSI2MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayIvPgo8cmVjdCB4PSI4MCIgeT0iNjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iMTIwIiB5PSI2MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayIvPgo8cmVjdCB4PSIxNjAiIHk9IjYwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjQwIiB5PSIxMDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iMTAwIiB5PSIxMDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iMTQwIiB5PSIxMDAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iMjAiIHk9IjE0MCIgd2lkdGg9IjIwIiBoZWlnaHQ9IjIwIiBmaWxsPSJibGFjayIvPgo8cmVjdCB4PSI4MCIgeT0iMTQwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjEyMCIgeT0iMTQwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjE2MCIgeT0iMTQwIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIGZpbGw9ImJsYWNrIi8+CjxyZWN0IHg9IjYwIiB5PSIxNjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iMTAwIiB5PSIxNjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPHJlY3QgeD0iMTQwIiB5PSIxNjAiIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0iYmxhY2siLz4KPC9zdmc+'
-  }
-
-  const handleDownload = (platform: 'ios' | 'android') => {
-    if (platform === 'ios') {
-      window.open('https://apps.apple.com/app/logyourbody', '_blank')
-    } else {
-      window.open('https://play.google.com/store/apps/details?id=com.logyourbody.app', '_blank')
-    }
-  }
 
   return (
-    <div className="min-h-screen bg-linear-bg font-inter">
+    <div className="min-h-screen bg-black text-white">
       <Header />
 
-      <main>
-        {/* Hero Section */}
-        <section className="py-16 md:py-24 relative overflow-hidden">
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="mx-auto max-w-4xl text-center">
-              <Badge className="mb-6 bg-linear-purple/10 text-linear-purple border-linear-purple/20 inline-block">
-                <Smartphone className="h-3 w-3 mr-2" />
-                Mobile App
-              </Badge>
-              
-              <h1 className="mb-6 text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-linear-text">
-                Body composition tracking
+      {/* Hero Section - Linear Mobile Style */}
+      <section className="relative pt-32 pb-20 overflow-hidden">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            {/* Left Content */}
+            <div className="text-center lg:text-left">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6 tracking-tight">
+                Introducing
                 <br />
-                <span className="bg-gradient-to-r from-linear-purple via-linear-text to-linear-purple bg-clip-text text-transparent">
-                  in your pocket
+                <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                  LogYourBody
                 </span>
+                <br />
+                Mobile
               </h1>
               
-              <p className="mx-auto mb-8 max-w-2xl text-lg text-linear-text-secondary">
-                Track FFMI, body fat percentage, and progress photos with professional-grade accuracy. 
-                The most advanced body composition app available on iOS and Android.
+              <p className="text-xl sm:text-2xl text-gray-400 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                Complex body composition tracking
+                <br />
+                in compact form.
               </p>
 
-              {/* Download Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
                 <Button
-                  onClick={() => handleDownload('ios')}
-                  className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg min-w-[200px]"
+                  onClick={handleDownload}
+                  className="bg-white text-black px-8 py-6 text-lg font-medium rounded-xl hover:bg-gray-100 transition-all duration-200 flex items-center justify-center gap-3 shadow-2xl"
                 >
-                  <Apple className="h-5 w-5 mr-2" />
-                  Download for iOS
+                  <Apple className="h-6 w-6" />
+                  Download for iPhone
+                  <ArrowRight className="h-5 w-5" />
                 </Button>
                 
                 <Button
                   variant="outline"
-                  onClick={() => handleDownload('android')}
-                  className="border border-linear-border text-linear-text hover:bg-linear-border/30 px-8 py-4 text-base rounded-xl transition-all min-w-[200px]"
+                  className="border-gray-800 text-gray-400 hover:bg-gray-900 px-8 py-6 text-lg rounded-xl"
+                  disabled
                 >
-                  <Download className="h-5 w-5 mr-2" />
-                  Get on Android
+                  Android Coming Soon
                 </Button>
               </div>
 
-              {/* QR Code Section */}
-              <div className="text-center">
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowQR(!showQR)}
-                  className="text-linear-text-secondary hover:text-linear-text transition-colors"
-                >
-                  <QrCode className="h-4 w-4 mr-2" />
-                  Scan QR code to download
-                </Button>
-                
-                {showQR && (
-                  <div className="mt-6 inline-block p-6 bg-white rounded-2xl shadow-xl">
-                    <Image
-                      src={generateQRCode()}
-                      alt="Download QR Code"
-                      width={128}
-                      height={128}
-                      className="w-32 h-32 mx-auto"
-                    />
-                    <p className="text-xs text-gray-600 mt-2">Scan with your camera</p>
+              {/* QR Code Section - Desktop Only */}
+              {!isMobile && (
+                <div className="hidden lg:block">
+                  <div className="inline-flex items-start gap-6 p-6 bg-gray-900/50 rounded-2xl border border-gray-800 backdrop-blur-xl">
+                    <div className="text-left">
+                      <p className="text-sm text-gray-500 mb-1">Scan to download</p>
+                      <p className="text-lg font-medium">Point your iPhone camera here</p>
+                    </div>
+                    <div className="bg-white p-4 rounded-xl">
+                      {/* QR Code pointing to App Store */}
+                      <svg width="120" height="120" viewBox="0 0 120 120" className="text-black">
+                        <rect width="120" height="120" fill="white"/>
+                        {/* This is a placeholder - in production, use a real QR code generator */}
+                        <path d="M10 10h20v20h-20zM40 10h10v10h-10zM60 10h10v10h-10zM80 10h10v10h-10zM90 10h20v20h-20zM10 40h10v10h-10zM30 40h20v10h-20zM60 40h10v10h-10zM80 40h10v10h-10zM100 40h10v10h-10zM10 60h10v10h-10zM30 60h10v10h-10zM50 60h20v10h-20zM80 60h10v10h-10zM100 60h10v10h-10zM10 80h10v10h-10zM30 80h20v10h-20zM60 80h10v10h-10zM80 80h10v10h-10zM100 80h10v10h-10zM10 90h20v20h-20zM40 100h10v10h-10zM60 100h10v10h-10zM80 100h10v10h-10zM90 90h20v20h-20z" fill="currentColor"/>
+                      </svg>
+                    </div>
                   </div>
-                )}
+                </div>
+              )}
+            </div>
+
+            {/* Right - iPhone Mockup */}
+            <div className="relative max-w-sm mx-auto lg:max-w-none">
+              <div className="relative">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 blur-3xl"></div>
+                
+                {/* Phone */}
+                <div className="relative mx-auto w-72 lg:w-80">
+                  <div className="bg-gray-900 rounded-[3rem] p-2 shadow-2xl border border-gray-800">
+                    <div className="bg-black rounded-[2.5rem] p-4">
+                      {/* Screen Content */}
+                      <div className="bg-gray-950 rounded-[2rem] p-6 h-[600px] relative overflow-hidden">
+                        {/* Status Bar */}
+                        <div className="flex justify-between items-center mb-6 text-xs">
+                          <span className="text-gray-400 font-medium">9:41</span>
+                          <div className="flex gap-1 items-center">
+                            <div className="w-5 h-3 border border-gray-400 rounded-sm">
+                              <div className="w-3 h-full bg-gray-400 rounded-sm"></div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* App Content */}
+                        <div className="space-y-4">
+                          <h3 className="text-2xl font-bold">Today</h3>
+                          
+                          {/* FFMI Card */}
+                          <div className="bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl p-4">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <p className="text-blue-200 text-xs mb-1">Fat-Free Mass Index</p>
+                                <p className="text-3xl font-bold">21.4</p>
+                              </div>
+                              <Badge className="bg-white/20 text-white border-0 text-xs">
+                                Natural Peak
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2 text-xs text-blue-200">
+                              <TrendingUp className="h-3 w-3" />
+                              <span>+0.3 this month • 87th percentile</span>
+                            </div>
+                          </div>
+
+                          {/* Quick Stats */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="bg-gray-900 rounded-xl p-3">
+                              <p className="text-gray-500 text-xs mb-1">Body Fat</p>
+                              <p className="text-xl font-bold">12.3%</p>
+                              <p className="text-xs text-green-400 flex items-center gap-1">
+                                <span>↓</span> 0.5%
+                              </p>
+                            </div>
+                            <div className="bg-gray-900 rounded-xl p-3">
+                              <p className="text-gray-500 text-xs mb-1">Weight</p>
+                              <p className="text-xl font-bold">180 lbs</p>
+                              <p className="text-xs text-gray-400 flex items-center gap-1">
+                                <span>→</span> stable
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Actions */}
+                          <div className="space-y-2">
+                            <button className="w-full bg-white text-black rounded-xl py-3 text-sm font-medium">
+                              Log Measurement
+                            </button>
+                            <button className="w-full bg-gray-900 hover:bg-gray-800 text-white rounded-xl py-3 text-sm font-medium transition-colors">
+                              Take Progress Photo
+                            </button>
+                          </div>
+
+                          {/* Recent Activity */}
+                          <div className="pt-4 border-t border-gray-800">
+                            <p className="text-xs text-gray-500 mb-3">Recent activity</p>
+                            <div className="space-y-3">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                                    <Activity className="h-4 w-4 text-gray-400" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium">Morning weight</p>
+                                    <p className="text-xs text-gray-500">2 hours ago</p>
+                                  </div>
+                                </div>
+                                <span className="text-sm text-gray-300">180.2</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center">
+                                    <Camera className="h-4 w-4 text-gray-400" />
+                                  </div>
+                                  <div>
+                                    <p className="text-sm font-medium">Progress photo</p>
+                                    <p className="text-xs text-gray-500">Yesterday</p>
+                                  </div>
+                                </div>
+                                <CheckCircle2 className="h-4 w-4 text-green-400" />
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Dynamic Island */}
+                  <div className="absolute top-8 left-1/2 transform -translate-x-1/2 w-32 h-7 bg-black rounded-full"></div>
+                </div>
               </div>
             </div>
           </div>
+        </div>
+      </section>
 
-          {/* Background decorations */}
-          <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-            <div className="absolute top-20 left-10 w-20 h-20 bg-linear-purple/5 rounded-full"></div>
-            <div className="absolute bottom-20 right-10 w-32 h-32 bg-linear-purple/5 rounded-full"></div>
-            <div className="absolute top-1/2 left-1/3 w-2 h-2 bg-linear-purple/20 rounded-full"></div>
-            <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-linear-purple/30 rounded-full"></div>
-          </div>
-        </section>
-
-        {/* Features Grid */}
-        <section className="py-16 bg-linear-card/20">
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="mb-12 text-center">
-              <h2 className="mb-4 text-3xl font-bold text-linear-text">
-                Everything you need to track real progress
+      {/* Stay on top Section - Linear Style */}
+      <section className="py-20 border-t border-gray-900">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+                Stay on top of your most
+                <br />
+                important body metrics
               </h2>
-              <p className="text-linear-text-secondary max-w-2xl mx-auto">
-                Professional-grade body composition tracking with the simplicity of a modern mobile app.
+              <p className="text-xl text-gray-400">
+                Your pocket body composition lab. Always ready when you are.
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {/* Inbox Feature */}
+            <div className="bg-gray-900/50 rounded-2xl p-8 border border-gray-800 mb-8">
+              <div className="flex items-start gap-6">
+                <div className="flex-shrink-0">
+                  <div className="h-16 w-16 bg-blue-600/20 rounded-2xl flex items-center justify-center">
+                    <Bell className="h-8 w-8 text-blue-500" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-2xl font-bold mb-3">Inbox</h3>
+                  <p className="text-gray-400 text-lg mb-6">
+                    Never miss a measurement. Smart reminders adapt to your schedule.
+                  </p>
+                  <div className="flex flex-wrap gap-3">
+                    <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-4 py-2">
+                      <Tap className="h-3 w-3 mr-2 inline" />
+                      Tap to log
+                    </Badge>
+                    <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-4 py-2">
+                      <Swipe className="h-3 w-3 mr-2 inline" />
+                      Swipe to dismiss
+                    </Badge>
+                    <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-4 py-2">
+                      <Timer className="h-3 w-3 mr-2 inline" />
+                      Snooze for later
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Features Grid */}
+            <div className="grid sm:grid-cols-2 gap-6">
               {features.map((feature, index) => {
                 const IconComponent = feature.icon
                 return (
-                  <Card key={index} className="border-linear-border bg-linear-bg hover:shadow-lg transition-all">
-                    <CardContent className="p-6 text-center">
-                      <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-linear-purple/10 mb-4">
-                        <IconComponent className="h-6 w-6 text-linear-purple" />
+                  <div
+                    key={index}
+                    className="group p-6 rounded-xl hover:bg-gray-900/50 transition-all border border-transparent hover:border-gray-800"
+                  >
+                    <div className="flex gap-4">
+                      <div className="flex-shrink-0">
+                        <div className="h-12 w-12 bg-gray-900 rounded-xl flex items-center justify-center group-hover:bg-gray-800 transition-colors">
+                          <IconComponent className="h-6 w-6 text-gray-400" />
+                        </div>
                       </div>
-                      <h3 className="mb-3 text-lg font-semibold text-linear-text">
-                        {feature.title}
-                      </h3>
-                      <p className="text-sm text-linear-text-secondary leading-relaxed">
-                        {feature.description}
-                      </p>
-                    </CardContent>
-                  </Card>
+                      <div>
+                        <h3 className="text-lg font-semibold mb-2">{feature.title}</h3>
+                        <p className="text-gray-400 leading-relaxed">{feature.description}</p>
+                      </div>
+                    </div>
+                  </div>
                 )
               })}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Device Mockup */}
-        <section className="py-16">
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="mx-auto max-w-md">
-              <div className="relative">
-                {/* Phone Frame */}
-                <div className="relative mx-auto w-72 h-[600px] bg-gray-900 rounded-[3rem] p-3 shadow-2xl">
-                  <div className="w-full h-full bg-linear-bg rounded-[2.5rem] overflow-hidden">
-                    {/* Status Bar */}
-                    <div className="h-12 bg-linear-card flex items-center justify-between px-6">
-                      <div className="text-xs text-linear-text font-medium">9:41</div>
-                      <div className="flex items-center gap-1">
-                        <div className="w-4 h-2 bg-linear-text rounded-sm"></div>
-                        <div className="w-6 h-3 border border-linear-text rounded-sm">
-                          <div className="w-4 h-full bg-linear-text rounded-sm"></div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* App Content */}
-                    <div className="p-6 space-y-6">
-                      <div className="text-center">
-                        <h3 className="text-xl font-bold text-linear-text mb-2">Dashboard</h3>
-                        <p className="text-sm text-linear-text-secondary">Your progress at a glance</p>
-                      </div>
-                      
-                      <div className="space-y-4">
-                        <div className="bg-linear-card p-4 rounded-xl">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm text-linear-text-secondary">FFMI</span>
-                            <span className="text-lg font-bold text-linear-text">21.4</span>
-                          </div>
-                          <div className="w-full bg-linear-border rounded-full h-2">
-                            <div className="bg-linear-purple h-2 rounded-full w-3/4"></div>
-                          </div>
-                        </div>
-                        
-                        <div className="bg-linear-card p-4 rounded-xl">
-                          <div className="flex justify-between items-center mb-2">
-                            <span className="text-sm text-linear-text-secondary">Body Fat</span>
-                            <span className="text-lg font-bold text-linear-text">12.3%</span>
-                          </div>
-                          <div className="w-full bg-linear-border rounded-full h-2">
-                            <div className="bg-green-500 h-2 rounded-full w-1/3"></div>
-                          </div>
-                        </div>
-                        
-                        <div className="bg-linear-card p-4 rounded-xl">
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm text-linear-text-secondary">Weight</span>
-                            <span className="text-lg font-bold text-linear-text">180 lbs</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <Button className="w-full bg-linear-text text-linear-bg rounded-xl py-3">
-                        Log New Measurement
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Floating Stats */}
-                <div className="absolute -top-4 -left-4 bg-linear-bg/90 backdrop-blur-sm border border-linear-border/50 rounded-xl p-3 shadow-lg">
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-linear-text">4.9★</div>
-                    <div className="text-xs text-linear-text-secondary">App Store</div>
-                  </div>
-                </div>
-                
-                <div className="absolute -bottom-4 -right-4 bg-linear-bg/90 backdrop-blur-sm border border-linear-border/50 rounded-xl p-3 shadow-lg">
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-linear-text">10K+</div>
-                    <div className="text-xs text-linear-text-secondary">Downloads</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Social Proof */}
-        <section className="py-16 bg-linear-card/20">
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="mb-12 text-center">
-              <h2 className="mb-4 text-3xl font-bold text-linear-text">
-                Loved by fitness enthusiasts worldwide
+      {/* Workflows Section */}
+      <section className="py-20 border-t border-gray-900">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <Badge className="mb-4 bg-gray-900 text-gray-400 border-gray-800">
+                Ultraportable
+              </Badge>
+              <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+                Designed for real life
               </h2>
-              <p className="text-linear-text-secondary">
-                Join thousands who&apos;ve already discovered better body composition tracking
+              <p className="text-xl text-gray-400">
+                From morning weigh-in to evening review
               </p>
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
-              {testimonials.map((testimonial, index) => (
-                <Card key={index} className="border-linear-border bg-linear-bg">
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-1 mb-4">
-                      {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                      ))}
+            <div className="space-y-4">
+              {workflows.map((workflow, index) => {
+                const IconComponent = workflow.icon
+                return (
+                  <div
+                    key={index}
+                    className="flex gap-6 p-6 bg-gray-900/30 rounded-2xl border border-gray-800 hover:border-gray-700 transition-all hover:bg-gray-900/50"
+                  >
+                    <div className="flex-shrink-0">
+                      <div className="h-12 w-12 bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl flex items-center justify-center">
+                        <IconComponent className="h-6 w-6 text-gray-300" />
+                      </div>
                     </div>
-                    <p className="text-linear-text-secondary mb-4 italic">
-                      &quot;{testimonial.content}&quot;
-                    </p>
-                    <div>
-                      <div className="font-semibold text-linear-text">{testimonial.name}</div>
-                      <div className="text-sm text-linear-text-secondary">{testimonial.role}</div>
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-2">
+                        <h3 className="text-lg font-semibold">{workflow.title}</h3>
+                        <span className="text-sm text-gray-500">{workflow.time}</span>
+                      </div>
+                      <p className="text-gray-400">{workflow.description}</p>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
+                  </div>
+                )
+              })}
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Final CTA */}
-        <section className="py-16">
-          <div className="container mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold text-linear-text mb-4">
-              Ready to track real progress?
+      {/* Tech Specs - Linear Style */}
+      <section className="py-20 border-t border-gray-900">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+                Built different
+              </h2>
+              <p className="text-xl text-gray-400">
+                Native performance. Privacy by design. AI at the edge.
+              </p>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8">
+              {techSpecs.map((spec, index) => {
+                const IconComponent = spec.icon
+                return (
+                  <div key={index} className="text-center">
+                    <div className="mb-6 inline-block">
+                      <IconComponent className={cn("h-12 w-12", spec.color)} />
+                    </div>
+                    <h3 className="text-2xl font-bold mb-2">{spec.title}</h3>
+                    <div className="text-3xl font-mono text-gray-400 mb-4">{spec.value}</div>
+                    <p className="text-gray-400 leading-relaxed">
+                      {spec.description}
+                    </p>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Availability Section */}
+      <section className="py-20 border-t border-gray-900">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl sm:text-5xl font-bold mb-4">
+              Available 24/7.
+              <br />
+              <span className="text-gray-400">Or just 9-5.</span>
             </h2>
-            <p className="text-linear-text-secondary mb-8 max-w-2xl mx-auto">
-              Download LogYourBody today and start seeing your body composition changes with scientific accuracy.
+            <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
+              Configure notification schedules that respect your time. 
+              Track on your terms, not ours.
+            </p>
+
+            <div className="bg-gray-900/50 rounded-2xl p-8 border border-gray-800 inline-block">
+              <div className="grid grid-cols-7 gap-4 mb-6">
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                  <div key={day} className="text-center">
+                    <p className="text-xs text-gray-500 mb-2">{day}</p>
+                    <div className={cn(
+                      "h-16 w-12 rounded-lg",
+                      day === 'Sat' || day === 'Sun' 
+                        ? "bg-gray-800" 
+                        : "bg-gradient-to-b from-blue-600 to-purple-600"
+                    )}></div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-gray-400">
+                Weekday mornings only • Perfect for your routine
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Final CTA */}
+      <section className="py-24 border-t border-gray-900">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold mb-6">
+              Your pocket
+              <br />
+              body comp lab
+            </h2>
+            <p className="text-xl text-gray-400 mb-10">
+              Start tracking what matters. Available now on iPhone.
             </p>
             
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
               <Button
-                onClick={() => handleDownload('ios')}
-                className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
+                onClick={handleDownload}
+                className="bg-white text-black px-10 py-6 text-lg font-medium rounded-xl hover:bg-gray-100 transition-all duration-200 shadow-2xl"
               >
-                <Apple className="h-5 w-5 mr-2" />
-                Download for iOS
-                <ArrowRight className="h-4 w-4 ml-2" />
+                <Apple className="h-6 w-6 mr-3" />
+                Download on App Store
               </Button>
               
-              <Link href="/signin">
+              {!isMobile && (
                 <Button
                   variant="outline"
-                  className="border border-linear-border text-linear-text hover:bg-linear-border/30 px-8 py-4 text-base rounded-xl transition-all"
+                  onClick={() => setShowQR(!showQR)}
+                  className="border-gray-800 text-gray-400 hover:bg-gray-900 px-10 py-6 text-lg rounded-xl"
                 >
-                  Try Web Version
-                  <ExternalLink className="h-4 w-4 ml-2" />
+                  <QrCode className="h-6 w-6 mr-3" />
+                  {showQR ? 'Hide' : 'Show'} QR Code
                 </Button>
-              </Link>
+              )}
+            </div>
+
+            {/* QR Code Modal */}
+            {showQR && !isMobile && (
+              <div className="inline-block p-8 bg-gray-900 rounded-2xl border border-gray-800 mb-12">
+                <p className="text-sm text-gray-500 mb-4">Scan with your iPhone camera</p>
+                <div className="bg-white p-6 rounded-xl">
+                  <svg width="200" height="200" viewBox="0 0 200 200" className="text-black">
+                    <rect width="200" height="200" fill="white"/>
+                    {/* Placeholder QR pattern */}
+                    <path d="M20 20h40v40h-40zM140 20h40v40h-40zM20 140h40v40h-40zM80 20h20v20h-20zM100 40h20v20h-20zM80 60h20v20h-20zM100 80h20v20h-20zM80 100h20v20h-20zM100 120h20v20h-20zM80 140h20v20h-20zM140 80h20v20h-20zM160 100h20v20h-20zM140 120h20v20h-20z" fill="currentColor"/>
+                  </svg>
+                </div>
+                <p className="text-xs text-gray-500 mt-4">Takes you straight to the App Store</p>
+              </div>
+            )}
+            
+            <div className="flex items-center justify-center gap-8 text-sm text-gray-500">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                Free to try
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                No ads, ever
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-green-500" />
+                Cancel anytime
+              </div>
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
 
       <Footer />
     </div>

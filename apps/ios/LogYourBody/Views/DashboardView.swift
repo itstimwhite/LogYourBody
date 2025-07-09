@@ -75,26 +75,25 @@ struct DashboardView: View {
     @ViewBuilder
     private var mainContentView: some View {
         ScrollView {
-            VStack(spacing: 20) {
+            VStack(spacing: 8) {  // Further reduced from 12
                 // Progress Photo (1:1 square)
                 progressPhotoView
-                    .padding(.horizontal)
+                    .padding(.horizontal, 12)
+                
+                // Timeline Slider - moved above metrics
+                if bodyMetrics.count > 1 {
+                    timelineSlider
+                        .padding(.horizontal, 12)
+                }
                 
                 // Core Metrics Row
                 coreMetricsRow
-                    .padding(.horizontal)
+                    .padding(.horizontal, 12)
                 
-                // Secondary Metrics Strip
-                secondaryMetricsStrip
-                    .frame(height: 80)
-                    .background(Color.appCard)
-                    .padding(.horizontal)
-                    .cornerRadius(12)
-                
-                // Bottom padding to prevent tab bar overlap
-                Color.clear.frame(height: 100)
+                // Bottom padding to account for pinned metrics strip
+                Color.clear.frame(height: 130)  // Space for metrics strip + tab bar
             }
-            .padding(.top, 12)
+            .padding(.top, 4)  // Further reduced from 8
         }
         .refreshable {
             await refreshData()
@@ -110,7 +109,7 @@ struct DashboardView: View {
                 historicalMetrics: bodyMetrics,
                 selectedMetricsIndex: $selectedIndex
             )
-            .frame(height: UIScreen.main.bounds.width - 32) // Account for padding
+            .frame(height: UIScreen.main.bounds.width * 0.7) // Reduced to 70% of width
             .background(Color.appBackground)
             .cornerRadius(16)
             .clipped()
@@ -126,13 +125,16 @@ struct DashboardView: View {
                         }) {
                             ZStack {
                                 Circle()
-                                    .fill(Color.appPrimary)
+                                    .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
                                     .frame(width: 56, height: 56)
-                                    .shadow(color: Color.black.opacity(0.2), radius: 4, x: 0, y: 2)
+                                    .background(
+                                        Circle()
+                                            .fill(Color.white.opacity(0.05))
+                                    )
                                 
-                                Image(systemName: "camera.fill")
-                                    .font(.system(size: 24, weight: .medium))
-                                    .foregroundColor(.white)
+                                Image(systemName: "camera")
+                                    .font(.system(size: 24, weight: .regular))
+                                    .foregroundColor(.white.opacity(0.8))
                             }
                         }
                         .padding(20)
@@ -144,7 +146,7 @@ struct DashboardView: View {
     
     @ViewBuilder
     private var coreMetricsRow: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 8) {  // Reduced spacing
             // Body Fat % with segmented progress ring
             let estimatedBF = currentMetric?.bodyFatPercentage == nil && selectedIndex < bodyMetrics.count
                 ? PhotoMetadataService.shared.estimateBodyFat(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics)
@@ -195,7 +197,8 @@ struct DashboardView: View {
                 icon: "figure.walk",
                 value: selectedDateMetrics?.steps != nil ? "\(selectedDateMetrics!.steps!)" : "––",
                 label: "Steps",
-                iconColor: .green
+                iconColor: .green,
+                isEstimated: false
             )
             .frame(maxWidth: .infinity)
             
@@ -214,7 +217,8 @@ struct DashboardView: View {
                 icon: "scalemass",
                 value: weightValue != nil ? "\(Int(weightValue!))" : "––",
                 label: "Weight \(currentSystem.weightUnit)",
-                iconColor: .gray
+                iconColor: .gray,
+                isEstimated: estimatedWeight != nil
             )
             .frame(maxWidth: .infinity)
             
@@ -224,12 +228,15 @@ struct DashboardView: View {
             // Lean Mass
             let leanMass = calculateLeanMass() != nil ?
                 convertWeight(calculateLeanMass()!, from: "kg", to: currentSystem.weightUnit) : nil
+            let isLeanMassEstimated = (currentMetric?.weight == nil && estimatedWeight != nil) || 
+                                      (currentMetric?.bodyFatPercentage == nil && hasEstimatedData)
             
             MetricStripItem(
                 icon: "figure.arms.open",
                 value: leanMass != nil ? "\(Int(leanMass!))" : "––",
                 label: "Lean Mass \(currentSystem.weightUnit)",
-                iconColor: .blue
+                iconColor: .blue,
+                isEstimated: isLeanMassEstimated
             )
             .frame(maxWidth: .infinity)
         }
@@ -280,20 +287,39 @@ struct DashboardView: View {
     @ViewBuilder
     private var headerView: some View {
         VStack(spacing: 0) {
-            // Timeline slider (if multiple entries)
-            if bodyMetrics.count > 1 {
-                timelineSlider
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(Color.appBackground)
-            }
             
             // Streamlined header row
             HStack {
-                // User info in single row
-                Text(userInfoString)
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundColor(.appText)
+                // User info in two lines
+                VStack(alignment: .leading, spacing: 2) {
+                    if let name = authManager.currentUser?.profile?.fullName?.split(separator: " ").first {
+                        Text(String(name))
+                            .font(.system(size: 16, weight: .medium))
+                            .foregroundColor(.appText)
+                    }
+                    
+                    HStack(spacing: 8) {
+                        if let age = userAge {
+                            Label("\(age)", systemImage: "person")
+                                .font(.system(size: 14))
+                                .foregroundColor(.appTextSecondary)
+                        }
+                        
+                        if let gender = authManager.currentUser?.profile?.gender {
+                            Text(gender == "male" ? "♂" : "♀")
+                                .font(.system(size: 14))
+                                .foregroundColor(.appTextSecondary)
+                        }
+                        
+                        if let height = authManager.currentUser?.profile?.height {
+                            let displayHeight = currentSystem.measurementSystem == "imperial" ? 
+                                formatHeightToFeetInches(height) : "\(Int(height))cm"
+                            Label(displayHeight, systemImage: "ruler")
+                                .font(.system(size: 14))
+                                .foregroundColor(.appTextSecondary)
+                        }
+                    }
+                }
                 
                 Spacer()
                 
@@ -307,23 +333,9 @@ struct DashboardView: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 12)
+            .padding(.vertical, 8)
             .background(Color.appBackground)
             
-            // Estimated data indicator (if any metrics are estimated)
-            if hasEstimatedData {
-                HStack {
-                    Image(systemName: "bolt.fill")
-                        .font(.system(size: 12))
-                        .foregroundColor(.orange)
-                    Text("Estimated values")
-                        .font(.system(size: 12))
-                        .foregroundColor(.orange)
-                    Spacer()
-                }
-                .padding(.horizontal, 16)
-                .padding(.bottom, 8)
-            }
         }
     }
     
@@ -360,6 +372,28 @@ struct DashboardView: View {
             PhotoMetadataService.shared.estimateBodyFat(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics) != nil
         
         return hasEstimatedWeight || hasEstimatedBF
+    }
+    
+    private func relativeDateLabel(for date: Date) -> String {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        if calendar.isDateInToday(date) {
+            return "Today"
+        } else if calendar.isDateInYesterday(date) {
+            return "Yesterday"
+        } else {
+            let daysDifference = calendar.dateComponents([.day], from: date, to: now).day ?? 0
+            if daysDifference <= 3 && daysDifference >= 0 {
+                // Within 3 days, show relative
+                return "\(daysDifference) days ago"
+            } else {
+                // Beyond 3 days, show actual date
+                let formatter = DateFormatter()
+                formatter.dateFormat = "MMM d"
+                return formatter.string(from: date)
+            }
+        }
     }
     
     @ViewBuilder
@@ -422,10 +456,10 @@ struct DashboardView: View {
             }
             .frame(height: 32)
             
-            // Date labels
+            // Date labels with relative formatting
             HStack {
                 if let date = bodyMetrics.first?.date {
-                    Text(date, style: .date)
+                    Text(relativeDateLabel(for: date))
                         .font(.system(size: 14))
                         .foregroundColor(.appTextSecondary)
                 }
@@ -433,7 +467,7 @@ struct DashboardView: View {
                 Spacer()
                 
                 if let date = currentMetric?.date {
-                    Text(date, style: .date)
+                    Text(relativeDateLabel(for: date))
                         .font(.system(size: 14, weight: .medium))
                         .foregroundColor(.appText)
                 }
@@ -441,7 +475,7 @@ struct DashboardView: View {
                 Spacer()
                 
                 if let date = bodyMetrics.last?.date {
-                    Text(date, style: .date)
+                    Text(relativeDateLabel(for: date))
                         .font(.system(size: 14))
                         .foregroundColor(.appTextSecondary)
                 }
@@ -464,8 +498,28 @@ struct DashboardView: View {
                     } else if bodyMetrics.isEmpty {
                         emptyStateView
                     } else {
-                        mainContentView
-                            .smartBlur(isPresented: showPhotoOptions || showCamera || showPhotoPicker || showingModal)
+                        ZStack(alignment: .bottom) {
+                            mainContentView
+                                .smartBlur(isPresented: showPhotoOptions || showCamera || showPhotoPicker || showingModal)
+                            
+                            // Pinned Secondary Metrics Strip
+                            VStack(spacing: 0) {
+                                Spacer()
+                                
+                                secondaryMetricsStrip
+                                    .frame(height: 64)
+                                    .background(
+                                        Color.appCard
+                                            .overlay(
+                                                Rectangle()
+                                                    .fill(Color.appBorder.opacity(0.2))
+                                                    .frame(height: 0.5),
+                                                alignment: .top
+                                            )
+                                    )
+                                    .padding(.bottom, 75) // Increased space for tab bar
+                            }
+                        }
                     }
                 }
             }
@@ -917,35 +971,33 @@ struct DashboardView: View {
     // MARK: - Optimal Range Calculations
     
     private func getOptimalBodyFatRange() -> ClosedRange<Double> {
-        // TODO: Adjust based on gender and age
         let gender = authManager.currentUser?.profile?.gender?.lowercased() ?? "male"
         
         if gender == "female" {
-            return 16...20  // Female optimal range
+            return Constants.BodyComposition.BodyFat.femaleOptimalRange
         } else {
-            return 6...10   // Male optimal range
+            return Constants.BodyComposition.BodyFat.maleOptimalRange
         }
     }
     
     private func getIdealBodyFat() -> Double {
         let gender = authManager.currentUser?.profile?.gender?.lowercased() ?? "male"
-        return gender == "female" ? 18 : 8
+        return gender == "female" ? Constants.BodyComposition.BodyFat.femaleIdealValue : Constants.BodyComposition.BodyFat.maleIdealValue
     }
     
     private func getOptimalFFMIRange() -> ClosedRange<Double> {
-        // TODO: Adjust based on gender
         let gender = authManager.currentUser?.profile?.gender?.lowercased() ?? "male"
         
         if gender == "female" {
-            return 16...19  // Female optimal FFMI range
+            return Constants.BodyComposition.FFMI.femaleOptimalRange
         } else {
-            return 20...23  // Male optimal FFMI range
+            return Constants.BodyComposition.FFMI.maleOptimalRange
         }
     }
     
     private func getIdealFFMI() -> Double {
         let gender = authManager.currentUser?.profile?.gender?.lowercased() ?? "male"
-        return gender == "female" ? 17.5 : 23
+        return gender == "female" ? Constants.BodyComposition.FFMI.femaleIdealValue : Constants.BodyComposition.FFMI.maleIdealValue
     }
 }
 
@@ -982,12 +1034,23 @@ struct MetricStripItem: View {
     let value: String
     let label: String
     let iconColor: Color
+    var isEstimated: Bool = false
     
     var body: some View {
         VStack(spacing: 4) {
-            Image(systemName: icon)
-                .font(.system(size: 18))
-                .foregroundColor(iconColor)
+            ZStack(alignment: .topTrailing) {
+                Image(systemName: icon)
+                    .font(.system(size: 18))
+                    .foregroundColor(iconColor)
+                
+                // Estimated indicator
+                if isEstimated {
+                    Image(systemName: "bolt.fill")
+                        .font(.system(size: 8))
+                        .foregroundColor(.orange)
+                        .offset(x: 8, y: -4)
+                }
+            }
             
             Text(value)
                 .font(.system(size: 32, weight: .bold, design: .rounded))
@@ -1187,8 +1250,8 @@ struct StandardizedProgressRing: View {
     @State private var animatedValue: Double = 0
     @State private var previousZone: Color? = nil
     
-    private let size: CGFloat = 120
-    private let lineWidth: CGFloat = 8
+    private let size: CGFloat = 86  // Further reduced by 15%
+    private let lineWidth: CGFloat = 6  // Thinner for smaller size
     
     // Define zones based on ideal value
     private var underZone: ClosedRange<Double> {
@@ -1234,19 +1297,22 @@ struct StandardizedProgressRing: View {
         return .degrees(normalized * 360 - 90)
     }
     
-    // Get color based on zone
+    // Get color based on zone - premium feel with subtle accents
     private func zoneColor(for value: Double) -> Color {
         if targetZone.contains(value) {
-            return .adaptiveGreen
+            // Target zone: subtle purple accent at 30% opacity
+            return Color.appPrimary.opacity(0.3)
         } else if value < targetZone.lowerBound {
-            return .adaptiveGray
+            // Under zone: slightly darker gray
+            return Color(white: 0.25)
         } else {
-            return .adaptiveOrange
+            // Over zone: desaturated warning
+            return Color(white: 0.35)
         }
     }
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {  // Reduced spacing
             ZStack {
                 // Background zones
                 backgroundZones
@@ -1263,8 +1329,10 @@ struct StandardizedProgressRing: View {
             .frame(width: size, height: size)
             
             Text(label)
-                .font(.system(size: 12))
+                .font(.system(size: 11))  // Reduced from 12
                 .foregroundColor(.appTextSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
         }
         .onAppear {
             withAnimation(.spring(response: 0.8, dampingFraction: 0.8)) {
@@ -1292,33 +1360,17 @@ struct StandardizedProgressRing: View {
     @ViewBuilder
     private var backgroundZones: some View {
         ZStack {
-            // Full background
+            // Base: light gray track
             Circle()
-                .stroke(Color.appBorder.opacity(0.3), lineWidth: lineWidth)
+                .stroke(Color(white: 0.2), lineWidth: lineWidth)
             
-            // Under zone (gray)
-            Arc(
-                startAngle: angle(for: minValue),
-                endAngle: angle(for: underZone.upperBound),
-                clockwise: true
-            )
-            .stroke(Color(.systemGray).opacity(0.3), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
-            
-            // Target zone (green)
+            // Target zone: subtle purple accent at 30% opacity
             Arc(
                 startAngle: angle(for: targetZone.lowerBound),
                 endAngle: angle(for: targetZone.upperBound),
                 clockwise: true
             )
-            .stroke(Color(.systemGreen).opacity(0.3), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
-            
-            // Over zone (red)
-            Arc(
-                startAngle: angle(for: overZone.lowerBound),
-                endAngle: angle(for: maxValue),
-                clockwise: true
-            )
-            .stroke(Color(.systemRed).opacity(0.3), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
+            .stroke(Color.appPrimary.opacity(0.15), style: StrokeStyle(lineWidth: lineWidth, lineCap: .butt))
         }
     }
     
@@ -1400,6 +1452,47 @@ struct Arc: Shape {
         )
         
         return path
+    }
+}
+
+// Temporary CameraView definition until the file is properly added to Xcode project
+struct CameraView: UIViewControllerRepresentable {
+    @Environment(\.dismiss) var dismiss
+    let onImageCaptured: (UIImage) -> Void
+    
+    func makeUIViewController(context: Context) -> UIImagePickerController {
+        let picker = UIImagePickerController()
+        picker.delegate = context.coordinator
+        picker.sourceType = .camera
+        picker.cameraCaptureMode = .photo
+        picker.cameraDevice = .front
+        picker.allowsEditing = false
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+        let parent: CameraView
+        
+        init(_ parent: CameraView) {
+            self.parent = parent
+        }
+        
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+            if let image = info[.originalImage] as? UIImage {
+                parent.onImageCaptured(image)
+            }
+            parent.dismiss()
+        }
+        
+        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+            parent.dismiss()
+        }
     }
 }
 

@@ -135,21 +135,23 @@ struct SignUpView: View {
                             HStack {
                                 if isLoading {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: isValidForm ? .black : .white))
                                         .scaleEffect(0.8)
                                 } else {
                                     Text("Create account")
                                         .font(.appBody)
                                         .fontWeight(.semibold)
+                                        .foregroundColor(isValidForm ? .black : .white)
                                 }
                             }
                             .frame(height: 48)
                             .frame(maxWidth: .infinity)
                             .background(isValidForm ? Color.white : Color.appBorder)
-                            .foregroundColor(isValidForm ? .black : .white)
                             .cornerRadius(Constants.cornerRadius)
                             .animation(.easeInOut(duration: 0.2), value: isValidForm)
                         }
+                        .buttonStyle(PlainButtonStyle())
+                        .scaleEffect(isLoading ? 0.98 : 1.0)
                         .disabled(!isValidForm || isLoading)
                         
                         // Divider
@@ -256,6 +258,7 @@ struct SignUpView: View {
         }
     }
 }
+
 
 #Preview {
     NavigationView {

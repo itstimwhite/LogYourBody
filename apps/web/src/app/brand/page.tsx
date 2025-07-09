@@ -1,10 +1,11 @@
 'use client'
 
 import React from 'react';
-import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Download, Copy, Check } from 'lucide-react';
+import { Download, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
+import { Header } from '@/components/Header';
+import { Footer } from '@/components/Footer';
 
 export default function BrandPage() {
   const [copiedItem, setCopiedItem] = useState<string | null>(null);
@@ -73,23 +74,8 @@ export default function BrandPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-linear-bg font-inter">
-      {/* Header */}
-      <header className="border-b border-linear-border sticky top-0 bg-linear-bg/80 backdrop-blur-xl z-50">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link href="/">
-                <Button variant="ghost" size="sm" className="gap-2">
-                  <ArrowLeft className="h-4 w-4" />
-                  Back
-                </Button>
-              </Link>
-              <h1 className="text-xl font-semibold text-linear-text">Brand Guidelines</h1>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      <Header />
 
       <main className="container mx-auto px-4 sm:px-6 py-12">
         {/* Hero Section */}
@@ -311,6 +297,7 @@ export default function BrandPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

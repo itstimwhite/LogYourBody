@@ -1,7 +1,6 @@
 import { Metadata } from 'next'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
 import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
 
 export const metadata: Metadata = {
   title: 'Terms of Service - LogYourBody',
@@ -10,20 +9,8 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <nav className="flex items-center justify-between">
-            <Link href="/" className="text-xl font-semibold">
-              LogYourBody
-            </Link>
-            <Link href="/signin">
-              <Button>Get Started</Button>
-            </Link>
-          </nav>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">  
+      <Header />
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-16 max-w-4xl">

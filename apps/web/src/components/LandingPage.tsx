@@ -85,7 +85,7 @@ export function LandingPage() {
       icon: Shield,
       title: "Your Data, Private",
       description:
-        "End-to-end encrypted. Export anytime. Delete anytime. You own it.",
+        "Built for the privacy-obsessed: keep your progress photos under lock and key, where they belong.",
     },
     {
       icon: Clock,
@@ -167,7 +167,7 @@ export function LandingPage() {
                 
                 {/* Primary CTA - YC style */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
-                  <Link href="/signup">
+                  <Link href="/download/ios">
                     <Button
                       className="bg-linear-purple text-white px-8 py-3 text-base font-semibold rounded-lg hover:bg-linear-purple/90 transition-all shadow-md"
                     >
@@ -345,7 +345,7 @@ export function LandingPage() {
                 <p className="text-sm text-linear-text-secondary mb-4">
                   Stop juggling spreadsheets and PDFs. Start seeing the complete picture.
                 </p>
-                <Link href="/signup">
+                <Link href="/download/ios">
                   <Button className="bg-linear-purple text-white px-6 py-2.5 text-sm font-medium rounded-lg hover:bg-linear-purple/90 transition-all">
                     Import Your Data
                   </Button>
@@ -738,7 +738,7 @@ export function LandingPage() {
                       Download the app or sign up on the web. Your account works everywhere from day one.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3">
-                      <Link href="/signup">
+                      <Link href="/download/ios">
                         <Button
                           className="bg-linear-text text-linear-bg hover:bg-linear-text-secondary transition-colors"
                         >
@@ -870,7 +870,7 @@ export function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                <Link href="/signup">
+                <Link href="/download/ios">
                   <Button
                     className="w-full bg-linear-text text-linear-bg hover:bg-linear-text-secondary focus:ring-2 focus:ring-linear-purple/50 transition-colors"
                     aria-describedby="trial-terms"
@@ -989,7 +989,7 @@ export function LandingPage() {
               </p>
               
               <div className="flex flex-col sm:flex-row justify-center gap-4 mb-8">
-                <Link href="/signup">
+                <Link href="/download/ios">
                   <Button
                     className="bg-linear-text text-linear-bg px-8 py-4 text-base font-medium rounded-xl hover:bg-linear-text-secondary transition-all duration-200 hover:scale-105 shadow-lg"
                   >

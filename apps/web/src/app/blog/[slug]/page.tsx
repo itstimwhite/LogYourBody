@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
-import { Calendar, Clock, User, ArrowLeft } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft, Activity } from 'lucide-react';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import ReactMarkdown from 'react-markdown';
@@ -91,19 +91,34 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               {post.title}
             </h1>
             
-            <div className="flex items-center gap-6 text-linear-text-tertiary">
-              <div className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                <span>{post.author}</span>
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+              <div className="flex items-center gap-6 text-linear-text-tertiary">
+                <div className="flex items-center gap-2">
+                  <User className="h-4 w-4" />
+                  <span>{post.author}</span>
+                  {post.authorRole && (
+                    <span className="text-linear-text-tertiary text-sm">
+                      • {post.authorRole}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
+                  <span>{post.formattedDate}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4" />
+                  <span>{post.readTime}</span>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4" />
-                <span>{post.formattedDate}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                <span>{post.readTime}</span>
-              </div>
+              {post.authorStats && (
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-linear-purple/10 rounded-full">
+                    <Activity className="h-3.5 w-3.5 text-linear-purple" />
+                    <span className="text-linear-purple font-medium">{post.authorStats.bodyFat}% BF</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -139,7 +154,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 Put this knowledge into action with LogYourBody&apos;s precision tracking tools. 
                 Monitor the metrics that actually matter for your fitness goals.
               </p>
-              <Link href="/signin">
+              <Link href="/download/ios">
                 <Button className="bg-linear-text text-linear-bg hover:bg-linear-text/90">
                   Start Free Trial
                 </Button>

@@ -93,21 +93,23 @@ struct LoginView: View {
                             HStack {
                                 if isLoading {
                                     ProgressView()
-                                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                        .progressViewStyle(CircularProgressViewStyle(tint: isEnabled ? .black : .white))
                                         .scaleEffect(0.8)
                                 } else {
                                     Text("Sign in")
                                         .font(.appBody)
                                         .fontWeight(.semibold)
+                                        .foregroundColor(isEnabled ? .black : .white)
                                 }
                             }
                             .frame(height: 48)
                             .frame(maxWidth: .infinity)
                             .background(isEnabled ? Color.white : Color.appBorder)
-                            .foregroundColor(isEnabled ? .black : .white)
                             .cornerRadius(Constants.cornerRadius)
                             .animation(.easeInOut(duration: 0.2), value: isEnabled)
                         }
+                        .buttonStyle(PlainButtonStyle())
+                        .scaleEffect(isLoading ? 0.98 : 1.0)
                         .disabled(!isEnabled)
                         
                         // Divider
@@ -193,6 +195,7 @@ struct LoginView: View {
         }
     }
 }
+
 
 #Preview {
     NavigationView {
