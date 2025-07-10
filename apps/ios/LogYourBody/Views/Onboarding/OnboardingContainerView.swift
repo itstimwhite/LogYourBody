@@ -129,15 +129,15 @@ struct OnboardingContainerView: View {
             }
         }
         .preferredColorScheme(.dark)
+        #if DEBUG
+        .debugResetEnabled() // Enable shake to reset in debug builds
+        #endif
         .onChange(of: viewModel.currentStep) { _, newStep in
             // Subtle haptic feedback
             let impactFeedback = UIImpactFeedbackGenerator(style: .light)
             impactFeedback.prepare()
             impactFeedback.impactOccurred()
         }
-        #if DEBUG
-        .debugResetEnabled() // Enable shake to reset in debug builds
-        #endif
     }
 }
 
