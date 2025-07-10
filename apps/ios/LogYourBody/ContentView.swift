@@ -93,9 +93,6 @@ struct ContentView: View {
             }
         }
         .preferredColorScheme(.dark)
-        #if DEBUG
-        .debugResetEnabled() // Enable shake to reset in debug builds
-        #endif
         .toastPresenter() // Add global toast presenter
         .onAppear {
             // Initialize onboarding status
