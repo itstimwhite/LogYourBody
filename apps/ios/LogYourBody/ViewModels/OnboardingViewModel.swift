@@ -88,22 +88,34 @@ class OnboardingViewModel: ObservableObject {
         case .name:
             // Show name step if name is empty (couldn't get from Apple Sign In)
             return data.name.isEmpty
-        case .dateOfBirth:
-            // Show DOB step if not imported from HealthKit
-            return data.dateOfBirth == nil
-        case .height:
-            // Show height step if not imported from HealthKit
-            return data.totalHeightInInches == 0
-        case .gender:
-            // Show gender step if not imported from HealthKit
-            return data.gender == nil
+        case .dateOfBirth, .height, .gender:
+            // Always show these steps so users can see imported data
+            // This increases perceived value when data is pre-filled from HealthKit
+            return true
         }
     }
     
     func previousStep() {
         withAnimation(.easeInOut(duration: 0.3)) {
             if currentStep.rawValue > 0 {
-                currentStep = OnboardingStep(rawValue: currentStep.rawValue - 1)!
+                var previousStepValue = currentStep.rawValue - 1
+                
+                // Keep decrementing until we find a step that should be shown
+                while previousStepValue >= 0 {
+                    let potentialStep = OnboardingStep(rawValue: previousStepValue)!
+                    
+                    if shouldShowStep(potentialStep) {
+                        currentStep = potentialStep
+                        break
+                    }
+                    
+                    previousStepValue -= 1
+                }
+                
+                // If we couldn't find a previous step, stay on current
+                if previousStepValue < 0 {
+                    currentStep = OnboardingStep(rawValue: 0)!
+                }
             }
         }
     }

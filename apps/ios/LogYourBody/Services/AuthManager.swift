@@ -523,7 +523,69 @@ class AuthManager: NSObject, ObservableObject {
         }
     }
     
-    func signInWithAppleCredentials(_ appleIDCredential: ASAuthorizationAppleIDCredential) async throws {
+    // MARK: - Unified Apple Sign In Handler
+    @MainActor
+    func handleAppleSignIn() async {
+        print("🍎 Starting unified Apple Sign In flow")
+        
+        guard isClerkLoaded else {
+            print("❌ Clerk not initialized")
+            authError = AppError.authenticationFailed("Authentication service not ready. Please try again.")
+            return
+        }
+        
+        do {
+            // Create the Apple ID provider and request
+            let appleIDProvider = ASAuthorizationAppleIDProvider()
+            let request = appleIDProvider.createRequest()
+            request.requestedScopes = [.fullName, .email]
+            
+            // Create and configure the authorization controller
+            let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+            
+            // Use a continuation to handle the delegate callbacks
+            let appleIDCredential = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<ASAuthorizationAppleIDCredential, Error>) in
+                let delegate = AppleSignInDelegate(continuation: continuation)
+                authorizationController.delegate = delegate
+                authorizationController.presentationContextProvider = delegate
+                
+                // Keep a strong reference to the delegate
+                objc_setAssociatedObject(authorizationController, "delegate", delegate, .OBJC_ASSOCIATION_RETAIN)
+                
+                authorizationController.performRequests()
+            }
+            
+            // Process the credentials
+            try await signInWithAppleCredentials(appleIDCredential)
+            
+        } catch {
+            print("❌ Apple Sign In failed: \(error)")
+            
+            // Handle specific errors
+            if let authError = error as? ASAuthorizationError {
+                switch authError.code {
+                case .canceled:
+                    // User canceled - don't show error
+                    print("🍎 User canceled Apple Sign In")
+                    return
+                case .failed:
+                    self.authError = AppError.authenticationFailed("Apple Sign In failed. Please try again.")
+                case .invalidResponse:
+                    self.authError = AppError.authenticationFailed("Invalid response from Apple Sign In.")
+                case .notHandled:
+                    self.authError = AppError.authenticationFailed("Apple Sign In request was not handled.")
+                case .unknown:
+                    self.authError = AppError.authenticationFailed("An unknown error occurred with Apple Sign In.")
+                @unknown default:
+                    self.authError = AppError.authenticationFailed("An error occurred with Apple Sign In.")
+                }
+            } else {
+                self.authError = AppError.authenticationFailed(error.localizedDescription)
+            }
+        }
+    }
+    
+    private func signInWithAppleCredentials(_ appleIDCredential: ASAuthorizationAppleIDCredential) async throws {
         print("🍎 Native Apple Sign In with credentials")
         print("🍎 User ID: \(appleIDCredential.user)")
         
@@ -1174,6 +1236,46 @@ class AuthManager: NSObject, ObservableObject {
         }
         
         return nil
+    }
+}
+
+// MARK: - Apple Sign In Delegate
+private class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    let continuation: CheckedContinuation<ASAuthorizationAppleIDCredential, Error>
+    
+    init(continuation: CheckedContinuation<ASAuthorizationAppleIDCredential, Error>) {
+        self.continuation = continuation
+        super.init()
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
+            continuation.resume(returning: appleIDCredential)
+        } else {
+            continuation.resume(throwing: ASAuthorizationError(.invalidResponse))
+        }
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        continuation.resume(throwing: error)
+    }
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        // Get the key window
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
+            return window
+        }
+        
+        // Fallback to any active window
+        if let windowScene = UIApplication.shared.connectedScenes
+                .filter({ $0.activationState == .foregroundActive })
+                .first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            return window
+        }
+        
+        fatalError("No active window found")
     }
 }
 

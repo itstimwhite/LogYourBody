@@ -171,9 +171,24 @@ struct SignUpView: View {
                         .padding(.vertical, 8)
                         
                         // Apple Sign In
-                        AppleSignInButton()
+                        Button(action: {
+                            Task {
+                                await authManager.handleAppleSignIn()
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "apple.logo")
+                                    .font(.system(size: 18))
+                                Text("Continue with Apple")
+                                    .font(.system(size: 17, weight: .medium))
+                            }
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
                             .frame(height: 48)
-                            .allowsHitTesting(true)
+                            .background(Color.white)
+                            .cornerRadius(Constants.cornerRadius)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                         
                         // Already have account
                         HStack(spacing: 4) {
@@ -202,6 +217,13 @@ struct SignUpView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage)
+        }
+        .onChange(of: authManager.authError) { _, error in
+            if let error = error {
+                errorMessage = error.localizedDescription
+                showError = true
+                authManager.authError = nil // Clear the error after showing
+            }
         }
         .onTapGesture {
             focusedField = nil

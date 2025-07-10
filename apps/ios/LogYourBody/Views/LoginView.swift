@@ -129,10 +129,24 @@ struct LoginView: View {
                         .padding(.vertical, 20)
                         
                         // Apple Sign In
-                        AppleSignInButton()
+                        Button(action: {
+                            Task {
+                                await authManager.handleAppleSignIn()
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "apple.logo")
+                                    .font(.system(size: 18))
+                                Text("Continue with Apple")
+                                    .font(.system(size: 17, weight: .medium))
+                            }
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity)
                             .frame(height: 48)
-                            .environmentObject(authManager)
-                            .allowsHitTesting(true)
+                            .background(Color.white)
+                            .cornerRadius(Constants.cornerRadius)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                         
                         // Sign Up Link
                         HStack(spacing: 4) {
@@ -162,6 +176,13 @@ struct LoginView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage)
+        }
+        .onChange(of: authManager.authError) { _, error in
+            if let error = error {
+                errorMessage = error.localizedDescription
+                showError = true
+                authManager.authError = nil // Clear the error after showing
+            }
         }
         .onTapGesture {
             focusedField = nil

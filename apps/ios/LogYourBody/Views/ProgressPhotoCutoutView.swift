@@ -198,15 +198,33 @@ struct PlaceholderSilhouetteView: View {
     let gender: String
     
     var body: some View {
-        Image(systemName: gender.lowercased() == "male" ? "figure.stand" : "figure.stand.dress")
-            .font(.system(size: 200, weight: .thin))
-            .foregroundColor(Color.appTextTertiary.opacity(0.3))
-            .shadow(
-                color: Color.black.opacity(0.1),
-                radius: 8,
-                x: 0,
-                y: 4
-            )
+        ZStack {
+            // Background glow for better contrast
+            Image(systemName: gender.lowercased() == "male" ? "figure.stand" : "figure.stand.dress")
+                .font(.system(size: 200, weight: .ultraLight))
+                .foregroundColor(Color.white.opacity(0.05))
+                .blur(radius: 20)
+            
+            // Main silhouette with better contrast
+            Image(systemName: gender.lowercased() == "male" ? "figure.stand" : "figure.stand.dress")
+                .font(.system(size: 200, weight: .ultraLight))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            Color.appTextSecondary.opacity(0.15),
+                            Color.appTextSecondary.opacity(0.25)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .shadow(
+                    color: Color.black.opacity(0.2),
+                    radius: 10,
+                    x: 0,
+                    y: 5
+                )
+        }
     }
 }
 

@@ -15,17 +15,42 @@ struct WelcomeStepView: View {
     @State private var animateButton = false
     
     var body: some View {
-        VStack(spacing: 0) {
-            Spacer()
+        ZStack {
+            // Liquid Glass Background
+            LiquidGlassBackground(
+                opacity: 0.6,
+                blurRadius: 30,
+                saturation: 1.1,
+                gradientColors: [
+                    Color.appPrimary.opacity(0.08),
+                    Color.appPrimary.opacity(0.03),
+                    Color.clear
+                ]
+            )
             
-            VStack(spacing: 40) {
-                // Minimal icon - Linear style
-                Image(systemName: "chart.line.uptrend.xyaxis")
-                    .font(.system(size: 48, weight: .regular))
-                    .foregroundColor(.appPrimary)
-                    .opacity(animateIcon ? 1 : 0)
-                    .scaleEffect(animateIcon ? 1 : 0.9)
-                    .animation(.easeOut(duration: 0.5), value: animateIcon)
+            VStack(spacing: 0) {
+                Spacer()
+                
+                VStack(spacing: 40) {
+                    // Icon with liquid glass accent
+                    ZStack {
+                        // Liquid accent behind icon
+                        if #available(iOS 26, *) {
+                            LiquidGlassAccent(
+                                color: .appPrimary,
+                                opacity: 0.15,
+                                size: CGSize(width: 120, height: 120)
+                            )
+                        }
+                        
+                        // Minimal icon - Linear style
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.system(size: 48, weight: .regular))
+                            .foregroundColor(.appPrimary)
+                            .opacity(animateIcon ? 1 : 0)
+                            .scaleEffect(animateIcon ? 1 : 0.9)
+                            .animation(.easeOut(duration: 0.5), value: animateIcon)
+                    }
                 
                 // Welcome text with refined typography
                 VStack(spacing: 20) {
@@ -60,19 +85,20 @@ struct WelcomeStepView: View {
             
             Spacer()
             
-            // Get Started button with modern styling
-            VStack(spacing: 16) {
-                Button(action: {
-                    let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                    impactFeedback.impactOccurred()
-                    viewModel.nextStep()
-                }) {
-                    Text("Get Started")
-                        .font(.system(size: 16, weight: .medium))
-                }
-                .modernPrimaryButtonStyle()
-                .opacity(animateButton ? 1 : 0)
-                .animation(.easeOut(duration: 0.4).delay(0.3), value: animateButton)
+                // Get Started button with modern styling
+                VStack(spacing: 16) {
+                    LiquidGlassButton(
+                        title: "Get Started",
+                        action: {
+                            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                            impactFeedback.impactOccurred()
+                            viewModel.nextStep()
+                        },
+                        color: .white,
+                        textColor: .black
+                    )
+                    .opacity(animateButton ? 1 : 0)
+                    .animation(.easeOut(duration: 0.4).delay(0.3), value: animateButton)
                 
                 Text("Takes less than 3 minutes")
                     .font(.system(size: 14, weight: .regular))
@@ -82,6 +108,7 @@ struct WelcomeStepView: View {
             }
             .padding(.horizontal, Constants.paddingLarge)
             .padding(.bottom, 60)
+            }
         }
         .onAppear {
             animateIcon = true

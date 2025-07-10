@@ -84,6 +84,7 @@ struct DashboardView: View {
                 if bodyMetrics.count > 1 {
                     timelineSlider
                         .padding(.horizontal, 12)
+                        .padding(.vertical, 8)
                 }
                 
                 // Core Metrics Row
@@ -117,7 +118,6 @@ struct DashboardView: View {
             // Add photo button overlay if no photo exists
             if currentMetric?.photoUrl == nil || currentMetric?.photoUrl?.isEmpty == true {
                 VStack {
-                    Spacer()
                     HStack {
                         Spacer()
                         Button(action: {
@@ -125,20 +125,17 @@ struct DashboardView: View {
                         }) {
                             ZStack {
                                 Circle()
-                                    .stroke(Color.white.opacity(0.3), lineWidth: 1.5)
-                                    .frame(width: 56, height: 56)
-                                    .background(
-                                        Circle()
-                                            .fill(Color.white.opacity(0.05))
-                                    )
+                                    .fill(Color.black.opacity(0.5))
+                                    .frame(width: 44, height: 44)
                                 
-                                Image(systemName: "camera")
-                                    .font(.system(size: 24, weight: .regular))
-                                    .foregroundColor(.white.opacity(0.8))
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 18, weight: .medium))
+                                    .foregroundColor(.white)
                             }
                         }
-                        .padding(20)
+                        .padding(12)
                     }
+                    Spacer()
                 }
             }
         }
@@ -154,9 +151,9 @@ struct DashboardView: View {
             
             let bodyFatValue = currentMetric?.bodyFatPercentage ?? estimatedBF?.value
             
-            if bodyFatValue != nil {
+            if let bodyFatValue = bodyFatValue {
                 StandardizedProgressRing(
-                    value: bodyFatValue!,
+                    value: bodyFatValue,
                     idealValue: getIdealBodyFat(),
                     label: "Body Fat",
                     unit: "%"
@@ -195,7 +192,7 @@ struct DashboardView: View {
             // Steps
             MetricStripItem(
                 icon: "figure.walk",
-                value: selectedDateMetrics?.steps != nil ? "\(selectedDateMetrics!.steps!)" : "––",
+                value: selectedDateMetrics?.steps.map { "\($0)" } ?? "––",
                 label: "Steps",
                 iconColor: .green,
                 isEstimated: false
@@ -311,9 +308,9 @@ struct DashboardView: View {
                                 .foregroundColor(.appTextSecondary)
                         }
                         
-                        if let height = authManager.currentUser?.profile?.height {
-                            let displayHeight = currentSystem.measurementSystem == "imperial" ? 
-                                formatHeightToFeetInches(height) : "\(Int(height))cm"
+                        if let height = authManager.currentUser?.profile?.height, height > 0 {
+                            let displayHeight = currentSystem == .imperial ? 
+                                formatHeightToFeetInches(height) : "\(Int(height * 2.54))cm"
                             Label(displayHeight, systemImage: "ruler")
                                 .font(.system(size: 14))
                                 .foregroundColor(.appTextSecondary)
@@ -398,7 +395,7 @@ struct DashboardView: View {
     
     @ViewBuilder
     private var timelineSlider: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 4) {
             // Custom slider with dots
             ZStack(alignment: .leading) {
                 // Track
@@ -540,24 +537,32 @@ struct DashboardView: View {
                 print("   - currentUser: \(authManager.currentUser?.id ?? "nil") (\(authManager.currentUser?.email ?? "nil"))")
                 print("   - clerkSession: \(authManager.clerkSession?.id ?? "nil")")
                 
-                // Only load data if we have a valid user
-                if authManager.currentUser?.id != nil {
-                    loadCachedDataImmediately()
-                    loadDailyMetrics()
-                    Task {
-                        // Sync today's steps from HealthKit if authorized
-                        if healthKitManager.isAuthorized {
-                            await syncStepsFromHealthKit()
+                // Delay initial load to prevent crash during transition
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    // Only load data if we have a valid user
+                    if authManager.currentUser?.id != nil {
+                        loadCachedDataImmediately()
+                        loadDailyMetrics()
+                        
+                        Task {
+                            // Add a small delay to ensure UI is stable
+                            try? await Task.sleep(nanoseconds: 100_000_000) // 0.1 seconds
                             
-                            // On first launch, sync historical step data
-                            if !UserDefaults.standard.bool(forKey: "HasSyncedHistoricalSteps") {
-                                await syncHistoricalSteps()
+                            // Sync today's steps from HealthKit if authorized
+                            if await healthKitManager.isAuthorized {
+                                await syncStepsFromHealthKit()
+                                
+                                // On first launch, sync historical step data
+                                if !UserDefaults.standard.bool(forKey: "HasSyncedHistoricalSteps") {
+                                    await syncHistoricalSteps()
+                                }
                             }
+                            
+                            await loadBodyMetrics()
                         }
-                        await loadBodyMetrics()
+                    } else {
+                        print("⚠️ Skipping data load - no authenticated user")
                     }
-                } else {
-                    print("⚠️ Skipping data load - no authenticated user")
                 }
             }
             .onReceive(healthKitManager.$todayStepCount) { newStepCount in
@@ -629,15 +634,20 @@ struct DashboardView: View {
         
         print("🔍 Loading cached data for user: \(userId)")
         
-        let cached = CoreDataManager.shared.fetchBodyMetrics(for: userId)
-        bodyMetrics = cached.compactMap { $0.toBodyMetrics() }
-            .sorted { $0.date < $1.date }
-        
-        print("📊 Found \(bodyMetrics.count) body metrics for user \(userId)")
-        
-        if !bodyMetrics.isEmpty {
-            selectedIndex = bodyMetrics.count - 1
-            loadMetricsForSelectedDate()
+        do {
+            let cached = CoreDataManager.shared.fetchBodyMetrics(for: userId)
+            bodyMetrics = cached.compactMap { $0.toBodyMetrics() }
+                .sorted { $0.date < $1.date }
+            
+            print("📊 Found \(bodyMetrics.count) body metrics for user \(userId)")
+            
+            if !bodyMetrics.isEmpty {
+                selectedIndex = min(bodyMetrics.count - 1, max(0, selectedIndex))
+                loadMetricsForSelectedDate()
+            }
+        } catch {
+            print("❌ Error loading cached data: \(error)")
+            bodyMetrics = []
         }
     }
     
@@ -966,6 +976,14 @@ struct DashboardView: View {
         await Task.detached(priority: .background) {
             await self.healthKitManager.syncStepsToSupabase(userId: userId)
         }.value
+    }
+    
+    // MARK: - Helper Functions
+    
+    private func formatHeightToFeetInches(_ heightInInches: Double) -> String {
+        let feet = Int(heightInInches / 12)
+        let inches = Int(heightInInches.truncatingRemainder(dividingBy: 12))
+        return "\(feet)'\(inches)\""
     }
     
     // MARK: - Optimal Range Calculations
@@ -1417,16 +1435,17 @@ struct StandardizedProgressRing: View {
     
     @ViewBuilder
     private var centerContent: some View {
-        VStack(spacing: 0) {
+        VStack(spacing: -2) {
             Text("\(value, specifier: "%.1f")")
-                .font(.system(size: 48, weight: .bold, design: .rounded))
+                .font(.system(size: 28, weight: .bold, design: .rounded))
                 .foregroundColor(.appText)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
             
             if !unit.isEmpty {
                 Text(unit)
-                    .font(.system(size: 14))
+                    .font(.system(size: 12))
                     .foregroundColor(.appTextSecondary)
-                    .offset(y: -4)
             }
         }
     }

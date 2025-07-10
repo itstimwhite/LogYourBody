@@ -147,6 +147,9 @@ struct CompletionStepView: View {
                         
                         Task {
                             await viewModel.completeOnboarding(authManager: authManager)
+                            
+                            // Add a small delay to ensure profile updates are propagated
+                            try? await Task.sleep(nanoseconds: 500_000_000) // 0.5 seconds
                         }
                     }) {
                         HStack {

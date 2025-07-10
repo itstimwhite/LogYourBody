@@ -13,11 +13,56 @@ struct OnboardingContainerView: View {
     @StateObject private var healthKitManager = HealthKitManager.shared
     @State private var backgroundOffset: CGFloat = 0
     
+    // Dynamic liquid glass properties based on current step
+    private var liquidGlassOpacity: Double {
+        switch viewModel.currentStep {
+        case .welcome, .completion:
+            return 0.6
+        case .healthKit, .progressPhotos, .notifications:
+            return 0.4
+        default:
+            return 0.3
+        }
+    }
+    
+    private var liquidGlassGradient: [Color] {
+        switch viewModel.currentStep {
+        case .welcome:
+            return [
+                Color.appPrimary.opacity(0.08),
+                Color.appPrimary.opacity(0.03),
+                Color.clear
+            ]
+        case .completion:
+            return [
+                Color.green.opacity(0.08),
+                Color.appPrimary.opacity(0.03),
+                Color.clear
+            ]
+        case .healthKit:
+            return [
+                Color.red.opacity(0.05),
+                Color.appPrimary.opacity(0.02),
+                Color.clear
+            ]
+        default:
+            return [
+                Color.appPrimary.opacity(0.05),
+                Color.appPrimary.opacity(0.02),
+                Color.clear
+            ]
+        }
+    }
+    
     var body: some View {
         ZStack {
-            // Clean background - Linear style
-            Color.appBackground
-                .ignoresSafeArea()
+            // LiquidGlass background that adapts to current step
+            LiquidGlassBackground(
+                opacity: liquidGlassOpacity,
+                blurRadius: 25,
+                saturation: 1.1,
+                gradientColors: liquidGlassGradient
+            )
             
             VStack(spacing: 0) {
                 // Modern progress indicator
@@ -90,6 +135,7 @@ struct OnboardingContainerView: View {
             impactFeedback.prepare()
             impactFeedback.impactOccurred()
         }
+        .debugResetEnabled() // Enable shake to reset in debug builds
     }
 }
 

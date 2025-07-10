@@ -113,7 +113,7 @@ struct ContentView: View {
             // Update onboarding status when UserDefaults changes
             hasCompletedOnboarding = UserDefaults.standard.bool(forKey: Constants.hasCompletedOnboardingKey)
         }
-        .onChange(of: authManager.isAuthenticated) { newValue in
+        .onChange(of: authManager.isAuthenticated) { _, newValue in
             print("🔄 Authentication state changed to: \(newValue)")
             print("🔄 Should show onboarding: \(shouldShowOnboarding)")
             print("🔄 Profile complete: \(isProfileComplete)")
@@ -121,6 +121,18 @@ struct ContentView: View {
             print("🔄 isLoadingComplete: \(isLoadingComplete)")
             print("🔄 Current user: \(authManager.currentUser?.email ?? "nil")")
             print("🔄 Clerk session: \(authManager.clerkSession?.id ?? "nil")")
+        }
+        .onChange(of: hasCompletedOnboarding) { _, newValue in
+            if newValue && isLoadingComplete {
+                print("🎯 Onboarding completed, transitioning to main app...")
+                // Add a small delay to ensure smooth transition
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    // Force a view refresh if needed
+                    withAnimation(.easeInOut(duration: 0.3)) {
+                        // The view should automatically update based on shouldShowOnboarding
+                    }
+                }
+            }
         }
     }
 }

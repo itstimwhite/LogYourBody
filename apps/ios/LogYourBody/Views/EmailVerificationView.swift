@@ -58,8 +58,10 @@ struct EmailVerificationView: View {
                                 .font(.appBodySmall)
                                 .foregroundColor(.appTextSecondary)
                             
-                            OTPInputView(
+                            EnhancedOTPInputView(
                                 otpCode: $verificationCode,
+                                errorMessage: $errorMessage,
+                                isLoading: $isLoading,
                                 onComplete: {
                                     // Auto-submit when all digits are entered
                                     if verificationCode.count == 6 {
@@ -67,13 +69,6 @@ struct EmailVerificationView: View {
                                     }
                                 }
                             )
-                            
-                            if let errorMessage = errorMessage {
-                                Text(errorMessage)
-                                    .font(.appBodySmall)
-                                    .foregroundColor(.error)
-                                    .padding(.top, 4)
-                            }
                             
                             if let successMessage = successMessage {
                                 Text(successMessage)
@@ -83,32 +78,12 @@ struct EmailVerificationView: View {
                             }
                         }
                         
-                        // Loading indicator when verifying
-                        if isLoading {
-                            HStack {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .appTextSecondary))
-                                    .scaleEffect(0.8)
-                                Text("Verifying...")
-                                    .font(.appBodySmall)
-                                    .foregroundColor(.appTextSecondary)
-                            }
-                            .padding(.top, 8)
-                        }
-                        
-                        // Resend Code Button
-                        Button(action: resendCode) {
-                            if resendCooldown > 0 {
-                                Text("Resend code in \(resendCooldown)s")
-                                    .font(.appBodySmall)
-                                    .foregroundColor(.appTextTertiary)
-                            } else {
-                                Text("Didn't receive the code? Resend")
-                                    .font(.appBodySmall)
-                                    .foregroundColor(.appTextSecondary)
-                            }
-                        }
-                        .disabled(isLoading || resendCooldown > 0)
+                        // Resend Timer
+                        ResendTimerView(
+                            resendCooldown: $resendCooldown,
+                            onResend: resendCode
+                        )
+                        .padding(.top, 8)
                     }
                     .padding(.horizontal, 24)
                     
