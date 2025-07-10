@@ -135,7 +135,9 @@ struct OnboardingContainerView: View {
             impactFeedback.prepare()
             impactFeedback.impactOccurred()
         }
+        #if DEBUG
         .debugResetEnabled() // Enable shake to reset in debug builds
+        #endif
     }
 }
 
