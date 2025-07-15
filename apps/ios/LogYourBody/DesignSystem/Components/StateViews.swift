@@ -9,8 +9,8 @@ import SwiftUI
 
 // MARK: - Loading View
 
-struct LoadingView: View {
-    @Environment(\.theme) var theme
+struct DesignLoadingView: View {
+    
     
     let message: String?
     let progress: Double?
@@ -47,30 +47,30 @@ struct LoadingView: View {
     }
     
     private var standardLoading: some View {
-        VStack(spacing: theme.spacing.lg) {
+        VStack(spacing: 16) {
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: theme.colors.primary))
+                .progressViewStyle(CircularProgressViewStyle(tint: .appPrimary))
                 .scaleEffect(1.5)
             
             if let message = message {
                 Text(message)
-                    .font(theme.typography.bodyMedium)
-                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.body)
+                    .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
             }
             
             if let progress = progress {
-                VStack(spacing: theme.spacing.xs) {
+                VStack(spacing: 4) {
                     ProgressBar(progress: progress)
                         .frame(width: 200)
                     
                     Text("\(Int(progress * 100))%")
-                        .font(theme.typography.captionMedium)
-                        .foregroundColor(theme.colors.textTertiary)
+                        .font(.caption)
+                        .foregroundColor(Color.secondary.opacity(0.6))
                 }
             }
         }
-        .padding(theme.spacing.xl)
+        .padding(24)
     }
     
     private var overlayLoading: some View {
@@ -89,18 +89,18 @@ struct LoadingView: View {
     }
     
     private var minimalLoading: some View {
-        HStack(spacing: theme.spacing.sm) {
+        HStack(spacing: 8) {
             ProgressView()
-                .progressViewStyle(CircularProgressViewStyle(tint: theme.colors.textSecondary))
+                .progressViewStyle(CircularProgressViewStyle(tint: .secondary))
                 .scaleEffect(0.8)
             
             if let message = message {
                 Text(message)
-                    .font(theme.typography.captionLarge)
-                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
             }
         }
-        .padding(theme.spacing.md)
+        .padding(12)
     }
     
     private var fullScreenLoading: some View {
@@ -108,11 +108,11 @@ struct LoadingView: View {
             VStack {
                 Spacer()
                 
-                VStack(spacing: theme.spacing.xxl) {
+                VStack(spacing: 32) {
                     // Animated logo or icon
                     Image(systemName: "heart.fill")
                         .font(.system(size: 60))
-                        .foregroundColor(theme.colors.primary)
+                        .foregroundColor(.appPrimary)
                         .scaleEffect(animatingScale)
                         .onAppear {
                             withAnimation(
@@ -123,25 +123,25 @@ struct LoadingView: View {
                             }
                         }
                     
-                    VStack(spacing: theme.spacing.md) {
+                    VStack(spacing: 12) {
                         if let message = message {
                             Text(message)
-                                .font(theme.typography.headlineSmall)
-                                .foregroundColor(theme.colors.text)
+                                .font(.headline)
+                                .foregroundColor(.primary)
                         }
                         
                         if let progress = progress {
-                            VStack(spacing: theme.spacing.sm) {
+                            VStack(spacing: 8) {
                                 ProgressBar(progress: progress)
                                     .frame(width: min(300, geometry.size.width * 0.8))
                                 
                                 Text("\(Int(progress * 100))%")
-                                    .font(theme.typography.bodyMedium)
-                                    .foregroundColor(theme.colors.textSecondary)
+                                    .font(.body)
+                                    .foregroundColor(.secondary)
                             }
                         } else {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: theme.colors.primary))
+                                .progressViewStyle(CircularProgressViewStyle(tint: .appPrimary))
                                 .scaleEffect(1.2)
                         }
                     }
@@ -150,7 +150,7 @@ struct LoadingView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(theme.colors.background)
+            .background(Color.appBackground)
         }
     }
     
@@ -160,7 +160,7 @@ struct LoadingView: View {
 // MARK: - Empty State View
 
 struct EmptyStateView: View {
-    @Environment(\.theme) var theme
+    
     
     let icon: String
     let title: String
@@ -183,23 +183,23 @@ struct EmptyStateView: View {
     }
     
     var body: some View {
-        VStack(spacing: theme.spacing.lg) {
+        VStack(spacing: 16) {
             // Icon
             Image(systemName: icon)
                 .font(.system(size: 60))
-                .foregroundColor(theme.colors.textTertiary)
-                .padding(.bottom, theme.spacing.sm)
+                .foregroundColor(Color.secondary.opacity(0.6))
+                .padding(.bottom, 8)
             
             // Text content
-            VStack(spacing: theme.spacing.sm) {
+            VStack(spacing: 8) {
                 Text(title)
-                    .font(theme.typography.headlineSmall)
-                    .foregroundColor(theme.colors.text)
+                    .font(.headline)
+                    .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
                 
                 Text(description)
-                    .font(theme.typography.bodyMedium)
-                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.body)
+                    .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -211,10 +211,10 @@ struct EmptyStateView: View {
                     style: .primary,
                     action: action
                 )
-                .padding(.top, theme.spacing.md)
+                .padding(.top, 12)
             }
         }
-        .padding(theme.spacing.xl)
+        .padding(24)
         .frame(maxWidth: 320)
     }
 }
@@ -222,28 +222,28 @@ struct EmptyStateView: View {
 // MARK: - Error View
 
 struct ErrorView: View {
-    @Environment(\.theme) var theme
+    
     
     let error: Error
     let retryAction: (() -> Void)?
     
     var body: some View {
-        VStack(spacing: theme.spacing.lg) {
+        VStack(spacing: 16) {
             // Error icon
             Image(systemName: "exclamationmark.triangle.fill")
                 .font(.system(size: 60))
-                .foregroundColor(theme.colors.error)
-                .padding(.bottom, theme.spacing.sm)
+                .foregroundColor(.red)
+                .padding(.bottom, 8)
             
             // Error message
-            VStack(spacing: theme.spacing.sm) {
+            VStack(spacing: 8) {
                 Text("Something went wrong")
-                    .font(theme.typography.headlineSmall)
-                    .foregroundColor(theme.colors.text)
+                    .font(.headline)
+                    .foregroundColor(.primary)
                 
                 Text(error.localizedDescription)
-                    .font(theme.typography.bodyMedium)
-                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.body)
+                    .foregroundColor(.secondary)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
             }
@@ -256,10 +256,10 @@ struct ErrorView: View {
                     style: .primary,
                     action: retryAction
                 )
-                .padding(.top, theme.spacing.md)
+                .padding(.top, 12)
             }
         }
-        .padding(theme.spacing.xl)
+        .padding(24)
         .frame(maxWidth: 320)
     }
 }
@@ -267,7 +267,7 @@ struct ErrorView: View {
 // MARK: - Success View
 
 struct SuccessView: View {
-    @Environment(\.theme) var theme
+    
     
     let title: String
     let description: String?
@@ -278,16 +278,16 @@ struct SuccessView: View {
     @State private var animateCheckmark = false
     
     var body: some View {
-        VStack(spacing: theme.spacing.lg) {
+        VStack(spacing: 16) {
             // Success checkmark
             ZStack {
                 Circle()
-                    .fill(theme.colors.success.opacity(0.1))
+                    .fill(.green.opacity(0.1))
                     .frame(width: 100, height: 100)
                 
                 Image(systemName: "checkmark")
                     .font(.system(size: 50, weight: .bold))
-                    .foregroundColor(theme.colors.success)
+                    .foregroundColor(.green)
                     .scaleEffect(showCheckmark ? 1 : 0.5)
                     .opacity(showCheckmark ? 1 : 0)
                     .rotationEffect(.degrees(animateCheckmark ? 0 : -30))
@@ -300,16 +300,16 @@ struct SuccessView: View {
             }
             
             // Text content
-            VStack(spacing: theme.spacing.sm) {
+            VStack(spacing: 8) {
                 Text(title)
-                    .font(theme.typography.headlineSmall)
-                    .foregroundColor(theme.colors.text)
+                    .font(.headline)
+                    .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
                 
                 if let description = description {
                     Text(description)
-                        .font(theme.typography.bodyMedium)
-                        .foregroundColor(theme.colors.textSecondary)
+                        .font(.body)
+                        .foregroundColor(.secondary)
                         .multilineTextAlignment(.center)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -322,10 +322,10 @@ struct SuccessView: View {
                     style: .primary,
                     action: action
                 )
-                .padding(.top, theme.spacing.md)
+                .padding(.top, 12)
             }
         }
-        .padding(theme.spacing.xl)
+        .padding(24)
         .frame(maxWidth: 320)
     }
 }
@@ -333,7 +333,7 @@ struct SuccessView: View {
 // MARK: - Progress Bar
 
 struct ProgressBar: View {
-    @Environment(\.theme) var theme
+    
     
     let progress: Double
     let showPercentage: Bool
@@ -347,28 +347,28 @@ struct ProgressBar: View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 // Background
-                RoundedRectangle(cornerRadius: theme.radius.xs)
-                    .fill(theme.colors.surfaceTertiary)
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.appCard.opacity(0.5))
                     .frame(height: 6)
                 
                 // Progress
-                RoundedRectangle(cornerRadius: theme.radius.xs)
-                    .fill(theme.colors.primary)
+                RoundedRectangle(cornerRadius: 3)
+                    .fill(Color.appPrimary)
                     .frame(width: geometry.size.width * progress, height: 6)
-                    .animation(theme.animation.medium, value: progress)
+                    .animation(.easeInOut(duration: 0.3), value: progress)
                 
                 // Percentage label
                 if showPercentage {
                     Text("\(Int(progress * 100))%")
-                        .font(theme.typography.captionSmall)
-                        .foregroundColor(theme.colors.text)
-                        .padding(.horizontal, theme.spacing.xs)
+                        .font(.caption2)
+                        .foregroundColor(.primary)
+                        .padding(.horizontal, 4)
                         .background(
                             Capsule()
-                                .fill(theme.colors.surface)
+                                .fill(Color.appCard)
                                 .overlay(
                                     Capsule()
-                                        .stroke(theme.colors.border, lineWidth: 1)
+                                        .stroke(Color.appBorder, lineWidth: 1)
                                 )
                         )
                         .offset(x: (geometry.size.width * progress) - 25)
@@ -383,7 +383,7 @@ struct ProgressBar: View {
 // MARK: - Skeleton Loading
 
 struct SkeletonView: View {
-    @Environment(\.theme) var theme
+    
     
     let width: CGFloat?
     let height: CGFloat
@@ -403,7 +403,7 @@ struct SkeletonView: View {
     
     var body: some View {
         RoundedRectangle(cornerRadius: cornerRadius)
-            .fill(theme.colors.surfaceTertiary)
+            .fill(Color.appCard.opacity(0.5))
             .frame(width: width, height: height)
             .overlay(
                 GeometryReader { geometry in
@@ -442,14 +442,14 @@ struct StateViews_Previews: PreviewProvider {
             ScrollView {
                 VStack(spacing: 40) {
                     // Loading views
-                    LoadingView(message: "Loading your data...")
+                    DesignLoadingView(message: "Loading your data...")
                     
-                    LoadingView(
+                    DesignLoadingView(
                         message: "Uploading photo...",
                         progress: 0.65
                     )
                     
-                    LoadingView(
+                    DesignLoadingView(
                         message: "Syncing",
                         style: .minimal
                     )

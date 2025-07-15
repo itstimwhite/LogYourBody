@@ -16,7 +16,7 @@ struct OnboardingContainerView: View {
     // Dynamic liquid glass properties based on current step
     private var liquidGlassOpacity: Double {
         switch viewModel.currentStep {
-        case .welcome, .completion:
+        case .welcome:
             return 0.6
         case .healthKit, .progressPhotos, .notifications:
             return 0.4
@@ -30,12 +30,6 @@ struct OnboardingContainerView: View {
         case .welcome:
             return [
                 Color.appPrimary.opacity(0.08),
-                Color.appPrimary.opacity(0.03),
-                Color.clear
-            ]
-        case .completion:
-            return [
-                Color.green.opacity(0.08),
                 Color.appPrimary.opacity(0.03),
                 Color.clear
             ]
@@ -56,21 +50,29 @@ struct OnboardingContainerView: View {
     
     var body: some View {
         ZStack {
-            // LiquidGlass background that adapts to current step
-            LiquidGlassBackground(
-                opacity: liquidGlassOpacity,
-                blurRadius: 25,
-                saturation: 1.1,
-                gradientColors: liquidGlassGradient
-            )
+            // Adaptive glass background
+            ZStack {
+                // Base gradient
+                LinearGradient(
+                    colors: liquidGlassGradient,
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                
+                // Glass overlay
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .opacity(liquidGlassOpacity)
+            }
+            .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Modern progress indicator
-                if viewModel.currentStep != .welcome && viewModel.currentStep != .completion && viewModel.currentStep != .profilePreparation {
+                if viewModel.currentStep != .welcome && viewModel.currentStep != .profilePreparation {
                     VStack(spacing: 0) {
                         // Step dots indicator
                         HStack(spacing: 6) {
-                            ForEach(OnboardingViewModel.OnboardingStep.allCases.filter { $0 != .welcome && $0 != .completion && $0 != .profilePreparation }, id: \.self) { step in
+                            ForEach(OnboardingViewModel.OnboardingStep.allCases.filter { $0 != .welcome && $0 != .profilePreparation }, id: \.self) { step in
                                 StepIndicator(
                                     isActive: step == viewModel.currentStep,
                                     isCompleted: step.rawValue < viewModel.currentStep.rawValue
@@ -89,38 +91,44 @@ struct OnboardingContainerView: View {
                 }
                 
                 // Content with animation
-                Group {
+                ZStack {
                     switch viewModel.currentStep {
                     case .welcome:
                         WelcomeStepView()
+                            .environmentObject(viewModel)
                     case .name:
                         NameInputView()
+                            .environmentObject(viewModel)
                     case .dateOfBirth:
                         DateOfBirthInputView()
+                            .environmentObject(viewModel)
                     case .height:
                         HeightInputView()
+                            .environmentObject(viewModel)
                     case .gender:
                         GenderInputView()
+                            .environmentObject(viewModel)
                     case .healthKit:
                         HealthKitStepView()
+                            .environmentObject(viewModel)
                     case .progressPhotos:
-                        ProgressPhotosStepView(
-                            onboardingData: $viewModel.data,
-                            onNext: viewModel.nextStep,
-                            onSkip: viewModel.nextStep
-                        )
+                        ProgressPhotosStepView()
+                            .environmentObject(viewModel)
                     case .notifications:
                         NotificationsStepView()
+                            .environmentObject(viewModel)
                     case .profilePreparation:
                         ProfilePreparationView(
                             onboardingData: $viewModel.data,
-                            onComplete: viewModel.nextStep
+                            onComplete: {
+                                Task {
+                                    await viewModel.completeOnboarding(authManager: authManager)
+                                }
+                            }
                         )
-                    case .completion:
-                        CompletionStepView()
+                        .environmentObject(viewModel)
                     }
                 }
-                .environmentObject(viewModel)
                 .transition(.asymmetric(
                     insertion: .move(edge: .trailing).combined(with: .opacity),
                     removal: .move(edge: .leading).combined(with: .opacity)

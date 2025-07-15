@@ -14,15 +14,20 @@ struct AddEntrySheet: View {
     @Binding var isPresented: Bool
     @State private var selectedTab: Int
     @State private var selectedDate = Date()
+    @AppStorage(Constants.preferredMeasurementSystemKey) private var measurementSystem = PreferencesView.defaultMeasurementSystem
     
     init(isPresented: Binding<Bool>, initialTab: Int = 0) {
         self._isPresented = isPresented
         self._selectedTab = State(initialValue: initialTab)
     }
     
+    var currentSystem: PreferencesView.MeasurementSystem {
+        PreferencesView.MeasurementSystem(rawValue: measurementSystem) ?? .imperial
+    }
+    
     // Weight entry
     @State private var weight: String = ""
-    @State private var weightUnit: String = "kg"
+    @State private var weightUnit: String = ""
     
     // Body fat entry
     @State private var bodyFat: String = ""
@@ -115,6 +120,12 @@ struct AddEntrySheet: View {
                 Button("OK", role: .cancel) {}
             } message: {
                 Text(errorMessage)
+            }
+            .onAppear {
+                // Set default weight unit based on user preference
+                if weightUnit.isEmpty {
+                    weightUnit = currentSystem.weightUnit
+                }
             }
         }
     }

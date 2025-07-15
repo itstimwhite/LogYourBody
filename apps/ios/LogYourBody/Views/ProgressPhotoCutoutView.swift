@@ -7,6 +7,56 @@
 
 import SwiftUI
 
+// MARK: - ProcessingImagePlaceholder (Temporary until imports are resolved)
+
+struct CutoutProcessingImagePlaceholder: View {
+    @State private var pulseAnimation = false
+    
+    var body: some View {
+        ZStack {
+            // Background
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.appCard)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.appBorder, lineWidth: 1)
+                )
+            
+            // Processing indicator
+            VStack(spacing: 16) {
+                // Animated icon
+                ZStack {
+                    Circle()
+                        .fill(Color.appPrimary.opacity(0.1))
+                        .frame(width: 60, height: 60)
+                        .scaleEffect(pulseAnimation ? 1.2 : 1.0)
+                        .opacity(pulseAnimation ? 0.6 : 1.0)
+                    
+                    Image(systemName: "photo")
+                        .font(.system(size: 28))
+                        .foregroundColor(.appPrimary)
+                }
+                
+                VStack(spacing: 4) {
+                    Text("Processing...")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundColor(.appText)
+                    
+                    Text("AI background removal")
+                        .font(.system(size: 13))
+                        .foregroundColor(.appTextSecondary)
+                }
+            }
+        }
+        .aspectRatio(3/4, contentMode: .fit)
+        .onAppear {
+            withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
+                pulseAnimation = true
+            }
+        }
+    }
+}
+
 struct ProgressPhotoCutoutView: View {
     let currentMetric: BodyMetrics?
     let historicalMetrics: [BodyMetrics]
@@ -15,6 +65,7 @@ struct ProgressPhotoCutoutView: View {
     @State private var dragOffset: CGSize = .zero
     @State private var isDragging = false
     @EnvironmentObject var authManager: AuthManager
+    @StateObject private var processingService = ImageProcessingService.shared
     
     // Computed properties
     private var displayMetrics: [BodyMetrics] {
@@ -37,6 +88,25 @@ struct ProgressPhotoCutoutView: View {
         guard metricsIndex < historicalMetrics.count else { return nil }
         let metric = historicalMetrics[metricsIndex]
         return displayMetrics.firstIndex { $0.id == metric.id }
+    }
+    
+    // Accessibility label for photos
+    private func accessibilityLabel(for metric: BodyMetrics) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .long
+        let dateString = formatter.string(from: metric.date)
+        
+        var label = "Progress photo, \(dateString)"
+        
+        if let bodyFat = metric.bodyFatPercentage {
+            label += ", body fat \(String(format: "%.1f", bodyFat)) percent"
+        }
+        
+        if let weight = metric.weight {
+            label += ", weight \(Int(weight)) kilograms"
+        }
+        
+        return label
     }
     
     private var spotlightGradient: LinearGradient {
@@ -68,80 +138,68 @@ struct ProgressPhotoCutoutView: View {
     }
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Dynamic gradient spotlight
-                Circle()
-                    .fill(spotlightGradient)
-                    .frame(width: geometry.size.width * 1.2, height: geometry.size.width * 1.2)
-                    .blur(radius: 40)
-                    .offset(y: geometry.size.height * 0.3)
-                    .animation(.easeInOut(duration: 1.0), value: currentBodyFat)
-                    .edgeToEdge()
-                
-                if displayMetrics.isEmpty {
-                    // Placeholder when no photos
-                    PlaceholderSilhouetteView(gender: authManager.currentUser?.profile?.gender ?? "male")
-                } else {
-                    // Clean photo stack with depth cues
-                    ZStack {
-                        // Show up to 3 photos behind current
-                        ForEach(0..<min(3, selectedPhotoIndex), id: \.self) { offset in
-                            let photoIndex = selectedPhotoIndex - offset - 1
-                            if photoIndex >= 0 && photoIndex < displayMetrics.count {
-                                CutoutPhotoView(
-                                    photoUrl: displayMetrics[photoIndex].photoUrl,
-                                    scale: 0.95 - (Double(offset) * 0.03),
-                                    offset: CGSize(
-                                        width: -Double(offset + 1) * 15,
-                                        height: -Double(offset + 1) * 10
-                                    ),
-                                    opacity: 0.7 - (Double(offset) * 0.2),
-                                    blur: Double(offset) * 0.5
+        ZStack {
+            // Unified background that covers Dynamic Island
+            Color.appBackground
+                .ignoresSafeArea()
+            
+            GeometryReader { geometry in
+                ZStack {
+                    // Dynamic gradient spotlight
+                    Circle()
+                        .fill(spotlightGradient)
+                        .frame(width: geometry.size.width * 1.2, height: geometry.size.width * 1.2)
+                        .blur(radius: 40)
+                        .offset(y: geometry.size.height * 0.3)
+                        .animation(.easeInOut(duration: 1.0), value: currentBodyFat)
+                    
+                    if displayMetrics.isEmpty {
+                        // Placeholder when no photos
+                        PlaceholderSilhouetteView(gender: authManager.currentUser?.profile?.gender ?? "male")
+                    } else {
+                        // Proper carousel implementation with processing placeholders
+                        TabView(selection: $selectedPhotoIndex) {
+                            // Show existing photos
+                            ForEach(Array(displayMetrics.enumerated()), id: \.element.id) { index, metric in
+                                AnimatedPhotoContainer(
+                                    metric: metric,
+                                    isVisible: index == selectedPhotoIndex
                                 )
-                                .allowsHitTesting(false)
+                                .tag(index)
+                                .accessibilityElement()
+                                .accessibilityLabel(accessibilityLabel(for: metric))
+                                .accessibilityHint("Swipe left or right to view other photos")
+                            }
+                            
+                            // Show processing placeholders
+                            ForEach(processingService.processingTasks.filter { task in
+                                task.status != .completed && task.status != .failed
+                            }) { task in
+                                CutoutProcessingImagePlaceholder()
+                                    .tag(displayMetrics.count + (processingService.processingTasks.firstIndex(where: { $0.id == task.id }) ?? 0))
                             }
                         }
-                        
-                        // Current photo (interactive carousel)
-                        if selectedPhotoIndex < displayMetrics.count {
-                            TabView(selection: $selectedPhotoIndex) {
-                                ForEach(Array(displayMetrics.enumerated()), id: \.element.id) { index, metric in
-                                    CutoutPhotoView(
-                                        photoUrl: metric.photoUrl,
-                                        scale: 1.0,
-                                        offset: .zero,
-                                        opacity: 1.0,
-                                        showShadow: true
-                                    )
-                                    .tag(index)
-                                    .frame(width: geometry.size.width * 0.9)
-                                    .frame(maxHeight: geometry.size.height)
-                                }
+                        .tabViewStyle(.page(indexDisplayMode: .never))
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .animation(.easeInOut(duration: 0.3), value: selectedPhotoIndex)
+                        .onChange(of: selectedPhotoIndex) { _, newIndex in
+                            // Update timeline when photo changes
+                            if !isDragging, let metricsIdx = metricsIndex(for: newIndex) {
+                                HapticManager.shared.sliderChanged()
+                                selectedMetricsIndex = metricsIdx
                             }
-                            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                            .frame(height: geometry.size.height)
-                            .animation(.easeInOut, value: selectedPhotoIndex)
-                            .onChange(of: selectedPhotoIndex) { _, newIndex in
-                                // Update timeline when photo changes
-                                if let metricsIdx = metricsIndex(for: newIndex) {
-                                    selectedMetricsIndex = metricsIdx
-                                }
-                            }
-                            .gesture(
-                                DragGesture()
-                                    .onChanged { _ in
-                                        isDragging = true
-                                    }
-                                    .onEnded { _ in
-                                        isDragging = false
-                                    }
-                            )
                         }
+                        .simultaneousGesture(
+                            DragGesture()
+                                .onChanged { _ in
+                                    isDragging = true
+                                }
+                                .onEnded { _ in
+                                    isDragging = false
+                                }
+                        )
                     }
                 }
-                
-                // Remove metrics overlay since they're shown in the rings below
             }
         }
         .onAppear {
@@ -189,6 +247,46 @@ struct CutoutPhotoView: View {
                     x: 0,
                     y: 4
                 )
+            }
+        }
+    }
+}
+
+struct AnimatedPhotoContainer: View {
+    let metric: BodyMetrics
+    let isVisible: Bool
+    @State private var photoOpacity: Double = 0
+    
+    var body: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Each photo in its own container
+                CutoutPhotoView(
+                    photoUrl: metric.photoUrl,
+                    scale: 1.0,
+                    offset: .zero,
+                    opacity: 1.0,
+                    showShadow: true
+                )
+                .frame(width: geometry.size.width * 0.9)
+                .frame(maxHeight: geometry.size.height)
+                .clipped()
+                .opacity(photoOpacity)
+                .onAppear {
+                    // Fade in animation when photo appears
+                    withAnimation(.easeIn(duration: 0.3)) {
+                        photoOpacity = 1.0
+                    }
+                }
+                .onChange(of: isVisible) { _, newValue in
+                    if newValue {
+                        // Reset and fade in when becoming visible
+                        photoOpacity = 0
+                        withAnimation(.easeIn(duration: 0.3)) {
+                            photoOpacity = 1.0
+                        }
+                    }
+                }
             }
         }
     }

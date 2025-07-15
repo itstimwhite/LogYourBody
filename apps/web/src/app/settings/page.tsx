@@ -15,7 +15,8 @@ import {
   ChevronRight,
   ArrowLeft,
   Heart,
-  LogOut
+  LogOut,
+  Download
 } from 'lucide-react'
 import Link from 'next/link'
 import { MobileNavbar } from '@/components/MobileNavbar'
@@ -78,6 +79,13 @@ export default function SettingsPage() {
       icon: Heart,
       href: '/settings/subscription',
       badge: 'Free'
+    },
+    {
+      title: 'Export Data',
+      description: 'Download all your data',
+      icon: Download,
+      href: '/settings/data-export',
+      badge: null
     }
   ]
 

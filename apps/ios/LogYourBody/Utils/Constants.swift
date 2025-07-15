@@ -8,6 +8,10 @@
 import Foundation
 import SwiftUI
 
+extension Notification.Name {
+    static let profileUpdated = Notification.Name("profileUpdated")
+}
+
 struct Constants {
     // MARK: - App Info
     static let appName = "LogYourBody"
@@ -69,8 +73,8 @@ struct Constants {
     struct BodyComposition {
         // Body Fat Percentage
         struct BodyFat {
-            static let maleOptimalRange: ClosedRange<Double> = 6...10
-            static let maleIdealValue: Double = 8
+            static let maleOptimalRange: ClosedRange<Double> = 8...12
+            static let maleIdealValue: Double = 10
             static let femaleOptimalRange: ClosedRange<Double> = 16...20
             static let femaleIdealValue: Double = 18
         }

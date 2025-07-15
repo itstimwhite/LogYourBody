@@ -131,7 +131,7 @@ struct LoginView: View {
                         // Apple Sign In
                         Button(action: {
                             Task {
-                                await authManager.handleAppleSignIn()
+                                await authManager.signInWithAppleOAuth()
                             }
                         }) {
                             HStack {
@@ -176,13 +176,6 @@ struct LoginView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(errorMessage)
-        }
-        .onChange(of: authManager.authError) { _, error in
-            if let error = error {
-                errorMessage = error.localizedDescription
-                showError = true
-                authManager.authError = nil // Clear the error after showing
-            }
         }
         .onTapGesture {
             focusedField = nil

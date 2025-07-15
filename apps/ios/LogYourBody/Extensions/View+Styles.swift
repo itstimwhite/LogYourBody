@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-// MARK: - Linear-Inspired Text Field Style
-struct ModernTextFieldStyle: TextFieldStyle {
+// MARK: - Linear-Inspired Text Field Modifier
+struct ModernTextFieldModifier: ViewModifier {
     @FocusState private var isFocused: Bool
     
-    func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration
+    func body(content: Content) -> some View {
+        content
             .padding(.horizontal, 12)
             .padding(.vertical, 12)
             .background(
@@ -33,11 +33,12 @@ struct ModernTextFieldStyle: TextFieldStyle {
 }
 
 // MARK: - Linear-Inspired Primary Button Style
-struct ModernPrimaryButtonStyle: ButtonStyle {
+// NOTE: Temporarily using ViewModifier instead of ButtonStyle due to compilation issues
+struct ModernPrimaryButtonModifier: ViewModifier {
     @Environment(\.isEnabled) var isEnabled
     
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
+    func body(content: Content) -> some View {
+        content
             .font(.system(size: 15, weight: .medium))
             .foregroundColor(.white)
             .frame(maxWidth: .infinity)
@@ -46,16 +47,13 @@ struct ModernPrimaryButtonStyle: ButtonStyle {
                 Color.appPrimary.opacity(isEnabled ? 1 : 0.5)
             )
             .cornerRadius(6)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .opacity(configuration.isPressed ? 0.9 : 1.0)
-            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 
 // MARK: - Secondary Button Style
-struct SecondaryButtonStyle: ButtonStyle {
-    func makeBody(configuration: Self.Configuration) -> some View {
-        configuration.label
+struct ModernSecondaryButtonModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
             .font(.system(size: 15, weight: .medium))
             .foregroundColor(.appTextSecondary)
             .frame(maxWidth: .infinity)
@@ -65,11 +63,9 @@ struct SecondaryButtonStyle: ButtonStyle {
                     .stroke(Color.appBorder, lineWidth: 1)
             )
             .background(
-                Color.appCard.opacity(configuration.isPressed ? 0.5 : 0)
+                Color.appCard.opacity(0.3)
             )
             .cornerRadius(6)
-            .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 
@@ -157,11 +153,11 @@ struct SubtleShadow: ViewModifier {
 
 extension View {
     func modernPrimaryButtonStyle() -> some View {
-        self.buttonStyle(ModernPrimaryButtonStyle())
+        self.modifier(ModernPrimaryButtonModifier())
     }
     
-    func secondaryButtonStyle() -> some View {
-        self.buttonStyle(SecondaryButtonStyle())
+    func modernSecondaryButtonStyle() -> some View {
+        self.modifier(ModernSecondaryButtonModifier())
     }
     
     func modernCardStyle(noPadding: Bool = false) -> some View {
@@ -169,7 +165,7 @@ extension View {
     }
     
     func modernTextFieldStyle() -> some View {
-        textFieldStyle(ModernTextFieldStyle())
+        modifier(ModernTextFieldModifier())
     }
     
     func glassmorphism() -> some View {

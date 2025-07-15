@@ -9,7 +9,7 @@ import SwiftUI
 
 // MARK: - Button Style Enum
 
-enum ButtonStyle {
+enum StandardButtonStyle {
     case primary
     case secondary
     case tertiary
@@ -52,12 +52,12 @@ enum ButtonSize {
 // MARK: - Standard Button
 
 struct StandardButton: View {
-    @Environment(\.theme) var theme
+    
     @Environment(\.isEnabled) var isEnabled
     
     let title: String
     let icon: String?
-    let style: ButtonStyle
+    let style: StandardButtonStyle
     let size: ButtonSize
     let isLoading: Bool
     let fullWidth: Bool
@@ -68,7 +68,7 @@ struct StandardButton: View {
     init(
         _ title: String,
         icon: String? = nil,
-        style: ButtonStyle = .primary,
+        style: StandardButtonStyle = .primary,
         size: ButtonSize = .medium,
         isLoading: Bool = false,
         fullWidth: Bool = false,
@@ -86,11 +86,11 @@ struct StandardButton: View {
     var body: some View {
         Button(action: {
             if !isLoading {
-                theme.haptics.impact(.light)
+                // HapticManager.shared.impact(style: .light)
                 action()
             }
         }) {
-            HStack(spacing: theme.spacing.xs) {
+            HStack(spacing: 4) {
                 if isLoading {
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: foregroundColor))
@@ -110,16 +110,16 @@ struct StandardButton: View {
             .frame(height: size.height)
             .padding(.horizontal, size.horizontalPadding)
             .background(backgroundView)
-            .cornerRadius(theme.radius.button)
+            .cornerRadius(8)
             .overlay(overlayView)
             .scaleEffect(isPressed ? 0.97 : 1.0)
-            .animation(theme.animation.interactive, value: isPressed)
+            .animation(.easeOut(duration: 0.1), value: isPressed)
             .opacity(isEnabled && !isLoading ? 1.0 : 0.6)
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(isLoading || !isEnabled)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(theme.animation.ultraFast) {
+            withAnimation(.easeOut(duration: 0.1)) {
                 isPressed = pressing
             }
         }, perform: {})
@@ -130,15 +130,15 @@ struct StandardButton: View {
     private var foregroundColor: Color {
         switch style {
         case .primary:
-            return theme.colors.background
+            return Color.appBackground
         case .secondary:
-            return theme.colors.primary
+            return .appPrimary
         case .tertiary:
-            return theme.colors.text
+            return .primary
         case .destructive:
             return .white
         case .ghost:
-            return theme.colors.text
+            return .primary
         }
     }
     
@@ -146,13 +146,13 @@ struct StandardButton: View {
     private var backgroundView: some View {
         switch style {
         case .primary:
-            theme.colors.primary
+            Color.appPrimary
         case .secondary:
-            theme.colors.primary.opacity(0.1)
+            Color.appPrimary.opacity(0.1)
         case .tertiary:
-            theme.colors.surface
+            Color.appCard
         case .destructive:
-            theme.colors.error
+            Color.red
         case .ghost:
             Color.clear
         }
@@ -162,11 +162,11 @@ struct StandardButton: View {
     private var overlayView: some View {
         switch style {
         case .secondary:
-            RoundedRectangle(cornerRadius: theme.radius.button)
-                .stroke(theme.colors.primary.opacity(0.5), lineWidth: 1.5)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.appPrimary.opacity(0.5), lineWidth: 1.5)
         case .tertiary:
-            RoundedRectangle(cornerRadius: theme.radius.button)
-                .stroke(theme.colors.border, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 8)
+                .stroke(Color.appBorder, lineWidth: 1)
         default:
             EmptyView()
         }
@@ -176,7 +176,7 @@ struct StandardButton: View {
 // MARK: - Icon Button
 
 struct IconButton: View {
-    @Environment(\.theme) var theme
+    
     @Environment(\.isEnabled) var isEnabled
     
     let icon: String
@@ -197,19 +197,19 @@ struct IconButton: View {
     
     var body: some View {
         Button(action: {
-            theme.haptics.impact(.light)
+            // HapticManager.shared.impact(style: .light)
             action()
         }) {
             Image(systemName: icon)
                 .font(.system(size: size, weight: .medium))
-                .foregroundColor(theme.colors.text)
+                .foregroundColor(.primary)
                 .frame(width: size * 1.8, height: size * 1.8)
                 .background(
                     Circle()
-                        .fill(theme.colors.surface)
+                        .fill(Color.appCard)
                         .overlay(
                             Circle()
-                                .stroke(theme.colors.border, lineWidth: 1)
+                                .stroke(Color.appBorder, lineWidth: 1)
                         )
                 )
                 .scaleEffect(isPressed ? 0.9 : 1.0)
@@ -218,7 +218,7 @@ struct IconButton: View {
         .buttonStyle(PlainButtonStyle())
         .disabled(!isEnabled)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(theme.animation.ultraFast) {
+            withAnimation(.easeOut(duration: 0.1)) {
                 isPressed = pressing
             }
         }, perform: {})
@@ -228,7 +228,7 @@ struct IconButton: View {
 // MARK: - Text Button
 
 struct TextButton: View {
-    @Environment(\.theme) var theme
+    
     
     let title: String
     let color: Color?
@@ -246,12 +246,12 @@ struct TextButton: View {
     
     var body: some View {
         Button(action: {
-            theme.haptics.selection()
+            // HapticManager.shared.selection()
             action()
         }) {
             Text(title)
-                .font(theme.typography.labelMedium)
-                .foregroundColor(color ?? theme.colors.primary)
+                .font(.footnote)
+                .foregroundColor(color ?? .appPrimary)
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -260,7 +260,7 @@ struct TextButton: View {
 // MARK: - Floating Action Button
 
 struct FloatingActionButton: View {
-    @Environment(\.theme) var theme
+    
     
     let icon: String
     let action: () -> Void
@@ -269,7 +269,7 @@ struct FloatingActionButton: View {
     
     var body: some View {
         Button(action: {
-            theme.haptics.impact(.medium)
+            // HapticManager.shared.impact(style: .medium)
             action()
         }) {
             Image(systemName: icon)
@@ -278,9 +278,9 @@ struct FloatingActionButton: View {
                 .frame(width: 56, height: 56)
                 .background(
                     Circle()
-                        .fill(theme.colors.primary)
+                        .fill(Color.appPrimary)
                         .shadow(
-                            color: theme.colors.primary.opacity(0.3),
+                            color: Color.appPrimary.opacity(0.3),
                             radius: 8,
                             x: 0,
                             y: 4
@@ -290,7 +290,7 @@ struct FloatingActionButton: View {
         }
         .buttonStyle(PlainButtonStyle())
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(theme.animation.interactive) {
+            withAnimation(.easeOut(duration: 0.1)) {
                 isPressed = pressing
             }
         }, perform: {})

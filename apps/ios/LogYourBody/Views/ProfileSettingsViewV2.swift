@@ -37,11 +37,11 @@ struct ProfileSettingsViewV2: View {
     var body: some View {
         ZStack {
             // Background
-            Color(.systemGroupedBackground)
+            Color.appBackground
                 .ignoresSafeArea()
             
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 24) {
                     // Profile Header
                     profileHeader
                         .padding(.top)
@@ -69,7 +69,7 @@ struct ProfileSettingsViewV2: View {
                     additionalActionsSection
                 }
                 .padding(.horizontal)
-                .padding(.bottom, 30)
+                .padding(.bottom, 100)  // Increased to ensure delete account button is visible
             }
         }
         .navigationTitle("Profile")
@@ -79,11 +79,13 @@ struct ProfileSettingsViewV2: View {
                 if isSaving {
                     ProgressView()
                         .scaleEffect(0.8)
+                        .tint(.appPrimary)
                 } else if hasChanges {
                     Button("Save") {
                         saveProfile()
                     }
                     .fontWeight(.medium)
+                    .foregroundColor(.appPrimary)
                 }
             }
         }
@@ -159,48 +161,36 @@ struct ProfileSettingsViewV2: View {
                 Divider()
                     .padding(.leading, 16)
                 
-                // Gender Selector
+                // Gender Selector with modern segmented control
                 genderSelector
             }
-            .background(Color(.systemBackground))
-            .cornerRadius(10)
+            .background(Color.appCard)
+            .cornerRadius(12)
         }
     }
     
     private var genderSelector: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        HStack {
             Text("Biological Sex")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
+                .foregroundColor(.primary)
+                .font(.system(size: 16))
             
-            HStack(spacing: 0) {
+            Spacer()
+            
+            Picker("Biological Sex", selection: $editableGender) {
                 ForEach(OnboardingData.Gender.allCases, id: \.self) { gender in
-                    Button {
-                        editableGender = gender
-                        hasChanges = true
-                    } label: {
-                        Text(gender.rawValue)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(editableGender == gender ? .primary : .secondary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
-                            .background(
-                                editableGender == gender ?
-                                Color(.systemGray5) : Color.clear
-                            )
-                            .cornerRadius(6)
-                    }
+                    Text(gender.rawValue).tag(gender)
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 4)
-            .background(Color(.systemGray6))
-            .cornerRadius(8)
-            .padding(.horizontal, 16)
-            .padding(.bottom, 12)
+            .pickerStyle(SegmentedPickerStyle())
+            .frame(width: 140)
+            .scaleEffect(0.95) // Slightly smaller for better fit
+            .onChange(of: editableGender) { _, _ in
+                hasChanges = true
+            }
         }
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
     }
     
     private var physicalInformationCard: some View {
@@ -259,8 +249,8 @@ struct ProfileSettingsViewV2: View {
                     .padding(.vertical, 12)
                 }
             }
-            .background(Color(.systemBackground))
-            .cornerRadius(10)
+            .background(Color.appCard)
+            .cornerRadius(12)
         }
     }
     
@@ -298,8 +288,8 @@ struct ProfileSettingsViewV2: View {
                     .padding(.vertical, 12)
                 }
             }
-            .background(Color(.systemBackground))
-            .cornerRadius(10)
+            .background(Color.appCard)
+            .cornerRadius(12)
         }
     }
     
@@ -410,14 +400,15 @@ struct ProfileSettingsViewV2: View {
     private func sectionHeader(_ title: String) -> some View {
         HStack {
             Text(title)
-                .font(.footnote)
-                .fontWeight(.medium)
-                .foregroundColor(.secondary)
+                .font(.system(size: 13, weight: .medium))
+                .foregroundColor(.appTextSecondary)
                 .textCase(.uppercase)
+                .tracking(0.5)
             Spacer()
         }
-        .padding(.horizontal)
+        .padding(.horizontal, 16)
         .padding(.bottom, 8)
+        .padding(.top, 4)
     }
     
     @ViewBuilder
@@ -461,8 +452,8 @@ struct ProfileSettingsViewV2: View {
                     .fontWeight(.medium)
             }
             .padding()
-            .background(Color(.systemBackground))
-            .cornerRadius(10)
+            .background(Color.appCard)
+            .cornerRadius(12)
             .shadow(radius: 10)
             .padding(.bottom, 50)
         }
@@ -533,16 +524,9 @@ struct ProfileSettingsViewV2: View {
         
         Task {
             do {
-                // Update Clerk user if name changed
-                if let clerkUser = Clerk.shared.user {
-                    let nameComponents = editableName.trimmingCharacters(in: .whitespacesAndNewlines).components(separatedBy: " ")
-                    let firstName = nameComponents.first ?? ""
-                    let lastName = nameComponents.dropFirst().joined(separator: " ")
-                    
-                    try await clerkUser.update(.init(
-                        firstName: firstName.isEmpty ? nil : firstName,
-                        lastName: lastName.isEmpty ? nil : lastName
-                    ))
+                // Update name using consolidated method if changed
+                if editableName != currentUser.name {
+                    try await authManager.consolidateNameUpdate(editableName)
                 }
                 
                 // Calculate height in inches for storage
@@ -566,32 +550,26 @@ struct ProfileSettingsViewV2: View {
                 // Save to Core Data
                 CoreDataManager.shared.saveProfile(updatedProfile, userId: currentUser.id, email: currentUser.email)
                 
-                // Update auth manager
-                let updatedUser = User(
-                    id: currentUser.id,
-                    email: currentUser.email,
-                    name: editableName.isEmpty ? nil : editableName,
-                    avatarUrl: currentUser.avatarUrl,
-                    profile: updatedProfile,
-                    onboardingCompleted: currentUser.onboardingCompleted
-                )
+                // Update auth manager with proper sync
+                let updates: [String: Any] = [
+                    "name": editableName.isEmpty ? "" : editableName,
+                    "dateOfBirth": editableDateOfBirth,
+                    "height": heightInInches,
+                    "heightUnit": useMetricHeight ? "cm" : "in",
+                    "gender": editableGender.rawValue,
+                    "onboardingCompleted": true
+                ]
+                
+                await authManager.updateProfile(updates)
                 
                 await MainActor.run {
-                    authManager.currentUser = updatedUser
-                    
-                    // Save to UserDefaults
-                    if let userData = try? JSONEncoder().encode(updatedUser) {
-                        UserDefaults.standard.set(userData, forKey: Constants.currentUserKey)
-                    }
-                    
                     isSaving = false
                     withAnimation {
                         showingSaveSuccess = true
                     }
                     
-                    // Trigger sync
-                    // TODO: Uncomment when RealtimeSyncManager is added to project
-                    // syncManager.syncAll()
+                    // Force UI refresh
+                    NotificationCenter.default.post(name: .profileUpdated, object: nil)
                 }
             } catch {
                 await MainActor.run {

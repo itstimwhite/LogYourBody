@@ -19,7 +19,7 @@ enum HeaderStyle {
 // MARK: - Standard Header
 
 struct StandardHeader: View {
-    @Environment(\.theme) var theme
+    
     @Environment(\.dismiss) var dismiss
     
     let title: String
@@ -68,7 +68,7 @@ struct StandardHeader: View {
     // MARK: - Header Variants
     
     private var standardHeader: some View {
-        HStack(spacing: theme.spacing.md) {
+        HStack(spacing: 12) {
             // Leading items
             if showBackButton {
                 BackButton(action: backAction ?? { dismiss() })
@@ -77,14 +77,14 @@ struct StandardHeader: View {
             // Title
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(theme.typography.headlineSmall)
-                    .foregroundColor(theme.colors.text)
+                    .font(.subheadline)
+                    .foregroundColor(.primary)
                     .lineLimit(1)
                 
                 if let subtitle = subtitle {
                     Text(subtitle)
-                        .font(theme.typography.captionLarge)
-                        .foregroundColor(theme.colors.textSecondary)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
                         .lineLimit(1)
                 }
             }
@@ -92,19 +92,19 @@ struct StandardHeader: View {
             Spacer()
             
             // Trailing items
-            HStack(spacing: theme.spacing.sm) {
+            HStack(spacing: 8) {
                 ForEach(trailingItems) { action in
                     HeaderActionButton(action: action)
                 }
             }
         }
-        .padding(.horizontal, theme.spacing.screenPadding)
+        .padding(.horizontal, 16)
         .padding(.top, safeAreaTop)
-        .padding(.bottom, theme.spacing.sm)
+        .padding(.bottom, 8)
     }
     
     private var largeHeader: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.xs) {
+        VStack(alignment: .leading, spacing: 4) {
             // Top bar
             HStack {
                 if showBackButton {
@@ -113,7 +113,7 @@ struct StandardHeader: View {
                 
                 Spacer()
                 
-                HStack(spacing: theme.spacing.sm) {
+                HStack(spacing: 8) {
                     ForEach(trailingItems) { action in
                         HeaderActionButton(action: action)
                     }
@@ -121,24 +121,24 @@ struct StandardHeader: View {
             }
             
             // Large title
-            VStack(alignment: .leading, spacing: theme.spacing.xxs) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(title)
-                    .font(theme.typography.displaySmall)
-                    .foregroundColor(theme.colors.text)
+                    .font(.largeTitle)
+                    .foregroundColor(.primary)
                     .lineLimit(2)
                 
                 if let subtitle = subtitle {
                     Text(subtitle)
-                        .font(theme.typography.bodyMedium)
-                        .foregroundColor(theme.colors.textSecondary)
+                        .font(.body)
+                        .foregroundColor(.secondary)
                         .lineLimit(2)
                 }
             }
-            .padding(.top, theme.spacing.xs)
+            .padding(.top, 4)
         }
-        .padding(.horizontal, theme.spacing.screenPadding)
+        .padding(.horizontal, 16)
         .padding(.top, safeAreaTop)
-        .padding(.bottom, theme.spacing.md)
+        .padding(.bottom, 12)
     }
     
     private var minimalHeader: some View {
@@ -150,8 +150,8 @@ struct StandardHeader: View {
             Spacer()
             
             Text(title)
-                .font(theme.typography.labelLarge)
-                .foregroundColor(theme.colors.text)
+                .font(.callout)
+                .foregroundColor(.primary)
             
             Spacer()
             
@@ -161,9 +161,9 @@ struct StandardHeader: View {
                     .frame(width: 44, height: 44)
             }
         }
-        .padding(.horizontal, theme.spacing.screenPadding)
+        .padding(.horizontal, 16)
         .padding(.top, safeAreaTop)
-        .padding(.bottom, theme.spacing.xs)
+        .padding(.bottom, 4)
     }
     
     // MARK: - Computed Properties
@@ -174,12 +174,12 @@ struct StandardHeader: View {
         case .transparent:
             Color.clear
         default:
-            theme.colors.background
+            Color.appBackground
                 .overlay(
                     VStack {
                         Spacer()
                         Divider()
-                            .background(theme.colors.border)
+                            .background(Color.appBorder)
                     }
                 )
         }
@@ -219,24 +219,24 @@ struct HeaderAction: Identifiable {
 // MARK: - Header Action Button
 
 struct HeaderActionButton: View {
-    @Environment(\.theme) var theme
+    
     
     let action: HeaderAction
     @State private var isPressed = false
     
     var body: some View {
         Button(action: {
-            theme.haptics.impact(.light)
+            // HapticManager.shared.impact(style: .light)
             action.action()
         }) {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: action.icon)
                     .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(theme.colors.text)
+                    .foregroundColor(.primary)
                     .frame(width: 44, height: 44)
                     .background(
                         Circle()
-                            .fill(theme.colors.surface)
+                            .fill(Color.appCard)
                     )
                 
                 // Badge
@@ -248,7 +248,7 @@ struct HeaderActionButton: View {
                         .padding(.horizontal, 4)
                         .background(
                             Capsule()
-                                .fill(theme.colors.error)
+                                .fill(.red)
                         )
                         .offset(x: 6, y: -6)
                 }
@@ -257,7 +257,7 @@ struct HeaderActionButton: View {
         }
         .buttonStyle(PlainButtonStyle())
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(theme.animation.ultraFast) {
+            withAnimation(.easeOut(duration: 0.1)) {
                 isPressed = pressing
             }
         }, perform: {})
@@ -267,34 +267,34 @@ struct HeaderActionButton: View {
 // MARK: - Back Button
 
 struct BackButton: View {
-    @Environment(\.theme) var theme
+    
     
     let action: () -> Void
     @State private var isPressed = false
     
     var body: some View {
         Button(action: {
-            theme.haptics.impact(.light)
+            // HapticManager.shared.impact(style: .light)
             action()
         }) {
             HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .semibold))
                 Text("Back")
-                    .font(theme.typography.labelMedium)
+                    .font(.footnote)
             }
-            .foregroundColor(theme.colors.primary)
+            .foregroundColor(.appPrimary)
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
             .background(
                 Capsule()
-                    .fill(theme.colors.primary.opacity(0.1))
+                    .fill(Color.appPrimary.opacity(0.1))
             )
             .scaleEffect(isPressed ? 0.95 : 1.0)
         }
         .buttonStyle(PlainButtonStyle())
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(theme.animation.ultraFast) {
+            withAnimation(.easeOut(duration: 0.1)) {
                 isPressed = pressing
             }
         }, perform: {})
@@ -304,7 +304,7 @@ struct BackButton: View {
 // MARK: - Progress Header
 
 struct ProgressHeader: View {
-    @Environment(\.theme) var theme
+    
     
     let title: String
     let progress: Double
@@ -325,14 +325,14 @@ struct ProgressHeader: View {
                 ZStack(alignment: .leading) {
                     // Background
                     Rectangle()
-                        .fill(theme.colors.surfaceTertiary)
+                        .fill(Color.appCard.opacity(0.5))
                         .frame(height: 3)
                     
                     // Progress
                     Rectangle()
-                        .fill(theme.colors.primary)
+                        .fill(Color.appPrimary)
                         .frame(width: geometry.size.width * progress, height: 3)
-                        .animation(theme.animation.medium, value: progress)
+                        .animation(.easeInOut(duration: 0.3), value: progress)
                 }
             }
             .frame(height: 3)
@@ -343,7 +343,7 @@ struct ProgressHeader: View {
 // MARK: - Scrollable Header Wrapper
 
 struct ScrollableHeaderView<Content: View>: View {
-    @Environment(\.theme) var theme
+    
     
     let header: StandardHeader
     @ViewBuilder let content: () -> Content
@@ -380,9 +380,9 @@ struct ScrollableHeaderView<Content: View>: View {
             // Fixed header
             header
                 .background(
-                    theme.colors.background
+                    Color.appBackground
                         .opacity(scrollOffset < -10 ? 1 : 0)
-                        .animation(theme.animation.fast, value: scrollOffset)
+                        .animation(.easeOut(duration: 0.2), value: scrollOffset)
                 )
         }
     }

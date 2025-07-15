@@ -97,17 +97,18 @@ class PhotoUploadManager: ObservableObject {
         }
         
         do {
-            // Step 1: Remove background on device
+            // Step 1: Process image with Vision framework
             updateUploadStatus(.preparing, progress: 0.1)
-            print("📸 PhotoUploadManager: Removing background on device")
+            print("📸 PhotoUploadManager: Processing image with Vision framework")
             
-            let processedImage = try await BackgroundRemovalService.shared.removeBackground(from: image)
-            print("✅ PhotoUploadManager: Background removed successfully")
+            let processedResult = try await ImageProcessingService.shared.processImage(image, imageId: UUID().uuidString)
+            let orientedProcessedImage = processedResult.finalImage
+            print("✅ PhotoUploadManager: Image processed successfully (cropped, aligned, background removed)")
             
             // Step 2: Prepare image for upload (PNG to preserve transparency)
             updateUploadStatus(.preparing, progress: 0.2)
             print("📸 PhotoUploadManager: Preparing image for upload")
-            guard let imageData = BackgroundRemovalService.shared.prepareForUpload(processedImage) else {
+            guard let imageData = BackgroundRemovalService.shared.prepareForUpload(orientedProcessedImage) else {
                 print("❌ PhotoUploadManager: Failed to prepare image")
                 throw PhotoError.imageConversionFailed
             }
@@ -160,9 +161,13 @@ class PhotoUploadManager: ObservableObject {
     // MARK: - Private Methods
     
     private func prepareImageForUpload(_ image: UIImage) -> Data? {
+        // For regular uploads, we'll use the simple orientation fix
+        // Vision-based correction is used for progress photos after background removal
+        let orientedImage = image.fixedOrientation()
+        
         // Resize image if needed to max 2048px on longest side
         let maxDimension: CGFloat = 2048
-        let size = image.size
+        let size = orientedImage.size
         
         var targetSize = size
         if size.width > maxDimension || size.height > maxDimension {
@@ -180,7 +185,7 @@ class PhotoUploadManager: ObservableObject {
         
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
         let resizedImage = renderer.image { context in
-            image.draw(in: CGRect(origin: .zero, size: targetSize))
+            orientedImage.draw(in: CGRect(origin: .zero, size: targetSize))
         }
         
         // Convert to JPEG with 85% quality
@@ -394,5 +399,18 @@ class PhotoUploadManager: ObservableObject {
                 error: nil
             )
         }
+    }
+}
+
+// MARK: - UIImage Extension for Orientation Fix
+extension UIImage {
+    func fixedOrientation() -> UIImage {
+        guard imageOrientation != .up else { return self }
+        
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        defer { UIGraphicsEndImageContext() }
+        
+        draw(in: CGRect(origin: .zero, size: size))
+        return UIGraphicsGetImageFromCurrentImageContext() ?? self
     }
 }

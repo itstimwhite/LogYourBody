@@ -12,7 +12,7 @@ struct OnboardingData {
     var dateOfBirth: Date?
     var heightFeet: Int = 5
     var heightInches: Int = 8
-    var gender: Gender?
+    var gender: Gender? = .male  // Default to male
     var notificationsEnabled: Bool = false
     var healthKitEnabled: Bool = false
     var hasUploadedPhotos: Bool = false

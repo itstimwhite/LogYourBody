@@ -32,143 +32,115 @@ struct ProfilePreparationView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Horizontal stepper at top
-            HStack(spacing: 0) {
-                ForEach(0..<4) { index in
-                    if index > 0 {
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 0.5)
-                            .frame(maxWidth: .infinity)
-                    }
-                    
-                    ZStack {
-                        Circle()
-                            .stroke(currentStepIndex >= index ? Color.accentColor : Color.gray.opacity(0.3), lineWidth: 2)
-                            .frame(width: 28, height: 28)
-                            .background(
-                                Circle()
-                                    .fill(currentStepIndex > index ? Color.accentColor : Color.clear)
-                            )
-                        
-                        Image(systemName: stepIcon(for: index))
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(currentStepIndex > index ? .white : (currentStepIndex == index ? .accentColor : .gray))
-                    }
-                }
-            }
-            .padding(.horizontal, 40)
-            .padding(.top, 20)
-            .padding(.bottom, 32)
+            Spacer()
+                .frame(height: 60)
             
             // Title & subtitle
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(spacing: 16) {
                 Text("Getting Your Profile Ready")
-                    .font(.system(size: 34, weight: .bold, design: .default))
-                    .foregroundColor(.primary)
+                    .font(.system(size: 32, weight: .bold))
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
                 
                 Text("Just a moment while we set everything up...")
-                    .font(.system(size: 17))
-                    .foregroundColor(.secondary)
+                    .font(.system(size: 16))
+                    .foregroundColor(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 20)
-            .padding(.bottom, 32)
+            .padding(.horizontal, 32)
+            .padding(.bottom, 48)
             
             // Step list
-            List {
+            VStack(spacing: 24) {
                 ForEach(Array(preparationSteps.enumerated()), id: \.element.id) { index, step in
-                    HStack(spacing: 16) {
+                    HStack(spacing: 20) {
                         // Icon or progress indicator
                         ZStack {
+                            Circle()
+                                .fill(Color.white.opacity(0.1))
+                                .frame(width: 48, height: 48)
+                            
                             if step.status == .inProgress {
                                 ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .accentColor))
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
                                     .scaleEffect(0.8)
                                     .transition(.opacity)
                             } else if step.status == .completed {
                                 Image(systemName: "checkmark")
-                                    .font(.system(size: 17, weight: .semibold))
-                                    .foregroundColor(.primary)
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
                                     .transition(.scale.combined(with: .opacity))
                                     .scaleEffect(step.status == .completed ? 1 : 0.5)
                                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: step.status)
                             } else {
                                 Image(systemName: step.icon)
-                                    .font(.system(size: 17))
-                                    .foregroundStyle(.tertiary)
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.white.opacity(0.5))
                             }
                         }
-                        .frame(width: 24, height: 24)
                         
                         Text(step.title)
                             .font(.system(size: 17))
-                            .foregroundStyle(
-                                step.status == .completed ? AnyShapeStyle(.primary) :
-                                step.status == .inProgress ? AnyShapeStyle(.primary) :
-                                AnyShapeStyle(.tertiary)
+                            .foregroundColor(
+                                step.status == .completed ? .white :
+                                step.status == .inProgress ? .white :
+                                .white.opacity(0.5)
                             )
                         
                         Spacer()
                     }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 8, trailing: 20))
-                    .accessibilityLabel("Step \(index + 1) of 4: \(step.title)—\(accessibilityStatus(for: step.status))")
+                    .accessibilityLabel("Step \(index + 1): \(step.title)—\(accessibilityStatus(for: step.status))")
                 }
             }
-            .listStyle(PlainListStyle())
-            .scrollDisabled(true)
-            .frame(height: CGFloat(preparationSteps.count) * 56)
+            .padding(.horizontal, 32)
             
             // Photo upload progress (if applicable)
             if uploadService.totalCount > 0 {
-                VStack(spacing: 8) {
+                VStack(spacing: 12) {
                     // Progress bar
                     GeometryReader { geometry in
                         ZStack(alignment: .leading) {
-                            Rectangle()
-                                .fill(Color.gray.opacity(0.2))
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(Color.white.opacity(0.2))
                                 .frame(height: 4)
                             
-                            Rectangle()
-                                .fill(Color.accentColor)
+                            RoundedRectangle(cornerRadius: 2)
+                                .fill(Color.white)
                                 .frame(width: geometry.size.width * uploadService.totalProgress, height: 4)
                                 .animation(.linear(duration: 0.3), value: uploadService.totalProgress)
                         }
                     }
                     .frame(height: 4)
-                    .padding(.horizontal, 20)
+                    .padding(.horizontal, 32)
                     
                     Text(uploadService.uploadSummary)
                         .font(.system(size: 14))
-                        .foregroundColor(.secondary)
+                        .foregroundColor(.white.opacity(0.7))
                 }
-                .padding(.top, 16)
+                .padding(.top, 32)
             }
             
             Spacer()
             
             // Continue button (shows when ready)
             if showContinueButton {
-                VStack(spacing: 12) {
-                    Button(action: onComplete) {
-                        Text("Go to Dashboard")
-                            .font(.system(size: 17, weight: .semibold))
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(Color.accentColor)
-                            .cornerRadius(12)
-                    }
+                VStack(spacing: 16) {
+                    LiquidGlassCTAButton(
+                        text: "Go to Dashboard",
+                        icon: "arrow.right",
+                        action: onComplete,
+                        isEnabled: true
+                    )
                     
                     if uploadService.isUploading {
                         Text("Photos will continue uploading in the background")
-                            .font(.system(size: 13))
-                            .foregroundColor(.secondary)
+                            .font(.system(size: 14))
+                            .foregroundColor(.white.opacity(0.6))
                             .multilineTextAlignment(.center)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 40)
+                .padding(.horizontal, 32)
+                .padding(.bottom, 50)
                 .transition(.opacity.combined(with: .move(edge: .bottom)))
             }
         }

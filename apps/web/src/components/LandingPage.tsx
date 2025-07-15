@@ -33,6 +33,7 @@ import { LandingTimelineDemo } from "./LandingTimelineDemo";
 import { StepTrackerSection } from "./StepTrackerModule";
 import { LandingPredictionSection } from "./LandingPredictionSection";
 import { FeaturesFlyout } from "./FeaturesFlyout";
+import { Prefooter } from "./Prefooter";
 
 export function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
@@ -1024,6 +1025,9 @@ export function LandingPage() {
           </div>
         </section>
       </main>
+
+      {/* Prefooter - using minimal variant for variety */}
+      <Prefooter variant="minimal" />
 
       {/* Footer */}
       <Footer />

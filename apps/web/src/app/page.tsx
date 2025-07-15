@@ -30,6 +30,7 @@ import { Header } from "@/components/Header";
 import { LandingTimelineDemo } from "@/components/LandingTimelineDemo";
 import { StepTrackerSection } from "@/components/StepTrackerModule";
 import { LandingPredictionSection } from "@/components/LandingPredictionSection";
+import { Prefooter } from "@/components/Prefooter";
 import { APP_CONFIG } from "@/constants/app";
 
 export default function HomePage() {
@@ -453,6 +454,9 @@ export default function HomePage() {
           </div>
         </section>
       </main>
+
+      {/* Prefooter - showcasing the new component */}
+      <Prefooter variant="default" />
 
       <Footer />
     </div>

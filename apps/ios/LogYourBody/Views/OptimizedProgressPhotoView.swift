@@ -198,19 +198,6 @@ struct OptimizedProgressPhotoView: View {
     }
 }
 
-// Extension to fix image orientation
-extension UIImage {
-    func fixedOrientation() -> UIImage {
-        guard imageOrientation != .up else { return self }
-        
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        defer { UIGraphicsEndImageContext() }
-        
-        draw(in: CGRect(origin: .zero, size: size))
-        return UIGraphicsGetImageFromCurrentImageContext() ?? self
-    }
-}
-
 // Extension to preload images for smooth scrolling
 extension OptimizedProgressPhotoView {
     static func preloadImages(urls: [String]) {

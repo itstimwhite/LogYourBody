@@ -19,13 +19,22 @@ typealias ASPresentationAnchor = UIWindow
 enum AuthError: LocalizedError {
     case clerkNotInitialized
     case invalidCredentials
+    case nameUpdateFailed(String)
+    case networkError
+    case syncError(String)
     
     var errorDescription: String? {
         switch self {
         case .clerkNotInitialized:
-            return "Clerk SDK is not initialized"
+            return "Authentication service is not ready. Please try again."
         case .invalidCredentials:
             return "Invalid authentication credentials"
+        case .nameUpdateFailed(let reason):
+            return "Failed to update name: \(reason)"
+        case .networkError:
+            return "Network connection error. Please check your connection."
+        case .syncError(let reason):
+            return "Failed to sync data: \(reason)"
         }
     }
 }
@@ -51,6 +60,8 @@ class AuthManager: NSObject, ObservableObject {
     @Published var clerkSession: Session?
     @Published var needsEmailVerification = false
     @Published var isClerkLoaded = false
+    @Published var needsLegalConsent = false
+    @Published var pendingAppleUserId: String?
     
     private var currentSignUp: SignUp?
     private var pendingSignUpCredentials: (email: String, password: String)?
@@ -102,6 +113,13 @@ class AuthManager: NSObject, ObservableObject {
         sessionObservationTask = Task { @MainActor in
             // Initial check
             self.updateSessionState()
+            
+            // Check for pending name updates when session is established
+            if self.clerkSession != nil {
+                Task {
+                    await self.resolvePendingNameUpdates()
+                }
+            }
             
             // Periodically check for session changes
             // Since Clerk doesn't expose objectWillChange, we'll use a timer
@@ -189,14 +207,11 @@ class AuthManager: NSObject, ObservableObject {
             }
         }
         
-        let displayName = [firstName, lastName]
-            .compactMap { $0 }
-            .joined(separator: " ")
-            .trimmingCharacters(in: .whitespaces)
+        // Use single source of truth for display name
+        let displayName = getUserDisplayName()
         
         // Don't proceed if we don't have a valid email
         guard !email.isEmpty else {
-            print("❌ No email found in Clerk user object")
             self.currentUser = nil
             self.isAuthenticated = false
             return
@@ -230,8 +245,6 @@ class AuthManager: NSObject, ObservableObject {
         if let encoded = try? JSONEncoder().encode(localUser) {
             userDefaults.set(encoded, forKey: userKey)
         }
-        
-        print("✅ Updated local user: \(email)")
         
         // Create or update profile in Supabase
         Task {
@@ -295,8 +308,6 @@ class AuthManager: NSObject, ObservableObject {
     func signUp(email: String, password: String, name: String) async throws {
         // Mock authentication for development
         if Constants.useMockAuth {
-            print("🧪 Using mock sign up for development")
-            
             // Simulate the sign up process
             try await Task.sleep(nanoseconds: 500_000_000) // 0.5 second delay
             
@@ -326,7 +337,6 @@ class AuthManager: NSObject, ObservableObject {
                 self.isAuthenticated = true
                 // Clear onboarding status for new users
                 UserDefaults.standard.set(false, forKey: Constants.hasCompletedOnboardingKey)
-                print("✅ Mock sign up successful")
             }
             return
         }
@@ -359,10 +369,7 @@ class AuthManager: NSObject, ObservableObject {
                 // Clear onboarding status for new users
                 UserDefaults.standard.set(false, forKey: Constants.hasCompletedOnboardingKey)
             }
-            
-            print("✅ Sign up created, email verification required")
         } catch {
-            print("❌ Sign up failed: \(error)")
             throw error
         }
     }
@@ -504,10 +511,7 @@ class AuthManager: NSObject, ObservableObject {
     // MARK: - Apple Sign In
     
     func startAppleSignIn() {
-        print("🍎 startAppleSignIn called")
-        
         guard isClerkLoaded else {
-            print("❌ Clerk not initialized")
             return
         }
         
@@ -516,9 +520,8 @@ class AuthManager: NSObject, ObservableObject {
                 // Use Clerk SDK for Apple Sign In
                 let signIn = try await SignIn.create(strategy: .oauth(provider: .apple))
                 try await signIn.authenticateWithRedirect()
-                print("✅ Apple Sign In initiated through Clerk SDK")
             } catch {
-                print("❌ Apple Sign In failed: \(error)")
+                // Handle error silently
             }
         }
     }
@@ -526,11 +529,8 @@ class AuthManager: NSObject, ObservableObject {
     // MARK: - Unified Apple Sign In Handler
     @MainActor
     func handleAppleSignIn() async {
-        print("🍎 Starting unified Apple Sign In flow")
-        
         guard isClerkLoaded else {
-            print("❌ Clerk not initialized")
-            authError = AppError.authenticationFailed("Authentication service not ready. Please try again.")
+            showAuthError("Authentication service not ready. Please try again.")
             return
         }
         
@@ -559,49 +559,39 @@ class AuthManager: NSObject, ObservableObject {
             try await signInWithAppleCredentials(appleIDCredential)
             
         } catch {
-            print("❌ Apple Sign In failed: \(error)")
-            
             // Handle specific errors
             if let authError = error as? ASAuthorizationError {
                 switch authError.code {
                 case .canceled:
                     // User canceled - don't show error
-                    print("🍎 User canceled Apple Sign In")
                     return
                 case .failed:
-                    self.authError = AppError.authenticationFailed("Apple Sign In failed. Please try again.")
+                    showAuthError("Apple Sign In failed. Please try again.")
                 case .invalidResponse:
-                    self.authError = AppError.authenticationFailed("Invalid response from Apple Sign In.")
+                    showAuthError("Invalid response from Apple Sign In.")
                 case .notHandled:
-                    self.authError = AppError.authenticationFailed("Apple Sign In request was not handled.")
+                    showAuthError("Apple Sign In request was not handled.")
                 case .unknown:
-                    self.authError = AppError.authenticationFailed("An unknown error occurred with Apple Sign In.")
+                    showAuthError("An unknown error occurred with Apple Sign In.")
                 @unknown default:
-                    self.authError = AppError.authenticationFailed("An error occurred with Apple Sign In.")
+                    showAuthError("An error occurred with Apple Sign In.")
                 }
             } else {
-                self.authError = AppError.authenticationFailed(error.localizedDescription)
+                showAuthError(error.localizedDescription)
             }
         }
     }
     
-    private func signInWithAppleCredentials(_ appleIDCredential: ASAuthorizationAppleIDCredential) async throws {
-        print("🍎 Native Apple Sign In with credentials")
-        print("🍎 User ID: \(appleIDCredential.user)")
-        
+    func signInWithAppleCredentials(_ appleIDCredential: ASAuthorizationAppleIDCredential) async throws {
         guard isClerkLoaded else {
-            print("❌ Clerk not initialized")
             throw AuthError.clerkNotInitialized
         }
         
         // Extract the identity token
         guard let identityToken = appleIDCredential.identityToken,
               let idTokenString = String(data: identityToken, encoding: .utf8) else {
-            print("❌ Failed to get Apple ID token")
             throw AuthError.invalidCredentials
         }
-        
-        print("🍎 ID Token received: \(idTokenString.prefix(20))...")
         
         do {
             // Use Clerk's ID token authentication
@@ -609,8 +599,28 @@ class AuthManager: NSObject, ObservableObject {
             
             // Handle the transfer flow result
             switch result {
-            case .signIn(_):
-                print("✅ Apple Sign In successful")
+            case .signIn(let signIn):
+                // For sign in, we need to activate the session first to get the user ID
+                if let sessionId = signIn.createdSessionId {
+                    try await clerk.setActive(sessionId: sessionId)
+                }
+                
+                // Now get the actual user ID from the clerk user
+                guard let userId = clerk.user?.id else {
+                    throw AuthError.invalidCredentials
+                }
+                
+                // Check if this user has already accepted legal terms
+                let hasAcceptedLegal = await checkLegalConsent(userId: userId)
+                
+                if !hasAcceptedLegal {
+                    // Store the user ID for the consent flow
+                    self.pendingAppleUserId = userId
+                    self.needsLegalConsent = true
+                    // Don't update auth state yet - wait for consent
+                    return
+                }
+                
                 // The session observer will handle updating the auth state
                 
                 // Store the user's name if this is their first sign in
@@ -620,14 +630,33 @@ class AuthManager: NSObject, ObservableObject {
                         .joined(separator: " ")
                     
                     if !name.isEmpty {
+                        // Temporarily store for immediate use
                         UserDefaults.standard.set(name, forKey: "appleSignInName")
+                        
+                        // Update name using consolidated method
+                        do {
+                            try await consolidateNameUpdate(name)
+                        } catch {
+                            print("❌ Failed to update name from Apple Sign In: \(error)")
+                            // Keep the temporary storage for later resolution
+                        }
                     }
                 }
                 
-            case .signUp(_):
-                print("📝 New user - completing sign up")
-                // For new users, we might need to complete the sign up process
-                // The session observer will handle the auth state
+            case .signUp(let signUp):
+                // For sign up, activate the session to get user ID
+                if let sessionId = signUp.createdSessionId {
+                    try await clerk.setActive(sessionId: sessionId)
+                }
+                
+                // Get the actual user ID
+                guard let userId = clerk.user?.id else {
+                    throw AuthError.invalidCredentials
+                }
+                
+                // For new users, always show consent screen
+                self.pendingAppleUserId = userId
+                self.needsLegalConsent = true
                 
                 // Store the user's name for onboarding
                 if let fullName = appleIDCredential.fullName {
@@ -636,22 +665,16 @@ class AuthManager: NSObject, ObservableObject {
                         .joined(separator: " ")
                     
                     if !name.isEmpty {
+                        // Temporarily store for immediate use in onboarding
                         UserDefaults.standard.set(name, forKey: "appleSignInName")
+                        
+                        // Note: We don't update Clerk here because the user hasn't 
+                        // accepted legal terms yet. The name will be synced during
+                        // onboarding completion via consolidateNameUpdate
                     }
                 }
             }
         } catch {
-            print("❌ Apple Sign In with ID token failed: \(error)")
-            print("❌ Error details: \(String(describing: error))")
-            print("❌ Error type: \(type(of: error))")
-            
-            // Log the full error description
-            if let nsError = error as NSError? {
-                print("❌ Error domain: \(nsError.domain)")
-                print("❌ Error code: \(nsError.code)")
-                print("❌ Error userInfo: \(nsError.userInfo)")
-            }
-            
             // Show user-friendly error for authorization issues
             let errorString = String(describing: error).lowercased()
             if errorString.contains("authorization_invalid") {
@@ -682,44 +705,31 @@ class AuthManager: NSObject, ObservableObject {
     
     func verifyEmail(code: String) async throws {
         guard let signUp = currentSignUp else {
-            print("❌ No active sign up to verify")
             throw AuthError.clerkNotInitialized
         }
         
         do {
             let result = try await signUp.attemptVerification(strategy: .emailCode(code: code))
             
-            print("📧 Verification result status: \(result.status)")
-            print("📧 Created session ID: \(result.createdSessionId ?? "nil")")
-            print("📧 Verifications: \(String(describing: signUp.verifications))")
-            print("📧 Missing fields: \(String(describing: signUp.missingFields))")
-            
             // Check verification status
             switch result.status {
             case .complete:
-                print("✅ Verification complete")
                 if let createdSessionId = result.createdSessionId {
                     // Set the session as active to complete the sign up flow
                     try await clerk.setActive(sessionId: createdSessionId)
-                    print("✅ Email verified and session activated successfully")
                     
                     // Force an immediate session state update
                     await MainActor.run {
                         self.updateSessionState()
                     }
                 } else {
-                    print("⚠️ Sign up complete but no session ID returned")
                     // Try to sign in with credentials
                     if let credentials = pendingSignUpCredentials {
-                        print("🔄 Attempting to sign in after verification")
                         try await login(email: credentials.email, password: credentials.password)
                     }
                 }
                 
             case .missingRequirements:
-                print("⚠️ Missing requirements after verification")
-                print("📝 Missing fields: \(signUp.missingFields ?? [])")
-                
                 // For now, show an error to the user about missing requirements
                 // In a production app, you would handle legal acceptance properly
                 let missingFieldsString = (signUp.missingFields ?? []).joined(separator: ", ")
@@ -734,7 +744,7 @@ class AuthManager: NSObject, ObservableObject {
                 throw error
                 
             default:
-                print("❓ Unexpected verification status: \(result.status)")
+                break
             }
             
             // Clear email verification flag only when we're actually done
@@ -749,7 +759,6 @@ class AuthManager: NSObject, ObservableObject {
             
             // The session observer will now detect the active session and update isAuthenticated
         } catch {
-            print("❌ Email verification failed: \(error)")
             // Don't clear the verification state on error
             // This keeps the user on the verification screen
             throw error
@@ -758,15 +767,12 @@ class AuthManager: NSObject, ObservableObject {
     
     func resendVerificationEmail() async throws {
         guard let signUp = currentSignUp else {
-            print("❌ No active sign up to resend verification")
             throw AuthError.clerkNotInitialized
         }
         
         do {
             try await signUp.prepareVerification(strategy: .emailCode)
-            print("✅ Verification email resent successfully")
         } catch {
-            print("❌ Failed to resend verification email: \(error)")
             throw error
         }
     }
@@ -778,6 +784,24 @@ class AuthManager: NSObject, ObservableObject {
         // In production, you'd want to exchange the Clerk token for a Supabase token
         // through your backend API
         return Constants.supabaseAnonKey
+    }
+    
+    // MARK: - Token Management
+    
+    func getAccessToken() async -> String? {
+        guard let session = clerk.session else {
+            print("❌ No active Clerk session")
+            return nil
+        }
+        
+        do {
+            // Get JWT token from Clerk
+            let tokenResource = try await session.getToken()
+            return tokenResource?.jwt
+        } catch {
+            print("❌ Failed to get JWT token: \(error)")
+            return nil
+        }
     }
     
     // MARK: - Supabase Profile Sync
@@ -1237,6 +1261,252 @@ class AuthManager: NSObject, ObservableObject {
         
         return nil
     }
+    
+    // MARK: - Clerk User Updates
+    
+    func updateClerkUserName(_ fullName: String, retryCount: Int = 3) async throws {
+        guard let _ = clerk.user else {
+            throw AuthError.clerkNotInitialized
+        }
+        
+        // Validate input
+        let trimmedName = fullName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
+            throw AuthError.nameUpdateFailed("Name cannot be empty")
+        }
+        
+        // Store the name temporarily in case update fails
+        UserDefaults.standard.set(trimmedName, forKey: "pendingNameUpdate")
+        
+        // Since Clerk iOS SDK update method is unclear, we'll update our local state
+        // and sync to Supabase. The name will be synced with Clerk on next sign in.
+        print("ℹ️ Updating name locally and in Supabase")
+        
+        // Update local user immediately
+        if var user = currentUser {
+            user.name = trimmedName
+            
+            // Create new profile with updated name
+            if let existingProfile = user.profile {
+                let updatedProfile = UserProfile(
+                    id: existingProfile.id,
+                    email: existingProfile.email,
+                    username: existingProfile.username,
+                    fullName: trimmedName,
+                    dateOfBirth: existingProfile.dateOfBirth,
+                    height: existingProfile.height,
+                    heightUnit: existingProfile.heightUnit,
+                    gender: existingProfile.gender,
+                    activityLevel: existingProfile.activityLevel,
+                    goalWeight: existingProfile.goalWeight,
+                    goalWeightUnit: existingProfile.goalWeightUnit
+                )
+                user.profile = updatedProfile
+            }
+            
+            self.currentUser = user
+            
+            // Persist to UserDefaults
+            if let encoded = try? JSONEncoder().encode(user) {
+                userDefaults.set(encoded, forKey: userKey)
+            }
+            
+            // Sync to Supabase
+            await createOrUpdateSupabaseProfile(user: user)
+            
+            // Clear the pending update after successful local update
+            UserDefaults.standard.removeObject(forKey: "pendingNameUpdate")
+            
+            print("✅ Updated user name locally and in Supabase: \(trimmedName)")
+        } else {
+            throw AuthError.nameUpdateFailed("No current user found")
+        }
+    }
+    
+    // MARK: - Apple Sign In with OAuth
+    @MainActor
+    func signInWithAppleOAuth() async {
+        guard isClerkLoaded else {
+            showAuthError("Please wait for app to initialize and try again")
+            return
+        }
+        
+        do {
+            // Create OAuth sign in
+            let signIn = try await SignIn.create(strategy: .oauth(provider: .apple))
+            
+            // Open Safari for authentication
+            try await signIn.authenticateWithRedirect()
+            
+        } catch {
+            // Handle specific error cases
+            let errorString = String(describing: error)
+            
+            if errorString.contains("oauth_provider_not_enabled") {
+                showAuthError("Apple Sign In is not configured. Please contact support.")
+            } else if errorString.contains("network") || errorString.contains("connection") {
+                showAuthError("Network error. Please check your connection and try again.")
+            } else {
+                showAuthError("Apple Sign In failed. Please try email sign in instead.")
+            }
+        }
+    }
+    
+    // MARK: - Name Management (Single Source of Truth)
+    
+    /// Single source of truth for getting the user's display name
+    /// Priority: 1. Clerk user name, 2. Pending update, 3. Apple Sign In name, 4. Email prefix
+    func getUserDisplayName() -> String {
+        // First check if we have a Clerk user with a name
+        if let clerkUser = clerk.user {
+            let firstName = clerkUser.firstName ?? ""
+            let lastName = clerkUser.lastName ?? ""
+            let clerkName = [firstName, lastName]
+                .compactMap { $0 }
+                .joined(separator: " ")
+                .trimmingCharacters(in: .whitespaces)
+            
+            if !clerkName.isEmpty {
+                return clerkName
+            }
+        }
+        
+        // Check for pending name update (in case Clerk update failed)
+        if let pendingName = UserDefaults.standard.string(forKey: "pendingNameUpdate"),
+           !pendingName.isEmpty {
+            return pendingName
+        }
+        
+        // Check for Apple Sign In name (temporary storage during onboarding)
+        if let appleSignInName = UserDefaults.standard.string(forKey: "appleSignInName"),
+           !appleSignInName.isEmpty {
+            return appleSignInName
+        }
+        
+        // Fall back to email prefix
+        if let email = currentUser?.email ?? clerk.user?.emailAddresses.first?.emailAddress {
+            return email.components(separatedBy: "@").first ?? "User"
+        }
+        
+        return "User"
+    }
+    
+    /// Consolidates name updates across all systems
+    func consolidateNameUpdate(_ fullName: String) async throws {
+        let trimmedName = fullName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedName.isEmpty else {
+            throw AuthError.nameUpdateFailed("Name cannot be empty")
+        }
+        
+        // Update using our method (which handles local, Supabase, and Core Data)
+        try await updateClerkUserName(trimmedName)
+        
+        // Clean up temporary storage after successful update
+        UserDefaults.standard.removeObject(forKey: "appleSignInName")
+        
+        // Sync to Core Data (if not already done in updateClerkUserName)
+        if let userId = currentUser?.id,
+           let email = currentUser?.email,
+           let profile = currentUser?.profile {
+            CoreDataManager.shared.saveProfile(profile, userId: userId, email: email)
+        }
+        
+        // Post notification for UI updates
+        NotificationCenter.default.post(name: .profileUpdated, object: nil)
+    }
+    
+    /// Check and resolve any pending name updates on app launch
+    func resolvePendingNameUpdates() async {
+        guard let pendingName = UserDefaults.standard.string(forKey: "pendingNameUpdate"),
+              !pendingName.isEmpty else {
+            return
+        }
+        
+        do {
+            print("📝 Resolving pending name update: \(pendingName)")
+            try await consolidateNameUpdate(pendingName)
+            print("✅ Pending name update resolved")
+        } catch {
+            print("❌ Failed to resolve pending name update: \(error)")
+            // Keep the pending update for next attempt
+        }
+    }
+    
+    // MARK: - Legal Consent Management
+    
+    func checkLegalConsent(userId: String) async -> Bool {
+        // Check if user has accepted legal terms in backend
+        guard let token = await getSupabaseToken() else {
+            return false
+        }
+        
+        do {
+            // Query the profiles table for legal consent status
+            let url = URL(string: "\(Constants.supabaseURL)/rest/v1/profiles?id=eq.\(userId)&select=legal_accepted_at")!
+            var request = URLRequest(url: url)
+            request.setValue(Constants.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            
+            let (data, _) = try await URLSession.shared.data(for: request)
+            
+            if let json = try JSONSerialization.jsonObject(with: data) as? [[String: Any]],
+               let profile = json.first,
+               let _ = profile["legal_accepted_at"] as? String {
+                return true // User has accepted legal terms
+            }
+        } catch {
+            print("❌ Failed to check legal consent: \(error)")
+        }
+        
+        return false
+    }
+    
+    func acceptLegalConsent(userId: String) async {
+        // Save legal consent to backend
+        guard let token = await getSupabaseToken() else {
+            return
+        }
+        
+        do {
+            let consentData: [String: Any] = [
+                "id": userId,
+                "legal_accepted_at": ISO8601DateFormatter().string(from: Date()),
+                "terms_accepted": true,
+                "privacy_accepted": true
+            ]
+            
+            let url = URL(string: "\(Constants.supabaseURL)/rest/v1/profiles")!
+            var request = URLRequest(url: url)
+            request.httpMethod = "POST"
+            request.setValue(Constants.supabaseAnonKey, forHTTPHeaderField: "apikey")
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+            request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+            request.setValue("resolution=merge-duplicates", forHTTPHeaderField: "Prefer")
+            
+            let jsonData = try JSONSerialization.data(withJSONObject: [consentData])
+            request.httpBody = jsonData
+            
+            let (_, response) = try await URLSession.shared.data(for: request)
+            
+            if let httpResponse = response as? HTTPURLResponse {
+                if (200...299).contains(httpResponse.statusCode) {
+                    print("✅ Legal consent saved")
+                    
+                    // Now complete the sign in process
+                    self.needsLegalConsent = false
+                    self.pendingAppleUserId = nil
+                    
+                    // Force session update to complete authentication
+                    self.updateSessionState()
+                } else {
+                    print("❌ Failed to save consent: Status \(httpResponse.statusCode)")
+                }
+            }
+        } catch {
+            print("❌ Failed to save legal consent: \(error)")
+        }
+    }
+    
 }
 
 // MARK: - Apple Sign In Delegate

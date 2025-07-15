@@ -2,12 +2,11 @@ import SwiftUI
 
 struct VersionRow: View {
     var body: some View {
-        HStack {
-            Text("Version")
-            Spacer()
-            Text(AppVersionManager.shared.formattedVersionString())
-                .foregroundColor(.secondary)
-        }
+        SettingsRow(
+            icon: "info.circle",
+            title: "Version",
+            value: AppVersion.fullVersion
+        )
     }
 }
 

@@ -79,8 +79,7 @@ class DebugResetManager {
         
         print("✅ DEBUG: Complete reset finished")
         
-        // Show success message
-        ToastManager.shared.show("Debug Reset Complete", type: .success)
+        // Success message removed - app will restart
         
         // Force app restart by crashing (only in DEBUG)
         #if DEBUG
@@ -144,7 +143,7 @@ class DebugResetManager {
     
     private func clearCoreData() {
         print("🗑️ Clearing Core Data...")
-        CoreDataManager.shared.clearAllData()
+        CoreDataManager.shared.deleteAllData()
     }
     
     private func clearKeychain() {
@@ -175,11 +174,7 @@ class DebugResetManager {
     
     private func signOutFromClerk() async {
         print("🗑️ Signing out from Clerk...")
-        do {
-            try await AuthManager.shared.signOut()
-        } catch {
-            print("❌ Failed to sign out: \(error)")
-        }
+        await AuthManager.shared.logout()
     }
     
     private func clearDerivedDataCache() {

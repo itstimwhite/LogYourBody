@@ -16,73 +16,118 @@ struct DeleteAccountView: View {
     @State private var isDeleting = false
     @State private var showError = false
     @State private var errorMessage = ""
+    @FocusState private var isTextFieldFocused: Bool
     
     private let confirmationPhrase = "DELETE"
     
     var body: some View {
-        List {
-            Section {
-                VStack(spacing: 20) {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(.red)
-                        .padding(.top, 20)
-                    
-                    Text("Delete Account")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    
-                    Text("This action cannot be undone. All your data will be permanently deleted.")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity)
-                .listRowBackground(Color.clear)
-            }
-            
-            Section("What will be deleted") {
-                Label("All weight entries", systemImage: "scalemass")
-                Label("Your profile information", systemImage: "person.circle")
-                Label("Health data", systemImage: "heart.fill")
-            }
-            
-            Section("Confirm deletion") {
-                VStack(alignment: .leading, spacing: 12) {
-                    Text("Type \"\(confirmationPhrase)\" to confirm account deletion:")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    TextField("Type \(confirmationPhrase)", text: $confirmationText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .autocapitalization(.allCharacters)
-                        .disableAutocorrection(true)
-                }
-                
-                Button(action: {
-                    deleteAccount()
-                }) {
-                    if isDeleting {
-                        HStack {
-                            Spacer()
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                            Text("Deleting...")
-                                .foregroundColor(.white)
-                            Spacer()
-                        }
-                    } else {
-                        Text("Delete My Account")
-                            .frame(maxWidth: .infinity)
+        ZStack {
+            ScrollView {
+                VStack(spacing: SettingsDesign.sectionSpacing) {
+                    // Header Section
+                    VStack(spacing: 20) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .font(.system(size: 50))
+                            .foregroundColor(.red)
+                            .padding(.top, 20)
+                        
+                        Text("Delete Account")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        Text("This action cannot be undone. All your data will be permanently deleted.")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
                     }
+                    .padding(.bottom, 20)
+                    
+                    // What will be deleted section
+                    SettingsSection(header: "What will be deleted") {
+                        VStack(spacing: 0) {
+                            DataInfoRow(
+                                icon: "scalemass",
+                                title: "All weight entries",
+                                iconColor: .red
+                            )
+                            
+                            Divider()
+                            
+                            DataInfoRow(
+                                icon: "person.circle",
+                                title: "Your profile information",
+                                iconColor: .red
+                            )
+                            
+                            Divider()
+                            
+                            DataInfoRow(
+                                icon: "heart.fill",
+                                title: "Health data",
+                                iconColor: .red
+                            )
+                        }
+                    }
+                    
+                    // Confirm deletion section
+                    SettingsSection(
+                        header: "Confirm deletion",
+                        footer: "Type \"\(confirmationPhrase)\" to confirm account deletion"
+                    ) {
+                        VStack(spacing: 12) {
+                            TextField("Type \(confirmationPhrase)", text: $confirmationText)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .autocapitalization(.allCharacters)
+                                .disableAutocorrection(true)
+                                .focused($isTextFieldFocused)
+                                .submitLabel(.done)
+                                .onSubmit {
+                                    isTextFieldFocused = false
+                                }
+                                .padding(.horizontal, SettingsDesign.horizontalPadding)
+                                .padding(.vertical, 8)
+                        }
+                    }
+                    
+                    // Delete Button
+                    Button(action: {
+                        isTextFieldFocused = false
+                        deleteAccount()
+                    }) {
+                        if isDeleting {
+                            HStack {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(0.8)
+                                Text("Deleting...")
+                                    .foregroundColor(.white)
+                            }
+                            .frame(maxWidth: .infinity)
+                        } else {
+                            Text("Delete My Account")
+                                .frame(maxWidth: .infinity)
+                        }
+                    }
+                    .foregroundColor(.white)
+                    .padding()
+                    .background(confirmationText == confirmationPhrase ? Color.red : Color.gray)
+                    .cornerRadius(SettingsDesign.cornerRadius)
+                    .disabled(confirmationText != confirmationPhrase || isDeleting)
+                    .padding(.horizontal, 20)
+                    
+                    // Bottom padding
+                    Color.clear
+                        .frame(height: 100)
                 }
-                .foregroundColor(.white)
-                .padding()
-                .background(confirmationText == confirmationPhrase ? Color.red : Color.gray)
-                .cornerRadius(10)
-                .disabled(confirmationText != confirmationPhrase || isDeleting)
-                .listRowInsets(EdgeInsets())
-                .listRowBackground(Color.clear)
+                .padding(.vertical)
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .settingsBackground()
+            
+            // Loading overlay
+            if isDeleting {
+                LoadingOverlay(message: "Deleting your account...")
             }
         }
         .navigationTitle("Delete Account")
@@ -100,6 +145,13 @@ struct DeleteAccountView: View {
         } message: {
             Text("Are you sure you want to delete your account? This cannot be undone.")
         }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .overlay(
+            SuccessOverlay(
+                isShowing: .constant(false),
+                message: ""
+            )
+        )
     }
     
     private func deleteAccount() {

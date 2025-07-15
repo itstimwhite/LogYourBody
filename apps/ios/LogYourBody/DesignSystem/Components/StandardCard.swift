@@ -19,7 +19,7 @@ enum CardStyle {
 // MARK: - Standard Card
 
 struct StandardCard<Content: View>: View {
-    @Environment(\.theme) var theme
+    
     
     let style: CardStyle
     let padding: CGFloat?
@@ -37,9 +37,9 @@ struct StandardCard<Content: View>: View {
     
     var body: some View {
         content()
-            .padding(padding ?? theme.spacing.cardPadding)
+            .padding(padding ?? 16)
             .background(backgroundView)
-            .cornerRadius(theme.radius.card)
+            .cornerRadius(12)
             .overlay(overlayView)
             .shadow(
                 color: shadowColor,
@@ -55,11 +55,11 @@ struct StandardCard<Content: View>: View {
     private var backgroundView: some View {
         switch style {
         case .standard:
-            theme.colors.surface
+            Color.appCard
         case .elevated:
-            theme.colors.surface
+            Color.appCard
         case .outlined:
-            theme.colors.background
+            Color.appBackground
         case .glass:
             GlassBackground()
         }
@@ -69,11 +69,11 @@ struct StandardCard<Content: View>: View {
     private var overlayView: some View {
         switch style {
         case .outlined:
-            RoundedRectangle(cornerRadius: theme.radius.card)
-                .stroke(theme.colors.border, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.appBorder, lineWidth: 1)
         case .glass:
-            RoundedRectangle(cornerRadius: theme.radius.card)
-                .stroke(theme.colors.border.opacity(0.3), lineWidth: 1)
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Color.appBorder.opacity(0.3), lineWidth: 1)
         default:
             EmptyView()
         }
@@ -116,11 +116,11 @@ struct StandardCard<Content: View>: View {
 // MARK: - Glass Background
 
 struct GlassBackground: View {
-    @Environment(\.theme) var theme
+    
     
     var body: some View {
         ZStack {
-            theme.colors.surface.opacity(0.8)
+            Color.appCard.opacity(0.8)
             
             VisualEffectBlur(blurStyle: .systemUltraThinMaterialDark)
                 .opacity(0.5)
@@ -145,7 +145,7 @@ struct VisualEffectBlur: UIViewRepresentable {
 // MARK: - Metric Card
 
 struct MetricCard: View {
-    @Environment(\.theme) var theme
+    
     
     let value: String
     let label: String
@@ -190,14 +190,14 @@ struct MetricCard: View {
     }
     
     var body: some View {
-        StandardCard(style: .standard, padding: theme.spacing.sm) {
-            VStack(alignment: .leading, spacing: theme.spacing.xs) {
+        StandardCard(style: .standard, padding: 8) {
+            VStack(alignment: .leading, spacing: 4) {
                 // Header with icon and trend
                 HStack {
                     if let icon = icon {
                         Image(systemName: icon)
                             .font(.system(size: 16))
-                            .foregroundColor(theme.colors.textSecondary)
+                            .foregroundColor(.secondary)
                     }
                     
                     Spacer()
@@ -208,10 +208,10 @@ struct MetricCard: View {
                                 .font(.system(size: 12, weight: .semibold))
                             if case let .up(value) = trend {
                                 Text("+\(Int(value))%")
-                                    .font(theme.typography.captionMedium)
+                                    .font(.caption)
                             } else if case let .down(value) = trend {
                                 Text("-\(Int(value))%")
-                                    .font(theme.typography.captionMedium)
+                                    .font(.caption)
                             }
                         }
                         .foregroundColor(trend.color)
@@ -220,21 +220,21 @@ struct MetricCard: View {
                     if isEstimated {
                         Image(systemName: "bolt.fill")
                             .font(.system(size: 12))
-                            .foregroundColor(theme.colors.warning)
+                            .foregroundColor(.orange)
                     }
                 }
                 
                 // Value
                 Text(value)
-                    .font(theme.typography.headlineLarge)
-                    .foregroundColor(theme.colors.text)
+                    .font(.largeTitle)
+                    .foregroundColor(.primary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.8)
                 
                 // Label
                 Text(label)
-                    .font(theme.typography.captionLarge)
-                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
                     .lineLimit(1)
             }
         }
@@ -244,7 +244,7 @@ struct MetricCard: View {
 // MARK: - Info Card
 
 struct InfoCard: View {
-    @Environment(\.theme) var theme
+    
     
     let icon: String
     let iconColor: Color?
@@ -265,22 +265,22 @@ struct InfoCard: View {
     
     var body: some View {
         StandardCard(style: .outlined) {
-            HStack(alignment: .top, spacing: theme.spacing.md) {
+            HStack(alignment: .top, spacing: 12) {
                 // Icon
                 Image(systemName: icon)
                     .font(.system(size: 24))
-                    .foregroundColor(iconColor ?? theme.colors.primary)
+                    .foregroundColor(iconColor ?? .appPrimary)
                     .frame(width: 32, height: 32)
                 
                 // Content
-                VStack(alignment: .leading, spacing: theme.spacing.xxs) {
+                VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(theme.typography.labelLarge)
-                        .foregroundColor(theme.colors.text)
+                        .font(.callout)
+                        .foregroundColor(.primary)
                     
                     Text(description)
-                        .font(theme.typography.bodySmall)
-                        .foregroundColor(theme.colors.textSecondary)
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
                         .fixedSize(horizontal: false, vertical: true)
                 }
                 
@@ -293,7 +293,7 @@ struct InfoCard: View {
 // MARK: - Action Card
 
 struct ActionCard<Destination: View>: View {
-    @Environment(\.theme) var theme
+    
     
     let icon: String
     let title: String
@@ -317,27 +317,27 @@ struct ActionCard<Destination: View>: View {
     var body: some View {
         NavigationLink(destination: destination) {
             StandardCard(style: .standard) {
-                HStack(spacing: theme.spacing.md) {
+                HStack(spacing: 12) {
                     // Icon
                     Image(systemName: icon)
                         .font(.system(size: 24))
-                        .foregroundColor(theme.colors.primary)
+                        .foregroundColor(.appPrimary)
                         .frame(width: 48, height: 48)
                         .background(
                             Circle()
-                                .fill(theme.colors.primary.opacity(0.1))
+                                .fill(Color.appPrimary.opacity(0.1))
                         )
                     
                     // Content
-                    VStack(alignment: .leading, spacing: theme.spacing.xxs) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(title)
-                            .font(theme.typography.labelLarge)
-                            .foregroundColor(theme.colors.text)
+                            .font(.callout)
+                            .foregroundColor(.primary)
                         
                         if let subtitle = subtitle {
                             Text(subtitle)
-                                .font(theme.typography.captionLarge)
-                                .foregroundColor(theme.colors.textSecondary)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                     }
                     
@@ -346,14 +346,14 @@ struct ActionCard<Destination: View>: View {
                     // Chevron
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(theme.colors.textTertiary)
+                        .foregroundColor(Color.secondary.opacity(0.6))
                 }
             }
         }
         .buttonStyle(PlainButtonStyle())
         .scaleEffect(isPressed ? 0.98 : 1.0)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(theme.animation.ultraFast) {
+            withAnimation(.easeOut(duration: 0.1)) {
                 isPressed = pressing
             }
         }, perform: {})

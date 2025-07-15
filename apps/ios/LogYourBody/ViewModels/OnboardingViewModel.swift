@@ -8,6 +8,7 @@
 import SwiftUI
 import Combine
 
+@MainActor
 class OnboardingViewModel: ObservableObject {
     @Published var currentStep: OnboardingStep = .welcome
     @Published var data = OnboardingData()
@@ -25,7 +26,6 @@ class OnboardingViewModel: ObservableObject {
         case progressPhotos = 6
         case notifications = 7
         case profilePreparation = 8
-        case completion = 9
         
         var title: String {
             switch self {
@@ -38,7 +38,6 @@ class OnboardingViewModel: ObservableObject {
             case .progressPhotos: return "Progress Photos"
             case .notifications: return "Notifications"
             case .profilePreparation: return "Preparing Profile"
-            case .completion: return "All Set!"
             }
         }
         
@@ -49,9 +48,12 @@ class OnboardingViewModel: ObservableObject {
     
     
     init() {
-        // Pre-fill data from Apple Sign In if available
-        if let appleSignInName = UserDefaults.standard.string(forKey: "appleSignInName") {
-            data.name = appleSignInName
+        // Use single source of truth for name
+        let displayName = AuthManager.shared.getUserDisplayName()
+        
+        // Only use the name if it's not the email fallback
+        if !displayName.contains("@") && displayName != "User" {
+            data.name = displayName
         }
     }
     
@@ -72,9 +74,9 @@ class OnboardingViewModel: ObservableObject {
                     nextStepValue += 1
                 }
                 
-                // If we've skipped all steps, go to completion
+                // If we've skipped all steps, go to profile preparation
                 if nextStepValue >= OnboardingStep.allCases.count {
-                    currentStep = .completion
+                    currentStep = .profilePreparation
                 }
             }
         }
@@ -82,7 +84,7 @@ class OnboardingViewModel: ObservableObject {
     
     private func shouldShowStep(_ step: OnboardingStep) -> Bool {
         switch step {
-        case .welcome, .healthKit, .progressPhotos, .notifications, .profilePreparation, .completion:
+        case .welcome, .healthKit, .progressPhotos, .notifications, .profilePreparation:
             // Always show these steps
             return true
         case .name:
@@ -122,6 +124,16 @@ class OnboardingViewModel: ObservableObject {
     
     
     func completeOnboarding(authManager: AuthManager) async {
+        // Validate required fields before completing
+        guard !data.name.isEmpty,
+              data.dateOfBirth != nil,
+              data.totalHeightInInches > 0,
+              data.gender != nil else {
+            // Don't complete onboarding if required fields are missing
+            isLoading = false
+            return
+        }
+        
         isLoading = true
         
         await MainActor.run {
@@ -135,9 +147,17 @@ class OnboardingViewModel: ObservableObject {
         // Update user profile
         let currentUser = await MainActor.run { authManager.currentUser }
         if let user = currentUser {
-            // Create profile update data
+            // Update name using consolidated method
+            if !data.name.isEmpty && data.name != authManager.getUserDisplayName() {
+                do {
+                    try await authManager.consolidateNameUpdate(data.name)
+                } catch {
+                    print("❌ Failed to update name during onboarding: \(error)")
+                }
+            }
+            
+            // Create profile update data (without name, as it's handled above)
             let updates: [String: Any] = [
-                "name": data.name.isEmpty ? user.name ?? "" : data.name,
                 "dateOfBirth": data.dateOfBirth as Any,
                 "height": Double(data.totalHeightInInches),
                 "heightUnit": "in",

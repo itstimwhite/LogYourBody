@@ -41,6 +41,10 @@
 	<string>LogYourBody uses HealthKit to save your weight measurements.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>LogYourBody uses Face ID to secure your personal health data and progress photos.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>LogYourBody uses the camera to capture progress photos for tracking your fitness journey.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>LogYourBody needs access to scan your photo library for progress photos to import.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>healthkit</string>

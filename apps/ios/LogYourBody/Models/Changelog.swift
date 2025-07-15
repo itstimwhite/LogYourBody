@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct ChangelogEntry {
     let version: String
@@ -42,10 +43,35 @@ class ChangelogManager {
     private init() {}
     
     // Add new versions at the top
-    let entries: [ChangelogEntry] = [
+    private let hardcodedEntries: [ChangelogEntry] = [
+        ChangelogEntry(
+            version: "1.4.0",
+            date: Date(timeIntervalSince1970: 1720656000), // July 11, 2025 (today)
+            changes: [
+                .init(type: .feature, description: "Frictionless Apple Sign In with post-auth consent"),
+                .init(type: .feature, description: "Redesigned photo carousel with 16:9 aspect ratio"),
+                .init(type: .improvement, description: "Monochrome gauge design for cleaner UI"),
+                .init(type: .improvement, description: "Lightweight date slider with snap-to-value"),
+                .init(type: .improvement, description: "Floating navigation bar without background"),
+                .init(type: .bugfix, description: "Fixed progress photo zooming issues"),
+                .init(type: .performance, description: "Optimized image loading in carousel")
+            ]
+        ),
+        ChangelogEntry(
+            version: "1.3.0",
+            date: Date(timeIntervalSince1970: 1719792000), // July 1, 2025
+            changes: [
+                .init(type: .feature, description: "AI-powered background removal for progress photos"),
+                .init(type: .feature, description: "Advanced body composition analytics"),
+                .init(type: .improvement, description: "Premium dashboard UI overhaul"),
+                .init(type: .improvement, description: "Enhanced onboarding flow"),
+                .init(type: .bugfix, description: "Fixed Core Data sync issues"),
+                .init(type: .performance, description: "Faster photo processing")
+            ]
+        ),
         ChangelogEntry(
             version: "1.2.0",
-            date: Date(timeIntervalSince1970: 1736019600), // Jan 5, 2025
+            date: Date(timeIntervalSince1970: 1718928000), // June 21, 2025
             changes: [
                 .init(type: .feature, description: "Import all historical data from HealthKit"),
                 .init(type: .feature, description: "What's New section in Settings"),
@@ -59,7 +85,7 @@ class ChangelogManager {
         ),
         ChangelogEntry(
             version: "1.1.0",
-            date: Date(timeIntervalSince1970: 1735689600), // Jan 1, 2025
+            date: Date(timeIntervalSince1970: 1717718400), // June 7, 2025
             changes: [
                 .init(type: .feature, description: "Redesigned profile settings with greyscale theme"),
                 .init(type: .feature, description: "Real-time sync with cloud storage"),
@@ -71,7 +97,7 @@ class ChangelogManager {
         ),
         ChangelogEntry(
             version: "1.0.0",
-            date: Date(timeIntervalSince1970: 1735430400), // Dec 29, 2024
+            date: Date(timeIntervalSince1970: 1716508800), // May 24, 2025
             changes: [
                 .init(type: .feature, description: "Initial release"),
                 .init(type: .feature, description: "Track body weight and body fat percentage"),
@@ -82,6 +108,34 @@ class ChangelogManager {
             ]
         )
     ]
+    
+    /// Get all entries, ensuring the current app version is included
+    var entries: [ChangelogEntry] {
+        let currentVersion = AppVersion.current
+        
+        // Check if current version already exists in hardcoded entries
+        if hardcodedEntries.first?.version == currentVersion {
+            return hardcodedEntries
+        }
+        
+        // If current version is newer, add a placeholder entry
+        var allEntries = hardcodedEntries
+        
+        // Only add if current version is newer than the latest hardcoded version
+        if let latestVersion = hardcodedEntries.first?.version,
+           currentVersion.compare(latestVersion, options: NSString.CompareOptions.numeric) == .orderedDescending {
+            let placeholderEntry = ChangelogEntry(
+                version: currentVersion,
+                date: Date(),
+                changes: [
+                    .init(type: .feature, description: "New features and improvements in this version")
+                ]
+            )
+            allEntries.insert(placeholderEntry, at: 0)
+        }
+        
+        return allEntries
+    }
     
     /// Get changelog entries since a specific version
     func entriesSince(version: String) -> [ChangelogEntry] {

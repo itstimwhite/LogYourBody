@@ -105,7 +105,28 @@ struct LogYourBodyApp: App {
         guard url.scheme == "logyourbody" else { return }
         
         switch url.host {
+        case "oauth", "oauth-callback":
+            // Handle OAuth callbacks (e.g., from Apple Sign In)
+            // Clerk SDK handles the OAuth callback automatically
+            break
+            
         case "log":
+            // Check if user is authenticated and has completed onboarding
+            guard authManager.isAuthenticated else {
+                // User needs to sign in first
+                return
+            }
+            
+            // Check if onboarding is complete
+            let hasCompletedOnboarding = UserDefaults.standard.bool(forKey: Constants.hasCompletedOnboardingKey)
+            let isProfileComplete = checkProfileComplete()
+            
+            if !hasCompletedOnboarding || !isProfileComplete {
+                // User needs to complete onboarding first
+                // Don't open the add entry sheet
+                return
+            }
+            
             // Handle specific log types
             if let path = url.pathComponents.dropFirst().first {
                 switch path {
@@ -120,8 +141,17 @@ struct LogYourBodyApp: App {
                 }
             }
             showAddEntrySheet = true
+            
         default:
-            break
+            print("🔗 Unhandled URL host: \(url.host ?? "nil")")
         }
+    }
+    
+    private func checkProfileComplete() -> Bool {
+        guard let profile = authManager.currentUser?.profile else { return false }
+        return profile.fullName != nil &&
+               profile.dateOfBirth != nil &&
+               profile.height != nil &&
+               profile.gender != nil
     }
 }

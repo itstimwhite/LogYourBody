@@ -533,6 +533,48 @@ class CoreDataManager: ObservableObject {
         }
     }
     
+    // MARK: - Export Methods
+    
+    func fetchAllBodyMetrics(for userId: String) -> [BodyMetrics] {
+        let fetchRequest: NSFetchRequest<CachedBodyMetrics> = CachedBodyMetrics.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "userId == %@", userId)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        
+        do {
+            let cachedMetrics = try viewContext.fetch(fetchRequest)
+            return cachedMetrics.compactMap { $0.toBodyMetrics() }
+        } catch {
+            print("Error fetching all body metrics: \(error)")
+            return []
+        }
+    }
+    
+    func fetchAllDailyLogs(for userId: String) -> [DailyLog] {
+        let fetchRequest: NSFetchRequest<CachedDailyMetrics> = CachedDailyMetrics.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "userId == %@", userId)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        
+        do {
+            let cachedLogs = try viewContext.fetch(fetchRequest)
+            return cachedLogs.map { log in
+                DailyLog(
+                    id: log.id ?? UUID().uuidString,
+                    userId: log.userId ?? "",
+                    date: log.date ?? Date(),
+                    weight: nil,  // DailyMetrics doesn't store weight
+                    weightUnit: nil,
+                    stepCount: log.steps != nil ? Int(log.steps) : nil,
+                    notes: log.notes,
+                    createdAt: log.createdAt ?? Date(),
+                    updatedAt: log.updatedAt ?? Date()
+                )
+            }
+        } catch {
+            print("Error fetching all daily logs: \(error)")
+            return []
+        }
+    }
+    
     // MARK: - Debug Methods
     
     func debugPrintAllBodyMetrics() {

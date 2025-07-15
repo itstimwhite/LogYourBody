@@ -18,7 +18,7 @@ enum TextFieldStyle {
 // MARK: - Standard Text Field
 
 struct StandardTextField: View {
-    @Environment(\.theme) var theme
+    
     @FocusState private var isFocused: Bool
     
     @Binding var text: String
@@ -69,16 +69,16 @@ struct StandardTextField: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.xs) {
+        VStack(alignment: .leading, spacing: 4) {
             // Label
             if let label = label {
                 Text(label)
-                    .font(theme.typography.labelMedium)
-                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
             }
             
             // Text Field Container
-            HStack(spacing: theme.spacing.sm) {
+            HStack(spacing: 8) {
                 // Leading icon
                 if let icon = icon {
                     Image(systemName: icon)
@@ -105,18 +105,18 @@ struct StandardTextField: View {
                 .keyboardType(keyboardType)
                 .autocapitalization(textContentType == .emailAddress ? .none : .sentences)
                 .disableAutocorrection(textContentType == .emailAddress || isSecureField)
-                .font(theme.typography.bodyMedium)
-                .foregroundColor(theme.colors.text)
+                .font(.body)
+                .foregroundColor(.primary)
                 .focused($isFocused)
                 
                 // Trailing elements
-                HStack(spacing: theme.spacing.xs) {
+                HStack(spacing: 4) {
                     // Character count
                     if let limit = characterLimit {
                         Text("\(text.count)/\(limit)")
-                            .font(theme.typography.captionSmall)
+                            .font(.caption2)
                             .foregroundColor(
-                                text.count > limit ? theme.colors.error : theme.colors.textTertiary
+                                text.count > limit ? .red : Color.secondary.opacity(0.6)
                             )
                     }
                     
@@ -125,7 +125,7 @@ struct StandardTextField: View {
                         Button(action: { showPassword.toggle() }) {
                             Image(systemName: showPassword ? "eye.slash" : "eye")
                                 .font(.system(size: 16))
-                                .foregroundColor(theme.colors.textSecondary)
+                                .foregroundColor(.secondary)
                         }
                     }
                     
@@ -134,34 +134,34 @@ struct StandardTextField: View {
                         Button(action: { text = "" }) {
                             Image(systemName: "xmark.circle.fill")
                                 .font(.system(size: 16))
-                                .foregroundColor(theme.colors.textTertiary)
+                                .foregroundColor(Color.secondary.opacity(0.6))
                         }
                         .transition(.scale.combined(with: .opacity))
                     }
                 }
             }
-            .padding(.horizontal, theme.spacing.md)
-            .padding(.vertical, theme.spacing.sm)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
             .background(backgroundView)
-            .cornerRadius(theme.radius.input)
+            .cornerRadius(6)
             .overlay(overlayView)
-            .animation(theme.animation.fast, value: isFocused)
-            .animation(theme.animation.fast, value: errorMessage != nil)
+            .animation(.easeOut(duration: 0.2), value: isFocused)
+            .animation(.easeOut(duration: 0.2), value: errorMessage != nil)
             
             // Helper/Error text
             if let error = errorMessage {
-                HStack(spacing: theme.spacing.xxs) {
+                HStack(spacing: 2) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .font(.system(size: 12))
                     Text(error)
-                        .font(theme.typography.captionMedium)
+                        .font(.caption)
                 }
-                .foregroundColor(theme.colors.error)
+                .foregroundColor(.red)
                 .transition(.move(edge: .top).combined(with: .opacity))
             } else if let helper = helperText {
                 Text(helper)
-                    .font(theme.typography.captionMedium)
-                    .foregroundColor(theme.colors.textTertiary)
+                    .font(.caption)
+                    .foregroundColor(Color.secondary.opacity(0.6))
             }
         }
     }
@@ -172,9 +172,9 @@ struct StandardTextField: View {
     private var backgroundView: some View {
         switch style {
         case .standard:
-            theme.colors.surface
+            Color.appCard
         case .filled:
-            theme.colors.surfaceSecondary
+            Color.appCard.opacity(0.8)
         case .outlined:
             Color.clear
         }
@@ -182,19 +182,19 @@ struct StandardTextField: View {
     
     @ViewBuilder
     private var overlayView: some View {
-        RoundedRectangle(cornerRadius: theme.radius.input)
+        RoundedRectangle(cornerRadius: 6)
             .stroke(borderColor, lineWidth: borderWidth)
     }
     
     private var borderColor: Color {
         if errorMessage != nil {
-            return theme.colors.error
+            return .red
         } else if isFocused {
-            return theme.colors.borderFocused
+            return Color.appPrimary
         } else {
             switch style {
             case .outlined:
-                return theme.colors.border
+                return Color.appBorder
             default:
                 return Color.clear
             }
@@ -211,11 +211,11 @@ struct StandardTextField: View {
     
     private var iconColor: Color {
         if errorMessage != nil {
-            return theme.colors.error
+            return .red
         } else if isFocused {
-            return theme.colors.primary
+            return .appPrimary
         } else {
-            return theme.colors.textSecondary
+            return .secondary
         }
     }
 }
@@ -223,7 +223,7 @@ struct StandardTextField: View {
 // MARK: - Search Field
 
 struct SearchField: View {
-    @Environment(\.theme) var theme
+    
     @FocusState private var isFocused: Bool
     
     @Binding var text: String
@@ -241,43 +241,43 @@ struct SearchField: View {
     }
     
     var body: some View {
-        HStack(spacing: theme.spacing.sm) {
+        HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
                 .font(.system(size: 16))
-                .foregroundColor(theme.colors.textSecondary)
+                .foregroundColor(.secondary)
             
             TextField(placeholder, text: $text) {
                 onSearch?()
             }
-            .font(theme.typography.bodyMedium)
-            .foregroundColor(theme.colors.text)
+            .font(.body)
+            .foregroundColor(.primary)
             .focused($isFocused)
             
             if !text.isEmpty {
                 Button(action: { text = "" }) {
                     Image(systemName: "xmark.circle.fill")
                         .font(.system(size: 16))
-                        .foregroundColor(theme.colors.textTertiary)
+                        .foregroundColor(Color.secondary.opacity(0.6))
                 }
                 .transition(.scale.combined(with: .opacity))
             }
         }
-        .padding(.horizontal, theme.spacing.md)
-        .padding(.vertical, theme.spacing.sm)
-        .background(theme.colors.surface)
-        .cornerRadius(theme.radius.full)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color.appCard)
+        .cornerRadius(999)
         .overlay(
-            RoundedRectangle(cornerRadius: theme.radius.full)
-                .stroke(isFocused ? theme.colors.borderFocused : Color.clear, lineWidth: 2)
+            RoundedRectangle(cornerRadius: 999)
+                .stroke(isFocused ? Color.appPrimary : Color.clear, lineWidth: 2)
         )
-        .animation(theme.animation.fast, value: isFocused)
+        .animation(.easeOut(duration: 0.2), value: isFocused)
     }
 }
 
 // MARK: - Text Area
 
 struct TextArea: View {
-    @Environment(\.theme) var theme
+    
     @FocusState private var isFocused: Bool
     
     @Binding var text: String
@@ -307,12 +307,12 @@ struct TextArea: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: theme.spacing.xs) {
+        VStack(alignment: .leading, spacing: 4) {
             // Label
             if let label = label {
                 Text(label)
-                    .font(theme.typography.labelMedium)
-                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
             }
             
             // Text Editor
@@ -320,26 +320,26 @@ struct TextArea: View {
                 // Placeholder
                 if text.isEmpty {
                     Text(placeholder)
-                        .font(theme.typography.bodyMedium)
-                        .foregroundColor(theme.colors.textTertiary)
-                        .padding(.horizontal, theme.spacing.sm)
-                        .padding(.vertical, theme.spacing.xs)
+                        .font(.body)
+                        .foregroundColor(Color.secondary.opacity(0.6))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
                 }
                 
                 // Text Editor
                 TextEditor(text: $text)
-                    .font(theme.typography.bodyMedium)
-                    .foregroundColor(theme.colors.text)
+                    .font(.body)
+                    .foregroundColor(.primary)
                     .scrollContentBackground(.hidden)
                     .background(Color.clear)
                     .focused($isFocused)
                     .frame(minHeight: minHeight, maxHeight: maxHeight)
             }
-            .padding(theme.spacing.sm)
-            .background(theme.colors.surface)
-            .cornerRadius(theme.radius.input)
+            .padding(8)
+            .background(Color.appCard)
+            .cornerRadius(6)
             .overlay(
-                RoundedRectangle(cornerRadius: theme.radius.input)
+                RoundedRectangle(cornerRadius: 6)
                     .stroke(borderColor, lineWidth: borderWidth)
             )
             
@@ -347,13 +347,13 @@ struct TextArea: View {
             HStack {
                 // Error message
                 if let error = errorMessage {
-                    HStack(spacing: theme.spacing.xxs) {
+                    HStack(spacing: 2) {
                         Image(systemName: "exclamationmark.circle.fill")
                             .font(.system(size: 12))
                         Text(error)
-                            .font(theme.typography.captionMedium)
+                            .font(.caption)
                     }
-                    .foregroundColor(theme.colors.error)
+                    .foregroundColor(.red)
                 }
                 
                 Spacer()
@@ -361,9 +361,9 @@ struct TextArea: View {
                 // Character count
                 if let limit = characterLimit {
                     Text("\(text.count)/\(limit)")
-                        .font(theme.typography.captionSmall)
+                        .font(.caption2)
                         .foregroundColor(
-                            text.count > limit ? theme.colors.error : theme.colors.textTertiary
+                            text.count > limit ? .red : Color.secondary.opacity(0.6)
                         )
                 }
             }
@@ -372,11 +372,11 @@ struct TextArea: View {
     
     private var borderColor: Color {
         if errorMessage != nil {
-            return theme.colors.error
+            return .red
         } else if isFocused {
-            return theme.colors.borderFocused
+            return Color.appPrimary
         } else {
-            return theme.colors.border
+            return Color.appBorder
         }
     }
     

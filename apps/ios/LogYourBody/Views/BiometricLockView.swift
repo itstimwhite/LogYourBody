@@ -12,6 +12,7 @@ struct BiometricLockView: View {
     @Binding var isUnlocked: Bool
     @State private var isAuthenticating = false
     @State private var hasAttemptedOnce = false
+    @State private var authenticationTimer: Timer?
     
     var body: some View {
         ZStack {
@@ -30,11 +31,25 @@ struct BiometricLockView: View {
                     .animation(.easeInOut(duration: 0.6).repeatForever(autoreverses: true), value: isAuthenticating)
                 
                 if hasAttemptedOnce && !isAuthenticating {
-                    // Only show tap instruction after first failed attempt
-                    Text("Tap to unlock")
-                        .font(.appCaption)
-                        .foregroundColor(.appTextTertiary)
-                        .opacity(0.5)
+                    VStack(spacing: 8) {
+                        Text("Tap to unlock")
+                            .font(.appCaption)
+                            .foregroundColor(.appTextTertiary)
+                            .opacity(0.5)
+                        
+                        // Add skip option after failed attempt
+                        Button(action: {
+                            withAnimation(.easeOut(duration: 0.3)) {
+                                isUnlocked = true
+                            }
+                        }) {
+                            Text("Skip")
+                                .font(.appCaption)
+                                .foregroundColor(.appPrimary)
+                                .opacity(0.8)
+                        }
+                        .padding(.top, 8)
+                    }
                 }
                 
                 Spacer()
@@ -52,6 +67,10 @@ struct BiometricLockView: View {
                 authenticate()
             }
         }
+        .onDisappear {
+            // Clean up timer if view disappears
+            authenticationTimer?.invalidate()
+        }
     }
     
     private func authenticate() {
@@ -61,30 +80,63 @@ struct BiometricLockView: View {
         // Configure context for no fallback button
         context.localizedFallbackTitle = ""
         
+        // Cancel any existing timer
+        authenticationTimer?.invalidate()
+        
         if context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error) {
             isAuthenticating = true
             
+            // Set a timeout to prevent indefinite blocking
+            authenticationTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: false) { _ in
+                DispatchQueue.main.async {
+                    if self.isAuthenticating {
+                        // Timeout reached, cancel authentication
+                        context.invalidate()
+                        self.isAuthenticating = false
+                        self.hasAttemptedOnce = true
+                    }
+                }
+            }
+            
             context.evaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, localizedReason: "Unlock LogYourBody") { success, error in
                 DispatchQueue.main.async {
-                    isAuthenticating = false
+                    // Cancel timer since we got a response
+                    self.authenticationTimer?.invalidate()
+                    self.isAuthenticating = false
                     
                     if success {
                         // Smooth unlock animation
                         withAnimation(.easeOut(duration: 0.3)) {
-                            isUnlocked = true
+                            self.isUnlocked = true
                         }
                     } else {
                         // Failed - mark that we've attempted once
-                        hasAttemptedOnce = true
+                        self.hasAttemptedOnce = true
                         
-                        // If user cancelled or there was an error, do nothing
-                        // No alerts, no error messages - just let them tap to try again
+                        // Check if it was a user cancellation
+                        if let laError = error as? LAError {
+                            switch laError.code {
+                            case .userCancel, .systemCancel:
+                                // User cancelled - show skip option immediately
+                                break
+                            case .biometryNotAvailable, .biometryNotEnrolled:
+                                // Biometry issues - unlock immediately
+                                withAnimation(.easeOut(duration: 0.3)) {
+                                    self.isUnlocked = true
+                                }
+                            default:
+                                // Other errors - let them retry
+                                break
+                            }
+                        }
                     }
                 }
             }
         } else {
             // Biometrics not available, unlock immediately
-            isUnlocked = true
+            withAnimation(.easeOut(duration: 0.3)) {
+                isUnlocked = true
+            }
         }
     }
 }

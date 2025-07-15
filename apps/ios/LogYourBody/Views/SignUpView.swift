@@ -7,6 +7,7 @@
 
 import SwiftUI
 import AuthenticationServices
+import SafariServices
 
 struct SignUpView: View {
     @EnvironmentObject var authManager: AuthManager
@@ -16,6 +17,12 @@ struct SignUpView: View {
     @State private var isLoading = false
     @State private var showError = false
     @State private var errorMessage = ""
+    @State private var agreedToTerms = false
+    @State private var agreedToPrivacy = false
+    @State private var agreedToHealthDisclaimer = false
+    @State private var showTermsSheet = false
+    @State private var showPrivacySheet = false
+    @State private var showHealthDisclaimerSheet = false
     @FocusState private var focusedField: Field?
     
     enum Field {
@@ -123,12 +130,89 @@ struct SignUpView: View {
                             }
                         }
                         
-                        // Terms Text
-                        Text("By creating an account, you agree to our Terms of Service and Privacy Policy")
-                            .font(.appCaption)
-                            .foregroundColor(.appTextSecondary)
-                            .multilineTextAlignment(.center)
-                            .padding(.horizontal)
+                        // Privacy Consent Checkboxes
+                        VStack(spacing: 16) {
+                            // Terms of Service
+                            HStack(alignment: .top, spacing: 12) {
+                                Button(action: { agreedToTerms.toggle() }) {
+                                    Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(agreedToTerms ? .white : .appBorder)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack(spacing: 4) {
+                                        Text("I agree to the")
+                                            .font(.appCaption)
+                                            .foregroundColor(.appTextSecondary)
+                                        
+                                        Button("Terms of Service") {
+                                            showTermsSheet = true
+                                        }
+                                        .font(.appCaption)
+                                        .foregroundColor(.white)
+                                        .underline()
+                                    }
+                                }
+                                
+                                Spacer()
+                            }
+                            
+                            // Privacy Policy
+                            HStack(alignment: .top, spacing: 12) {
+                                Button(action: { agreedToPrivacy.toggle() }) {
+                                    Image(systemName: agreedToPrivacy ? "checkmark.square.fill" : "square")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(agreedToPrivacy ? .white : .appBorder)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack(spacing: 4) {
+                                        Text("I have read and accept the")
+                                            .font(.appCaption)
+                                            .foregroundColor(.appTextSecondary)
+                                        
+                                        Button("Privacy Policy") {
+                                            showPrivacySheet = true
+                                        }
+                                        .font(.appCaption)
+                                        .foregroundColor(.white)
+                                        .underline()
+                                    }
+                                    
+                                    Text("Including data collection for fitness tracking")
+                                        .font(.system(size: 11))
+                                        .foregroundColor(.appTextTertiary)
+                                }
+                                
+                                Spacer()
+                            }
+                            
+                            // Health Disclaimer
+                            HStack(alignment: .top, spacing: 12) {
+                                Button(action: { agreedToHealthDisclaimer.toggle() }) {
+                                    Image(systemName: agreedToHealthDisclaimer ? "checkmark.square.fill" : "square")
+                                        .font(.system(size: 20))
+                                        .foregroundColor(agreedToHealthDisclaimer ? .white : .appBorder)
+                                }
+                                .buttonStyle(PlainButtonStyle())
+                                
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("I understand LogYourBody is not a medical device")
+                                        .font(.appCaption)
+                                        .foregroundColor(.appTextSecondary)
+                                    
+                                    Text("Consult healthcare professionals for medical advice")
+                                        .font(.system(size: 11))
+                                        .foregroundColor(.appTextTertiary)
+                                }
+                                
+                                Spacer()
+                            }
+                        }
+                        .padding(.vertical, 8)
                         
                         // Sign Up Button
                         Button(action: signUp) {
@@ -173,7 +257,7 @@ struct SignUpView: View {
                         // Apple Sign In
                         Button(action: {
                             Task {
-                                await authManager.handleAppleSignIn()
+                                await authManager.signInWithAppleOAuth()
                             }
                         }) {
                             HStack {
@@ -218,15 +302,16 @@ struct SignUpView: View {
         } message: {
             Text(errorMessage)
         }
-        .onChange(of: authManager.authError) { _, error in
-            if let error = error {
-                errorMessage = error.localizedDescription
-                showError = true
-                authManager.authError = nil // Clear the error after showing
-            }
-        }
         .onTapGesture {
             focusedField = nil
+        }
+        .sheet(isPresented: $showTermsSheet) {
+            SafariView(url: URL(string: "https://logyourbody.com/terms")!)
+                .ignoresSafeArea()
+        }
+        .sheet(isPresented: $showPrivacySheet) {
+            SafariView(url: URL(string: "https://logyourbody.com/privacy")!)
+                .ignoresSafeArea()
         }
     }
     
@@ -235,7 +320,10 @@ struct SignUpView: View {
         email.contains("@") &&
         password.count >= 8 &&
         hasUpperAndLower &&
-        hasNumberOrSymbol
+        hasNumberOrSymbol &&
+        agreedToTerms &&
+        agreedToPrivacy &&
+        agreedToHealthDisclaimer
     }
     
     private var hasUpperAndLower: Bool {
@@ -281,6 +369,25 @@ struct SignUpView: View {
     }
 }
 
+// Safari View wrapper for showing web content
+struct SafariView: UIViewControllerRepresentable {
+    let url: URL
+    
+    func makeUIViewController(context: Context) -> SFSafariViewController {
+        let config = SFSafariViewController.Configuration()
+        config.entersReaderIfAvailable = false
+        config.barCollapsingEnabled = true
+        
+        let controller = SFSafariViewController(url: url, configuration: config)
+        controller.preferredControlTintColor = .white
+        controller.preferredBarTintColor = UIColor(Color.appBackground)
+        controller.dismissButtonStyle = .close
+        
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: Context) {}
+}
 
 #Preview {
     NavigationView {

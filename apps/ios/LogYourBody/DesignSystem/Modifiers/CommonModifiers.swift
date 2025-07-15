@@ -10,7 +10,7 @@ import SwiftUI
 // MARK: - Interactive Scale Modifier
 
 struct InteractiveScale: ViewModifier {
-    @Environment(\.theme) var theme
+    
     @State private var isPressed = false
     
     let scale: CGFloat
@@ -23,7 +23,7 @@ struct InteractiveScale: ViewModifier {
         content
             .scaleEffect(isPressed ? scale : 1.0)
             .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-                withAnimation(theme.animation.ultraFast) {
+                withAnimation(.easeOut(duration: 0.1)) {
                     isPressed = pressing
                 }
             }, perform: {})
@@ -84,8 +84,7 @@ struct Glow: ViewModifier {
 
 // MARK: - Loading Overlay Modifier
 
-struct LoadingOverlay: ViewModifier {
-    @Environment(\.theme) var theme
+struct DesignLoadingOverlay: ViewModifier {
     let isLoading: Bool
     let message: String?
     
@@ -96,33 +95,32 @@ struct LoadingOverlay: ViewModifier {
                 .blur(radius: isLoading ? 3 : 0)
             
             if isLoading {
-                LoadingView(
+                DesignLoadingView(
                     message: message,
                     style: .overlay
                 )
                 .transition(.opacity)
             }
         }
-        .animation(theme.animation.fast, value: isLoading)
+        .animation(.easeInOut(duration: 0.2), value: isLoading)
     }
 }
 
 // MARK: - Error Banner Modifier
 
 struct ErrorBanner: ViewModifier {
-    @Environment(\.theme) var theme
     @Binding var error: String?
     
-    var body: some View {
+    func body(content: Content) -> some View {
         VStack(spacing: 0) {
             // Error banner
             if let error = error {
-                HStack(spacing: theme.spacing.sm) {
+                HStack(spacing: 8) {
                     Image(systemName: "exclamationmark.circle.fill")
                         .font(.system(size: 16))
                     
                     Text(error)
-                        .font(theme.typography.bodySmall)
+                        .font(.system(size: 14))
                         .lineLimit(2)
                     
                     Spacer()
@@ -133,15 +131,15 @@ struct ErrorBanner: ViewModifier {
                     }
                 }
                 .foregroundColor(.white)
-                .padding(theme.spacing.md)
-                .background(theme.colors.error)
+                .padding(12)
+                .background(Color.red)
                 .transition(.move(edge: .top).combined(with: .opacity))
             }
             
             // Main content
             content
         }
-        .animation(theme.animation.medium, value: error != nil)
+        .animation(.easeInOut(duration: 0.3), value: error != nil)
     }
 }
 
@@ -185,62 +183,52 @@ struct ConditionalModifier<TrueModifier: ViewModifier, FalseModifier: ViewModifi
     }
 }
 
-// MARK: - Button Styles
+// MARK: - Button Style Modifiers
+// NOTE: Using ViewModifier instead of ButtonStyle due to compilation issues
 
-struct PrimaryButtonStyle: ButtonStyle {
-    @Environment(\.theme) var theme
+struct DesignPrimaryButtonModifier: ViewModifier {
     @Environment(\.isEnabled) var isEnabled
     
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(theme.typography.labelLarge)
-            .foregroundColor(theme.colors.background)
-            .padding(.horizontal, theme.spacing.lg)
-            .padding(.vertical, theme.spacing.sm)
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(.white)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: theme.radius.button)
-                    .fill(theme.colors.primary)
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.appPrimary)
             )
-            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .opacity(isEnabled ? 1.0 : 0.6)
-            .animation(theme.animation.ultraFast, value: configuration.isPressed)
     }
 }
 
-struct SecondaryButtonStyle: ButtonStyle {
-    @Environment(\.theme) var theme
+struct DesignSecondaryButtonModifier: ViewModifier {
     @Environment(\.isEnabled) var isEnabled
     
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(theme.typography.labelLarge)
-            .foregroundColor(theme.colors.primary)
-            .padding(.horizontal, theme.spacing.lg)
-            .padding(.vertical, theme.spacing.sm)
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: 16, weight: .medium))
+            .foregroundColor(.appPrimary)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: theme.radius.button)
-                    .fill(theme.colors.primary.opacity(0.1))
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.appPrimary.opacity(0.1))
                     .overlay(
-                        RoundedRectangle(cornerRadius: theme.radius.button)
-                            .stroke(theme.colors.primary.opacity(0.5), lineWidth: 1.5)
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.appPrimary.opacity(0.5), lineWidth: 1.5)
                     )
             )
-            .scaleEffect(configuration.isPressed ? 0.97 : 1.0)
             .opacity(isEnabled ? 1.0 : 0.6)
-            .animation(theme.animation.ultraFast, value: configuration.isPressed)
     }
 }
 
-struct GhostButtonStyle: ButtonStyle {
-    @Environment(\.theme) var theme
-    
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(theme.typography.labelMedium)
-            .foregroundColor(theme.colors.primary)
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .opacity(configuration.isPressed ? 0.8 : 1.0)
-            .animation(theme.animation.ultraFast, value: configuration.isPressed)
+struct DesignGhostButtonModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .font(.system(size: 15, weight: .medium))
+            .foregroundColor(.appPrimary)
     }
 }
 
@@ -262,7 +250,7 @@ extension View {
     
     // State modifiers
     func loadingOverlay(isLoading: Bool, message: String? = nil) -> some View {
-        modifier(LoadingOverlay(isLoading: isLoading, message: message))
+        modifier(DesignLoadingOverlay(isLoading: isLoading, message: message))
     }
     
     func errorBanner(_ error: Binding<String?>) -> some View {

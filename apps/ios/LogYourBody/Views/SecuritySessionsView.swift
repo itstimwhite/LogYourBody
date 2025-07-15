@@ -19,6 +19,7 @@ struct SecuritySessionsView: View {
     @State private var showRevokeConfirmation = false
     @State private var isRevokingSession = false
     @State private var showSuccessToast = false
+    @State private var successMessage = ""
     @State private var refreshTimer: Timer?
     
     // Pull to refresh
@@ -26,47 +27,65 @@ struct SecuritySessionsView: View {
     
     var body: some View {
         ZStack {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-            
             if isLoading && sessions.isEmpty {
-                loadingView
+                LoadingOverlay(message: "Loading sessions...")
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 16) {
-                        // Security Info Card
-                        securityInfoCard
-                            .padding(.horizontal)
-                            .padding(.top)
+                    VStack(spacing: SettingsDesign.sectionSpacing) {
+                        // Security Info Section
+                        SettingsSection {
+                            DataInfoRow(
+                                icon: "lock.shield.fill",
+                                title: "Session Management",
+                                description: "View and manage devices signed into your account",
+                                iconColor: .blue
+                            )
+                        }
                         
                         // Sessions List
                         if sessions.isEmpty {
-                            emptyStateView
+                            SettingsEmptyState(
+                                icon: "checkmark.shield.fill",
+                                title: "No Other Sessions",
+                                message: "Only this device is currently signed in",
+                                iconColor: .green
+                            )
+                            .padding(.top, 40)
                         } else {
-                            ForEach(sessions) { session in
-                                SessionRowView(
-                                    session: session,
-                                    onRevoke: {
-                                        sessionToRevoke = session
-                                        showRevokeConfirmation = true
+                            SettingsSection(header: "Active Sessions") {
+                                VStack(spacing: 0) {
+                                    ForEach(Array(sessions.enumerated()), id: \.element.id) { index, session in
+                                        if index > 0 {
+                                            Divider()
+                                        }
+                                        SessionRowView(
+                                            session: session,
+                                            onRevoke: {
+                                                sessionToRevoke = session
+                                                showRevokeConfirmation = true
+                                            }
+                                        )
                                     }
-                                )
-                                .padding(.horizontal)
+                                }
                             }
                         }
                         
                         // Last Updated
                         if !sessions.isEmpty {
-                            lastUpdatedView
+                            Text("Last updated: \(Date().formatted(date: .omitted, time: .shortened))")
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .frame(maxWidth: .infinity)
                                 .padding(.top, 8)
-                                .padding(.bottom, 30)
                         }
                     }
                     .padding(.vertical)
+                    .settingsSectionStyle()
                 }
                 .refreshable {
                     await loadSessions()
                 }
+                .settingsBackground()
             }
         }
         .navigationTitle("Active Sessions")
@@ -113,110 +132,14 @@ struct SecuritySessionsView: View {
             Text(errorMessage)
         }
         .overlay(
-            Group {
-                if showSuccessToast {
-                    successToastView
-                }
-            }
+            SuccessOverlay(
+                isShowing: $showSuccessToast,
+                message: successMessage
+            )
         )
     }
     
     // MARK: - View Components
-    
-    private var loadingView: some View {
-        VStack(spacing: 20) {
-            ProgressView()
-                .scaleEffect(1.2)
-            Text("Loading sessions...")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    
-    private var securityInfoCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(spacing: 12) {
-                Image(systemName: "lock.shield.fill")
-                    .font(.title2)
-                    .foregroundColor(.blue)
-                    .frame(width: 40, height: 40)
-                    .background(Color.blue.opacity(0.1))
-                    .cornerRadius(8)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("Session Management")
-                        .font(.headline)
-                    Text("View and manage devices signed into your account")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-                
-                Spacer()
-            }
-        }
-        .padding()
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-    }
-    
-    private var emptyStateView: some View {
-        VStack(spacing: 20) {
-            Image(systemName: "checkmark.shield.fill")
-                .font(.system(size: 60))
-                .foregroundColor(.green)
-                .padding()
-                .background(Color.green.opacity(0.1))
-                .clipShape(Circle())
-            
-            VStack(spacing: 8) {
-                Text("No Other Sessions")
-                    .font(.headline)
-                Text("Only this device is currently signed in")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.center)
-            }
-        }
-        .padding(.vertical, 60)
-        .frame(maxWidth: .infinity)
-    }
-    
-    private var lastUpdatedView: some View {
-        HStack {
-            Spacer()
-            Text("Last updated: \(Date().formatted(date: .omitted, time: .shortened))")
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Spacer()
-        }
-    }
-    
-    private var successToastView: some View {
-        VStack {
-            Spacer()
-            HStack {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-                Text("Session revoked successfully")
-                    .fontWeight(.medium)
-            }
-            .padding()
-            .background(Color(.systemBackground))
-            .cornerRadius(10)
-            .shadow(radius: 10)
-            .padding(.bottom, 50)
-        }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                withAnimation {
-                    showSuccessToast = false
-                }
-            }
-        }
-    }
     
     // MARK: - Methods
     
@@ -261,12 +184,13 @@ struct SecuritySessionsView: View {
                 isRevokingSession = false
                 
                 // Show success toast
+                successMessage = "Session revoked successfully"
                 withAnimation {
                     showSuccessToast = true
                 }
                 
                 // Haptic feedback
-                HapticManager.shared.success()
+                // HapticManager.shared.success() // TODO: Add HapticManager to Xcode project
             }
         } catch {
             await MainActor.run {
@@ -283,104 +207,111 @@ struct SecuritySessionsView: View {
 struct SessionRowView: View {
     let session: SessionInfo
     let onRevoke: () -> Void
-    @State private var isPressed = false
+    @State private var isExpanded = false
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
+        VStack(spacing: 0) {
             // Main Content
-            HStack(spacing: 16) {
-                // Device Icon
-                ZStack {
-                    Circle()
-                        .fill(iconBackgroundColor)
-                        .frame(width: 50, height: 50)
-                    
+            Button(action: {
+                withAnimation(SettingsDesign.animation) {
+                    isExpanded.toggle()
+                }
+            }) {
+                HStack(spacing: 12) {
+                    // Device Icon
                     Image(systemName: deviceIcon)
-                        .font(.system(size: 24))
+                        .font(.system(size: SettingsDesign.iconSize))
                         .foregroundColor(iconColor)
-                }
-                
-                // Session Details
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack {
-                        Text(session.deviceName)
-                            .font(.system(size: 16, weight: .semibold))
+                        .frame(width: SettingsDesign.iconFrame)
+                        .padding(8)
+                        .background(iconBackgroundColor)
+                        .clipShape(Circle())
+                    
+                    // Session Details
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(session.deviceName)
+                                .font(SettingsDesign.titleFont)
+                                .foregroundColor(.primary)
+                            
+                            if session.isCurrentSession {
+                                Text("THIS DEVICE")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundColor(.green)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.green.opacity(0.15))
+                                    .cornerRadius(4)
+                            }
+                        }
                         
-                        if session.isCurrentSession {
-                            Text("THIS DEVICE")
-                                .font(.system(size: 10, weight: .bold))
-                                .foregroundColor(.green)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color.green.opacity(0.15))
-                                .cornerRadius(4)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(session.location)
+                                .font(SettingsDesign.valueFont)
+                                .foregroundColor(.secondary)
+                            
+                            HStack(spacing: 4) {
+                                Image(systemName: "clock")
+                                    .font(.system(size: 11))
+                                Text(timeAgoString(from: session.lastActiveAt))
+                                    .font(SettingsDesign.valueFont)
+                            }
+                            .foregroundColor(.secondary)
                         }
                     }
                     
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(session.location)
-                            .font(.system(size: 14))
-                            .foregroundColor(.secondary)
-                        
-                        HStack(spacing: 4) {
-                            Image(systemName: "clock")
-                                .font(.system(size: 12))
-                            Text(timeAgoString(from: session.lastActiveAt))
-                                .font(.system(size: 13))
+                    Spacer()
+                    
+                    // Revoke Button or Chevron
+                    if !session.isCurrentSession {
+                        Button(action: onRevoke) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.system(size: 20))
+                                .foregroundColor(.red)
                         }
-                        .foregroundColor(.secondary)
+                        .buttonStyle(PlainButtonStyle())
+                    } else if !session.ipAddress.isEmpty {
+                        Image(systemName: isExpanded ? "chevron.up" : "chevron.down")
+                            .font(SettingsDesign.chevronSize)
+                            .foregroundColor(Color(.tertiaryLabel))
                     }
                 }
-                
-                Spacer()
-                
-                // Revoke Button (not for current session)
-                if !session.isCurrentSession {
-                    Button(action: onRevoke) {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 24))
-                            .foregroundColor(.red.opacity(0.8))
-                    }
-                }
+                .padding(.horizontal, SettingsDesign.horizontalPadding)
+                .padding(.vertical, SettingsDesign.verticalPadding)
+                .contentShape(Rectangle())
             }
-            .padding()
+            .buttonStyle(PlainButtonStyle())
             
             // Additional Details (expandable)
-            if isPressed {
-                VStack(alignment: .leading, spacing: 8) {
+            if isExpanded {
+                VStack(spacing: 0) {
                     Divider()
                     
-                    HStack {
-                        Label("IP Address", systemImage: "network")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text(session.ipAddress)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    VStack(spacing: 8) {
+                        HStack {
+                            Label("IP Address", systemImage: "network")
+                                .font(SettingsDesign.valueFont)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text(session.ipAddress)
+                                .font(SettingsDesign.valueFont)
+                                .foregroundColor(.secondary)
+                        }
+                        
+                        HStack {
+                            Label("First Signed In", systemImage: "calendar")
+                                .font(SettingsDesign.valueFont)
+                                .foregroundColor(.secondary)
+                            Spacer()
+                            Text(session.createdAt.formatted(date: .abbreviated, time: .shortened))
+                                .font(SettingsDesign.valueFont)
+                                .foregroundColor(.secondary)
+                        }
                     }
-                    
-                    HStack {
-                        Label("First Signed In", systemImage: "calendar")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text(session.createdAt.formatted(date: .abbreviated, time: .shortened))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                    .padding(.horizontal, SettingsDesign.horizontalPadding)
+                    .padding(.vertical, 12)
                 }
-                .padding(.horizontal)
-                .padding(.bottom)
-            }
-        }
-        .background(Color(.systemBackground))
-        .cornerRadius(12)
-        .shadow(color: .black.opacity(0.05), radius: 5, x: 0, y: 2)
-        .scaleEffect(isPressed ? 0.98 : 1.0)
-        .onTapGesture {
-            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                isPressed.toggle()
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
     }

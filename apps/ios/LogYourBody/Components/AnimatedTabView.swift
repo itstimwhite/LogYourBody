@@ -2,7 +2,7 @@
 //  AnimatedTabView.swift
 //  LogYourBody
 //
-//  Tab view with matchedGeometryEffect for smooth transitions
+//  Tab view with Liquid Glass effect and accessibility
 //
 
 import SwiftUI
@@ -10,16 +10,19 @@ import SwiftUI
 struct AnimatedTabView: View {
     @Binding var selectedTab: Tab
     @Namespace private var namespace
+    @State private var bounceAnimation = false
     
     enum Tab: Int, CaseIterable {
         case dashboard = 0
-        case log = 1
-        case settings = 2
+        case dietPhases = 1
+        case log = 2
+        case settings = 3
         
         var icon: String {
             switch self {
             case .dashboard: return "house"
             case .log: return "plus"
+            case .dietPhases: return "chart.line.uptrend.xyaxis"
             case .settings: return "gearshape"
             }
         }
@@ -28,7 +31,17 @@ struct AnimatedTabView: View {
             switch self {
             case .dashboard: return "Dashboard"
             case .log: return "Log"
+            case .dietPhases: return "Diet Phases"
             case .settings: return "Settings"
+            }
+        }
+        
+        var accessibilityLabel: String {
+            switch self {
+            case .dashboard: return "Dashboard tab"
+            case .log: return "Add new entry"
+            case .dietPhases: return "Diet phase history"
+            case .settings: return "Settings tab"
             }
         }
     }
@@ -43,21 +56,56 @@ struct AnimatedTabView: View {
                 ) {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.8)) {
                         selectedTab = tab
+                        HapticManager.shared.buttonTapped()
+                        bounceAnimation.toggle()
                     }
                 }
             }
         }
         .padding(.horizontal, 8)
-        .frame(height: 49)
+        .frame(height: 56) // Increased height for better tap targets
         .background(
-            Color.appCard
-                .cornerRadius(25)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 25)
-                        .stroke(Color.appBorder.opacity(0.2), lineWidth: 0.5)
-                )
+            // Liquid Glass effect with dynamic animations
+            ZStack {
+                // Base glass layer
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(.ultraThinMaterial)
+                
+                // Animated shimmer overlay
+                RoundedRectangle(cornerRadius: 28)
+                    .fill(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.0),
+                                Color.white.opacity(0.05),
+                                Color.white.opacity(0.0)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
+                    )
+                    .offset(x: bounceAnimation ? -100 : 100)
+                    .animation(.easeInOut(duration: 1.5), value: bounceAnimation)
+                
+                // Glass border
+                RoundedRectangle(cornerRadius: 28)
+                    .stroke(
+                        LinearGradient(
+                            colors: [
+                                Color.white.opacity(0.15),
+                                Color.white.opacity(0.05)
+                            ],
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        ),
+                        lineWidth: 1
+                    )
+            }
+            .clipShape(RoundedRectangle(cornerRadius: 28))
         )
-        .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 2)
+        .shadow(color: Color.black.opacity(0.3), radius: 12, x: 0, y: 6)
+        .scaleEffect(bounceAnimation ? 1.02 : 1.0)
+        .animation(.spring(response: 0.5, dampingFraction: 0.7), value: bounceAnimation)
     }
 }
 
@@ -69,22 +117,51 @@ struct TabButton: View {
     @State private var isPressed = false
     
     var body: some View {
-        VStack(spacing: 4) {
-            ZStack {
-                // Selection indicator - removed for cleaner look
-                
-                Image(systemName: tab.icon)
-                    .font(.system(size: 24, weight: isSelected ? .medium : .regular))
-                    .foregroundColor(isSelected ? .white : Color(white: 0.5))
-                    .scaleEffect(isSelected ? 1.0 : 1.0)
+        Button(action: action) {
+            VStack(spacing: 4) {
+                ZStack {
+                    // Selection indicator with glass morphing effect
+                    if isSelected {
+                        ZStack {
+                            // Base selection circle
+                            Circle()
+                                .fill(Color.white.opacity(0.08))
+                                .frame(width: 44, height: 44)
+                                .blur(radius: 8)
+                            
+                            // Inner glow
+                            Circle()
+                                .fill(
+                                    RadialGradient(
+                                        colors: [
+                                            Color.white.opacity(0.15),
+                                            Color.white.opacity(0.0)
+                                        ],
+                                        center: .center,
+                                        startRadius: 0,
+                                        endRadius: 22
+                                    )
+                                )
+                                .frame(width: 40, height: 40)
+                        }
+                        .matchedGeometryEffect(id: "selection", in: namespace)
+                    }
+                    
+                    Image(systemName: tab.icon)
+                        .font(.system(size: 24, weight: isSelected ? .medium : .regular))
+                        .foregroundColor(isSelected ? .white : Color.white.opacity(0.5))
+                        .symbolEffect(.bounce, value: isSelected)
+                        .scaleEffect(isSelected ? 1.0 : 0.9)
+                        .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isSelected)
+                }
+                .frame(width: 44, height: 44) // Minimum tap target
             }
-            .frame(height: 44)
+            .frame(maxWidth: .infinity)
+            .scaleEffect(isPressed ? 0.9 : 1.0)
         }
-        .frame(maxWidth: .infinity)
-        .scaleEffect(isPressed ? 0.9 : 1.0)
-        .onTapGesture {
-            action()
-        }
+        .buttonStyle(PlainButtonStyle()) // Remove default button styling
+        .accessibilityLabel(tab.accessibilityLabel)
+        .accessibilityAddTraits(isSelected ? [.isButton, .isSelected] : .isButton)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
             withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                 isPressed = pressing
@@ -148,7 +225,7 @@ struct AnimatedProgressRing: View {
         .onAppear {
             animatedProgress = progress
         }
-        .onChange(of: progress) { newValue in
+        .onChange(of: progress) { _, newValue in
             animatedProgress = newValue
         }
     }

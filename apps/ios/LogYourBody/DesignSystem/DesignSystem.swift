@@ -27,14 +27,14 @@ extension View {
 
 // MARK: - Common Component Typealiases
 
-public typealias DSButton = StandardButton
-public typealias DSCard = StandardCard
-public typealias DSTextField = StandardTextField
-public typealias DSHeader = StandardHeader
-public typealias DSMetricCard = MetricCard
-public typealias DSSettingsRow = SettingsRow
-public typealias DSLoadingView = LoadingView
-public typealias DSEmptyState = EmptyStateView
+typealias DSButton = StandardButton
+typealias DSCard = StandardCard
+typealias DSTextField = StandardTextField
+typealias DSHeader = StandardHeader
+// MetricCard is already available in StandardCard.swift
+typealias DSSettingsRow = DesignSettingsRow
+typealias DSLoadingView = DesignLoadingView
+typealias DSEmptyState = EmptyStateView
 
 // MARK: - Quick Access Extensions
 
@@ -184,7 +184,7 @@ extension DesignSystem {
         // MARK: State Views
         
         static func loading(message: String? = "Loading...") -> some View {
-            LoadingView(message: message)
+            DesignLoadingView(message: message, style: .standard)
         }
         
         static func empty(

@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var hasCompletedOnboarding = false
     @State private var isLoadingComplete = false
     @State private var isUnlocked = false
+    @State private var showLegalConsent = false
     @AppStorage("biometricLockEnabled") private var biometricLockEnabled = false
     
     init() {
@@ -93,7 +94,17 @@ struct ContentView: View {
             }
         }
         .preferredColorScheme(.dark)
-        .toastPresenter() // Add global toast presenter
+        // Toast presenter removed - handle notifications at view level
+        .sheet(isPresented: $showLegalConsent) {
+            LegalConsentView(
+                isPresented: $showLegalConsent,
+                userId: authManager.pendingAppleUserId ?? "",
+                onAccept: {
+                    await authManager.acceptLegalConsent(userId: authManager.pendingAppleUserId ?? "")
+                }
+            )
+            .interactiveDismissDisabled(true) // Prevent dismissing without accepting
+        }
         .onAppear {
             // Initialize onboarding status
             hasCompletedOnboarding = UserDefaults.standard.bool(forKey: Constants.hasCompletedOnboardingKey)
@@ -133,6 +144,9 @@ struct ContentView: View {
                     }
                 }
             }
+        }
+        .onChange(of: authManager.needsLegalConsent) { _, newValue in
+            showLegalConsent = newValue
         }
     }
 }

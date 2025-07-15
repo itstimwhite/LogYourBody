@@ -20,8 +20,8 @@ enum SettingsRowType {
 
 // MARK: - Settings Row
 
-struct SettingsRow: View {
-    @Environment(\.theme) var theme
+struct DesignSettingsRow: View {
+    
     
     let icon: String?
     let iconColor: Color?
@@ -51,32 +51,32 @@ struct SettingsRow: View {
     var body: some View {
         Button(action: {
             if case .navigation = type {
-                theme.haptics.selection()
+                // // HapticManager.shared.selection()
                 action?()
             } else if case .action = type {
-                theme.haptics.impact(.light)
+                // // HapticManager.shared.impact(style: .light)
                 action?()
             }
         }) {
-            HStack(spacing: theme.spacing.md) {
+            HStack(spacing: 12) {
                 // Icon
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.system(size: 20))
-                        .foregroundColor(iconColor ?? theme.colors.primary)
+                        .foregroundColor(iconColor ?? .appPrimary)
                         .frame(width: 28, height: 28)
                 }
                 
                 // Content
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(theme.typography.bodyMedium)
-                        .foregroundColor(theme.colors.text)
+                        .font(.body)
+                        .foregroundColor(.primary)
                     
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(theme.typography.captionLarge)
-                            .foregroundColor(theme.colors.textSecondary)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                             .lineLimit(2)
                     }
                 }
@@ -86,10 +86,10 @@ struct SettingsRow: View {
                 // Trailing content
                 trailingContent
             }
-            .padding(.horizontal, theme.spacing.screenPadding)
-            .padding(.vertical, theme.spacing.sm)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
             .background(
-                theme.colors.background
+                Color.appBackground
                     .opacity(isPressed ? 0.5 : 0)
             )
             .contentShape(Rectangle())
@@ -98,7 +98,7 @@ struct SettingsRow: View {
         .disabled(!isInteractive)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
             if isInteractive {
-                withAnimation(theme.animation.ultraFast) {
+                withAnimation(.easeOut(duration: 0.1)) {
                     isPressed = pressing
                 }
             }
@@ -111,17 +111,17 @@ struct SettingsRow: View {
         case .navigation:
             Image(systemName: "chevron.right")
                 .font(.system(size: 14, weight: .semibold))
-                .foregroundColor(theme.colors.textTertiary)
+                .foregroundColor(Color.secondary.opacity(0.6))
                 
         case .toggle(let isOn):
             Toggle("", isOn: isOn)
                 .labelsHidden()
-                .tint(theme.colors.primary)
+                .tint(.appPrimary)
                 
         case .value(let text):
             Text(text)
-                .font(theme.typography.bodyMedium)
-                .foregroundColor(theme.colors.textSecondary)
+                .font(.body)
+                .foregroundColor(.secondary)
                 
         case .action:
             EmptyView()
@@ -143,11 +143,11 @@ struct SettingsRow: View {
             } label: {
                 HStack(spacing: 4) {
                     Text(selection.wrappedValue)
-                        .font(theme.typography.bodyMedium)
-                        .foregroundColor(theme.colors.textSecondary)
+                        .font(.body)
+                        .foregroundColor(.secondary)
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.system(size: 12))
-                        .foregroundColor(theme.colors.textTertiary)
+                        .foregroundColor(Color.secondary.opacity(0.6))
                 }
             }
             
@@ -157,8 +157,8 @@ struct SettingsRow: View {
                 in: range
             ) {
                 Text("\(value.wrappedValue)")
-                    .font(theme.typography.bodyMedium)
-                    .foregroundColor(theme.colors.textSecondary)
+                    .font(.body)
+                    .foregroundColor(.secondary)
             }
             .labelsHidden()
         }
@@ -176,9 +176,7 @@ struct SettingsRow: View {
 
 // MARK: - Settings Section
 
-struct SettingsSection<Content: View>: View {
-    @Environment(\.theme) var theme
-    
+struct DesignSettingsSection<Content: View>: View {
     let title: String?
     let footer: String?
     @ViewBuilder let content: () -> Content
@@ -198,37 +196,39 @@ struct SettingsSection<Content: View>: View {
             // Header
             if let title = title {
                 Text(title.uppercased())
-                    .font(theme.typography.captionMedium)
-                    .foregroundColor(theme.colors.textTertiary)
-                    .padding(.horizontal, theme.spacing.screenPadding)
-                    .padding(.bottom, theme.spacing.xs)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 4)
             }
             
             // Content with separators
             VStack(spacing: 0) {
                 content()
             }
-            .background(theme.colors.surface)
-            .cornerRadius(theme.radius.lg)
-            .padding(.horizontal, theme.spacing.screenPadding)
+            .background(Color.appCard)
+            .cornerRadius(12)
+            .padding(.horizontal, 16)
             
             // Footer
             if let footer = footer {
                 Text(footer)
-                    .font(theme.typography.captionMedium)
-                    .foregroundColor(theme.colors.textTertiary)
-                    .padding(.horizontal, theme.spacing.screenPadding)
-                    .padding(.top, theme.spacing.xs)
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.secondary)
+                    .padding(.horizontal, 16)
+                    .padding(.top, 4)
             }
         }
-        .padding(.vertical, theme.spacing.sm)
+        .padding(.vertical, 8)
     }
 }
 
 // MARK: - List Row
 
 struct ListRow: View {
-    @Environment(\.theme) var theme
+    
     
     let title: String
     let subtitle: String?
@@ -254,10 +254,10 @@ struct ListRow: View {
     
     var body: some View {
         Button(action: {
-            theme.haptics.selection()
+            // // HapticManager.shared.selection()
             action?()
         }) {
-            HStack(spacing: theme.spacing.md) {
+            HStack(spacing: 12) {
                 // Leading content
                 if let leading = leading {
                     leading
@@ -266,14 +266,14 @@ struct ListRow: View {
                 // Main content
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
-                        .font(theme.typography.bodyMedium)
-                        .foregroundColor(theme.colors.text)
+                        .font(.body)
+                        .foregroundColor(.primary)
                         .lineLimit(1)
                     
                     if let subtitle = subtitle {
                         Text(subtitle)
-                            .font(theme.typography.captionLarge)
-                            .foregroundColor(theme.colors.textSecondary)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                             .lineLimit(2)
                     }
                 }
@@ -286,13 +286,13 @@ struct ListRow: View {
                 } else if action != nil {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(theme.colors.textTertiary)
+                        .foregroundColor(Color.secondary.opacity(0.6))
                 }
             }
-            .padding(.horizontal, theme.spacing.screenPadding)
-            .padding(.vertical, theme.spacing.sm)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
             .background(
-                theme.colors.background
+                Color.appBackground
                     .opacity(isPressed ? 0.5 : 0)
             )
             .contentShape(Rectangle())
@@ -301,7 +301,7 @@ struct ListRow: View {
         .disabled(action == nil)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
             if action != nil {
-                withAnimation(theme.animation.ultraFast) {
+                withAnimation(.easeOut(duration: 0.1)) {
                     isPressed = pressing
                 }
             }
@@ -312,7 +312,7 @@ struct ListRow: View {
 // MARK: - Destructive Row
 
 struct DestructiveRow: View {
-    @Environment(\.theme) var theme
+    
     
     let title: String
     let icon: String?
@@ -322,33 +322,33 @@ struct DestructiveRow: View {
     
     var body: some View {
         Button(action: {
-            theme.haptics.impact(.medium)
+            // // HapticManager.shared.impact(style: .medium)
             action()
         }) {
-            HStack(spacing: theme.spacing.md) {
+            HStack(spacing: 12) {
                 if let icon = icon {
                     Image(systemName: icon)
                         .font(.system(size: 20))
-                        .foregroundColor(theme.colors.error)
+                        .foregroundColor(.red)
                 }
                 
                 Text(title)
-                    .font(theme.typography.bodyMedium)
-                    .foregroundColor(theme.colors.error)
+                    .font(.body)
+                    .foregroundColor(.red)
                 
                 Spacer()
             }
-            .padding(.horizontal, theme.spacing.screenPadding)
-            .padding(.vertical, theme.spacing.sm)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
             .background(
-                theme.colors.error
+                .red
                     .opacity(isPressed ? 0.1 : 0)
             )
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
-            withAnimation(theme.animation.ultraFast) {
+            withAnimation(.easeOut(duration: 0.1)) {
                 isPressed = pressing
             }
         }, perform: {})
@@ -363,8 +363,8 @@ struct SettingsRow_Previews: PreviewProvider {
             ScrollView {
                 VStack(spacing: 0) {
                     // Settings sections
-                    SettingsSection(title: "Account") {
-                        SettingsRow(
+                    DesignSettingsSection(title: "Account") {
+                        DesignSettingsRow(
                             icon: "person.circle",
                             title: "Profile",
                             subtitle: "John Doe",
@@ -375,15 +375,15 @@ struct SettingsRow_Previews: PreviewProvider {
                             .background(Color(white: 0.15))
                             .padding(.leading, 60)
                         
-                        SettingsRow(
+                        DesignSettingsRow(
                             icon: "envelope",
                             title: "Email",
                             type: .value(text: "john@example.com")
                         )
                     }
                     
-                    SettingsSection(title: "Preferences") {
-                        SettingsRow(
+                    DesignSettingsSection(title: "Preferences") {
+                        DesignSettingsRow(
                             icon: "moon",
                             title: "Dark Mode",
                             type: .toggle(isOn: .constant(true))
@@ -393,7 +393,7 @@ struct SettingsRow_Previews: PreviewProvider {
                             .background(Color(white: 0.15))
                             .padding(.leading, 60)
                         
-                        SettingsRow(
+                        DesignSettingsRow(
                             icon: "textformat",
                             title: "Font Size",
                             type: .picker(
@@ -406,7 +406,7 @@ struct SettingsRow_Previews: PreviewProvider {
                             .background(Color(white: 0.15))
                             .padding(.leading, 60)
                         
-                        SettingsRow(
+                        DesignSettingsRow(
                             icon: "bell",
                             title: "Notifications",
                             subtitle: "Manage notification preferences",
@@ -414,7 +414,7 @@ struct SettingsRow_Previews: PreviewProvider {
                         ) { }
                     }
                     
-                    SettingsSection(
+                    DesignSettingsSection(
                         title: "Data",
                         footer: "Your data will be permanently deleted"
                     ) {
@@ -425,7 +425,7 @@ struct SettingsRow_Previews: PreviewProvider {
                     }
                     
                     // List rows
-                    SettingsSection(title: "Recent Activity") {
+                    DesignSettingsSection(title: "Recent Activity") {
                         ListRow(
                             title: "Workout Session",
                             subtitle: "45 minutes • 320 calories",

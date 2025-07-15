@@ -31,6 +31,12 @@ struct MainTabView: View {
                             insertion: .move(edge: .leading).combined(with: .opacity),
                             removal: .move(edge: .trailing).combined(with: .opacity)
                         ))
+                case .dietPhases:
+                    DietPhaseHistoryView()
+                        .transition(.asymmetric(
+                            insertion: .move(edge: .trailing).combined(with: .opacity),
+                            removal: .move(edge: .leading).combined(with: .opacity)
+                        ))
                 case .log:
                     DashboardView() // Stay on dashboard when log is tapped
                         .onAppear {
@@ -50,17 +56,13 @@ struct MainTabView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             
-            // Custom Animated Tab Bar
-            VStack(spacing: 0) {
-                Spacer()
-                
-                AnimatedTabView(selectedTab: $selectedTab)
-                    .padding(.horizontal, 16)
-                    .padding(.bottom, 8)
-            }
+            // Floating Tab Bar
+            AnimatedTabView(selectedTab: $selectedTab)
+                .padding(.horizontal, 16)
+                .padding(.bottom, 20) // Space from bottom edge
         }
         .animation(.spring(response: 0.4, dampingFraction: 0.8), value: selectedTab)
-        .toastPresenter() // Add toast presenter to main view
+        // Toast presenter removed - handle notifications at view level
         .sheet(isPresented: $showAddEntrySheet) {
             AddEntrySheet(isPresented: $showAddEntrySheet)
                 .environmentObject(authManager)

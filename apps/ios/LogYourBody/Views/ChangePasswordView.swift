@@ -48,96 +48,90 @@ struct ChangePasswordView: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                // Header Icon
-                ZStack {
-                    Circle()
-                        .fill(Color.appPrimary.opacity(0.1))
-                        .frame(width: 80, height: 80)
-                    
-                    Image(systemName: "lock.shield")
-                        .font(.system(size: 36, weight: .medium))
-                        .foregroundColor(.appPrimary)
-                }
-                .padding(.top, 40)
-                .padding(.bottom, 24)
-                
-                // Title
-                VStack(spacing: 8) {
-                    Text("Change Password")
-                        .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(.appText)
-                    
-                    Text("Create a strong password to protect your account")
-                        .font(.appBody)
-                        .foregroundColor(.appTextSecondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 40)
-                }
-                .padding(.bottom, 40)
-                
-                // Form Fields
-                VStack(spacing: 20) {
-                    // Current Password
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Current Password")
-                            .font(.appBodySmall)
-                            .foregroundColor(.appTextSecondary)
+        ZStack {
+            ScrollView {
+                VStack(spacing: SettingsDesign.sectionSpacing) {
+                    // Header Icon
+                    VStack(spacing: 20) {
+                        ZStack {
+                            Circle()
+                                .fill(Color.appPrimary.opacity(0.1))
+                                .frame(width: 80, height: 80)
+                            
+                            Image(systemName: "lock.shield")
+                                .font(.system(size: 36, weight: .medium))
+                                .foregroundColor(.appPrimary)
+                        }
+                        .padding(.top, 20)
                         
+                        Text("Change Password")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        
+                        Text("Create a strong password to protect your account")
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 40)
+                    }
+                    .padding(.bottom, 20)
+                    
+                    // Form Fields
+                    SettingsSection(header: "Current Password") {
                         SecureField("Enter current password", text: $currentPassword)
-                            .modernTextFieldStyle()
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
                             .textContentType(.password)
                             .focused($focusedField, equals: .current)
                             .onSubmit {
                                 focusedField = .new
                             }
+                            .padding(.horizontal, SettingsDesign.horizontalPadding)
+                            .padding(.vertical, 8)
                     }
                     
-                    Divider()
-                        .padding(.vertical, 8)
-                    
-                    // New Password
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("New Password")
-                            .font(.appBodySmall)
-                            .foregroundColor(.appTextSecondary)
-                        
-                        SecureField("Enter new password", text: $newPassword)
-                            .modernTextFieldStyle()
-                            .textContentType(.newPassword)
-                            .focused($focusedField, equals: .new)
-                            .onSubmit {
-                                focusedField = .confirm
+                    SettingsSection(
+                        header: "New Password",
+                        footer: "Password must meet all requirements below"
+                    ) {
+                        VStack(spacing: 12) {
+                            SecureField("Enter new password", text: $newPassword)
+                                .textFieldStyle(RoundedBorderTextFieldStyle())
+                                .textContentType(.newPassword)
+                                .focused($focusedField, equals: .new)
+                                .onSubmit {
+                                    focusedField = .confirm
+                                }
+                                .padding(.horizontal, SettingsDesign.horizontalPadding)
+                                .padding(.top, 8)
+                            
+                            // Password Requirements
+                            VStack(alignment: .leading, spacing: 8) {
+                                PasswordRequirement(
+                                    text: "At least 8 characters",
+                                    isMet: newPassword.count >= 8
+                                )
+                                
+                                PasswordRequirement(
+                                    text: "Mix of uppercase and lowercase",
+                                    isMet: hasUpperAndLower
+                                )
+                                
+                                PasswordRequirement(
+                                    text: "At least one number or symbol",
+                                    isMet: hasNumberOrSymbol
+                                )
                             }
-                        
-                        // Password Requirements
-                        VStack(alignment: .leading, spacing: 6) {
-                            PasswordRequirement(
-                                text: "At least 8 characters",
-                                isMet: newPassword.count >= 8
-                            )
-                            
-                            PasswordRequirement(
-                                text: "Mix of uppercase and lowercase",
-                                isMet: hasUpperAndLower
-                            )
-                            
-                            PasswordRequirement(
-                                text: "At least one number or symbol",
-                                isMet: hasNumberOrSymbol
-                            )
+                            .padding(.horizontal, SettingsDesign.horizontalPadding)
+                            .padding(.bottom, 8)
                         }
                     }
                     
-                    // Confirm Password
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Confirm New Password")
-                            .font(.appBodySmall)
-                            .foregroundColor(.appTextSecondary)
-                        
+                    SettingsSection(
+                        header: "Confirm New Password",
+                        footer: !confirmPassword.isEmpty && !passwordsMatch ? "Passwords don't match" : nil
+                    ) {
                         SecureField("Re-enter new password", text: $confirmPassword)
-                            .modernTextFieldStyle()
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
                             .textContentType(.newPassword)
                             .focused($focusedField, equals: .confirm)
                             .onSubmit {
@@ -145,46 +139,42 @@ struct ChangePasswordView: View {
                                     changePassword()
                                 }
                             }
-                        
-                        if !confirmPassword.isEmpty && !passwordsMatch {
-                            HStack(spacing: 4) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.red)
-                                Text("Passwords don't match")
-                                    .font(.appCaption)
-                                    .foregroundColor(.red)
+                            .padding(.horizontal, SettingsDesign.horizontalPadding)
+                            .padding(.vertical, 8)
+                    }
+                    
+                    // Submit Button
+                    Button(action: changePassword) {
+                        HStack {
+                            if isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .scaleEffect(0.8)
+                            } else {
+                                Text("Update Password")
+                                    .fontWeight(.semibold)
                             }
                         }
+                        .frame(height: 48)
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(.white)
                     }
-                }
-                .padding(.horizontal, 24)
-                
-                // Submit Button
-                Button(action: changePassword) {
-                    HStack {
-                        if isLoading {
-                            ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .black))
-                                .scaleEffect(0.8)
-                        } else {
-                            Text("Update Password")
-                                .font(.appBody)
-                                .fontWeight(.semibold)
-                        }
-                    }
-                    .frame(height: 48)
-                    .frame(maxWidth: .infinity)
-                    .background(isValidForm ? Color.white : Color.appBorder)
-                    .foregroundColor(isValidForm ? .black : .white)
-                    .cornerRadius(Constants.cornerRadius)
+                    .background(isValidForm ? Color.appPrimary : Color.gray)
+                    .cornerRadius(SettingsDesign.cornerRadius)
+                    .disabled(!isValidForm || isLoading)
                     .animation(.easeInOut(duration: 0.2), value: isValidForm)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 20)
+                    
+                    Spacer(minLength: 40)
                 }
-                .disabled(!isValidForm || isLoading)
-                .padding(.horizontal, 24)
-                .padding(.top, 32)
-                
-                Spacer(minLength: 40)
+                .padding(.vertical)
+            }
+            .settingsBackground()
+            
+            // Loading overlay
+            if isLoading {
+                LoadingOverlay(message: "Updating password...")
             }
         }
         .scrollDismissesKeyboard(.interactively)
@@ -195,13 +185,20 @@ struct ChangePasswordView: View {
         } message: {
             Text(errorMessage)
         }
-        .alert("Password Updated", isPresented: $showSuccess) {
-            Button("OK", role: .cancel) {
-                dismiss()
+        .overlay(
+            SuccessOverlay(
+                isShowing: $showSuccess,
+                message: "Password updated successfully"
+            )
+            .onChange(of: showSuccess) { _, newValue in
+                if !newValue {
+                    // Dismiss after success overlay disappears
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        dismiss()
+                    }
+                }
             }
-        } message: {
-            Text("Your password has been successfully changed.")
-        }
+        )
         .onTapGesture {
             focusedField = nil
         }
@@ -260,11 +257,11 @@ struct PasswordRequirement: View {
         HStack(spacing: 6) {
             Image(systemName: isMet ? "checkmark.circle.fill" : "circle")
                 .font(.system(size: 14))
-                .foregroundColor(isMet ? .green : .appTextTertiary)
+                .foregroundColor(isMet ? .green : .secondary)
             
             Text(text)
-                .font(.appCaption)
-                .foregroundColor(isMet ? .appTextSecondary : .appTextTertiary)
+                .font(SettingsDesign.valueFont)
+                .foregroundColor(isMet ? .primary : .secondary)
         }
     }
 }

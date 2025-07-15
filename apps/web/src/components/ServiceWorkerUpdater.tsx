@@ -1,16 +1,35 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { usePathname } from 'next/navigation'
 import { Button } from './ui/button'
 import { RefreshCw } from 'lucide-react'
 
 export function ServiceWorkerUpdater() {
   const [showUpdateBar, setShowUpdateBar] = useState(false)
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null)
+  const pathname = usePathname()
+
+  // Define external pages where update banner should not show
+  const externalPages = [
+    '/privacy',
+    '/terms',
+    '/health-disclosure',
+    '/security',
+    '/about',
+    '/blog',
+    '/support',
+    '/contact',
+    '/changelog',
+    '/download'
+  ]
+
+  // Check if current page is an external page
+  const isExternalPage = externalPages.some(page => pathname?.startsWith(page))
 
   useEffect(() => {
-    // Only run in browser
-    if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+    // Only run in browser and not on external pages
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator) || isExternalPage) {
       return
     }
 
@@ -55,7 +74,7 @@ export function ServiceWorkerUpdater() {
       clearInterval(updateInterval)
       window.removeEventListener('focus', handleFocus)
     }
-  }, [])
+  }, [isExternalPage])
 
   const handleUpdate = () => {
     if (waitingWorker) {
@@ -69,7 +88,8 @@ export function ServiceWorkerUpdater() {
     }
   }
 
-  if (!showUpdateBar) return null
+  // Don't show on external pages
+  if (!showUpdateBar || isExternalPage) return null
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-4 bg-linear-card border-t border-linear-border shadow-lg animate-in slide-in-from-bottom-5">

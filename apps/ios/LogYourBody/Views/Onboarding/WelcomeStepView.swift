@@ -10,111 +10,129 @@ import SwiftUI
 struct WelcomeStepView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @EnvironmentObject var authManager: AuthManager
-    @State private var animateIcon = false
-    @State private var animateText = false
-    @State private var animateButton = false
+    @State private var animate = false
+    #if DEBUG
+    @State private var showDebugOptions = false
+    #endif
     
     var body: some View {
         ZStack {
-            // Liquid Glass Background
-            LiquidGlassBackground(
-                opacity: 0.6,
-                blurRadius: 30,
-                saturation: 1.1,
-                gradientColors: [
-                    Color.appPrimary.opacity(0.08),
-                    Color.appPrimary.opacity(0.03),
-                    Color.clear
-                ]
-            )
+            Color.appBackground
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 Spacer()
                 
                 VStack(spacing: 40) {
-                    // Icon with liquid glass accent
-                    ZStack {
-                        // Liquid accent behind icon
-                        if #available(iOS 26, *) {
-                            LiquidGlassAccent(
-                                color: .appPrimary,
-                                opacity: 0.15,
-                                size: CGSize(width: 120, height: 120)
-                            )
-                        }
-                        
-                        // Minimal icon - Linear style
-                        Image(systemName: "chart.line.uptrend.xyaxis")
-                            .font(.system(size: 48, weight: .regular))
-                            .foregroundColor(.appPrimary)
-                            .opacity(animateIcon ? 1 : 0)
-                            .scaleEffect(animateIcon ? 1 : 0.9)
-                            .animation(.easeOut(duration: 0.5), value: animateIcon)
-                    }
-                
-                // Welcome text with refined typography
-                VStack(spacing: 20) {
-                    // User greeting if available
-                    if let userName = authManager.currentUser?.displayName ?? authManager.currentUser?.name {
-                        Text("Welcome back, \(userName)")
-                            .font(.system(size: 18, weight: .medium))
-                            .foregroundColor(.appPrimary)
-                            .opacity(animateText ? 1 : 0)
-                            .offset(y: animateText ? 0 : 10)
-                            .animation(.smooth.delay(0.3), value: animateText)
-                    }
+                    // Icon
+                    Image(systemName: "chart.line.uptrend.xyaxis")
+                        .font(.system(size: 48, weight: .light))
+                        .foregroundColor(.white.opacity(0.9))
                     
-                    VStack(spacing: 8) {
-                        Text("LogYourBody")
-                            .font(.system(size: 32, weight: .semibold, design: .default))
-                            .foregroundColor(.appText)
-                            .opacity(animateText ? 1 : 0)
-                            .animation(.easeOut(duration: 0.4).delay(0.1), value: animateText)
-                        
-                        Text("Track your fitness journey with\nprecise body composition data")
-                            .font(.system(size: 16, weight: .regular))
-                            .foregroundColor(.appTextSecondary)
-                            .multilineTextAlignment(.center)
-                            .lineSpacing(6)
-                            .opacity(animateText ? 1 : 0)
-                            .animation(.easeOut(duration: 0.4).delay(0.2), value: animateText)
+                    // Welcome text
+                    VStack(spacing: 20) {
+                        if let userName = authManager.currentUser?.displayName ?? authManager.currentUser?.name {
+                            Text("Welcome, \(userName).")
+                                .font(.system(size: 32, weight: .semibold))
+                                .foregroundColor(.white)
+                                .opacity(animate ? 1 : 0)
+                                .animation(.easeOut(duration: 0.4).delay(0.1), value: animate)
+                            
+                            Text("Review your details to begin")
+                                .font(.system(size: 16, weight: .regular))
+                                .foregroundColor(.white.opacity(0.7))
+                                .multilineTextAlignment(.center)
+                                .opacity(animate ? 1 : 0)
+                                .animation(.easeOut(duration: 0.4).delay(0.2), value: animate)
+                        } else {
+                            Text("Welcome to LogYourBody")
+                                .font(.system(size: 32, weight: .semibold))
+                                .foregroundColor(.white)
+                                .opacity(animate ? 1 : 0)
+                                .animation(.easeOut(duration: 0.4).delay(0.1), value: animate)
+                            
+                            Text("Let's get you started")
+                                .font(.system(size: 16, weight: .regular))
+                                .foregroundColor(.white.opacity(0.7))
+                                .multilineTextAlignment(.center)
+                                .opacity(animate ? 1 : 0)
+                                .animation(.easeOut(duration: 0.4).delay(0.2), value: animate)
+                        }
                     }
                 }
-            }
-            .padding(.horizontal, Constants.paddingLarge)
-            
-            Spacer()
-            
-                // Get Started button with modern styling
+                .padding(.horizontal, Constants.paddingLarge)
+                
+                Spacer()
+                
+                // Get Started button
                 VStack(spacing: 16) {
-                    LiquidGlassButton(
-                        title: "Get Started",
+                    LiquidGlassCTAButton(
+                        text: "Get Started",
+                        icon: "arrow.right",
                         action: {
-                            let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                            impactFeedback.impactOccurred()
                             viewModel.nextStep()
                         },
-                        color: .white,
-                        textColor: .black
+                        isEnabled: true
                     )
-                    .opacity(animateButton ? 1 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.3), value: animateButton)
+                    .opacity(animate ? 1 : 0)
+                    .animation(.easeOut(duration: 0.4).delay(0.3), value: animate)
+                    
+                    Text("Takes less than 3 minutes")
+                        .font(.system(size: 14, weight: .regular))
+                        .foregroundColor(.appTextTertiary)
+                        .opacity(animate ? 1 : 0)
+                        .animation(.easeOut(duration: 0.4).delay(0.4), value: animate)
                 
-                Text("Takes less than 3 minutes")
-                    .font(.system(size: 14, weight: .regular))
-                    .foregroundColor(.appTextTertiary)
-                    .opacity(animateButton ? 0.8 : 0)
-                    .animation(.easeOut(duration: 0.4).delay(0.4), value: animateButton)
-            }
-            .padding(.horizontal, Constants.paddingLarge)
-            .padding(.bottom, 60)
+                #if DEBUG
+                if showDebugOptions {
+                    Button(action: {
+                        print("🔧 DEBUG: Skipping onboarding via button")
+                        UserDefaults.standard.set(true, forKey: Constants.hasCompletedOnboardingKey)
+                        
+                        // Force update profile to mark as complete
+                        Task {
+                            let updates: [String: Any] = [
+                                "name": "Debug User",
+                                "dateOfBirth": Date(),
+                                "height": 70.0,
+                                "heightUnit": "in",
+                                "gender": "Male",
+                                "onboardingCompleted": true
+                            ]
+                            await authManager.updateProfile(updates)
+                        }
+                        
+                        // Trigger UI update
+                        NotificationCenter.default.post(name: UserDefaults.didChangeNotification, object: nil)
+                    }) {
+                        Text("🔧 Skip Onboarding (Debug)")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundColor(.red)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(Color.red.opacity(0.1))
+                            .cornerRadius(8)
+                    }
+                    .padding(.top, 16)
+                    .transition(.opacity)
+                }
+                #endif
+                }
+                .padding(.horizontal, Constants.paddingLarge)
+                .padding(.bottom, 60)
             }
         }
         .onAppear {
-            animateIcon = true
-            animateText = true
-            animateButton = true
+            animate = true
         }
+        #if DEBUG
+        // Debug: Long press to show debug options
+        .onLongPressGesture(minimumDuration: 2.0) {
+            withAnimation(.spring()) {
+                showDebugOptions.toggle()
+            }
+        }
+        #endif
     }
 }
 

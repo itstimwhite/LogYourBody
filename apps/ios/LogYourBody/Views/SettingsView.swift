@@ -9,22 +9,357 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var authManager: AuthManager
+    @State private var showDeveloperMenu = false
+    @State private var developerTapCount = 0
+    @State private var refreshID = UUID()
     
-    #if DEBUG
+    var body: some View {
+        NavigationView {
+            ZStack {
+                Color.appBackground
+                    .ignoresSafeArea()
+                
+                ScrollView {
+                    VStack(spacing: 0) {
+                        // User Header
+                        userHeaderView
+                            .padding(.top, 20)
+                            .padding(.bottom, 30)
+                        
+                        VStack(spacing: 20) {
+                            // Profile Section
+                            SettingsSection(header: "Profile") {
+                                SettingsRow(
+                                    icon: "envelope",
+                                    title: "Email",
+                                    value: authManager.currentUser?.email ?? "",
+                                    showChevron: false
+                                )
+
+                                Divider()
+                                    .padding(.leading, 16)
+
+                                NavigationLink(destination: ProfileSettingsViewV2().environmentObject(authManager)) {
+                                    SettingsRow(
+                                        icon: "person.circle",
+                                        title: "Profile Settings",
+                                        showChevron: true
+                                    )
+                                }
+                            }
+
+                            // Preferences Section
+                            SettingsSection(header: "Preferences") {
+                                NavigationLink(destination: PreferencesView().environmentObject(authManager)) {
+                                    SettingsRow(
+                                        icon: "slider.horizontal.3",
+                                        title: "Units & Security",
+                                        showChevron: true
+                                    )
+                                }
+                            }
+
+                            // Integrations Section
+                            SettingsSection(header: "Integrations") {
+                                NavigationLink(destination: IntegrationsView().environmentObject(authManager)) {
+                                    SettingsRow(
+                                        icon: "arrow.triangle.2.circlepath",
+                                        title: "Apps & Import",
+                                        value: "Apple Health, Photos",
+                                        showChevron: true
+                                    )
+                                }
+                            }
+
+                            // Security & Devices Section
+                            SettingsSection(header: "Security & Devices") {
+                                NavigationLink(destination: SecuritySessionsView()) {
+                                    SettingsRow(
+                                        icon: "desktopcomputer",
+                                        title: "Active Sessions",
+                                        showChevron: true
+                                    )
+                                }
+
+                                Divider()
+                                    .padding(.leading, 16)
+
+                                NavigationLink(destination: ChangePasswordView()) {
+                                    SettingsRow(
+                                        icon: "lock.rotation",
+                                        title: "Change Password",
+                                        showChevron: true
+                                    )
+                                }
+                            }
+
+                            // Data & Privacy Section
+                            SettingsSection(header: "Data & Privacy") {
+                                NavigationLink(destination: ExportDataView()) {
+                                    SettingsRow(
+                                        icon: "square.and.arrow.up",
+                                        title: "Export Data",
+                                        showChevron: true
+                                    )
+                                }
+
+                                Divider()
+                                    .padding(.leading, 16)
+
+                                NavigationLink(destination: DeleteAccountView()) {
+                                    SettingsRow(
+                                        icon: "trash",
+                                        title: "Delete Account",
+                                        showChevron: true
+                                    )
+                                }
+                                .foregroundColor(.red)
+                            }
+
+                            // Legal Section
+                            SettingsSection(header: "Legal") {
+                                NavigationLink(destination: LegalView()) {
+                                    SettingsRow(
+                                        icon: "scale.3d",
+                                        title: "Legal & Policies",
+                                        showChevron: true
+                                    )
+                                }
+                            }
+
+                            // About Section
+                            SettingsSection(header: "About") {
+                                Button(action: {
+                                    developerTapCount += 1
+                                    if developerTapCount >= 7 {
+                                        withAnimation {
+                                            showDeveloperMenu = true
+                                            developerTapCount = 0
+                                        }
+                                    }
+                                    
+                                    // Reset tap count after 3 seconds
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                                        if developerTapCount < 7 {
+                                            developerTapCount = 0
+                                        }
+                                    }
+                                }) {
+                                    HStack {
+                                        VersionRow()
+                                        
+                                        if developerTapCount > 0 && developerTapCount < 7 {
+                                            Spacer()
+                                            Text("\(7 - developerTapCount)")
+                                                .font(.caption2)
+                                                .foregroundColor(.appTextTertiary)
+                                                .padding(.trailing, 16)
+                                                .transition(.opacity)
+                                        }
+                                    }
+                                }
+                                .buttonStyle(PlainButtonStyle())
+
+                                Divider()
+                                    .padding(.leading, 16)
+
+                                WhatsNewRow()
+
+                                Divider()
+                                    .padding(.leading, 16)
+
+                                Link(destination: URL(string: "https://logyourbody.com/support")!) {
+                                    SettingsRow(
+                                        icon: "questionmark.circle",
+                                        title: "Support",
+                                        showChevron: true,
+                                        isExternal: true
+                                    )
+                                }
+                            }
+
+                            // Log Out Button
+                            Button(action: {
+                                Task {
+                                    await authManager.logout()
+                                }
+                            }) {
+                                HStack {
+                                    Label("Log Out", systemImage: "rectangle.portrait.and.arrow.right")
+                                        .font(.system(size: 16))
+                                        .foregroundColor(.red)
+                                    Spacer()
+                                }
+                                .padding()
+                                .background(Color(.systemBackground))
+                                .cornerRadius(10)
+                            }
+                            .buttonStyle(PlainButtonStyle())
+                            .padding(.top, 12)
+                            
+                            // Footer with developer access
+                            if showDeveloperMenu {
+                                VStack(spacing: 8) {
+                                    NavigationLink(destination: DeveloperMenuView()) {
+                                        HStack {
+                                            Image(systemName: "hammer")
+                                                .font(.caption2)
+                                            Text("Developer Options")
+                                                .font(.caption2)
+                                        }
+                                        .foregroundColor(.appPrimary)
+                                    }
+                                }
+                                .padding(.top, 20)
+                                .padding(.bottom, 40)
+                            } else {
+                                // Just add spacing when developer menu is hidden
+                                Spacer()
+                                    .frame(height: 60)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                }
+            }
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.large)
+            .id(refreshID)
+            .onReceive(NotificationCenter.default.publisher(for: .profileUpdated)) { _ in
+                refreshID = UUID()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var userHeaderView: some View {
+        VStack(spacing: 16) {
+            // User Avatar
+            ZStack {
+                Circle()
+                    .fill(Color(.systemGray5))
+                    .frame(width: 80, height: 80)
+                
+                Text(authManager.currentUser?.profile?.fullName?.prefix(1).uppercased() ?? "U")
+                    .font(.system(size: 32, weight: .semibold))
+                    .foregroundColor(.secondary)
+            }
+            
+            // User Info
+            VStack(spacing: 4) {
+                Text(authManager.currentUser?.profile?.fullName ?? "User")
+                    .font(.headline)
+                    .foregroundColor(.primary)
+                
+                Text(authManager.currentUser?.email ?? "")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+}
+
+// MARK: - Settings View
+// Components are imported from SettingsComponents.swift which includes:
+// - SettingsSection
+// - SettingsRow
+// - SettingsNavigationLink
+// - SettingsToggleRow
+// - SettingsButtonRow
+// - and more...
+
+
+// MARK: - Developer Menu View
+
+struct DeveloperMenuView: View {
+    @EnvironmentObject var authManager: AuthManager
+    
+    var body: some View {
+        ZStack {
+            Color.appBackground
+                .ignoresSafeArea()
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    #if DEBUG
+                    // Debug Tools
+                    DebugToolsSection()
+                    #endif
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 40)
+            }
+        }
+        .navigationTitle("Developer Options")
+        .navigationBarTitleDisplayMode(.inline)
+    }
+}
+
+#if DEBUG
+struct DebugToolsSection: View {
+    @EnvironmentObject var authManager: AuthManager
+    
+    var body: some View {
+        SettingsSection(header: "Debug Tools") {
+            Button(action: {
+                Task {
+                    await testBodyMetricsSync()
+                }
+            }) {
+                SettingsRow(
+                    icon: "arrow.triangle.2.circlepath",
+                    title: "Test Body Metrics Sync"
+                )
+            }
+            
+            Divider()
+                .padding(.leading, 16)
+            
+            Button(action: {
+                CoreDataManager.shared.debugPrintAllBodyMetrics()
+            }) {
+                SettingsRow(
+                    icon: "doc.text.magnifyingglass",
+                    title: "Print All Body Metrics"
+                )
+            }
+            
+            Divider()
+                .padding(.leading, 16)
+            
+            Button(action: {
+                SyncManager.shared.syncAll()
+            }) {
+                SettingsRow(
+                    icon: "icloud.and.arrow.up",
+                    title: "Force Sync Now"
+                )
+            }
+            
+            Divider()
+                .padding(.leading, 16)
+            
+            Button(action: {
+                // Clear all caches
+                UserDefaults.standard.removeObject(forKey: "HasSyncedHistoricalSteps")
+            }) {
+                SettingsRow(
+                    icon: "trash",
+                    title: "Clear Caches"
+                )
+            }
+        }
+    }
+    
     @MainActor
     func testBodyMetricsSync() async {
         print("\n🔍 === SYNC DEBUG TEST START ===")
         
-        // 1. Check authentication
-        print("1️⃣ Auth Status: \(authManager.isAuthenticated ? "✅ Authenticated" : "❌ Not Authenticated")")
-        if let user = authManager.currentUser {
-            print("   User ID: \(user.id)")
-        }
-        
-        // 2. Create a test body metric with valid UUID
         let testMetric = BodyMetrics(
             id: UUID().uuidString,
-            userId: authManager.currentUser?.id ?? "",
+            userId: AuthManager.shared.currentUser?.id ?? "",
             date: Date(),
             weight: 75.5,
             weightUnit: "kg",
@@ -39,197 +374,17 @@ struct SettingsView: View {
             updatedAt: Date()
         )
         
-        print("\n2️⃣ Creating test metric:")
-        print("   ID: \(testMetric.id)")
-        print("   Weight: \(testMetric.weight ?? 0) \(testMetric.weightUnit ?? "")")
-        
-        // 3. Save to CoreData
         CoreDataManager.shared.saveBodyMetrics(testMetric, userId: testMetric.userId, markAsSynced: false)
-        print("   ✅ Saved to CoreData")
-        
-        // 4. Check unsynced entries
-        print("\n3️⃣ Checking unsynced entries:")
-        CoreDataManager.shared.debugPrintAllBodyMetrics()
-        
-        let unsynced = CoreDataManager.shared.fetchUnsyncedEntries()
-        print("   Unsynced body metrics: \(unsynced.bodyMetrics.count)")
-        print("   Unsynced daily metrics: \(unsynced.dailyMetrics.count)")
-        
-        // 5. Trigger sync
-        print("\n4️⃣ Triggering sync...")
         SyncManager.shared.syncIfNeeded()
-        
-        // Wait a bit for sync to complete
-        try? await Task.sleep(nanoseconds: 3_000_000_000) // 3 seconds
-        
-        // 6. Check sync results
-        print("\n5️⃣ Post-sync check:")
-        let postSyncUnsynced = CoreDataManager.shared.fetchUnsyncedEntries()
-        print("   Remaining unsynced body metrics: \(postSyncUnsynced.bodyMetrics.count)")
         
         print("\n🔍 === SYNC DEBUG TEST END ===\n")
     }
-    #endif
-    
-    var body: some View {
-        NavigationView {
-            List {
-                Section("Account") {
-                    HStack {
-                        Text("Email")
-                        Spacer()
-                        Text(authManager.currentUser?.email ?? "")
-                            .foregroundColor(.secondary)
-                    }
-                    
-                    NavigationLink("Profile Settings") {
-                        ProfileSettingsViewV2()
-                            .environmentObject(authManager)
-                    }
-                    
-                    NavigationLink("Preferences") {
-                        PreferencesView()
-                            .environmentObject(authManager)
-                    }
-                }
-                
-                Section("About") {
-                    VersionRow()
-                    WhatsNewRow()
-                    
-                    Link("Privacy Policy", destination: URL(string: "https://logyourbody.com/privacy")!)
-                    Link("Terms of Service", destination: URL(string: "https://logyourbody.com/terms")!)
-                }
-                
-                #if DEBUG
-                Section("Debug") {
-                    Button("Test Body Metrics Sync") {
-                        Task {
-                            await testBodyMetricsSync()
-                        }
-                    }
-                    
-                    Button("Print All Body Metrics") {
-                        CoreDataManager.shared.debugPrintAllBodyMetrics()
-                    }
-                    
-                    Button("Force Sync Now") {
-                        SyncManager.shared.syncAll()
-                    }
-                    
-                    Button("Clean Invalid Entries") {
-                        // Delete entries with invalid IDs
-                        let cleaned = CoreDataManager.shared.cleanInvalidBodyMetrics()
-                        print("🧹 Cleaned \(cleaned) invalid body metrics entries")
-                    }
-                    .foregroundColor(.red)
-                    
-                    Button("Repair Corrupted Entries") {
-                        // Repair entries with missing required fields
-                        let repaired = CoreDataManager.shared.repairCorruptedEntries()
-                        print("🔧 Repaired \(repaired) corrupted entries")
-                    }
-                    .foregroundColor(.orange)
-                    
-                    Button("Create Profile First") {
-                        Task {
-                            guard let user = authManager.currentUser else { return }
-                            
-                            // Create profile in Supabase first
-                            let profileData: [String: Any] = [
-                                "id": user.id,
-                                "email": user.email ?? "",
-                                "name": user.name ?? user.email ?? "User",
-                                "created_at": ISO8601DateFormatter().string(from: Date()),
-                                "updated_at": ISO8601DateFormatter().string(from: Date())
-                            ]
-                            
-                            do {
-                                if let session = authManager.clerkSession {
-                                    let tokenResource = try await session.getToken()
-                                    if let token = tokenResource?.jwt {
-                                        print("👤 Creating profile for user: \(user.id)")
-                                        
-                                        // Upsert profile
-                                        let url = URL(string: "\(Constants.supabaseURL)/rest/v1/profiles")!
-                                        var request = URLRequest(url: url)
-                                        request.httpMethod = "POST"
-                                        request.setValue(Constants.supabaseAnonKey, forHTTPHeaderField: "apikey")
-                                        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-                                        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                                        request.setValue("resolution=merge-duplicates", forHTTPHeaderField: "Prefer")
-                                        
-                                        let jsonData = try JSONSerialization.data(withJSONObject: [profileData])
-                                        request.httpBody = jsonData
-                                        
-                                        let (data, response) = try await URLSession.shared.data(for: request)
-                                        
-                                        if let httpResponse = response as? HTTPURLResponse {
-                                            print("📡 Profile creation response: Status \(httpResponse.statusCode)")
-                                            if let responseString = String(data: data, encoding: .utf8) {
-                                                print("📄 Response: \(responseString)")
-                                            }
-                                            
-                                            if (200...299).contains(httpResponse.statusCode) {
-                                                print("✅ Profile created/updated successfully!")
-                                            }
-                                        }
-                                    }
-                                }
-                            } catch {
-                                print("❌ Profile creation error: \(error)")
-                            }
-                        }
-                    }
-                    .foregroundColor(.green)
-                    
-                    Button("Test Minimal Sync") {
-                        Task {
-                            // Test with minimal fields only
-                            let testData: [[String: Any]] = [[
-                                "id": UUID().uuidString,
-                                "user_id": authManager.currentUser?.id ?? "",
-                                "date": ISO8601DateFormatter().string(from: Date()),
-                                "weight": 70.5,
-                                "weight_unit": "kg",
-                                "photo_url": NSNull()
-                            ]]
-                            
-                            do {
-                                if let session = authManager.clerkSession {
-                                    let tokenResource = try await session.getToken()
-                                    if let token = tokenResource?.jwt {
-                                        print("🧪 Testing minimal sync with: \(testData)")
-                                        let result = try await SupabaseManager.shared.upsertBodyMetricsBatch(testData, token: token)
-                                        print("✅ Minimal sync result: \(result)")
-                                    }
-                                }
-                            } catch {
-                                print("❌ Minimal sync error: \(error)")
-                            }
-                        }
-                    }
-                    .foregroundColor(.orange)
-                }
-                #endif
-                
-                Section {
-                    Button(action: {
-                        Task {
-                            await authManager.logout()
-                        }
-                    }) {
-                        Text("Log Out")
-                            .foregroundColor(.red)
-                    }
-                }
-            }
-            .navigationTitle("Settings")
-        }
-    }
 }
+#endif
+
 
 #Preview {
     SettingsView()
-        .environmentObject(AuthManager())
+        .environmentObject(AuthManager.shared)
+        .preferredColorScheme(.dark)
 }

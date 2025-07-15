@@ -21,18 +21,28 @@ struct HeightInputView: View {
     }
     
     var body: some View {
-        VStack(spacing: 0) {
+        ZStack {
+            // Edge-to-edge background
+            Color.appBackground
+                .ignoresSafeArea()
+            
+            VStack(spacing: 0) {
             // Header
             HStack {
                 Button(action: {
                     viewModel.previousStep()
+                    // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.appTextSecondary)
-                        .frame(width: 40, height: 40)
+                        .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.white.opacity(0.1))
+                )
                 
                 Spacer()
             }
@@ -43,11 +53,11 @@ struct HeightInputView: View {
             VStack(spacing: 40) {
                 // Title and subtitle
                 VStack(spacing: 12) {
-                    Text("How tall are you?")
+                    Text("Your Height")
                         .font(.system(size: 28, weight: .semibold))
                         .foregroundColor(.appText)
                     
-                    Text("We'll use this to calculate your FFMI")
+                    Text("Used to calculate FFMI")
                         .font(.system(size: 15, weight: .regular))
                         .foregroundColor(.appTextSecondary)
                         .multilineTextAlignment(.center)
@@ -64,13 +74,9 @@ struct HeightInputView: View {
                                     .font(.system(size: 14))
                                     .foregroundColor(.appTextSecondary)
                                 
-                                Text(heightDisplay)
-                                    .font(.system(size: 24, weight: .semibold))
+                                Text("\(heightDisplay) (\(viewModel.data.totalHeightInInches) in)")
+                                    .font(.system(size: 20, weight: .medium))
                                     .foregroundColor(.appText)
-                                
-                                Text("\(viewModel.data.totalHeightInInches) inches")
-                                    .font(.system(size: 16))
-                                    .foregroundColor(.adaptiveGreen)
                             }
                             
                             Spacer()
@@ -80,7 +86,7 @@ struct HeightInputView: View {
                                     isEditing = true
                                     showingPicker = true
                                 }
-                                HapticManager.shared.buttonTapped()
+                                // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
                             }) {
                                 Text("Edit")
                                     .font(.system(size: 15, weight: .medium))
@@ -91,14 +97,6 @@ struct HeightInputView: View {
                         .background(Color.appCard)
                         .cornerRadius(12)
                         
-                        HStack(spacing: 8) {
-                            Image(systemName: "checkmark.circle.fill")
-                                .font(.system(size: 14))
-                                .foregroundColor(.adaptiveGreen)
-                            Text("Imported from Apple Health")
-                                .font(.system(size: 14))
-                                .foregroundColor(.appTextSecondary)
-                        }
                     }
                     .padding(.horizontal, 24)
                     .transition(.opacity.combined(with: .scale))
@@ -106,6 +104,7 @@ struct HeightInputView: View {
                     // Height input button for manual entry
                     Button(action: {
                         showingPicker = true
+                        // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
                     }) {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
@@ -126,11 +125,11 @@ struct HeightInputView: View {
                         }
                         .padding(20)
                         .background(
-                            RoundedRectangle(cornerRadius: 12)
-                                .fill(Color.appCard.opacity(0.3))
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.white.opacity(0.1))
                                 .overlay(
-                                    RoundedRectangle(cornerRadius: 12)
-                                        .stroke(Color.appBorder.opacity(0.2), lineWidth: 1)
+                                    RoundedRectangle(cornerRadius: 16)
+                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                 )
                         )
                     }
@@ -156,22 +155,19 @@ struct HeightInputView: View {
             
             // Continue button
             VStack(spacing: 16) {
-                Button(action: {
-                    viewModel.nextStep()
-                }) {
-                    Text("Continue")
-                        .font(.system(size: 15, weight: .medium))
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 44)
-                        .background(viewModel.data.totalHeightInInches > 0 ? Color.appPrimary : Color.appBorder)
-                        .foregroundColor(viewModel.data.totalHeightInInches > 0 ? .white : .appTextTertiary)
-                        .cornerRadius(6)
-                }
-                .disabled(viewModel.data.totalHeightInInches == 0)
+                LiquidGlassCTAButton(
+                    text: "Continue",
+                    icon: "arrow.right",
+                    action: {
+                        viewModel.nextStep()
+                    },
+                    isEnabled: viewModel.data.totalHeightInInches > 0
+                )
                 .animation(.easeOut(duration: 0.2), value: viewModel.data.totalHeightInInches > 0)
             }
             .padding(.horizontal, 24)
             .padding(.bottom, 50)
+            }
         }
         .sheet(isPresented: $showingPicker) {
             HeightPickerSheet(
