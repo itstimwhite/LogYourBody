@@ -1,6 +1,6 @@
 //
-//  HapticManager.swift
-//  LogYourBody
+// HapticManager.swift
+// LogYourBody
 //
 class HapticManager {
     static let shared = HapticManager()

@@ -1,7 +1,8 @@
 //
-//  ShakeDetector.swift
-//  LogYourBody
+// ShakeDetector.swift
+// LogYourBody
 //
+import SwiftUI
 import UIKit
 
 // MARK: - Shake Detection

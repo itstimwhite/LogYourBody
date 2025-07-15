@@ -1,7 +1,9 @@
 //
-//  ProgressPhotoCutoutView.swift
-//  LogYourBody
+// ProgressPhotoCutoutView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct CutoutProcessingImagePlaceholder: View {
     @State private var pulseAnimation = false
     

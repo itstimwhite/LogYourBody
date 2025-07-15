@@ -1,7 +1,9 @@
 //
-//  OnboardingData.swift
-//  LogYourBody
+// OnboardingData.swift
+// LogYourBody
 //
+import Foundation
+
 struct OnboardingData {
     var name: String = ""
     var dateOfBirth: Date?

@@ -1,7 +1,9 @@
 //
-//  HealthKitPromptView.swift
-//  LogYourBody
+// HealthKitPromptView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct HealthKitPromptView: View {
     @Binding var isPresented: Bool
     @EnvironmentObject var authManager: AuthManager
@@ -21,15 +23,18 @@ struct HealthKitPromptView: View {
                     // Close button
                     HStack {
                         Spacer()
-                        Button(action: {
+                        Button(
+            action: {
                             // Save dismissal date
                             UserDefaults.standard.set(Date(), forKey: "lastHealthKitPromptDate")
                             isPresented = false
-                        }) {
+                        },
+            label: {
                             Image(systemName: "xmark.circle.fill")
                                 .font(.system(size: 28))
                                 .foregroundColor(.gray.opacity(0.6))
                         }
+        )
                     }
                     .padding(.horizontal)
                     
@@ -96,9 +101,11 @@ struct HealthKitPromptView: View {
                     
                     // Buttons
                     VStack(spacing: 12) {
-                        Button(action: {
+                        Button(
+            action: {
                             connectHealthKit()
-                        }) {
+                        },
+            label: {
                             HStack {
                                 if isConnecting {
                                     ProgressView()
@@ -127,16 +134,20 @@ struct HealthKitPromptView: View {
                             .foregroundColor(.white)
                             .cornerRadius(Constants.cornerRadius)
                         }
+        )
                         .disabled(isConnecting)
                         
-                        Button(action: {
+                        Button(
+            action: {
                             UserDefaults.standard.set(Date(), forKey: "lastHealthKitPromptDate")
                             isPresented = false
-                        }) {
+                        },
+            label: {
                             Text("Not Now")
                                 .font(.appBody)
                                 .foregroundColor(.appTextSecondary)
                         }
+        )
                         .padding(.vertical, 8)
                     }
                     .padding(.horizontal, 24)

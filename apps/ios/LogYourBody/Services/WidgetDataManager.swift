@@ -1,12 +1,14 @@
 //
-//  WidgetDataManager.swift
-//  LogYourBody
+// WidgetDataManager.swift
+// LogYourBody
 //
 import WidgetKit
 import HealthKit
 import UIKit
 
 @MainActor
+
+
 class WidgetDataManager: ObservableObject {
     static let shared = WidgetDataManager()
     private let sharedDefaults = UserDefaults(suiteName: "group.com.logyourbody.shared")
@@ -40,8 +42,7 @@ class WidgetDataManager: ObservableObject {
         
         // Get most recent body metrics
         let recentMetrics = coreDataManager.fetchBodyMetrics(for: userId)
-            .sorted { ($0.date ?? Date.distantPast) > ($1.date ?? Date.distantPast) }
-            .first
+            .max { ($0.date ?? Date.distantPast) < ($1.date ?? Date.distantPast) }
         
         var weight: Double?
         var bodyFat: Double?

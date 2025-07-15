@@ -1,6 +1,6 @@
 //
-//  LoadingManager.swift
-//  LogYourBody
+// LoadingManager.swift
+// LogYourBody
 //
 import SwiftUI
 

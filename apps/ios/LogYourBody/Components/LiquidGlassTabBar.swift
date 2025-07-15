@@ -1,7 +1,8 @@
 //
-//  LiquidGlassTabBar.swift
-//  LogYourBody
+// LiquidGlassTabBar.swift
+// LogYourBody
 //
+import SwiftUI
 struct LiquidGlassTabBar: View {
     @Binding var selectedTab: AnimatedTabView.Tab
     @Namespace private var namespace
@@ -100,8 +101,8 @@ struct LiquidTabButton: View {
                         rippleScale = 0
                         rippleOpacity = 0.3
                     }
-                },
-                label: {
+                }
+            ) {
                 VStack(spacing: 4) {
                     ZStack {
                         // Ripple effect

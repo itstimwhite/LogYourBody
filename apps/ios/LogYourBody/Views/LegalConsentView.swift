@@ -1,7 +1,9 @@
 //
-//  LegalConsentView.swift
-//  LogYourBody
+// LegalConsentView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct LegalConsentView: View {
     @Binding var isPresented: Bool
     let userId: String
@@ -56,14 +58,16 @@ struct LegalConsentView: View {
                     .padding(.horizontal, 24)
                     
                     // Continue Button
-                    Button(action: {
+                    Button(
+            action: {
                         Task {
                             isLoading = true
                             await onAccept()
                             isLoading = false
                             isPresented = false
                         }
-                    }) {
+                    },
+            label: {
                         HStack {
                             if isLoading {
                                 ProgressView()
@@ -81,6 +85,7 @@ struct LegalConsentView: View {
                         .cornerRadius(12)
                         .animation(.easeInOut(duration: 0.2), value: canContinue)
                     }
+        )
                     .disabled(!canContinue)
                     .padding(.horizontal, 24)
                     .padding(.bottom, 32)
@@ -107,9 +112,11 @@ struct ConsentCheckbox: View {
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
             // Custom checkbox
-            Button(action: {
+            Button(
+            action: {
                 isChecked.toggle()
-            }) {
+            },
+            label: {
                 ZStack {
                     RoundedRectangle(cornerRadius: 6)
                         .stroke(Color.white.opacity(0.3), lineWidth: 2)
@@ -126,6 +133,7 @@ struct ConsentCheckbox: View {
                     }
                 }
             }
+        )
             .buttonStyle(PlainButtonStyle())
             
             // Text with link

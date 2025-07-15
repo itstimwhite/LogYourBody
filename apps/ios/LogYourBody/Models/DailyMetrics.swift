@@ -1,6 +1,6 @@
 //
-//  DailyMetrics.swift
-//  LogYourBody
+// DailyMetrics.swift
+// LogYourBody
 //
 import Foundation
 

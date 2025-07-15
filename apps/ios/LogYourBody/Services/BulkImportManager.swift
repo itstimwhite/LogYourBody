@@ -1,6 +1,6 @@
 //
-//  BulkImportManager.swift
-//  LogYourBody
+// BulkImportManager.swift
+// LogYourBody
 //
 import SwiftUI
 import Photos

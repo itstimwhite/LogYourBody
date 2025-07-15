@@ -1,7 +1,8 @@
 //
-//  ContentView.swift
-//  LogYourBody
+// ContentView.swift
+// LogYourBody
 //
+import SwiftUI
 struct ContentView: View {
     @EnvironmentObject var authManager: AuthManager
     @StateObject private var loadingManager: LoadingManager

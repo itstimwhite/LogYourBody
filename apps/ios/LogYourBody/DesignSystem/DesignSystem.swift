@@ -1,6 +1,6 @@
 //
-//  DesignSystem.swift
-//  LogYourBody
+// DesignSystem.swift
+// LogYourBody
 //
 import SwiftUI
 

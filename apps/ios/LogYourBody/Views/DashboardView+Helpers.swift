@@ -1,9 +1,11 @@
 //
-//  DashboardView+Helpers.swift
-//  LogYourBody
+// DashboardView+Helpers.swift
+// LogYourBody
 //
-import HealthKit
+import Foundation
+import SwiftUI
 import PhotosUI
+import HealthKit
 
 extension DashboardView {
     // MARK: - Data Loading

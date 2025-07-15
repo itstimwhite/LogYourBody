@@ -1,6 +1,6 @@
 //
-//  LogYourBodyTests.swift
-//  LogYourBody
+// LogYourBodyTests.swift
+// LogYourBody
 //
 @testable import LogYourBody
 

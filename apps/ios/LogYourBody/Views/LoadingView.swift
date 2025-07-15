@@ -1,7 +1,8 @@
 //
-//  LoadingView.swift
-//  LogYourBody
+// LoadingView.swift
+// LogYourBody
 //
+import SwiftUI
 struct LoadingView: View {
     @Binding var progress: Double
     @Binding var loadingStatus: String

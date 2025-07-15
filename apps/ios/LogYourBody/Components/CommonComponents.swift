@@ -1,6 +1,6 @@
 //
-//  CommonComponents.swift
-//  LogYourBody
+// CommonComponents.swift
+// LogYourBody
 //
 typealias OnboardingBackground = OnboardingComponents.OnboardingBackground
 typealias OnboardingHeader = OnboardingComponents.OnboardingHeader

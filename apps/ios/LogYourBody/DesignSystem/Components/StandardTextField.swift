@@ -1,6 +1,6 @@
 //
-//  StandardTextField.swift
-//  LogYourBody
+// StandardTextField.swift
+// LogYourBody
 //
 import SwiftUI
 

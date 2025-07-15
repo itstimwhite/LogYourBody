@@ -1,7 +1,8 @@
 //
-//  WeightEntry.swift
-//  LogYourBody
+// WeightEntry.swift
+// LogYourBody
 //
+import Foundation
 struct WeightEntry: Identifiable, Codable {
     let id: String
     let userId: String

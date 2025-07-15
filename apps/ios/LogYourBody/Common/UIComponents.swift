@@ -1,7 +1,9 @@
 //
-//  UIComponents.swift
-//  LogYourBody
+// UIComponents.swift
+// LogYourBody
 //
+import SwiftUI
+
 enum Trend {
     case up(Double)
     case down(Double)
@@ -250,10 +252,12 @@ struct BottomNavGlass: View {
     var body: some View {
         HStack(spacing: 0) {
             ForEach(tabs, id: \.1) { icon, title in
-                Button(action: {
+                Button(
+            action: {
                     HapticManager.shared.tabSelected()
                     onTabSelected(title)
-                }) {
+                },
+            label: {
                     VStack(spacing: 4) {
                         Image(systemName: icon)
                             .font(.system(size: 22))
@@ -265,6 +269,7 @@ struct BottomNavGlass: View {
                     }
                     .frame(maxWidth: .infinity)
                 }
+        )
             }
         }
         .padding(.top, 8)
@@ -458,15 +463,21 @@ struct UIComponents_Previews: PreviewProvider {
                 
                 // Header Bar
                 HeaderBar(title: "Dashboard") {
-                    Button(action: {}) {
+                    Button(
+            action: {},
+            label: {
                         Image(systemName: "gear")
                             .foregroundColor(.appText)
                     }
+        )
                 } trailing: {
-                    Button(action: {}) {
+                    Button(
+            action: {},
+            label: {
                         Image(systemName: "plus")
                             .foregroundColor(.appText)
                     }
+        )
                 }
                 
                 // Metric Gauge

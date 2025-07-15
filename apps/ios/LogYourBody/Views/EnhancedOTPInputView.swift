@@ -1,7 +1,9 @@
 //
-//  EnhancedOTPInputView.swift
-//  LogYourBody
+// EnhancedOTPInputView.swift
+// LogYourBody
 //
+import SwiftUI
+import UIKit
 import Combine
 
 struct EnhancedOTPInputView: View {
@@ -88,7 +90,9 @@ struct EnhancedOTPInputView: View {
             
             // Paste Button (appears when clipboard has valid code)
             if showPasteButton, let code = clipboardCode {
-                Button(action: { pasteCode(code) }) {
+                Button(
+            action: { pasteCode(code) },
+            label: {
                     HStack(spacing: 6) {
                         Image(systemName: "doc.on.clipboard")
                             .font(.system(size: 14))
@@ -107,6 +111,7 @@ struct EnhancedOTPInputView: View {
                             )
                     )
                 }
+        )
                 .transition(.scale.combined(with: .opacity))
                 .accessibilityLabel("Paste verification code from clipboard")
             }

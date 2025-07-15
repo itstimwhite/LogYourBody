@@ -1,7 +1,9 @@
 //
-//  DietPhaseHistoryView.swift
-//  LogYourBody
+// DietPhaseHistoryView.swift
+// LogYourBody
 //
+import SwiftUI
+import Foundation
 enum PhaseType: String, CaseIterable {
     case bulk = "Bulk"
     case cut = "Cut"

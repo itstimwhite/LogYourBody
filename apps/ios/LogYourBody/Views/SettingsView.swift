@@ -1,7 +1,10 @@
 //
-//  SettingsView.swift
-//  LogYourBody
+// SettingsView.swift
+// LogYourBody
 //
+import SwiftUI
+import Foundation
+
 struct SettingsView: View {
     @EnvironmentObject var authManager: AuthManager
     @State private var showDeveloperMenu = false
@@ -124,7 +127,8 @@ struct SettingsView: View {
 
                             // About Section
                             SettingsSection(header: "About") {
-                                Button(action: {
+                                Button(
+            action: {
                                     developerTapCount += 1
                                     if developerTapCount >= 7 {
                                         withAnimation {
@@ -139,7 +143,8 @@ struct SettingsView: View {
                                             developerTapCount = 0
                                         }
                                     }
-                                }) {
+                                },
+            label: {
                                     HStack {
                                         VersionRow()
                                         
@@ -153,6 +158,7 @@ struct SettingsView: View {
                                         }
                                     }
                                 }
+        )
                                 .buttonStyle(PlainButtonStyle())
 
                                 Divider()
@@ -174,11 +180,13 @@ struct SettingsView: View {
                             }
 
                             // Log Out Button
-                            Button(action: {
+                            Button(
+            action: {
                                 Task {
                                     await authManager.logout()
                                 }
-                            }) {
+                            },
+            label: {
                                 HStack {
                                     Label("Log Out", systemImage: "rectangle.portrait.and.arrow.right")
                                         .font(.system(size: 16))
@@ -189,6 +197,7 @@ struct SettingsView: View {
                                 .background(Color(.systemBackground))
                                 .cornerRadius(10)
                             }
+        )
                             .buttonStyle(PlainButtonStyle())
                             .padding(.top, 12)
                             
@@ -299,53 +308,65 @@ struct DebugToolsSection: View {
     
     var body: some View {
         SettingsSection(header: "Debug Tools") {
-            Button(action: {
+            Button(
+            action: {
                 Task {
                     await testBodyMetricsSync()
                 }
-            }) {
+            },
+            label: {
                 SettingsRow(
                     icon: "arrow.triangle.2.circlepath",
                     title: "Test Body Metrics Sync"
                 )
             }
+        )
             
             Divider()
                 .padding(.leading, 16)
             
-            Button(action: {
+            Button(
+            action: {
                 CoreDataManager.shared.debugPrintAllBodyMetrics()
-            }) {
+            },
+            label: {
                 SettingsRow(
                     icon: "doc.text.magnifyingglass",
                     title: "Print All Body Metrics"
                 )
             }
+        )
             
             Divider()
                 .padding(.leading, 16)
             
-            Button(action: {
+            Button(
+            action: {
                 SyncManager.shared.syncAll()
-            }) {
+            },
+            label: {
                 SettingsRow(
                     icon: "icloud.and.arrow.up",
                     title: "Force Sync Now"
                 )
             }
+        )
             
             Divider()
                 .padding(.leading, 16)
             
-            Button(action: {
+            Button(
+            action: {
                 // Clear all caches
                 UserDefaults.standard.removeObject(forKey: "HasSyncedHistoricalSteps")
-            }) {
+            },
+            label: {
                 SettingsRow(
                     icon: "trash",
                     title: "Clear Caches"
                 )
             }
+        )
         }
     }
     

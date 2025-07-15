@@ -1,7 +1,8 @@
 //
-//  PhotoMetadataService.swift
-//  LogYourBody
+// PhotoMetadataService.swift
+// LogYourBody
 //
+import Foundation
 import Photos
 import ImageIO
 import CoreData

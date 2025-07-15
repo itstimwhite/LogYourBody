@@ -1,7 +1,9 @@
 //
-//  AuthComponents.swift
-//  LogYourBody
+// AuthComponents.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct AuthBackground: View {
     var body: some View {
         ZStack {

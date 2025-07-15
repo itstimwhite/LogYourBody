@@ -1,6 +1,6 @@
 //
-//  PhotoUploadManager.swift
-//  LogYourBody
+// PhotoUploadManager.swift
+// LogYourBody
 //
 import UIKit
 import PhotosUI

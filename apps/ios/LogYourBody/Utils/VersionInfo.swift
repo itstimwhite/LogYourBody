@@ -1,6 +1,6 @@
 //
-//  VersionInfo.swift
-//  LogYourBody
+// VersionInfo.swift
+// LogYourBody
 //
 import Foundation
 

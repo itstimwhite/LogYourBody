@@ -1,6 +1,6 @@
 //
-//  StandardCard.swift
-//  LogYourBody
+// StandardCard.swift
+// LogYourBody
 //
 import SwiftUI
 

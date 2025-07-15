@@ -1,13 +1,15 @@
 //
-//  SecuritySessionsView.swift
-//  LogYourBody
+// SecuritySessionsView.swift
+// LogYourBody
 //
+import SwiftUI
 import Clerk
 
 struct SecuritySessionsView: View {
     @EnvironmentObject var authManager: AuthManager
     @Environment(\.dismiss)
-    var dismiss    @State private var sessions: [SessionInfo] = []
+    var dismiss
+    @State private var sessions: [SessionInfo] = []
     @State private var isLoading = true
     @State private var showError = false
     @State private var errorMessage = ""
@@ -208,11 +210,13 @@ struct SessionRowView: View {
     var body: some View {
         VStack(spacing: 0) {
             // Main Content
-            Button(action: {
+            Button(
+            action: {
                 withAnimation(SettingsDesign.animation) {
                     isExpanded.toggle()
                 }
-            }) {
+            },
+            label: {
                 HStack(spacing: 12) {
                     // Device Icon
                     Image(systemName: deviceIcon)
@@ -276,6 +280,7 @@ struct SessionRowView: View {
                 .padding(.vertical, SettingsDesign.verticalPadding)
                 .contentShape(Rectangle())
             }
+        )
             .buttonStyle(PlainButtonStyle())
             
             // Additional Details (expandable)

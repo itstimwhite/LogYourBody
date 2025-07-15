@@ -1,7 +1,9 @@
 //
-//  SkeletonLoaders.swift
-//  LogYourBody
+// SkeletonLoaders.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct ShimmerEffect: ViewModifier {
     @State private var phase: CGFloat = 0
     let animation = Animation.linear(duration: 1.5).repeatForever(autoreverses: false)

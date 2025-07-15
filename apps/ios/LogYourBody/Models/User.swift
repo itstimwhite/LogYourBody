@@ -1,7 +1,9 @@
 //
-//  User.swift
-//  LogYourBody
+// User.swift
+// LogYourBody
 //
+import Foundation
+
 struct User: Codable, Identifiable {
     let id: String
     let email: String

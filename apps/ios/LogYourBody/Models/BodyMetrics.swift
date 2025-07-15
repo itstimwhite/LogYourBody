@@ -1,6 +1,6 @@
 //
-//  BodyMetrics.swift
-//  LogYourBody
+// BodyMetrics.swift
+// LogYourBody
 //
 import Foundation
 

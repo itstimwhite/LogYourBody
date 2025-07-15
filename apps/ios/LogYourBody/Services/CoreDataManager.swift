@@ -1,6 +1,6 @@
 //
-//  CoreDataManager.swift
-//  LogYourBody
+// CoreDataManager.swift
+// LogYourBody
 //
 import Foundation
 import CoreData
@@ -561,16 +561,24 @@ class CoreDataManager: ObservableObject {
         do {
             let cachedLogs = try viewContext.fetch(fetchRequest)
             return cachedLogs.map { log in
-                DailyLog(
-                    id: log.id ?? UUID().uuidString,
-                    userId: log.userId ?? "",
-                    date: log.date ?? Date(),
+                // Extract values with explicit types to help compiler
+                let logId: String = log.id ?? UUID().uuidString
+                let logUserId: String = log.userId ?? ""
+                let logDate: Date = log.date ?? Date()
+                let logStepCount: Int? = log.steps != nil ? Int(log.steps) : nil
+                let logCreatedAt: Date = log.createdAt ?? Date()
+                let logUpdatedAt: Date = log.updatedAt ?? Date()
+                
+                return DailyLog(
+                    id: logId,
+                    userId: logUserId,
+                    date: logDate,
                     weight: nil,  // DailyMetrics doesn't store weight
                     weightUnit: nil,
-                    stepCount: log.steps != nil ? Int(log.steps) : nil,
+                    stepCount: logStepCount,
                     notes: log.notes,
-                    createdAt: log.createdAt ?? Date(),
-                    updatedAt: log.updatedAt ?? Date()
+                    createdAt: logCreatedAt,
+                    updatedAt: logUpdatedAt
                 )
             }
         } catch {

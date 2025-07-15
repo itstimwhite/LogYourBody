@@ -1,13 +1,16 @@
 //
-//  IntegrationsView.swift
-//  LogYourBody
+// IntegrationsView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct IntegrationsView: View {
     @EnvironmentObject var authManager: AuthManager
     @StateObject private var healthKitManager = HealthKitManager.shared
     @AppStorage("healthKitSyncEnabled") private var healthKitSyncEnabled = true
     @State private var showHealthKitConnect = false
     @Environment(\.dismiss)
+
     var dismiss    
     var body: some View {
         ZStack {

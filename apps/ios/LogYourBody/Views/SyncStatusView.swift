@@ -1,6 +1,6 @@
 //
-//  SyncStatusView.swift
-//  LogYourBody
+// SyncStatusView.swift
+// LogYourBody
 //
 import SwiftUI
 
@@ -162,10 +162,12 @@ struct SyncDetailsView: View {
                 }
                 
                 Section {
-                    Button(action: {
+                    Button(
+            action: {
                         syncManager.syncAll()
                         dismiss()
-                    }) {
+                    },
+            label: {
                         HStack {
                             if syncManager.isSyncing {
                                 ProgressView()
@@ -176,17 +178,21 @@ struct SyncDetailsView: View {
                             Text(syncManager.isSyncing ? "Syncing..." : "Sync Now")
                         }
                     }
+        )
                     .disabled(syncManager.isSyncing || !syncManager.isOnline)
                     
                     if syncManager.error != nil {
-                        Button(action: {
+                        Button(
+            action: {
                             syncManager.clearError()
-                        }) {
+                        },
+            label: {
                             HStack {
                                 Image(systemName: "xmark.circle")
                                 Text("Clear Error")
                             }
                         }
+        )
                         .foregroundColor(.red)
                     }
                 }

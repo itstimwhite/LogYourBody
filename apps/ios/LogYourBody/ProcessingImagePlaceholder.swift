@@ -1,7 +1,9 @@
 //
-//  ProcessingImagePlaceholder.swift
-//  LogYourBody
+// ProcessingImagePlaceholder.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct ProcessingImagePlaceholder: View {
     @State private var pulseAnimation = false
     

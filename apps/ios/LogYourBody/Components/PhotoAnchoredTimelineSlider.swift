@@ -1,7 +1,9 @@
 //
-//  PhotoAnchoredTimelineSlider.swift
-//  LogYourBody
+// PhotoAnchoredTimelineSlider.swift
+// LogYourBody
 //
+import SwiftUI
+import Foundation
 struct TimelineTick {
     let index: Int
     let date: Date

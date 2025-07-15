@@ -1,7 +1,8 @@
 //
-//  LegalDocumentView.swift
-//  LogYourBody
+// LegalDocumentView.swift
+// LogYourBody
 //
+import SwiftUI
 struct LegalDocumentView: View {
     let documentType: LegalDocumentType
     @State private var documentContent: String = ""

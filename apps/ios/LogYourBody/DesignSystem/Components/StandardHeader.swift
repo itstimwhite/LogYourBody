@@ -1,7 +1,9 @@
 //
-//  StandardHeader.swift
-//  LogYourBody
+// StandardHeader.swift
+// LogYourBody
 //
+import SwiftUI
+
 enum HeaderStyle {
     case standard
     case large

@@ -1,7 +1,10 @@
 //
-//  EmailVerificationView.swift
-//  LogYourBody
+// EmailVerificationView.swift
+// LogYourBody
 //
+import SwiftUI
+import Foundation
+
 struct EmailVerificationView: View {
     @EnvironmentObject var authManager: AuthManager
     @State private var verificationCode = ""

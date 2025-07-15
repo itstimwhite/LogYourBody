@@ -1,6 +1,6 @@
 //
-//  WhatsNewRow.swift
-//  LogYourBody
+// WhatsNewRow.swift
+// LogYourBody
 //
 import SwiftUI
 

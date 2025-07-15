@@ -1,9 +1,9 @@
 //
-//  LogYourBodyUITestsLaunchTests.swift
-//  LogYourBody
+// LogYourBodyUITestsLaunchTests.swift
+// LogYourBody
 //
 final class LogYourBodyUITestsLaunchTests: XCTestCase {
-    override class var runsForEachTargetApplicationUIConfiguration: Bool {
+    override static var runsForEachTargetApplicationUIConfiguration: Bool {
         true
     }
 

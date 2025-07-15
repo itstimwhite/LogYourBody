@@ -1,8 +1,9 @@
 //
-//  LogYourBodyWidget.swift
-//  LogYourBody
+// LogYourBodyWidget.swift
+// LogYourBody
 //
 import SwiftUI
+import WidgetKit
 
 struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> MetricsEntry {

@@ -1,7 +1,9 @@
 //
-//  View+Styles.swift
-//  LogYourBody
+// View+Styles.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct ModernTextFieldModifier: ViewModifier {
     @FocusState private var isFocused: Bool
     

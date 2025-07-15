@@ -1,7 +1,8 @@
 //
-//  ProfilePreparationView.swift
-//  LogYourBody
+// ProfilePreparationView.swift
+// LogYourBody
 //
+import SwiftUI
 struct ProfilePreparationView: View {
     @Binding var onboardingData: OnboardingData
     let onComplete: () -> Void

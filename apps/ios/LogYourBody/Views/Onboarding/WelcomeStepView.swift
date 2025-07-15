@@ -1,7 +1,9 @@
 //
-//  WelcomeStepView.swift
-//  LogYourBody
+// WelcomeStepView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct WelcomeStepView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @EnvironmentObject var authManager: AuthManager
@@ -80,7 +82,8 @@ struct WelcomeStepView: View {
                 
                 #if DEBUG
                 if showDebugOptions {
-                    Button(action: {
+                    Button(
+            action: {
                         // print("🔧 DEBUG: Skipping onboarding via button")
                         UserDefaults.standard.set(true, forKey: Constants.hasCompletedOnboardingKey)
                         
@@ -99,7 +102,8 @@ struct WelcomeStepView: View {
                         
                         // Trigger UI update
                         NotificationCenter.default.post(name: UserDefaults.didChangeNotification, object: nil)
-                    }) {
+                    },
+            label: {
                         Text("🔧 Skip Onboarding (Debug)")
                             .font(.system(size: 12, weight: .medium))
                             .foregroundColor(.red)
@@ -108,6 +112,7 @@ struct WelcomeStepView: View {
                             .background(Color.red.opacity(0.1))
                             .cornerRadius(8)
                     }
+        )
                     .padding(.top, 16)
                     .transition(.opacity)
                 }

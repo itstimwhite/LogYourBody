@@ -1,6 +1,6 @@
 //
-//  ImageProcessingService.swift
-//  LogYourBody
+// ImageProcessingService.swift
+// LogYourBody
 //
 import UIKit
 import Vision

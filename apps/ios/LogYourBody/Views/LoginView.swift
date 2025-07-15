@@ -1,7 +1,8 @@
 //
-//  LoginView.swift
-//  LogYourBody
+// LoginView.swift
+// LogYourBody
 //
+import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {
@@ -125,11 +126,13 @@ struct LoginView: View {
                         .padding(.vertical, 20)
                         
                         // Apple Sign In
-                        Button(action: {
+                        Button(
+            action: {
                             Task {
                                 await authManager.signInWithAppleOAuth()
                             }
-                        }) {
+                        },
+            label: {
                             HStack {
                                 Image(systemName: "apple.logo")
                                     .font(.system(size: 18))
@@ -142,6 +145,7 @@ struct LoginView: View {
                             .background(Color.white)
                             .cornerRadius(Constants.cornerRadius)
                         }
+        )
                         .buttonStyle(PlainButtonStyle())
                         
                         // Sign Up Link

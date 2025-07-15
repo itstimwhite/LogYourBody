@@ -1,6 +1,6 @@
 //
-//  VisionOrientationService.swift
-//  LogYourBody
+// VisionOrientationService.swift
+// LogYourBody
 //
 import UIKit
 import Vision

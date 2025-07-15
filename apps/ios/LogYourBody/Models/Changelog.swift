@@ -1,6 +1,6 @@
 //
-//  Changelog.swift
-//  LogYourBody
+// Changelog.swift
+// LogYourBody
 //
 import Foundation
 import SwiftUI

@@ -1,7 +1,8 @@
 //
-//  ToastManager.swift
-//  LogYourBody
+// ToastManager.swift
+// LogYourBody
 //
+import SwiftUI
 import Combine
 import UIKit
 

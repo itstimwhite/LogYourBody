@@ -1,6 +1,6 @@
 //
-//  Collection+Safe.swift
-//  LogYourBody
+// Collection+Safe.swift
+// LogYourBody
 //
 extension Collection {
     /// Returns the element at the specified index if it is within bounds, otherwise nil.

@@ -1,6 +1,6 @@
 //
-//  LogYourBodyUITests.swift
-//  LogYourBody
+// LogYourBodyUITests.swift
+// LogYourBody
 //
 final class LogYourBodyUITests: XCTestCase {
     override func setUpWithError() throws {

@@ -1,7 +1,8 @@
 //
-//  DashboardView+Views.swift
-//  LogYourBody
+// DashboardView+Views.swift
+// LogYourBody
 //
+import SwiftUI
 import HealthKit
 import PhotosUI
 
@@ -173,9 +174,11 @@ extension DashboardView {
                 HStack {
                     Spacer()
                     
-                    Button(action: {
+                    Button(
+            action: {
                         showPhotoOptions = true
-                    }) {
+                    },
+            label: {
                         if currentMetric?.photoUrl == nil || currentMetric?.photoUrl?.isEmpty == true {
                             // Full button when no photo
                             HStack {
@@ -203,6 +206,7 @@ extension DashboardView {
                                 )
                         }
                     }
+        )
                     .padding(.trailing, 20)
                     .padding(.bottom, 12)
                 }

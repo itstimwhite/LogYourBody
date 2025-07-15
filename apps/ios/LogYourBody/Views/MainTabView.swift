@@ -1,7 +1,9 @@
 //
-//  MainTabView.swift
-//  LogYourBody
+// MainTabView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct MainTabView: View {
     @State private var selectedTab = AnimatedTabView.Tab.dashboard
     @StateObject private var healthKitManager = HealthKitManager.shared

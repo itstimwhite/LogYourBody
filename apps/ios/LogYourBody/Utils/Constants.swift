@@ -1,6 +1,6 @@
 //
-//  Constants.swift
-//  LogYourBody
+// Constants.swift
+// LogYourBody
 //
 import SwiftUI
 

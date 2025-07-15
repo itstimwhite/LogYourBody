@@ -1,7 +1,10 @@
 //
-//  Theme.swift
-//  LogYourBody
+// Theme.swift
+// LogYourBody
 //
+import SwiftUI
+import UIKit
+
 protocol Theme {
     var colors: ColorTheme { get }
     var typography: TypographyTheme { get }

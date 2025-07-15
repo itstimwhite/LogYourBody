@@ -1,7 +1,9 @@
 //
-//  PreferencesView.swift
-//  LogYourBody
+// PreferencesView.swift
+// LogYourBody
 //
+import SwiftUI
+import Foundation
 import LocalAuthentication
 
 struct PreferencesView: View {

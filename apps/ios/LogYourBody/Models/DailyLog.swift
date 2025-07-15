@@ -1,7 +1,9 @@
 //
-//  DailyLog.swift
-//  LogYourBody
+// DailyLog.swift
+// LogYourBody
 //
+import Foundation
+
 struct DailyLog: Identifiable, Codable {
     let id: String
     let userId: String

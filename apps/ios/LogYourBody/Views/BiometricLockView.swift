@@ -1,7 +1,8 @@
 //
-//  BiometricLockView.swift
-//  LogYourBody
+// BiometricLockView.swift
+// LogYourBody
 //
+import SwiftUI
 import LocalAuthentication
 
 struct BiometricLockView: View {
@@ -34,16 +35,19 @@ struct BiometricLockView: View {
                             .opacity(0.5)
                         
                         // Add skip option after failed attempt
-                        Button(action: {
+                        Button(
+            action: {
                             withAnimation(.easeOut(duration: 0.3)) {
                                 isUnlocked = true
                             }
-                        }) {
+                        },
+            label: {
                             Text("Skip")
                                 .font(.appCaption)
                                 .foregroundColor(.appPrimary)
                                 .opacity(0.8)
                         }
+        )
                         .padding(.top, 8)
                     }
                 }

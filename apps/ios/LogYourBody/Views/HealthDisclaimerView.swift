@@ -1,7 +1,8 @@
 //
-//  HealthDisclaimerView.swift
-//  LogYourBody
+// HealthDisclaimerView.swift
+// LogYourBody
 //
+import SwiftUI
 struct HealthDisclaimerView: View {
     @Environment(\.dismiss)
     private var dismiss    

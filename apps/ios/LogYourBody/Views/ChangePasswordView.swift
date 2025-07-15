@@ -1,12 +1,14 @@
 //
-//  ChangePasswordView.swift
-//  LogYourBody
+// ChangePasswordView.swift
+// LogYourBody
 //
+import SwiftUI
 import Clerk
 
 struct ChangePasswordView: View {
     @Environment(\.dismiss)
-    var dismiss    @State private var currentPassword = ""
+    var dismiss
+    @State private var currentPassword = ""
     @State private var newPassword = ""
     @State private var confirmPassword = ""
     @State private var isLoading = false

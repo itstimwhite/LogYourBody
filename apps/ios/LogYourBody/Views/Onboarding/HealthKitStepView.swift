@@ -1,7 +1,8 @@
 //
-//  HealthKitStepView.swift
-//  LogYourBody
+// HealthKitStepView.swift
+// LogYourBody
 //
+import SwiftUI
 import HealthKit
 
 struct HealthKitStepView: View {
@@ -18,16 +19,19 @@ struct HealthKitStepView: View {
             VStack(spacing: 0) {
             // Header
             HStack {
-                Button(action: {
+                Button(
+            action: {
                     viewModel.previousStep()
                     // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
-                }) {
+                },
+            label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.appTextSecondary)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
+        )
                 .background(
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color.white.opacity(0.1))
@@ -96,12 +100,14 @@ struct HealthKitStepView: View {
             
             // Connect button
             VStack(spacing: 16) {
-                Button(action: {
+                Button(
+            action: {
                     if !isConnecting {
                         connectHealthKit()
                         // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
                     }
-                }) {
+                },
+            label: {
                     HStack {
                         Text(isConnecting ? "Connecting..." : "Connect Apple Health")
                             .font(.system(size: 17, weight: .medium))
@@ -114,6 +120,7 @@ struct HealthKitStepView: View {
                     .frame(height: 56)
                     .foregroundColor(.appText)
                 }
+        )
                 .modernPrimaryButtonStyle()
                 .disabled(isConnecting)
                 

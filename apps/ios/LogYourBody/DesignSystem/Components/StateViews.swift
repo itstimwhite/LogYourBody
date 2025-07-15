@@ -1,6 +1,6 @@
 //
-//  StateViews.swift
-//  LogYourBody
+// StateViews.swift
+// LogYourBody
 //
 import SwiftUI
 

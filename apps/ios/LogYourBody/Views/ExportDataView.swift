@@ -1,12 +1,14 @@
 //
-//  ExportDataView.swift
-//  LogYourBody
+// ExportDataView.swift
+// LogYourBody
 //
+import SwiftUI
 import UniformTypeIdentifiers
 
 struct ExportDataView: View {
     @Environment(\.dismiss)
-    private var dismiss    @EnvironmentObject var authManager: AuthManager
+    private var dismiss
+    @EnvironmentObject var authManager: AuthManager
     @State private var isExporting = false
     @State private var exportProgress: Double = 0
     @State private var showShareSheet = false
@@ -84,9 +86,11 @@ struct ExportDataView: View {
                                 
                                 VStack(spacing: 0) {
                                     ForEach(ExportMethod.allCases, id: \.self) { method in
-                                        Button(action: {
+                                        Button(
+            action: {
                                             exportMethod = method
-                                        }) {
+                                        },
+            label: {
                                             HStack {
                                                 Image(systemName: exportMethod == method ? "checkmark.circle.fill" : "circle")
                                                     .font(.system(size: 20))
@@ -107,6 +111,7 @@ struct ExportDataView: View {
                                             .padding()
                                             .background(Color.appCard)
                                         }
+        )
                                         .buttonStyle(PlainButtonStyle())
                                         
                                         if method != ExportMethod.allCases.last {
@@ -130,13 +135,15 @@ struct ExportDataView: View {
                                 
                                 VStack(spacing: 0) {
                                     ForEach(ExportFormat.allCases, id: \.self) { format in
-                                        Button(action: {
+                                        Button(
+            action: {
                                             if selectedFormats.contains(format) {
                                                 selectedFormats.remove(format)
                                             } else {
                                                 selectedFormats.insert(format)
                                             }
-                                        }) {
+                                        },
+            label: {
                                             HStack {
                                                 Image(systemName: selectedFormats.contains(format) ? "checkmark.square.fill" : "square")
                                                     .font(.system(size: 20))
@@ -157,6 +164,7 @@ struct ExportDataView: View {
                                             .padding()
                                             .background(Color.appCard)
                                         }
+        )
                                         .buttonStyle(PlainButtonStyle())
                                         
                                         if format != ExportFormat.allCases.last {
@@ -173,9 +181,11 @@ struct ExportDataView: View {
                             
                             // Include Photos Option (only for direct download)
                             if exportMethod == .download {
-                                Button(action: {
+                                Button(
+            action: {
                                     includePhotos.toggle()
-                                }) {
+                                },
+            label: {
                                 HStack {
                                     Image(systemName: includePhotos ? "checkmark.square.fill" : "square")
                                         .font(.system(size: 20))
@@ -197,6 +207,7 @@ struct ExportDataView: View {
                                 .background(Color.appCard)
                                 .cornerRadius(12)
                                 }
+        )
                             .buttonStyle(PlainButtonStyle())
                             .padding(.horizontal)
                             }

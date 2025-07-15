@@ -1,6 +1,6 @@
 //
-//  AuthManager.swift
-//  LogYourBody
+// AuthManager.swift
+// LogYourBody
 //
 import Combine
 import AuthenticationServices

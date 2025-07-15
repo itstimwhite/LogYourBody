@@ -1,12 +1,14 @@
 //
-//  CameraView.swift
-//  LogYourBody
+// CameraView.swift
+// LogYourBody
 //
+import SwiftUI
 import UIKit
 
 struct CameraView: UIViewControllerRepresentable {
     @Environment(\.dismiss)
-    var dismiss    let onImageCaptured: (UIImage) -> Void
+    var dismiss
+    let onImageCaptured: (UIImage) -> Void
     
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()

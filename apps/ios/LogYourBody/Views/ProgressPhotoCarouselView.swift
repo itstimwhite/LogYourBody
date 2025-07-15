@@ -1,8 +1,10 @@
 //
-//  ProgressPhotoCarouselView.swift
-//  LogYourBody
+// ProgressPhotoCarouselView.swift
+// LogYourBody
 //
+import SwiftUI
 import Vision
+import UIKit
 
 // MARK: - Temporary Glass Card (until UIComponents.swift is added to project)
 struct ProgressPhotoGlassCard<Content: View>: View {

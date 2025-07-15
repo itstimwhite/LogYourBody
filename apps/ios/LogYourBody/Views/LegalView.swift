@@ -1,7 +1,8 @@
 //
-//  LegalView.swift
-//  LogYourBody
+// LegalView.swift
+// LogYourBody
 //
+import SwiftUI
 struct LegalView: View {
     @Environment(\.dismiss)
     var dismiss    

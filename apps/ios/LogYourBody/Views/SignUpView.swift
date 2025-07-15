@@ -1,14 +1,16 @@
 //
-//  SignUpView.swift
-//  LogYourBody
+// SignUpView.swift
+// LogYourBody
 //
+import SwiftUI
 import AuthenticationServices
 import SafariServices
 
 struct SignUpView: View {
     @EnvironmentObject var authManager: AuthManager
     @Environment(\.dismiss)
-    var dismiss    @State private var email = ""
+    var dismiss
+    @State private var email = ""
     @State private var password = ""
     @State private var isLoading = false
     @State private var showError = false
@@ -35,12 +37,15 @@ struct SignUpView: View {
                 VStack(spacing: 0) {
                     // Header
                     HStack {
-                        Button(action: { dismiss() }) {
+                        Button(
+            action: { dismiss() },
+            label: {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 20))
                                 .foregroundColor(.appText)
                                 .frame(width: 44, height: 44)
                         }
+        )
                         
                         Spacer()
                     }
@@ -130,11 +135,14 @@ struct SignUpView: View {
                         VStack(spacing: 16) {
                             // Terms of Service
                             HStack(alignment: .top, spacing: 12) {
-                                Button(action: { agreedToTerms.toggle() }) {
+                                Button(
+            action: { agreedToTerms.toggle() },
+            label: {
                                     Image(systemName: agreedToTerms ? "checkmark.square.fill" : "square")
                                         .font(.system(size: 20))
                                         .foregroundColor(agreedToTerms ? .white : .appBorder)
                                 }
+        )
                                 .buttonStyle(PlainButtonStyle())
                                 
                                 VStack(alignment: .leading, spacing: 4) {
@@ -157,11 +165,14 @@ struct SignUpView: View {
                             
                             // Privacy Policy
                             HStack(alignment: .top, spacing: 12) {
-                                Button(action: { agreedToPrivacy.toggle() }) {
+                                Button(
+            action: { agreedToPrivacy.toggle() },
+            label: {
                                     Image(systemName: agreedToPrivacy ? "checkmark.square.fill" : "square")
                                         .font(.system(size: 20))
                                         .foregroundColor(agreedToPrivacy ? .white : .appBorder)
                                 }
+        )
                                 .buttonStyle(PlainButtonStyle())
                                 
                                 VStack(alignment: .leading, spacing: 4) {
@@ -188,11 +199,14 @@ struct SignUpView: View {
                             
                             // Health Disclaimer
                             HStack(alignment: .top, spacing: 12) {
-                                Button(action: { agreedToHealthDisclaimer.toggle() }) {
+                                Button(
+            action: { agreedToHealthDisclaimer.toggle() },
+            label: {
                                     Image(systemName: agreedToHealthDisclaimer ? "checkmark.square.fill" : "square")
                                         .font(.system(size: 20))
                                         .foregroundColor(agreedToHealthDisclaimer ? .white : .appBorder)
                                 }
+        )
                                 .buttonStyle(PlainButtonStyle())
                                 
                                 VStack(alignment: .leading, spacing: 4) {
@@ -251,11 +265,13 @@ struct SignUpView: View {
                         .padding(.vertical, 8)
                         
                         // Apple Sign In
-                        Button(action: {
+                        Button(
+            action: {
                             Task {
                                 await authManager.signInWithAppleOAuth()
                             }
-                        }) {
+                        },
+            label: {
                             HStack {
                                 Image(systemName: "apple.logo")
                                     .font(.system(size: 18))
@@ -268,6 +284,7 @@ struct SignUpView: View {
                             .background(Color.white)
                             .cornerRadius(Constants.cornerRadius)
                         }
+        )
                         .buttonStyle(PlainButtonStyle())
                         
                         // Already have account

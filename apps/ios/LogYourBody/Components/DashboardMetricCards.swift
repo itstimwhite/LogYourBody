@@ -1,6 +1,6 @@
 //
-//  DashboardMetricCards.swift
-//  LogYourBody
+// DashboardMetricCards.swift
+// LogYourBody
 //
 import SwiftUI
 

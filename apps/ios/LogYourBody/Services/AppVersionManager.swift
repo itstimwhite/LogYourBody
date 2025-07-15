@@ -1,6 +1,6 @@
 //
-//  AppVersionManager.swift
-//  LogYourBody
+// AppVersionManager.swift
+// LogYourBody
 //
 import Foundation
 import UIKit

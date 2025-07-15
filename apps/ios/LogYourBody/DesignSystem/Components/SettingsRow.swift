@@ -1,6 +1,6 @@
 //
-//  SettingsRow.swift
-//  LogYourBody
+// SettingsRow.swift
+// LogYourBody
 //
 import SwiftUI
 
@@ -317,31 +317,34 @@ struct DestructiveRow: View {
     @State private var isPressed = false
     
     var body: some View {
-        Button(action: {
-            // // HapticManager.shared.impact(style: .medium)
-            action()
-        }) {
-            HStack(spacing: 12) {
-                if let icon = icon {
-                    Image(systemName: icon)
-                        .font(.system(size: 20))
+        Button(
+            action: {
+                // // HapticManager.shared.impact(style: .medium)
+                action()
+            },
+            label: {
+                HStack(spacing: 12) {
+                    if let icon = icon {
+                        Image(systemName: icon)
+                            .font(.system(size: 20))
+                            .foregroundColor(.red)
+                    }
+                    
+                    Text(title)
+                        .font(.body)
                         .foregroundColor(.red)
+                    
+                    Spacer()
                 }
-                
-                Text(title)
-                    .font(.body)
-                    .foregroundColor(.red)
-                
-                Spacer()
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(
+                    .red
+                        .opacity(isPressed ? 0.1 : 0)
+                )
+                .contentShape(Rectangle())
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 8)
-            .background(
-                .red
-                    .opacity(isPressed ? 0.1 : 0)
-            )
-            .contentShape(Rectangle())
-        }
+        )
         .buttonStyle(PlainButtonStyle())
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
             withAnimation(.easeOut(duration: 0.1)) {

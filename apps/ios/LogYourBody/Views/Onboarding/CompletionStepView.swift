@@ -1,9 +1,9 @@
 //
-//  CompletionStepView.swift
-//  LogYourBody
+// CompletionStepView.swift
+// LogYourBody
 //
+import SwiftUI
 import UIKit
-// (Assuming you have these components in your project)
 
 
 struct CompletionStepView: View {
@@ -28,16 +28,19 @@ struct CompletionStepView: View {
 
             // Custom floating header
             HStack {
-                Button(action: {
+                Button(
+            action: {
                     viewModel.previousStep()
                     // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
-                }) {
+                },
+            label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.appTextSecondary)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
+        )
                 .background(
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color.white.opacity(0.1))

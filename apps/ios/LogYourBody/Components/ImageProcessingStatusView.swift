@@ -1,7 +1,8 @@
 //
-//  ImageProcessingStatusView.swift
-//  LogYourBody
+// ImageProcessingStatusView.swift
+// LogYourBody
 //
+import SwiftUI
 struct ImageProcessingStatusView: View {
     @StateObject private var processingService = ImageProcessingService.shared
     

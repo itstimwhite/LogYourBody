@@ -1,7 +1,9 @@
 //
-//  LogWeightView.swift
-//  LogYourBody
+// LogWeightView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct LogWeightView: View {
     @EnvironmentObject var authManager: AuthManager
     @EnvironmentObject var syncManager: SyncManager
@@ -14,7 +16,8 @@ struct LogWeightView: View {
     @State private var errorMessage = ""
     @State private var showSuccess = false
     @Environment(\.dismiss)
-    var dismiss    @FocusState private var focusedField: Field?
+    var dismiss
+    @FocusState private var focusedField: Field?
     
     enum Field {
         case weight, bodyFat
@@ -34,12 +37,15 @@ struct LogWeightView: View {
                 VStack(spacing: 0) {
                     // Header
                     HStack {
-                        Button(action: { dismiss() }) {
+                        Button(
+            action: { dismiss() },
+            label: {
                             Image(systemName: "xmark")
                                 .font(.system(size: 18, weight: .medium))
                                 .foregroundColor(.appTextSecondary)
                                 .frame(width: 44, height: 44)
                         }
+        )
                         
                         Spacer()
                         

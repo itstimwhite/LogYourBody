@@ -1,7 +1,10 @@
 //
-//  DashboardView+Calculations.swift
-//  LogYourBody
+// DashboardView+Calculations.swift
+// LogYourBody
 //
+import Foundation
+import SwiftUI
+
 extension DashboardView {
     // MARK: - Unit Conversion
     

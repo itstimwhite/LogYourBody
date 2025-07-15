@@ -1,6 +1,6 @@
 //
-//  StandardButton.swift
-//  LogYourBody
+// StandardButton.swift
+// LogYourBody
 //
 import SwiftUI
 

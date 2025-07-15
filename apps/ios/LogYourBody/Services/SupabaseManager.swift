@@ -1,7 +1,9 @@
 //
-//  SupabaseManager.swift
-//  LogYourBody
+// SupabaseManager.swift
+// LogYourBody
 //
+import Foundation
+import SwiftUI
 import Clerk
 
 

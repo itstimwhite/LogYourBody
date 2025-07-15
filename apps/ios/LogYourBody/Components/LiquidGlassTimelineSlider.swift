@@ -1,7 +1,9 @@
 //
-//  LiquidGlassTimelineSlider.swift
-//  LogYourBody
+// LiquidGlassTimelineSlider.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct LiquidGlassTimelineSlider: View {
     @Binding var selectedIndex: Int
     let metrics: [BodyMetrics]

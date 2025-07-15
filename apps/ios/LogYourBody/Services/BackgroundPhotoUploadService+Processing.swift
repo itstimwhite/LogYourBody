@@ -1,6 +1,6 @@
 //
-//  BackgroundPhotoUploadService+Processing.swift
-//  LogYourBody
+// BackgroundPhotoUploadService+Processing.swift
+// LogYourBody
 //
 import SwiftUI
 import PhotosUI

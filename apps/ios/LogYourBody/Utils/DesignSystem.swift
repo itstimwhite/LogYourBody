@@ -1,7 +1,8 @@
 //
-//  DesignSystem.swift
-//  LogYourBody
+// DesignSystem.swift
+// LogYourBody
 //
+import SwiftUI
 import UIKit
 
 // MARK: - Adaptive Color System

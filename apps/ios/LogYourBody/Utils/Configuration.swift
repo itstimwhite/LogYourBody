@@ -1,7 +1,8 @@
 //
-//  Configuration.swift
-//  LogYourBody
+// Configuration.swift
+// LogYourBody
 //
+import Foundation
 enum Configuration {
     enum Error: Swift.Error {
         case missingKey, invalidValue
@@ -16,8 +17,11 @@ enum Configuration {
         case let value as T:
             return value
         case let string as String:
-            guard let value = T(string) else { fallthrough }
-            return value
+            if let value = T(string) {
+                return value
+            } else {
+                throw Error.invalidValue
+            }
         default:
             throw Error.invalidValue
         }
@@ -51,7 +55,7 @@ enum Configuration {
         } catch {
             // print("⚠️ API_BASE_URL not configured in Config.xcconfig")
             #if DEBUG
-            return "http://localhost:3000"
+            return "https://localhost:3000"
             #else
             return "https://logyourbody.com"
             #endif

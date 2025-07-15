@@ -1,7 +1,8 @@
 //
-//  DashboardView_Clean.swift
-//  LogYourBody
+// DashboardView_Clean.swift
+// LogYourBody
 //
+import SwiftUI
 import HealthKit
 import PhotosUI
 
@@ -25,7 +26,9 @@ struct DashboardView: View {
     @State var selectedPhoto: PhotosPickerItem?
     @State var showingModal = false
     @Namespace private var namespace
-    @AppStorage(Constants.preferredMeasurementSystemKey) var measurementSystem = PreferencesView.defaultMeasurementSystem
+    @AppStorage(Constants.preferredMeasurementSystemKey)
+
+    var measurementSystem = PreferencesView.defaultMeasurementSystem
     
     // MARK: - Computed Properties
     

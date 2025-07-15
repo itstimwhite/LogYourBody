@@ -1,6 +1,6 @@
 //
-//  LiquidGlassComponents.swift
-//  LogYourBody
+// LiquidGlassComponents.swift
+// LogYourBody
 //
 //
 // LiquidGlassComponents.swift

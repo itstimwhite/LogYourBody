@@ -1,7 +1,9 @@
 //
-//  GenderInputView.swift
-//  LogYourBody
+// GenderInputView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct GenderInputView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @State private var isEditing = false
@@ -17,10 +19,12 @@ struct GenderInputView: View {
             VStack(spacing: 0) {
             // Header with Liquid Glass effect
             HStack {
-                Button(action: {
+                Button(
+            action: {
                     viewModel.previousStep()
                     HapticManager.shared.buttonTapped()
-                }) {
+                },
+            label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.appTextSecondary)
@@ -29,6 +33,7 @@ struct GenderInputView: View {
                         .accessibilityLabel("Go back")
                         .accessibilityHint("Return to previous step")
                 }
+        )
                 
                 Spacer()
             }
@@ -72,12 +77,14 @@ struct GenderInputView: View {
                                 
                                 Spacer()
                                 
-                                Button(action: {
+                                Button(
+            action: {
                                     withAnimation(.spring(response: 0.35, dampingFraction: 0.7)) {
                                         isEditing = true
                                     }
                                     HapticManager.shared.buttonTapped()
-                                }) {
+                                },
+            label: {
                                     Text("Edit")
                                         .font(.system(size: 16, weight: .semibold))
                                         .foregroundColor(.appPrimary)
@@ -92,6 +99,7 @@ struct GenderInputView: View {
                                                 )
                                         )
                                 }
+        )
                                 .accessibilityLabel("Edit")
                                 .accessibilityHint("Change your biological sex selection")
                             }

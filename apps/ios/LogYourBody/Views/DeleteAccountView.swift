@@ -1,13 +1,15 @@
 //
-//  DeleteAccountView.swift
-//  LogYourBody
+// DeleteAccountView.swift
+// LogYourBody
 //
+import SwiftUI
 import Clerk
 
 struct DeleteAccountView: View {
     @EnvironmentObject var authManager: AuthManager
     @Environment(\.dismiss)
-    private var dismiss    @State private var showConfirmation = false
+    private var dismiss
+    @State private var showConfirmation = false
     @State private var confirmationText = ""
     @State private var isDeleting = false
     @State private var showError = false
@@ -87,10 +89,12 @@ struct DeleteAccountView: View {
                     }
                     
                     // Delete Button
-                    Button(action: {
+                    Button(
+            action: {
                         isTextFieldFocused = false
                         deleteAccount()
-                    }) {
+                    },
+            label: {
                         if isDeleting {
                             HStack {
                                 ProgressView()
@@ -105,6 +109,7 @@ struct DeleteAccountView: View {
                                 .frame(maxWidth: .infinity)
                         }
                     }
+        )
                     .foregroundColor(.white)
                     .padding()
                     .background(confirmationText == confirmationPhrase ? Color.red : Color.gray)

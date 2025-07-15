@@ -1,6 +1,6 @@
 //
-//  SyncManager.swift
-//  LogYourBody
+// SyncManager.swift
+// LogYourBody
 //
 import Foundation
 import Combine

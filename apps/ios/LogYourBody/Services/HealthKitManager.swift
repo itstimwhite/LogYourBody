@@ -1,7 +1,8 @@
 //
-//  HealthKitManager.swift
-//  LogYourBody
+// HealthKitManager.swift
+// LogYourBody
 //
+import Foundation
 import HealthKit
 
 class HealthKitManager: ObservableObject {

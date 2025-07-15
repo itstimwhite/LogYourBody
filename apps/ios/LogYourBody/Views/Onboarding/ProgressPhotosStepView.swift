@@ -1,7 +1,8 @@
 //
-//  ProgressPhotosStepView.swift
-//  LogYourBody
+// ProgressPhotosStepView.swift
+// LogYourBody
 //
+import SwiftUI
 import PhotosUI
 
 struct ProgressPhotosStepView: View {
@@ -25,16 +26,19 @@ struct ProgressPhotosStepView: View {
             VStack(spacing: 0) {
                 // Header with Liquid Glass effect
                 HStack {
-                    Button(action: {
+                    Button(
+            action: {
                         viewModel.previousStep()
                         HapticManager.shared.buttonTapped()
-                    }) {
+                    },
+            label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 18, weight: .regular))
                             .foregroundColor(.appTextSecondary)
                             .frame(width: 44, height: 44)
                             .contentShape(Rectangle())
                     }
+        )
                     .background(
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color.white.opacity(0.1))

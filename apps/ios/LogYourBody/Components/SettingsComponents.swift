@@ -1,7 +1,8 @@
 //
-//  SettingsComponents.swift
-//  LogYourBody
+// SettingsComponents.swift
+// LogYourBody
 //
+import SwiftUI
 struct SettingsDesign {
     // Spacing
     static let sectionSpacing: CGFloat = 24

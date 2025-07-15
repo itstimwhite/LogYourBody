@@ -1,7 +1,9 @@
 //
-//  OnboardingViewModel.swift
-//  LogYourBody
+// OnboardingViewModel.swift
+// LogYourBody
 //
+import SwiftUI
+import Foundation
 import Combine
 
 @MainActor

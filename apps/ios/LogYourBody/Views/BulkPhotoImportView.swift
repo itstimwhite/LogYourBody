@@ -1,7 +1,8 @@
 //
-//  BulkPhotoImportView.swift
-//  LogYourBody
+// BulkPhotoImportView.swift
+// LogYourBody
 //
+import SwiftUI
 import Photos
 
 struct BulkPhotoImportView: View {
@@ -9,7 +10,7 @@ struct BulkPhotoImportView: View {
     @StateObject private var scanner = PhotoLibraryScanner.shared
     @StateObject private var importManager = BulkImportManager.shared
     @Environment(\.dismiss)
-    var dismiss    
+    var dismiss
     @State private var selectedPhotos: Set<UUID> = []
     @State private var showPermissionAlert = false
     @State private var showImportConfirmation = false
@@ -137,11 +138,13 @@ struct BulkPhotoImportView: View {
             Spacer()
             
             VStack(spacing: 12) {
-                Button(action: {
+                Button(
+            action: {
                     showWelcomeScreen = false
                     hasStartedScan = true
                     checkPermissionAndScan()
-                }) {
+                },
+            label: {
                     Text("Start Scanning")
                         .font(.system(size: 17, weight: .semibold))
                         .foregroundColor(.white)
@@ -150,14 +153,18 @@ struct BulkPhotoImportView: View {
                         .background(Color.appPrimary)
                         .cornerRadius(12)
                 }
+        )
                 
-                Button(action: {
+                Button(
+            action: {
                     dismiss()
-                }) {
+                },
+            label: {
                     Text("Cancel")
                         .font(.system(size: 17))
                         .foregroundColor(.appTextSecondary)
                 }
+        )
             }
             .padding(.horizontal)
             .padding(.bottom, 40)
@@ -195,7 +202,8 @@ struct BulkPhotoImportView: View {
             
             Spacer()
             
-            Button(action: {
+            Button(
+            action: {
                 Task {
                     let authorized = await scanner.requestAuthorization()
                     if authorized {
@@ -204,7 +212,8 @@ struct BulkPhotoImportView: View {
                         showPermissionAlert = true
                     }
                 }
-            }) {
+            },
+            label: {
                 Text("Allow Access")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundColor(.white)
@@ -213,6 +222,7 @@ struct BulkPhotoImportView: View {
                     .background(Color.appPrimary)
                     .cornerRadius(12)
             }
+        )
             .padding(.horizontal)
             .padding(.bottom, 40)
         }
@@ -242,11 +252,13 @@ struct BulkPhotoImportView: View {
             
             Spacer()
             
-            Button(action: {
+            Button(
+            action: {
                 if let url = URL(string: UIApplication.openSettingsURLString) {
                     UIApplication.shared.open(url)
                 }
-            }) {
+            },
+            label: {
                 Text("Open Settings")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundColor(.white)
@@ -255,6 +267,7 @@ struct BulkPhotoImportView: View {
                     .background(Color.appPrimary)
                     .cornerRadius(12)
             }
+        )
             .padding(.horizontal)
             .padding(.bottom, 40)
         }
@@ -304,14 +317,17 @@ struct BulkPhotoImportView: View {
             
             Spacer()
             
-            Button(action: {
+            Button(
+            action: {
                 scanner.cancelScan()
                 dismiss()
-            }) {
+            },
+            label: {
                 Text("Cancel")
                     .font(.system(size: 17))
                     .foregroundColor(.appTextSecondary)
             }
+        )
             .padding(.bottom, 40)
         }
     }
@@ -340,9 +356,11 @@ struct BulkPhotoImportView: View {
             
             Spacer()
             
-            Button(action: {
+            Button(
+            action: {
                 dismiss()
-            }) {
+            },
+            label: {
                 Text("Done")
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundColor(.white)
@@ -351,6 +369,7 @@ struct BulkPhotoImportView: View {
                     .background(Color.appPrimary)
                     .cornerRadius(12)
             }
+        )
             .padding(.horizontal)
             .padding(.bottom, 40)
         }
@@ -396,9 +415,11 @@ struct BulkPhotoImportView: View {
                 VStack(spacing: 0) {
                     Divider()
                     
-                    Button(action: {
+                    Button(
+            action: {
                         showImportConfirmation = true
-                    }) {
+                    },
+            label: {
                         HStack {
                             Image(systemName: "square.and.arrow.down")
                             Text("Import \(selectedCount) Photo\(selectedCount == 1 ? "" : "s")")
@@ -410,6 +431,7 @@ struct BulkPhotoImportView: View {
                         .background(Color.appPrimary)
                         .cornerRadius(12)
                     }
+        )
                     .padding()
                     .background(Color.appCard)
                 }
@@ -460,13 +482,16 @@ struct BulkPhotoImportView: View {
             
             Spacer()
             
-            Button(action: {
+            Button(
+            action: {
                 dismiss()
-            }) {
+            },
+            label: {
                 Text("Continue in Background")
                     .font(.system(size: 17))
                     .foregroundColor(.appPrimary)
             }
+        )
             .padding(.bottom, 40)
         }
     }

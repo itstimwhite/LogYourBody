@@ -1,6 +1,6 @@
 //
-//  VersionRow.swift
-//  LogYourBody
+// VersionRow.swift
+// LogYourBody
 //
 import SwiftUI
 

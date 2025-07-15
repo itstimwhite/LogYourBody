@@ -1,6 +1,6 @@
 //
-//  WhatsNewView.swift
-//  LogYourBody
+// WhatsNewView.swift
+// LogYourBody
 //
 import SwiftUI
 
@@ -35,7 +35,8 @@ struct FeatureRow: View {
 
 struct WhatsNewView: View {
     @Environment(\.dismiss)
-    private var dismiss    @State private var selectedVersion: String?
+    private var dismiss
+    @State private var selectedVersion: String?
     
     private let changelogManager = ChangelogManager.shared
     

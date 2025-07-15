@@ -1,7 +1,8 @@
 //
-//  DashboardViewV2.swift
-//  LogYourBody
+// DashboardViewV2.swift
+// LogYourBody
 //
+import SwiftUI
 import HealthKit
 import PhotosUI
 
@@ -247,10 +248,12 @@ struct DashboardViewV2: View {
             
             // Floating FAB for adding photos
             if currentMetric?.photoUrl == nil {
-                Button(action: {
+                Button(
+            action: {
                     showPhotoOptions = true
                     HapticManager.shared.buttonTapped()
-                }) {
+                },
+            label: {
                     ZStack {
                         Circle()
                             .fill(Color.appPrimary)
@@ -261,6 +264,7 @@ struct DashboardViewV2: View {
                             .foregroundColor(.white)
                     }
                 }
+        )
                 .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
                 .padding(.trailing, 24)
                 .padding(.bottom, 16)

@@ -1,6 +1,6 @@
 //
-//  PhotoLibraryScanner.swift
-//  LogYourBody
+// PhotoLibraryScanner.swift
+// LogYourBody
 //
 import Photos
 import SwiftUI
@@ -230,7 +230,7 @@ class PhotoLibraryScanner: ObservableObject {
             }
             
             // Yield to prevent blocking
-            if index % batchSize == 0 {
+            if index.isMultiple(of: batchSize) {
                 await Task.yield()
             }
         }

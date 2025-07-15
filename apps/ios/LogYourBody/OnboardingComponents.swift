@@ -1,7 +1,9 @@
 //
-//  OnboardingComponents.swift
-//  LogYourBody
+// OnboardingComponents.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct OnboardingBackground: View {
     var body: some View {
         Color.appBackground
@@ -16,16 +18,19 @@ struct OnboardingHeader: View {
     var body: some View {
         HStack {
             if let onBack = onBack {
-                Button(action: {
+                Button(
+            action: {
                     onBack()
                     HapticManager.shared.buttonTapped()
-                }) {
+                },
+            label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.appTextSecondary)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
+        )
                 .modifier(LiquidGlassButtonModifier())
             }
             
@@ -90,16 +95,19 @@ struct OnboardingContinueButton: View {
     
     var body: some View {
         VStack(spacing: 20) {
-            Button(action: {
+            Button(
+            action: {
                 action()
                 HapticManager.shared.buttonTapped()
-            }) {
+            },
+            label: {
                 Text(title)
                     .font(.system(size: 17, weight: .medium))
                     .frame(maxWidth: .infinity)
                     .frame(height: 56)
                     .foregroundColor(isEnabled ? .white : .appTextTertiary)
             }
+        )
             .modifier(LiquidGlassContinueButtonModifier(isEnabled: isEnabled))
             .disabled(!isEnabled)
             

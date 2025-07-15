@@ -1,12 +1,14 @@
 //
-//  AddEntrySheet.swift
-//  LogYourBody
+// AddEntrySheet.swift
+// LogYourBody
 //
+import SwiftUI
 import PhotosUI
 
 struct AddEntrySheet: View {
     @Environment(\.dismiss)
-    var dismiss    @EnvironmentObject var authManager: AuthManager
+    var dismiss
+    @EnvironmentObject var authManager: AuthManager
     @Binding var isPresented: Bool
     @State private var selectedTab: Int
     @State private var selectedDate = Date()

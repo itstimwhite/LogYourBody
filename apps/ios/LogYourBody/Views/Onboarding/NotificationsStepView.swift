@@ -1,7 +1,8 @@
 //
-//  NotificationsStepView.swift
-//  LogYourBody
+// NotificationsStepView.swift
+// LogYourBody
 //
+import SwiftUI
 import UserNotifications
 
 struct NotificationsStepView: View {
@@ -20,16 +21,19 @@ struct NotificationsStepView: View {
             VStack(spacing: 0) {
                 // Header with Liquid Glass effect
                 HStack {
-                    Button(action: {
+                    Button(
+            action: {
                         viewModel.previousStep()
                         // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
-                    }) {
+                    },
+            label: {
                         Image(systemName: "chevron.left")
                             .font(.system(size: 18, weight: .regular))
                             .foregroundColor(.appTextSecondary)
                             .frame(width: 44, height: 44)
                             .contentShape(Rectangle())
                     }
+        )
                     .background(
                         RoundedRectangle(cornerRadius: 12)
                             .fill(Color.white.opacity(0.1))

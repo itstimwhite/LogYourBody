@@ -1,7 +1,8 @@
 //
-//  LogYourBodyApp.swift
-//  LogYourBody
+// LogYourBodyApp.swift
+// LogYourBody
 //
+import SwiftUI
 import Clerk
 
 @main

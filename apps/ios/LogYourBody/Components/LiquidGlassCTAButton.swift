@@ -1,7 +1,9 @@
 //
-//  LiquidGlassCTAButton.swift
-//  LogYourBody
+// LiquidGlassCTAButton.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct LiquidGlassCTAButton: View {
     let text: String
     let icon: String?
@@ -35,28 +37,31 @@ struct LiquidGlassCTAButton: View {
     }
     
     var body: some View {
-        Button(action: {
-            if isEnabled {
-                HapticManager.shared.buttonTapped()
-                action()
-            }
-        }) {
-            HStack(spacing: 8) {
-                Text(text)
-                    .font(.system(size: 17, weight: .semibold))
-                
-                if let icon = icon {
-                    Image(systemName: icon)
-                        .font(.system(size: 16, weight: .medium))
+        Button(
+            action: {
+                if isEnabled {
+                    HapticManager.shared.buttonTapped()
+                    action()
                 }
+            },
+            label: {
+                HStack(spacing: 8) {
+                    Text(text)
+                        .font(.system(size: 17, weight: .semibold))
+                    
+                    if let icon = icon {
+                        Image(systemName: icon)
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 56)
+                .foregroundColor(textColor)
+                .background(backgroundView)
+                .overlay(overlayView)
+                .clipShape(RoundedRectangle(cornerRadius: 28))
             }
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .foregroundColor(textColor)
-            .background(backgroundView)
-            .overlay(overlayView)
-            .clipShape(RoundedRectangle(cornerRadius: 28))
-        }
+        )
         .disabled(!isEnabled)
         .scaleEffect(isPressed ? 0.97 : 1.0)
         .animation(.spring(response: 0.3, dampingFraction: 0.8), value: isPressed)
@@ -208,24 +213,27 @@ struct LiquidGlassSecondaryCTAButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: {
-            HapticManager.shared.buttonTapped()
-            action()
-        }) {
-            Text(text)
-                .font(.system(size: 15, weight: .medium))
-                .foregroundColor(.white.opacity(0.7))
-                .padding(.horizontal, 24)
-                .padding(.vertical, 12)
-                .background(
-                    Capsule()
-                        .fill(Color.white.opacity(0.1))
-                        .overlay(
-                            Capsule()
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
-                )
-        }
+        Button(
+            action: {
+                HapticManager.shared.buttonTapped()
+                action()
+            },
+            label: {
+                Text(text)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.white.opacity(0.7))
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 12)
+                    .background(
+                        Capsule()
+                            .fill(Color.white.opacity(0.1))
+                            .overlay(
+                                Capsule()
+                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                            )
+                    )
+            }
+        )
     }
 }
 
@@ -262,9 +270,12 @@ struct LiquidGlassCTAButton_Previews: PreviewProvider {
                 )
                 
                 // Using modifier on existing button
-                Button(action: {}) {
-                    Text("Custom Button")
-                }
+                Button(
+                    action: {},
+                    label: {
+                        Text("Custom Button")
+                    }
+                )
                 .liquidGlassCTAStyle(isEnabled: true)
             }
             .padding()

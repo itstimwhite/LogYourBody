@@ -1,7 +1,8 @@
 //
-//  SupabaseDataClient.swift
-//  LogYourBody
+// SupabaseDataClient.swift
+// LogYourBody
 //
+import Foundation
 class SupabaseClient {
     static let shared = SupabaseClient()
     

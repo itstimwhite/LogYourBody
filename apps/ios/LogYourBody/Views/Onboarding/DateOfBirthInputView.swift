@@ -1,7 +1,8 @@
 //
-//  DateOfBirthInputView.swift
-//  LogYourBody
+// DateOfBirthInputView.swift
+// LogYourBody
 //
+import SwiftUI
 struct DateOfBirthInputView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @State private var selectedDate = Date()
@@ -30,16 +31,19 @@ struct DateOfBirthInputView: View {
             VStack(spacing: 0) {
             // Header
             HStack {
-                Button(action: {
+                Button(
+            action: {
                     viewModel.previousStep()
                     // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
-                }) {
+                },
+            label: {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 18, weight: .regular))
                         .foregroundColor(.appTextSecondary)
                         .frame(width: 44, height: 44)
                         .contentShape(Rectangle())
                 }
+        )
                 .background(
                     RoundedRectangle(cornerRadius: 12)
                         .fill(Color.white.opacity(0.1))
@@ -84,16 +88,19 @@ struct DateOfBirthInputView: View {
                             
                             Spacer()
                             
-                            Button(action: {
+                            Button(
+            action: {
                                 withAnimation(.spring(response: 0.3)) {
                                     isEditing = true
                                 }
                                 // HapticManager.shared.buttonTapped() // TODO: Add HapticManager to Xcode project
-                            }) {
+                            },
+            label: {
                                 Text("Edit")
                                     .font(.system(size: 15, weight: .medium))
                                     .foregroundColor(.appPrimary)
                             }
+        )
                         }
                         .padding(20)
                         .background(Color.appCard)

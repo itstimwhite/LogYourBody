@@ -1,14 +1,16 @@
 //
-//  ProfileSettingsViewV2.swift
-//  LogYourBody
+// ProfileSettingsViewV2.swift
+// LogYourBody
 //
+import SwiftUI
 import Clerk
 import PhotosUI
 
 struct ProfileSettingsViewV2: View {
     @EnvironmentObject var authManager: AuthManager
     @Environment(\.dismiss)
-    var dismiss    // @StateObject private var syncManager = RealtimeSyncManager.shared // TODO: Add RealtimeSyncManager to Xcode project
+    var dismiss
+    // @StateObject private var syncManager = RealtimeSyncManager.shared // TODO: Add RealtimeSyncManager to Xcode project
     
     // Editable fields
     @State private var editableName: String = ""

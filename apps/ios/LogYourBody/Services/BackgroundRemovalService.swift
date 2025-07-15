@@ -1,9 +1,11 @@
 //
-//  BackgroundRemovalService.swift
-//  LogYourBody
+// BackgroundRemovalService.swift
+// LogYourBody
 //
+import Foundation
 import Vision
 import CoreImage
+import UIKit
 class BackgroundRemovalService {
     static let shared = BackgroundRemovalService()
     private init() {}

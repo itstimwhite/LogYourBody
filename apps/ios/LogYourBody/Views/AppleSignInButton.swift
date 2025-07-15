@@ -1,11 +1,14 @@
 //
-//  AppleSignInButton.swift
-//  LogYourBody
+// AppleSignInButton.swift
+// LogYourBody
 //
+import SwiftUI
 import AuthenticationServices
 
 struct AppleSignInButton: UIViewRepresentable {
     @Environment(\.isEnabled)
+    var isEnabled: Bool
+    @Environment(\.colorScheme)
     var colorScheme
     @EnvironmentObject var authManager: AuthManager
     
@@ -52,12 +55,18 @@ struct AppleSignInButton: UIViewRepresentable {
             // print("🍎 Coordinator initialized")
         }
         
-        @objc func handleAuthorizationAppleIDButtonPress() {
+        @objc
+
+        
+        func handleAuthorizationAppleIDButtonPress() {
             // print("🍎 Apple Sign In button pressed")
             performAppleSignIn()
         }
         
-        @objc func handleTapGesture() {
+        @objc
+
+        
+        func handleTapGesture() {
             // print("🍎 Tap gesture recognized")
             performAppleSignIn()
         }

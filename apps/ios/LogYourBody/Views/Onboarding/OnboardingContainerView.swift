@@ -1,7 +1,9 @@
 //
-//  OnboardingContainerView.swift
-//  LogYourBody
+// OnboardingContainerView.swift
+// LogYourBody
 //
+import SwiftUI
+
 struct OnboardingContainerView: View {
     @StateObject private var viewModel = OnboardingViewModel()
     @EnvironmentObject var authManager: AuthManager
