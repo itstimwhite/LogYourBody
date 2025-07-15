@@ -95,11 +95,9 @@ jobs:
         brew install swiftlint
         # Create placeholder Supabase.xcconfig for CI
         if [ ! -f "Supabase.xcconfig" ]; then
-          cat > Supabase.xcconfig << EOF
-// Supabase Configuration (CI Placeholder)
-SUPABASE_URL = https://placeholder.supabase.co
-SUPABASE_ANON_KEY = placeholder-anon-key
-EOF
+          echo "// Supabase Configuration (CI Placeholder)" > Supabase.xcconfig
+          echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+          echo "SUPABASE_ANON_KEY = placeholder-anon-key" >> Supabase.xcconfig
         fi
         # Install CocoaPods if needed
         if [ -f "Podfile" ]; then
