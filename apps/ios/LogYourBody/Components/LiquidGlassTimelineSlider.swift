@@ -1,11 +1,9 @@
 //
-//  LiquidGlassTimelineSlider.swift
-//  LogYourBody
+// LiquidGlassTimelineSlider.swift
+// LogYourBody
 //
-//  Liquid Glass Timeline Slider with fluid animations
-//
-
-import SwiftUI
+// Liquid Glass Timeline Slider with fluid animations
+// import SwiftUI
 
 struct LiquidGlassTimelineSlider: View {
     @Binding var selectedIndex: Int

@@ -1,11 +1,9 @@
 //
-//  BackgroundPhotoUploadService+Processing.swift
-//  LogYourBody
+// BackgroundPhotoUploadService+Processing.swift
+// LogYourBody
 //
-//  Extension to integrate advanced image processing
-//
-
-import UIKit
+// Extension to integrate advanced image processing
+// import UIKit
 import SwiftUI
 import PhotosUI
 

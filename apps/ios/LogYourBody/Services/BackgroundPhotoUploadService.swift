@@ -1,11 +1,9 @@
 //
-//  BackgroundPhotoUploadService.swift
-//  LogYourBody
+// BackgroundPhotoUploadService.swift
+// LogYourBody
 //
-//  Created by Assistant on 7/8/25.
-//
-
-import Foundation
+// Created by Assistant on 7/8/25.
+// import Foundation
 import SwiftUI
 import PhotosUI
 import Combine

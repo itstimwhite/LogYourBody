@@ -1,11 +1,9 @@
 //
-//  StandardHeader.swift
-//  LogYourBody
+// StandardHeader.swift
+// LogYourBody
 //
-//  Reusable navigation header component
-//
-
-import SwiftUI
+// Reusable navigation header component
+// import SwiftUI
 
 // MARK: - Header Style Enum
 
@@ -223,10 +221,12 @@ struct HeaderActionButton: View {
     @State private var isPressed = false
     
     var body: some View {
-        Button(action: {
-            // HapticManager.shared.impact(style: .light)
-            action.action()
-        }) {
+        Button(
+            action: {
+                // HapticManager.shared.impact(style: .light)
+                action.action()
+            },
+            label: {
             ZStack(alignment: .topTrailing) {
                 Image(systemName: action.icon)
                     .font(.system(size: 20, weight: .medium))
@@ -269,10 +269,12 @@ struct BackButton: View {
     @State private var isPressed = false
     
     var body: some View {
-        Button(action: {
-            // HapticManager.shared.impact(style: .light)
-            action()
-        }) {
+        Button(
+            action: {
+                // HapticManager.shared.impact(style: .light)
+                action()
+            },
+            label: {
             HStack(spacing: 4) {
                 Image(systemName: "chevron.left")
                     .font(.system(size: 16, weight: .semibold))

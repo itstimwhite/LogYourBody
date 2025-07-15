@@ -1,11 +1,9 @@
 //
-//  LogYourBodyUITests.swift
-//  LogYourBodyUITests
+// LogYourBodyUITests.swift
+// LogYourBodyUITests
 //
-//  Created by Tim White on 7/1/25.
-//
-
-import XCTest
+// Created by Tim White on 7/1/25.
+// import XCTest
 
 final class LogYourBodyUITests: XCTestCase {
     override func setUpWithError() throws {

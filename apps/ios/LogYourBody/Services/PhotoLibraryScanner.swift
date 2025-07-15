@@ -1,11 +1,9 @@
 //
-//  PhotoLibraryScanner.swift
-//  LogYourBody
+// PhotoLibraryScanner.swift
+// LogYourBody
 //
-//  Handles photo library permissions and scanning for progress photos
-//
-
-import Foundation
+// Handles photo library permissions and scanning for progress photos
+// import Foundation
 import Photos
 import SwiftUI
 import Vision

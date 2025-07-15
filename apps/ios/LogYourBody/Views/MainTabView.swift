@@ -1,11 +1,9 @@
 //
-//  MainTabView.swift
-//  LogYourBody
+// MainTabView.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/1/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/1/25.
+// import SwiftUI
 
 struct MainTabView: View {
     @State private var selectedTab = AnimatedTabView.Tab.dashboard

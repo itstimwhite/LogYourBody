@@ -1,11 +1,9 @@
 //
-//  LiquidGlassTabBar.swift
-//  LogYourBody
+// LiquidGlassTabBar.swift
+// LogYourBody
 //
-//  Liquid Glass Tab Bar with dynamic animations
-//
-
-import SwiftUI
+// Liquid Glass Tab Bar with dynamic animations
+// import SwiftUI
 
 struct LiquidGlassTabBar: View {
     @Binding var selectedTab: AnimatedTabView.Tab
@@ -88,23 +86,25 @@ struct LiquidTabButton: View {
     
     var body: some View {
         GeometryReader { geometry in
-            Button(action: {
-                // Get button position for liquid animation
-                let frame = geometry.frame(in: .named("tabBar"))
-                onTap(frame)
-                
-                // Trigger ripple effect
-                withAnimation(.easeOut(duration: 0.6)) {
-                    rippleScale = 2
-                    rippleOpacity = 0
-                }
-                
-                // Reset ripple
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                    rippleScale = 0
-                    rippleOpacity = 0.3
-                }
-            }) {
+            Button(
+                action: {
+                    // Get button position for liquid animation
+                    let frame = geometry.frame(in: .named("tabBar"))
+                    onTap(frame)
+                    
+                    // Trigger ripple effect
+                    withAnimation(.easeOut(duration: 0.6)) {
+                        rippleScale = 2
+                        rippleOpacity = 0
+                    }
+                    
+                    // Reset ripple
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        rippleScale = 0
+                        rippleOpacity = 0.3
+                    }
+                },
+                label: {
                 VStack(spacing: 4) {
                     ZStack {
                         // Ripple effect

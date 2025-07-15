@@ -1,11 +1,9 @@
 //
-//  LogYourBodyWidget.swift
-//  LogYourBodyWidget
+// LogYourBodyWidget.swift
+// LogYourBodyWidget
 //
-//  Daily metrics widget showing weight, body fat %, and step count
-//
-
-import WidgetKit
+// Daily metrics widget showing weight, body fat %, and step count
+// import WidgetKit
 import SwiftUI
 
 struct Provider: TimelineProvider {

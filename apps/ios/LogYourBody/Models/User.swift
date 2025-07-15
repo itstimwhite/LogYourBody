@@ -1,11 +1,9 @@
 //
-//  User.swift
-//  LogYourBody
+// User.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/1/25.
-//
-
-import Foundation
+// Created by Tim White on 7/1/25.
+// import Foundation
 
 struct User: Codable, Identifiable {
     let id: String

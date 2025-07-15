@@ -1,11 +1,9 @@
 //
-//  SkeletonLoaders.swift
-//  LogYourBody
+// SkeletonLoaders.swift
+// LogYourBody
 //
-//  Skeleton loading views to prevent layout shift
-//
-
-import SwiftUI
+// Skeleton loading views to prevent layout shift
+// import SwiftUI
 
 // MARK: - Shimmer Effect
 

@@ -1,11 +1,9 @@
 //
-//  WelcomeStepView.swift
-//  LogYourBody
+// WelcomeStepView.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/2/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/2/25.
+// import SwiftUI
 
 struct WelcomeStepView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel

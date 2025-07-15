@@ -1,11 +1,9 @@
 //
-//  ImageProcessingService.swift
-//  LogYourBody
+// ImageProcessingService.swift
+// LogYourBody
 //
-//  Advanced on-device image processing with Vision framework
-//
-
-import Foundation
+// Advanced on-device image processing with Vision framework
+// import Foundation
 import UIKit
 import Vision
 import CoreImage

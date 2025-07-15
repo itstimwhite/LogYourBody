@@ -1,11 +1,9 @@
 //
-//  ToastManager.swift
-//  LogYourBody
+// ToastManager.swift
+// LogYourBody
 //
-//  Reusable toast notification system with queue management
-//
-
-import SwiftUI
+// Reusable toast notification system with queue management
+// import SwiftUI
 import Combine
 import UIKit
 

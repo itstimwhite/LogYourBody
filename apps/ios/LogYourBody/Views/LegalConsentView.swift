@@ -1,11 +1,9 @@
 //
-//  LegalConsentView.swift
-//  LogYourBody
+// LegalConsentView.swift
+// LogYourBody
 //
-//  Created on 7/11/25.
-//
-
-import SwiftUI
+// Created on 7/11/25.
+// import SwiftUI
 
 struct LegalConsentView: View {
     @Binding var isPresented: Bool

@@ -1,11 +1,9 @@
 //
-//  LoadingManager.swift
-//  LogYourBody
+// LoadingManager.swift
+// LogYourBody
 //
-//  Created on 7/2/25.
-//
-
-import Foundation
+// Created on 7/2/25.
+// import Foundation
 import SwiftUI
 
 @MainActor

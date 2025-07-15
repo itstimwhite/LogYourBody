@@ -1,11 +1,9 @@
 //
-//  OTPInputView.swift
-//  LogYourBody
+// OTPInputView.swift
+// LogYourBody
 //
-//  Created by Assistant on 7/4/25.
-//
-
-import SwiftUI
+// Created by Assistant on 7/4/25.
+// import SwiftUI
 import Combine
 
 struct OTPInputView: View {

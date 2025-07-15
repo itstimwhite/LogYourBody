@@ -1,11 +1,9 @@
 //
-//  DateOfBirthInputView.swift
-//  LogYourBody
+// DateOfBirthInputView.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/4/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/4/25.
+// import SwiftUI
 
 struct DateOfBirthInputView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel

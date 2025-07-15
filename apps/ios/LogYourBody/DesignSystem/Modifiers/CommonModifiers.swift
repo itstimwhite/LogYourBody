@@ -124,10 +124,13 @@ struct ErrorBanner: ViewModifier {
                     
                     Spacer()
                     
-                    Button(action: { self.error = nil }) {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 14, weight: .semibold))
-                    }
+                    Button(
+                        action: { self.error = nil },
+                        label: {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 14, weight: .semibold))
+                        }
+                    )
                 }
                 .foregroundColor(.white)
                 .padding(12)

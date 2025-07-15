@@ -1,11 +1,9 @@
 //
-//  DesignSystem.swift
-//  LogYourBody
+// DesignSystem.swift
+// LogYourBody
 //
-//  Adaptive colors, haptics, and design utilities
-//
-
-import SwiftUI
+// Adaptive colors, haptics, and design utilities
+// import SwiftUI
 import UIKit
 
 // MARK: - Adaptive Color System

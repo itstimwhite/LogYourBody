@@ -1,11 +1,9 @@
 //
-//  ProfileSettingsViewV2.swift
-//  LogYourBody
+// ProfileSettingsViewV2.swift
+// LogYourBody
 //
-//  Redesigned profile settings with greyscale theme and improved UX
-//
-
-import SwiftUI
+// Redesigned profile settings with greyscale theme and improved UX
+// import SwiftUI
 import Clerk
 import PhotosUI
 
@@ -55,11 +53,11 @@ struct ProfileSettingsViewV2: View {
                     // Sync Status
                     // TODO: Uncomment when RealtimeSyncManager is added to project
                     // if syncManager.pendingSyncCount > 0 || syncManager.error != nil {
-                    //     HStack {
-                    //         SyncStatusView()
-                    //         Spacer()
-                    //     }
-                    //     .padding(.horizontal)
+                    // HStack {
+                    // SyncStatusView()
+                    // Spacer()
+                    // }
+                    // .padding(.horizontal)
                     // }
                     
                     // Security Section

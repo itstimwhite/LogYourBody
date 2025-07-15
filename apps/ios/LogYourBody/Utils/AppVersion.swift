@@ -1,11 +1,9 @@
 //
-//  AppVersion.swift
-//  LogYourBody
+// AppVersion.swift
+// LogYourBody
 //
-//  Centralized app version management
-//
-
-import Foundation
+// Centralized app version management
+// import Foundation
 
 struct AppVersion {
     static let current: String = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"

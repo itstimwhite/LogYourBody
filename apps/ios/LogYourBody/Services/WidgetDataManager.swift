@@ -1,11 +1,9 @@
 //
-//  WidgetDataManager.swift
-//  LogYourBody
+// WidgetDataManager.swift
+// LogYourBody
 //
-//  Manages data sharing between app and widget
-//
-
-import Foundation
+// Manages data sharing between app and widget
+// import Foundation
 import WidgetKit
 import HealthKit
 import UIKit

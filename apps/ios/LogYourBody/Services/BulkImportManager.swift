@@ -1,11 +1,9 @@
 //
-//  BulkImportManager.swift
-//  LogYourBody
+// BulkImportManager.swift
+// LogYourBody
 //
-//  Manages bulk photo import process with background processing
-//
-
-import Foundation
+// Manages bulk photo import process with background processing
+// import Foundation
 import SwiftUI
 import Photos
 

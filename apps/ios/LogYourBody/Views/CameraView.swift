@@ -1,11 +1,9 @@
 //
-//  CameraView.swift
-//  LogYourBody
+// CameraView.swift
+// LogYourBody
 //
-//  Created by Assistant on 7/6/25.
-//
-
-import SwiftUI
+// Created by Assistant on 7/6/25.
+// import SwiftUI
 import UIKit
 
 struct CameraView: UIViewControllerRepresentable {

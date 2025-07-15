@@ -1,11 +1,9 @@
 //
-//  Theme.swift
-//  LogYourBody
+// Theme.swift
+// LogYourBody
 //
-//  Comprehensive theme system following Apple's design guidelines
-//
-
-import SwiftUI
+// Comprehensive theme system following Apple's design guidelines
+// import SwiftUI
 
 // MARK: - Theme Protocol
 

@@ -1,11 +1,9 @@
 //
-//  NotificationsStepView.swift
-//  LogYourBody
+// NotificationsStepView.swift
+// LogYourBody
 //
-//  Notification permissions with Liquid Glass design
-//
-
-import SwiftUI
+// Notification permissions with Liquid Glass design
+// import SwiftUI
 import UserNotifications
 
 struct NotificationsStepView: View {

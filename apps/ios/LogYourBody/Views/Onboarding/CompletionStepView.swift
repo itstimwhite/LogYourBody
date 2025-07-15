@@ -1,11 +1,9 @@
 //
-//  CompletionStepView.swift
-//  LogYourBody
+// CompletionStepView.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/2/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/2/25.
+// import SwiftUI
 import UIKit
 // (Assuming you have these components in your project)
 

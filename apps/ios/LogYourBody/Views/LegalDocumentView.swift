@@ -1,11 +1,9 @@
 //
-//  LegalDocumentView.swift
-//  LogYourBody
+// LegalDocumentView.swift
+// LogYourBody
 //
-//  Displays legal documents (Terms, Privacy, Health Disclosure) in-app
-//
-
-import SwiftUI
+// Displays legal documents (Terms, Privacy, Health Disclosure) in-app
+// import SwiftUI
 
 struct LegalDocumentView: View {
     let documentType: LegalDocumentType

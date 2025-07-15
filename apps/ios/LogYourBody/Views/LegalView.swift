@@ -1,11 +1,9 @@
 //
-//  LegalView.swift
-//  LogYourBody
+// LegalView.swift
+// LogYourBody
 //
-//  Legal documents and policies menu
-//
-
-import SwiftUI
+// Legal documents and policies menu
+// import SwiftUI
 
 struct LegalView: View {
     @Environment(\.dismiss)

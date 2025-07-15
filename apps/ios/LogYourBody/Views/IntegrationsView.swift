@@ -1,11 +1,9 @@
 //
-//  IntegrationsView.swift
-//  LogYourBody
+// IntegrationsView.swift
+// LogYourBody
 //
-//  Third-party integrations and data import settings
-//
-
-import SwiftUI
+// Third-party integrations and data import settings
+// import SwiftUI
 
 struct IntegrationsView: View {
     @EnvironmentObject var authManager: AuthManager

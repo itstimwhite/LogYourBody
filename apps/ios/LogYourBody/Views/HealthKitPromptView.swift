@@ -1,11 +1,9 @@
 //
-//  HealthKitPromptView.swift
-//  LogYourBody
+// HealthKitPromptView.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/2/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/2/25.
+// import SwiftUI
 
 struct HealthKitPromptView: View {
     @Binding var isPresented: Bool

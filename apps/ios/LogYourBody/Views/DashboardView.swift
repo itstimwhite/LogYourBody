@@ -1,11 +1,9 @@
 //
-//  DashboardView.swift
-//  LogYourBody
+// DashboardView.swift
+// LogYourBody
 //
-//  Main dashboard view
-//
-
-import SwiftUI
+// Main dashboard view
+// import SwiftUI
 import HealthKit
 import PhotosUI
 

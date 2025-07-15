@@ -1,11 +1,9 @@
 //
-//  PreferencesView.swift
-//  LogYourBody
+// PreferencesView.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/2/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/2/25.
+// import SwiftUI
 import LocalAuthentication
 
 struct PreferencesView: View {

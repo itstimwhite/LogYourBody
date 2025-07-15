@@ -1,12 +1,10 @@
 //
-//  LiquidGlassCTAButton.swift
-//  LogYourBody
+// LiquidGlassCTAButton.swift
+// LogYourBody
 //
-//  Unified CTA button component with Liquid Glass design
-//  for iOS 26+ with graceful fallback
-//
-
-import SwiftUI
+// Unified CTA button component with Liquid Glass design
+// for iOS 26+ with graceful fallback
+// import SwiftUI
 
 struct LiquidGlassCTAButton: View {
     let text: String

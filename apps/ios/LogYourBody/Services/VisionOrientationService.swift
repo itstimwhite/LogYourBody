@@ -1,11 +1,9 @@
 //
-//  VisionOrientationService.swift
-//  LogYourBody
+// VisionOrientationService.swift
+// LogYourBody
 //
-//  Service for detecting and correcting image orientation using Vision framework
-//
-
-import Foundation
+// Service for detecting and correcting image orientation using Vision framework
+// import Foundation
 import UIKit
 import Vision
 import CoreImage

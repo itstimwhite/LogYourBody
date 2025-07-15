@@ -1,11 +1,9 @@
 //
-//  SettingsView.swift
-//  LogYourBody
+// SettingsView.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/1/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/1/25.
+// import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var authManager: AuthManager

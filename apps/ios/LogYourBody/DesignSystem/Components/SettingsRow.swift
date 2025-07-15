@@ -47,15 +47,17 @@ struct DesignSettingsRow: View {
     }
     
     var body: some View {
-        Button(action: {
-            if case .navigation = type {
-                // // HapticManager.shared.selection()
-                action?()
-            } else if case .action = type {
-                // // HapticManager.shared.impact(style: .light)
-                action?()
-            }
-        }) {
+        Button(
+            action: {
+                if case .navigation = type {
+                    // // HapticManager.shared.selection()
+                    action?()
+                } else if case .action = type {
+                    // // HapticManager.shared.impact(style: .light)
+                    action?()
+                }
+            },
+            label: {
             HStack(spacing: 12) {
                 // Icon
                 if let icon = icon {
@@ -127,9 +129,11 @@ struct DesignSettingsRow: View {
         case .picker(let selection, let options):
             Menu {
                 ForEach(options, id: \.self) { option in
-                    Button(action: {
-                        selection.wrappedValue = option
-                    }) {
+                    Button(
+                        action: {
+                            selection.wrappedValue = option
+                        },
+                        label: {
                         HStack {
                             Text(option)
                             if selection.wrappedValue == option {
@@ -249,10 +253,12 @@ struct ListRow: View {
     }
     
     var body: some View {
-        Button(action: {
-            // // HapticManager.shared.selection()
-            action?()
-        }) {
+        Button(
+            action: {
+                // // HapticManager.shared.selection()
+                action?()
+            },
+            label: {
             HStack(spacing: 12) {
                 // Leading content
                 if let leading = leading {

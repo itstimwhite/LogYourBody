@@ -1,11 +1,9 @@
 //
-//  EmailVerificationView.swift
-//  LogYourBody
+// EmailVerificationView.swift
+// LogYourBody
 //
-//  Created by Assistant on 7/2/25.
-//
-
-import SwiftUI
+// Created by Assistant on 7/2/25.
+// import SwiftUI
 
 struct EmailVerificationView: View {
     @EnvironmentObject var authManager: AuthManager

@@ -1,11 +1,9 @@
 //
-//  PhotoMetadataService.swift
-//  LogYourBody
+// PhotoMetadataService.swift
+// LogYourBody
 //
-//  Extract date and other metadata from photos
-//
-
-import UIKit
+// Extract date and other metadata from photos
+// import UIKit
 import Photos
 import ImageIO
 import CoreData

@@ -1,11 +1,9 @@
 //
-//  SecuritySessionsView.swift
-//  LogYourBody
+// SecuritySessionsView.swift
+// LogYourBody
 //
-//  Displays active sessions with ability to revoke them
-//
-
-import SwiftUI
+// Displays active sessions with ability to revoke them
+// import SwiftUI
 import Clerk
 
 struct SecuritySessionsView: View {

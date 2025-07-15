@@ -1,11 +1,9 @@
 //
-//  Color+Theme.swift
-//  LogYourBody
+// Color+Theme.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/1/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/1/25.
+// import SwiftUI
 
 extension Color {
     // MARK: - Primary Colors

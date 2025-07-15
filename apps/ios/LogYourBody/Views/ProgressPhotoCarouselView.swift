@@ -1,12 +1,10 @@
 //
-//  ProgressPhotoCarouselView.swift
-//  LogYourBody
+// ProgressPhotoCarouselView.swift
+// LogYourBody
 //
-//  Created by Assistant on 7/11/25.
-//  Fixed-ratio photo carousel with face-centered cropping
-//
-
-import SwiftUI
+// Created by Assistant on 7/11/25.
+// Fixed-ratio photo carousel with face-centered cropping
+// import SwiftUI
 import Vision
 
 // MARK: - Temporary Glass Card (until UIComponents.swift is added to project)

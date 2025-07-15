@@ -1,11 +1,9 @@
 //
-//  Configuration.swift
-//  LogYourBody
+// Configuration.swift
+// LogYourBody
 //
-//  Configuration values from Config.xcconfig
-//
-
-import Foundation
+// Configuration values from Config.xcconfig
+// import Foundation
 
 enum Configuration {
     enum Error: Swift.Error {

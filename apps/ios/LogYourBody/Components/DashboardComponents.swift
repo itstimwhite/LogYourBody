@@ -1,11 +1,9 @@
 //
-//  DashboardComponents.swift
-//  LogYourBody
+// DashboardComponents.swift
+// LogYourBody
 //
-//  Dashboard-specific UI components
-//
-
-import SwiftUI
+// Dashboard-specific UI components
+// import SwiftUI
 
 // MARK: - SmartBlur Modifier
 

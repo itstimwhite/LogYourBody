@@ -1,11 +1,9 @@
 //
-//  ChangePasswordView.swift
-//  LogYourBody
+// ChangePasswordView.swift
+// LogYourBody
 //
-//  Modern password change interface using Clerk
-//
-
-import SwiftUI
+// Modern password change interface using Clerk
+// import SwiftUI
 import Clerk
 
 struct ChangePasswordView: View {

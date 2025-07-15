@@ -1,11 +1,9 @@
 //
-//  DashboardView+Views.swift
-//  LogYourBody
+// DashboardView+Views.swift
+// LogYourBody
 //
-//  View components for DashboardView
-//
-
-import SwiftUI
+// View components for DashboardView
+// import SwiftUI
 import HealthKit
 import PhotosUI
 

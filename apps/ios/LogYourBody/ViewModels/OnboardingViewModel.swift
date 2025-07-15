@@ -1,11 +1,9 @@
 //
-//  OnboardingViewModel.swift
-//  LogYourBody
+// OnboardingViewModel.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/2/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/2/25.
+// import SwiftUI
 import Combine
 
 @MainActor

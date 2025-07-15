@@ -1,11 +1,9 @@
 //
-//  CommonComponents.swift
-//  LogYourBody
+// CommonComponents.swift
+// LogYourBody
 //
-//  Re-exports all common UI components
-//
-
-import SwiftUI
+// Re-exports all common UI components
+// import SwiftUI
 
 // Include all common component definitions here or ensure they're in the main Components folder
 

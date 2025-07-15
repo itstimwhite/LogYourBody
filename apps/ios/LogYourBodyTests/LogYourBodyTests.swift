@@ -1,11 +1,9 @@
 //
-//  LogYourBodyTests.swift
-//  LogYourBodyTests
+// LogYourBodyTests.swift
+// LogYourBodyTests
 //
-//  Created by Tim White on 7/1/25.
-//
-
-import XCTest
+// Created by Tim White on 7/1/25.
+// import XCTest
 @testable import LogYourBody
 
 final class LogYourBodyTests: XCTestCase {

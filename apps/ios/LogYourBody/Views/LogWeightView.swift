@@ -1,11 +1,9 @@
 //
-//  LogWeightView.swift
-//  LogYourBody
+// LogWeightView.swift
+// LogYourBody
 //
-//  Created by Tim White on 7/1/25.
-//
-
-import SwiftUI
+// Created by Tim White on 7/1/25.
+// import SwiftUI
 
 struct LogWeightView: View {
     @EnvironmentObject var authManager: AuthManager

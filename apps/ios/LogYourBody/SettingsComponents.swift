@@ -1,11 +1,9 @@
 //
-//  SettingsComponents.swift
-//  LogYourBody
+// SettingsComponents.swift
+// LogYourBody
 //
-//  Unified settings UI components for consistent design
-//
-
-import SwiftUI
+// Unified settings UI components for consistent design
+// import SwiftUI
 
 // MARK: - Design Constants
 

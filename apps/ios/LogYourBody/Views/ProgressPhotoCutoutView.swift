@@ -1,11 +1,9 @@
 //
-//  ProgressPhotoCutoutView.swift
-//  LogYourBody
+// ProgressPhotoCutoutView.swift
+// LogYourBody
 //
-//  Created for displaying AI-processed cutout photos with Apple-style presentation
-//
-
-import SwiftUI
+// Created for displaying AI-processed cutout photos with Apple-style presentation
+// import SwiftUI
 
 // MARK: - ProcessingImagePlaceholder (Temporary until imports are resolved)
 

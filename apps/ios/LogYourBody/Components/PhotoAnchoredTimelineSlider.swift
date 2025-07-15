@@ -1,11 +1,9 @@
 //
-//  PhotoAnchoredTimelineSlider.swift
-//  LogYourBody
+// PhotoAnchoredTimelineSlider.swift
+// LogYourBody
 //
-//  Timeline slider with photo anchors
-//
-
-import SwiftUI
+// Timeline slider with photo anchors
+// import SwiftUI
 
 // MARK: - Timeline Data Structures
 
