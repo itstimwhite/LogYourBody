@@ -116,12 +116,31 @@ jest.mock('@/lib/supabase/client', () => ({
 
 // Mock indexedDB if it's not defined
 if (typeof indexedDB === 'undefined' && typeof global !== 'undefined') {
+  // Mock IDBRequest
+  global.IDBRequest = jest.fn()
+  global.IDBDatabase = jest.fn()
+  global.IDBTransaction = jest.fn()
+  global.IDBObjectStore = jest.fn()
+  global.IDBIndex = jest.fn()
+  global.IDBCursor = jest.fn()
+  global.IDBKeyRange = {
+    bound: jest.fn(),
+    lowerBound: jest.fn(),
+    upperBound: jest.fn(),
+    only: jest.fn(),
+  }
+  
   global.indexedDB = {
     open: jest.fn(() => ({
       onsuccess: jest.fn(),
       onerror: jest.fn(),
       onupgradeneeded: jest.fn(),
+      result: {
+        transaction: jest.fn(),
+        close: jest.fn(),
+      }
     })),
+    deleteDatabase: jest.fn(),
   }
 }
 
