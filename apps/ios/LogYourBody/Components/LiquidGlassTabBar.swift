@@ -101,8 +101,7 @@ struct LiquidTabButton: View {
                         rippleScale = 0
                         rippleOpacity = 0.3
                     }
-                }
-            ) {
+                }, label: {
                 VStack(spacing: 4) {
                     ZStack {
                         // Ripple effect
@@ -125,7 +124,7 @@ struct LiquidTabButton: View {
                 .frame(maxWidth: .infinity)
                 .scaleEffect(isPressed ? 0.85 : 1.0)
                 .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isPressed)
-            }
+            })
             .buttonStyle(PlainButtonStyle())
             .coordinateSpace(name: "tabBar")
             .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
