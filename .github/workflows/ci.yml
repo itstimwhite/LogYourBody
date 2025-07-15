@@ -21,7 +21,7 @@ jobs:
       root-changed: ${{ steps.changes.outputs.root }}
     steps:
       - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v2
+      - uses: dorny/paths-filter@v3
         id: changes
         with:
           filters: |
