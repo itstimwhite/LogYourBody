@@ -699,23 +699,23 @@ struct ProfileHeightPickerSheet: View {
     }
     
     private var imperialHeightPicker: some View {
-        let feetBinding = Binding(
-            get: { Int(Double(heightCm) / 30.48) },
-            set: { feet in
-                let totalInches = Double(heightCm) / 2.54
-                let currentInches = Int(totalInches.truncatingRemainder(dividingBy: 12))
-                heightCm = Int((Double(feet) * 30.48) + (Double(currentInches) * 2.54))
+        let totalInches: Double = Double(heightCm) / 2.54
+        let feet: Int = Int(totalInches / 12)
+        let inches: Int = Int(totalInches.truncatingRemainder(dividingBy: 12))
+        
+        let feetBinding = Binding<Int>(
+            get: { feet },
+            set: { newFeet in
+                let newHeightCm = (Double(newFeet) * 12 + Double(inches)) * 2.54
+                heightCm = Int(newHeightCm)
             }
         )
         
-        let inchesBinding = Binding(
-            get: {
-                let totalInches = Double(heightCm) / 2.54
-                return Int(totalInches.truncatingRemainder(dividingBy: 12))
-            },
-            set: { inches in
-                let feet = Int(Double(heightCm) / 30.48)
-                heightCm = Int((Double(feet) * 30.48) + (Double(inches) * 2.54))
+        let inchesBinding = Binding<Int>(
+            get: { inches },
+            set: { newInches in
+                let newHeightCm = (Double(feet) * 12 + Double(newInches)) * 2.54
+                heightCm = Int(newHeightCm)
             }
         )
         
