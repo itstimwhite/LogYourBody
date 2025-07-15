@@ -50,3 +50,4 @@ This ensures SwiftLint runs on every build in Xcode.
 - SwiftLint: ✅ Zero violations achieved
 - Build: ✅ Successful  
 - Tests: ✅ Passing
+- iOS Simulator: iPhone 16
