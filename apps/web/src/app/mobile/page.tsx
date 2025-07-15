@@ -23,8 +23,8 @@ import {
   Calendar,
   Activity,
   Timer,
-  Swipe,
-  Tap,
+  Hand,
+  TouchpadOff,
 } from 'lucide-react'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
@@ -62,7 +62,7 @@ export default function MobilePage() {
       description: 'Available 24/7. Or just 9-5. Notifications that respect your schedule.',
     },
     {
-      icon: Tap,
+      icon: TouchpadOff,
       title: 'Tap to log',
       description: 'Body metrics in 30 seconds. Swipe to see trends. No fluff.',
     },
@@ -329,11 +329,11 @@ export default function MobilePage() {
                   </p>
                   <div className="flex flex-wrap gap-3">
                     <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-4 py-2">
-                      <Tap className="h-3 w-3 mr-2 inline" />
+                      <TouchpadOff className="h-3 w-3 mr-2 inline" />
                       Tap to log
                     </Badge>
                     <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-4 py-2">
-                      <Swipe className="h-3 w-3 mr-2 inline" />
+                      <Hand className="h-3 w-3 mr-2 inline" />
                       Swipe to dismiss
                     </Badge>
                     <Badge className="bg-gray-800 text-gray-300 border-gray-700 px-4 py-2">
