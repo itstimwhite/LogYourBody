@@ -1,3 +1,7 @@
+//
+//  VersionRow.swift
+//  LogYourBody
+//
 import SwiftUI
 
 struct VersionRow: View {

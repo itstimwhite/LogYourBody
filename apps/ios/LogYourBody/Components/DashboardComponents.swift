@@ -1,12 +1,7 @@
 //
-// DashboardComponents.swift
-// LogYourBody
+//  DashboardComponents.swift
+//  LogYourBody
 //
-// Dashboard-specific UI components
-// import SwiftUI
-
-// MARK: - SmartBlur Modifier
-
 struct SmartBlurModifier: ViewModifier {
     let isPresented: Bool
     let radius: CGFloat

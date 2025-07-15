@@ -1,9 +1,7 @@
 //
-// AddEntrySheet.swift
-// LogYourBody
+//  AddEntrySheet.swift
+//  LogYourBody
 //
-// Bottom sheet for adding weight, body fat, or progress photos
-// import SwiftUI
 import PhotosUI
 
 struct AddEntrySheet: View {

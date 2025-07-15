@@ -1,9 +1,7 @@
 //
-// LogYourBodyApp.swift
-// LogYourBody
+//  LogYourBodyApp.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import SwiftUI
 import Clerk
 
 @main

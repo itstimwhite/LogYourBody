@@ -1,10 +1,7 @@
 //
-// DashboardViewV2.swift
-// LogYourBody
+//  DashboardViewV2.swift
+//  LogYourBody
 //
-// Premium dashboard redesign with unified header, enhanced carousel,
-// floating FAB, and clean metric visualization
-// import SwiftUI
 import HealthKit
 import PhotosUI
 

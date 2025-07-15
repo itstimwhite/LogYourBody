@@ -1,12 +1,7 @@
 //
-// StandardHeader.swift
-// LogYourBody
+//  StandardHeader.swift
+//  LogYourBody
 //
-// Reusable navigation header component
-// import SwiftUI
-
-// MARK: - Header Style Enum
-
 enum HeaderStyle {
     case standard
     case large

@@ -1,10 +1,7 @@
 //
-// StandardTextField.swift
-// LogYourBody
+//  StandardTextField.swift
+//  LogYourBody
 //
-// Reusable text field component with consistent styling
-//
-
 import SwiftUI
 
 // MARK: - Text Field Style Enum

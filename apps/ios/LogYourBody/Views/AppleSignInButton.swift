@@ -1,9 +1,7 @@
 //
-// AppleSignInButton.swift
-// LogYourBody
+//  AppleSignInButton.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import SwiftUI
 import AuthenticationServices
 
 struct AppleSignInButton: UIViewRepresentable {

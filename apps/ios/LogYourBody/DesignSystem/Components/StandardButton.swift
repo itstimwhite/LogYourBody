@@ -1,10 +1,7 @@
 //
-// StandardButton.swift
-// LogYourBody
+//  StandardButton.swift
+//  LogYourBody
 //
-// Reusable button component following Apple's design guidelines
-//
-
 import SwiftUI
 
 // MARK: - Button Style Enum

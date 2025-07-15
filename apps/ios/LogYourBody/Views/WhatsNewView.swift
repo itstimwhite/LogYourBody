@@ -1,3 +1,7 @@
+//
+//  WhatsNewView.swift
+//  LogYourBody
+//
 import SwiftUI
 
 struct FeatureRow: View {

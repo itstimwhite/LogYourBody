@@ -1,12 +1,7 @@
 //
-// SettingsComponents.swift
-// LogYourBody
+//  SettingsComponents.swift
+//  LogYourBody
 //
-// Unified settings UI components for consistent design
-// import SwiftUI
-
-// MARK: - Design Constants
-
 struct SettingsDesign {
     // Spacing
     static let sectionSpacing: CGFloat = 24

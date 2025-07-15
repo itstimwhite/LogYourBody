@@ -1,3 +1,7 @@
+//
+//  WhatsNewRow.swift
+//  LogYourBody
+//
 import SwiftUI
 
 struct WhatsNewRow: View {

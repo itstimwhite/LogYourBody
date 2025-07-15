@@ -1,11 +1,7 @@
 //
-// AuthComponents.swift
-// LogYourBody
+//  AuthComponents.swift
+//  LogYourBody
 //
-// Common components used across authentication screens
-// import SwiftUI
-
-// MARK: - Auth Background
 struct AuthBackground: View {
     var body: some View {
         ZStack {

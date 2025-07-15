@@ -1,3 +1,7 @@
+//
+//  VersionInfo.swift
+//  LogYourBody
+//
 import Foundation
 
 /// Simple version info utility that doesn't depend on AppVersionManager

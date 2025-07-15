@@ -1,9 +1,7 @@
 //
-// BiometricLockView.swift
-// LogYourBody
+//  BiometricLockView.swift
+//  LogYourBody
 //
-// Created by Assistant on 7/6/25.
-// import SwiftUI
 import LocalAuthentication
 
 struct BiometricLockView: View {

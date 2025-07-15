@@ -1,10 +1,7 @@
 //
-// AnimatedTabView.swift
-// LogYourBody
+//  AnimatedTabView.swift
+//  LogYourBody
 //
-// Tab view with Liquid Glass effect and accessibility
-// import SwiftUI
-
 struct AnimatedTabView: View {
     @Binding var selectedTab: Tab
     @Namespace private var namespace

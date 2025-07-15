@@ -1,9 +1,7 @@
 //
-// BackgroundRemovalService.swift
-// LogYourBody
+//  BackgroundRemovalService.swift
+//  LogYourBody
 //
-// On-device background removal using Vision framework
-// import UIKit
 import Vision
 import CoreImage
 class BackgroundRemovalService {

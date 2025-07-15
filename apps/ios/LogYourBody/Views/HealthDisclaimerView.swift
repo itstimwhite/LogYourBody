@@ -1,10 +1,7 @@
 //
-// HealthDisclaimerView.swift
-// LogYourBody
+//  HealthDisclaimerView.swift
+//  LogYourBody
 //
-// Created by Assistant on 7/11/25.
-// import SwiftUI
-
 struct HealthDisclaimerView: View {
     @Environment(\.dismiss)
     private var dismiss    

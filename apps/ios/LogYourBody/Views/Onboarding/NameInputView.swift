@@ -1,10 +1,7 @@
 //
-// NameInputView.swift
-// LogYourBody
+//  NameInputView.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/4/25.
-// import SwiftUI
-
 struct NameInputView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @FocusState private var isNameFieldFocused: Bool

@@ -1,3 +1,7 @@
+//
+//  CoreDataManager.swift
+//  LogYourBody
+//
 import Foundation
 import CoreData
 

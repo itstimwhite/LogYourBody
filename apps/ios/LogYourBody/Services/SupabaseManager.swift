@@ -1,9 +1,7 @@
 //
-// SupabaseManager.swift
-// LogYourBody
+//  SupabaseManager.swift
+//  LogYourBody
 //
-// Manages Supabase integration with Clerk JWT authentication
-// import Foundation
 import Clerk
 
 

@@ -1,10 +1,7 @@
 //
-// StateViews.swift
-// LogYourBody
+//  StateViews.swift
+//  LogYourBody
 //
-// Loading, empty, and error state views
-//
-
 import SwiftUI
 
 // MARK: - Loading View

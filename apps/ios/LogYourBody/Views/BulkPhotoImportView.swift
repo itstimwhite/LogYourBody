@@ -1,9 +1,7 @@
 //
-// BulkPhotoImportView.swift
-// LogYourBody
+//  BulkPhotoImportView.swift
+//  LogYourBody
 //
-// UI for bulk importing progress photos from library
-// import SwiftUI
 import Photos
 
 struct BulkPhotoImportView: View {

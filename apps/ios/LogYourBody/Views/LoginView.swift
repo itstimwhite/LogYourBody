@@ -1,9 +1,7 @@
 //
-// LoginView.swift
-// LogYourBody
+//  LoginView.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import SwiftUI
 import AuthenticationServices
 
 struct LoginView: View {

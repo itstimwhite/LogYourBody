@@ -1,9 +1,7 @@
 //
-// DeleteAccountView.swift
-// LogYourBody
+//  DeleteAccountView.swift
+//  LogYourBody
 //
-// Created by Assistant on 7/2/25.
-// import SwiftUI
 import Clerk
 
 struct DeleteAccountView: View {

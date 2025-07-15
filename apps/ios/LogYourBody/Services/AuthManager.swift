@@ -1,9 +1,7 @@
 //
-// AuthManager.swift
-// LogYourBody
+//  AuthManager.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import Foundation
 import Combine
 import AuthenticationServices
 import UIKit

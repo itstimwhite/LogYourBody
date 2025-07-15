@@ -1,11 +1,7 @@
 //
-// OnboardingComponents.swift
-// LogYourBody
+//  OnboardingComponents.swift
+//  LogYourBody
 //
-// Common components used across onboarding screens
-// import SwiftUI
-
-// MARK: - Onboarding Background
 struct OnboardingBackground: View {
     var body: some View {
         Color.appBackground

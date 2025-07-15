@@ -1,9 +1,7 @@
 //
-// ExportDataView.swift
-// LogYourBody
+//  ExportDataView.swift
+//  LogYourBody
 //
-// Created by Assistant on 7/2/25.
-// import SwiftUI
 import UniformTypeIdentifiers
 
 struct ExportDataView: View {

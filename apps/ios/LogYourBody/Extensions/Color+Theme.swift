@@ -1,10 +1,7 @@
 //
-// Color+Theme.swift
-// LogYourBody
+//  Color+Theme.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import SwiftUI
-
 extension Color {
     // MARK: - Primary Colors
     static let linearPurple = Color(hex: "#5B63D3")

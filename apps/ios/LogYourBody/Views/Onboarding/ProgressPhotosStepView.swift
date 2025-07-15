@@ -1,9 +1,7 @@
 //
-// ProgressPhotosStepView.swift
-// LogYourBody
+//  ProgressPhotosStepView.swift
+//  LogYourBody
 //
-// Onboarding step for uploading progress photos with Liquid Glass design
-// import SwiftUI
 import PhotosUI
 
 struct ProgressPhotosStepView: View {

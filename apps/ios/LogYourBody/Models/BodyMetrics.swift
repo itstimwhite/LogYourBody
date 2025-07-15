@@ -1,3 +1,7 @@
+//
+//  BodyMetrics.swift
+//  LogYourBody
+//
 import Foundation
 
 struct BodyMetrics: Identifiable, Codable {

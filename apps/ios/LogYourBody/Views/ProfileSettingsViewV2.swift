@@ -1,9 +1,7 @@
 //
-// ProfileSettingsViewV2.swift
-// LogYourBody
+//  ProfileSettingsViewV2.swift
+//  LogYourBody
 //
-// Redesigned profile settings with greyscale theme and improved UX
-// import SwiftUI
 import Clerk
 import PhotosUI
 

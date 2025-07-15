@@ -1,3 +1,7 @@
+//
+//  SyncStatusView.swift
+//  LogYourBody
+//
 import SwiftUI
 
 struct SyncStatusView: View {

@@ -1,11 +1,7 @@
 //
-// View+Styles.swift
-// LogYourBody
+//  View+Styles.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import SwiftUI
-
-// MARK: - Linear-Inspired Text Field Modifier
 struct ModernTextFieldModifier: ViewModifier {
     @FocusState private var isFocused: Bool
     

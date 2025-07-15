@@ -1,10 +1,7 @@
 //
-// DashboardMetricCards.swift
-// LogYourBody
+//  DashboardMetricCards.swift
+//  LogYourBody
 //
-// Metric card components for the dashboard
-//
-
 import SwiftUI
 
 // MARK: - Empty Metric Card

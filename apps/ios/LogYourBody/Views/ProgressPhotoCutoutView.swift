@@ -1,12 +1,7 @@
 //
-// ProgressPhotoCutoutView.swift
-// LogYourBody
+//  ProgressPhotoCutoutView.swift
+//  LogYourBody
 //
-// Created for displaying AI-processed cutout photos with Apple-style presentation
-// import SwiftUI
-
-// MARK: - ProcessingImagePlaceholder (Temporary until imports are resolved)
-
 struct CutoutProcessingImagePlaceholder: View {
     @State private var pulseAnimation = false
     

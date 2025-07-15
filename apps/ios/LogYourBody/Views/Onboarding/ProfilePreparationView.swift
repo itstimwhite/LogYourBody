@@ -1,10 +1,7 @@
 //
-// ProfilePreparationView.swift
-// LogYourBody
+//  ProfilePreparationView.swift
+//  LogYourBody
 //
-// Shows upload progress and prepares profile at end of onboarding
-// import SwiftUI
-
 struct ProfilePreparationView: View {
     @Binding var onboardingData: OnboardingData
     let onComplete: () -> Void

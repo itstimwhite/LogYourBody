@@ -1,9 +1,7 @@
 //
-// DashboardView+Helpers.swift
-// LogYourBody
+//  DashboardView+Helpers.swift
+//  LogYourBody
 //
-// Helper methods for DashboardView
-// import SwiftUI
 import HealthKit
 import PhotosUI
 

@@ -1,9 +1,7 @@
 //
-// ShakeDetector.swift
-// LogYourBody
+//  ShakeDetector.swift
+//  LogYourBody
 //
-// Shake gesture detection for debug actions
-// import SwiftUI
 import UIKit
 
 // MARK: - Shake Detection

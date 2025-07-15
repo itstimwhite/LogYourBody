@@ -1,9 +1,7 @@
 //
-// PhotoUploadManager.swift
-// LogYourBody
+//  PhotoUploadManager.swift
+//  LogYourBody
 //
-// Created by Assistant on 7/6/25.
-// import Foundation
 import UIKit
 import PhotosUI
 import Combine

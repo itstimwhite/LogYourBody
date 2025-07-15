@@ -1,10 +1,7 @@
 //
-// DietPhaseCard.swift
-// LogYourBody
+//  DietPhaseCard.swift
+//  LogYourBody
 //
-// Card component for displaying diet phase information
-// import SwiftUI
-
 struct DietPhaseCard: View {
     let phaseType: PhaseType
     let startDate: Date

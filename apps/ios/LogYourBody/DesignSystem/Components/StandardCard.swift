@@ -1,10 +1,7 @@
 //
-// StandardCard.swift
-// LogYourBody
+//  StandardCard.swift
+//  LogYourBody
 //
-// Reusable card components for consistent UI
-//
-
 import SwiftUI
 
 // MARK: - Card Style Enum

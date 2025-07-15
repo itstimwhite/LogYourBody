@@ -1,10 +1,7 @@
 //
-// Font+Custom.swift
-// LogYourBody
+//  Font+Custom.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import SwiftUI
-
 extension Font {
     // MARK: - Display Fonts (SF Pro Rounded)
     static let appDisplay = Font.system(size: 48, weight: .bold, design: .rounded)

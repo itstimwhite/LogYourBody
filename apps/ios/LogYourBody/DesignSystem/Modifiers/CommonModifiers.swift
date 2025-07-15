@@ -1,10 +1,7 @@
 //
-// CommonModifiers.swift
-// LogYourBody
+//  CommonModifiers.swift
+//  LogYourBody
 //
-// Common view modifiers and styles for consistent UI
-//
-
 import SwiftUI
 
 // MARK: - Interactive Scale Modifier

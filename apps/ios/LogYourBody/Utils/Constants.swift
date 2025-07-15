@@ -1,9 +1,7 @@
 //
-// Constants.swift
-// LogYourBody
+//  Constants.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import Foundation
 import SwiftUI
 
 extension Notification.Name {

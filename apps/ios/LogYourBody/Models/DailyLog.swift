@@ -1,10 +1,7 @@
 //
-// DailyLog.swift
-// LogYourBody
+//  DailyLog.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/2/25.
-// import Foundation
-
 struct DailyLog: Identifiable, Codable {
     let id: String
     let userId: String

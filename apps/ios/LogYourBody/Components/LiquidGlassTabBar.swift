@@ -1,10 +1,7 @@
 //
-// LiquidGlassTabBar.swift
-// LogYourBody
+//  LiquidGlassTabBar.swift
+//  LogYourBody
 //
-// Liquid Glass Tab Bar with dynamic animations
-// import SwiftUI
-
 struct LiquidGlassTabBar: View {
     @Binding var selectedTab: AnimatedTabView.Tab
     @Namespace private var namespace

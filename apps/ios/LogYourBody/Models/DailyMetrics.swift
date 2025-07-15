@@ -1,3 +1,7 @@
+//
+//  DailyMetrics.swift
+//  LogYourBody
+//
 import Foundation
 
 struct DailyMetrics: Identifiable, Codable {

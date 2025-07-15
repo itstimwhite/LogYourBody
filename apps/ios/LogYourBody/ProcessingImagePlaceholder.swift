@@ -1,10 +1,7 @@
 //
-// ProcessingImagePlaceholder.swift
-// LogYourBody
+//  ProcessingImagePlaceholder.swift
+//  LogYourBody
 //
-// Common placeholder view for images being processed
-// import SwiftUI
-
 struct ProcessingImagePlaceholder: View {
     @State private var pulseAnimation = false
     

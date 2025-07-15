@@ -1,10 +1,7 @@
 //
-// DesignSystem.swift
-// LogYourBody
+//  DesignSystem.swift
+//  LogYourBody
 //
-// Central import for all design system components
-//
-
 import SwiftUI
 
 // MARK: - Design System Namespace

@@ -1,3 +1,7 @@
+//
+//  RealtimeSyncManager.swift
+//  LogYourBody
+//
 import Foundation
 import Combine
 import Network

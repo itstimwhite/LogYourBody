@@ -1,12 +1,7 @@
 //
-// SkeletonLoaders.swift
-// LogYourBody
+//  SkeletonLoaders.swift
+//  LogYourBody
 //
-// Skeleton loading views to prevent layout shift
-// import SwiftUI
-
-// MARK: - Shimmer Effect
-
 struct ShimmerEffect: ViewModifier {
     @State private var phase: CGFloat = 0
     let animation = Animation.linear(duration: 1.5).repeatForever(autoreverses: false)

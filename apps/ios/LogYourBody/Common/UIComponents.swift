@@ -1,12 +1,7 @@
 //
-// UIComponents.swift
-// LogYourBody
+//  UIComponents.swift
+//  LogYourBody
 //
-// Created by Assistant on 7/11/25.
-// Common UI components for consistent design across the app
-// import SwiftUI
-
-// MARK: - Trend Enum
 enum Trend {
     case up(Double)
     case down(Double)

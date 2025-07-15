@@ -1,10 +1,7 @@
 //
-// OptimizedProgressPhotoView.swift
-// LogYourBody
+//  OptimizedProgressPhotoView.swift
+//  LogYourBody
 //
-// Created by Assistant on 7/6/25.
-// import SwiftUI
-
 struct OptimizedProgressPhotoView: View {
     let photoUrl: String?
     let maxHeight: CGFloat

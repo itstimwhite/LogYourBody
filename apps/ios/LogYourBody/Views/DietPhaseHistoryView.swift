@@ -1,11 +1,7 @@
 //
-// DietPhaseHistoryView.swift
-// LogYourBody
+//  DietPhaseHistoryView.swift
+//  LogYourBody
 //
-// Created for displaying diet phase history
-// import SwiftUI
-
-// Temporary phase type until DietPhaseCard is added to project
 enum PhaseType: String, CaseIterable {
     case bulk = "Bulk"
     case cut = "Cut"

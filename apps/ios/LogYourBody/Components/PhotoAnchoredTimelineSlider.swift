@@ -1,12 +1,7 @@
 //
-// PhotoAnchoredTimelineSlider.swift
-// LogYourBody
+//  PhotoAnchoredTimelineSlider.swift
+//  LogYourBody
 //
-// Timeline slider with photo anchors
-// import SwiftUI
-
-// MARK: - Timeline Data Structures
-
 struct TimelineTick {
     let index: Int
     let date: Date

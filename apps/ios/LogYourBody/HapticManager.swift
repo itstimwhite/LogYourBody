@@ -1,10 +1,7 @@
 //
-// HapticManager.swift
-// LogYourBody
+//  HapticManager.swift
+//  LogYourBody
 //
-// Manages haptic feedback throughout the app
-// import UIKit
-
 class HapticManager {
     static let shared = HapticManager()
     

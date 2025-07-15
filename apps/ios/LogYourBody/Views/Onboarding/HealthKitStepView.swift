@@ -1,9 +1,7 @@
 //
-// HealthKitStepView.swift
-// LogYourBody
+//  HealthKitStepView.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/2/25.
-// import SwiftUI
 import HealthKit
 
 struct HealthKitStepView: View {

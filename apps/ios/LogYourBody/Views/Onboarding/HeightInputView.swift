@@ -1,10 +1,7 @@
 //
-// HeightInputView.swift
-// LogYourBody
+//  HeightInputView.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/4/25.
-// import SwiftUI
-
 struct HeightInputView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @State private var showingPicker = false

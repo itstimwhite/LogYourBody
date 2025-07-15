@@ -1,10 +1,7 @@
 //
-// SettingsRow.swift
-// LogYourBody
+//  SettingsRow.swift
+//  LogYourBody
 //
-// Reusable settings and list row components
-//
-
 import SwiftUI
 
 // MARK: - Settings Row Type

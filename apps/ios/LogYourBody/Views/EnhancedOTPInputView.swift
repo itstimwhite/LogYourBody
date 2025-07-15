@@ -1,9 +1,7 @@
 //
-// EnhancedOTPInputView.swift
-// LogYourBody
+//  EnhancedOTPInputView.swift
+//  LogYourBody
 //
-// Enhanced OTP input with smart clipboard handling, platform autofill, and accessibility
-// import SwiftUI
 import Combine
 
 struct EnhancedOTPInputView: View {

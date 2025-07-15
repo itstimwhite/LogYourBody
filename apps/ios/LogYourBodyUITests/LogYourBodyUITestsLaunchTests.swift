@@ -1,10 +1,7 @@
 //
-// LogYourBodyUITestsLaunchTests.swift
-// LogYourBodyUITests
+//  LogYourBodyUITestsLaunchTests.swift
+//  LogYourBody
 //
-// Created by Tim White on 7/1/25.
-// import XCTest
-
 final class LogYourBodyUITestsLaunchTests: XCTestCase {
     override class var runsForEachTargetApplicationUIConfiguration: Bool {
         true
