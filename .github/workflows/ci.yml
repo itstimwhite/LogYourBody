@@ -91,11 +91,20 @@ jobs:
     - name: Install dependencies
       run: |
         cd apps/ios
+        # Install SwiftLint
+        brew install swiftlint
         # Install CocoaPods if needed
         if [ -f "Podfile" ]; then
           sudo gem install cocoapods
           pod install
         fi
+
+    - name: Run SwiftLint Check
+      run: |
+        cd apps/ios
+        echo "Running SwiftLint..."
+        swiftlint lint --strict --reporter github-actions-logging
+        echo "✅ SwiftLint passed with no violations"
 
     - name: Build iOS App
       run: |
@@ -268,6 +277,8 @@ jobs:
     - name: Run SwiftLint
       run: |
         cd apps/ios
-        swiftlint lint --quiet
-      continue-on-error: true
+        # Run SwiftLint with strict mode - fail on any violation
+        swiftlint lint --strict --reporter github-actions-logging
+      env:
+        SWIFTLINT_STRICT: true
 
