@@ -11,12 +11,14 @@ extension DashboardView {
     // MARK: - Main Content Views
     
     @ViewBuilder
+    
     var loadingView: some View {
         // Use skeleton loader instead of empty state for smoother experience
         DashboardSkeleton()
     }
     
     @ViewBuilder
+    
     var emptyStateView: some View {
         DashboardEmptyStateView(
             icon: "chart.line.downtrend.xyaxis",
@@ -26,6 +28,7 @@ extension DashboardView {
     }
     
     @ViewBuilder
+    
     var contentView: some View {
         // Always show skeleton on first load to prevent layout shift
         if bodyMetrics.isEmpty && !hasLoadedInitialData {
@@ -39,6 +42,7 @@ extension DashboardView {
     }
     
     @ViewBuilder
+    
     var mainContentView: some View {
         VStack(spacing: 0) {
             // Progress Photo - will expand to fill available space
@@ -76,6 +80,7 @@ extension DashboardView {
     // MARK: - Header View
     
     @ViewBuilder
+    
     var headerView: some View {
         DashboardHeaderBar(
             title: "",
@@ -154,6 +159,7 @@ extension DashboardView {
     // MARK: - Progress Photo View
     
     @ViewBuilder
+    
     var progressPhotoView: some View {
         ZStack {
             // Use the new carousel with fixed aspect ratio
@@ -209,6 +215,7 @@ extension DashboardView {
     // MARK: - Core Metrics Row
     
     @ViewBuilder
+    
     var coreMetricsRow: some View {
         HStack(spacing: 16) {  // Consistent spacing
             // Body Fat % with simplified progress bar
@@ -270,6 +277,7 @@ extension DashboardView {
     // MARK: - Secondary Metrics Row
     
     @ViewBuilder
+    
     var secondaryMetricsRow: some View {
         HStack(spacing: 12) {
             // Steps Card
@@ -313,6 +321,7 @@ extension DashboardView {
     // MARK: - Timeline Slider
     
     @ViewBuilder
+    
     var timelineSlider: some View {
         // Use PhotoAnchoredTimelineSlider which already includes navigation buttons and date display
         PhotoAnchoredTimelineSlider(

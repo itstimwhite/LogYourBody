@@ -36,6 +36,7 @@ struct SyncStatusView: View {
     }
     
     @ViewBuilder
+    
     private var statusIcon: some View {
         switch (syncManager.isOnline, syncManager.syncStatus) {
         case (false, _):

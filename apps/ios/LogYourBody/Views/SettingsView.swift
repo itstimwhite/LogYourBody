@@ -230,6 +230,7 @@ struct SettingsView: View {
     }
     
     @ViewBuilder
+    
     private var userHeaderView: some View {
         VStack(spacing: 16) {
             // User Avatar

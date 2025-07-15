@@ -93,6 +93,7 @@ struct ProcessingTaskRow: View {
     }
     
     @ViewBuilder
+    
     private var statusIcon: some View {
         switch task.status {
         case .pending:

@@ -79,6 +79,7 @@ struct BulkPhotoImportView: View {
     }
     
     @ViewBuilder
+    
     private var content: some View {
         if showWelcomeScreen && !hasStartedScan {
             welcomeView

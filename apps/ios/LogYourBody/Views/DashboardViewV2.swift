@@ -141,6 +141,7 @@ struct DashboardViewV2: View {
     // MARK: - Unified Glass Header
     
     @ViewBuilder
+    
     private var unifiedHeaderView: some View {
         HStack(spacing: 16) {
             // Avatar
@@ -236,6 +237,7 @@ struct DashboardViewV2: View {
     // MARK: - Enhanced Carousel Section
     
     @ViewBuilder
+    
     private var carouselSection: some View {
         ZStack(alignment: .bottomTrailing) {
             // Enhanced carousel with face detection
@@ -272,6 +274,7 @@ struct DashboardViewV2: View {
     // MARK: - Enhanced Timeline Slider
     
     @ViewBuilder
+    
     private var enhancedTimelineSlider: some View {
         VStack(spacing: 8) {
             // Floating date label above thumb
@@ -352,6 +355,7 @@ struct DashboardViewV2: View {
     // MARK: - Clean Metrics Section
     
     @ViewBuilder
+    
     private var metricsSection: some View {
         HStack(spacing: 24) { // Equal 24pt padding
             // Weight gauge
@@ -386,6 +390,7 @@ struct DashboardViewV2: View {
     // MARK: - Floating Metrics Strip
     
     @ViewBuilder
+    
     private var floatingMetricsStrip: some View {
         HStack(spacing: 32) { // Increased spacing to 32pt
             // BMI
@@ -465,6 +470,7 @@ struct DashboardViewV2: View {
     // MARK: - Helper Views
     
     @ViewBuilder
+    
     private var loadingView: some View {
         EmptyStateView(
             icon: "arrow.triangle.2.circlepath",
@@ -474,6 +480,7 @@ struct DashboardViewV2: View {
     }
     
     @ViewBuilder
+    
     private var emptyStateView: some View {
         EmptyStateView(
             icon: "chart.line.downtrend.xyaxis",

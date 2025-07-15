@@ -105,8 +105,7 @@ struct DesignSettingsRow: View {
         }, perform: {})
     }
     
-    @ViewBuilder
-    private var trailingContent: some View {
+    @ViewBuilder private var trailingContent: some View {
         switch type {
         case .navigation:
             Image(systemName: "chevron.right")

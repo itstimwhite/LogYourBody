@@ -17,7 +17,7 @@ enum HeaderStyle {
 // MARK: - Standard Header
 
 struct StandardHeader: View {
-    @Environment(\.dismiss) 
+    @Environment(\.isEnabled)
     var dismiss
     
     let title: String
@@ -166,8 +166,7 @@ struct StandardHeader: View {
     
     // MARK: - Computed Properties
     
-    @ViewBuilder
-    private var backgroundView: some View {
+    @ViewBuilder private var backgroundView: some View {
         switch style {
         case .transparent:
             Color.clear

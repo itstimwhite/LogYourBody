@@ -84,8 +84,7 @@ struct LiquidGlassCTAButton: View {
         }
     }
     
-    @ViewBuilder
-    private var backgroundView: some View {
+    @ViewBuilder private var backgroundView: some View {
         if #available(iOS 18.0, *) {
             // iOS 26 Liquid Glass style
             if isEnabled {
@@ -116,8 +115,7 @@ struct LiquidGlassCTAButton: View {
         }
     }
     
-    @ViewBuilder
-    private var overlayView: some View {
+    @ViewBuilder private var overlayView: some View {
         if isEnabled {
             // Only show border overlay when enabled for cleaner look
             RoundedRectangle(cornerRadius: 28)
@@ -162,8 +160,7 @@ struct LiquidGlassCTAModifier: ViewModifier {
             .clipShape(RoundedRectangle(cornerRadius: 28))
     }
     
-    @ViewBuilder
-    private var backgroundView: some View {
+    @ViewBuilder private var backgroundView: some View {
         if #available(iOS 18.0, *) {
             if isEnabled {
                 RoundedRectangle(cornerRadius: 28)
@@ -190,8 +187,7 @@ struct LiquidGlassCTAModifier: ViewModifier {
         }
     }
     
-    @ViewBuilder
-    private var overlayView: some View {
+    @ViewBuilder private var overlayView: some View {
         if isEnabled {
             RoundedRectangle(cornerRadius: 28)
                 .stroke(

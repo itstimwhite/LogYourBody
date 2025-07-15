@@ -7,7 +7,7 @@
 import AuthenticationServices
 
 struct AppleSignInButton: UIViewRepresentable {
-    @Environment(\.colorScheme) 
+    @Environment(\.isEnabled)
     var colorScheme
     @EnvironmentObject var authManager: AuthManager
     
