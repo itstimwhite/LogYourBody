@@ -114,10 +114,28 @@ jest.mock('@/lib/supabase/client', () => ({
   ),
 }))
 
-// Mock indexedDB if it's not defined
-if (typeof indexedDB === 'undefined' && typeof global !== 'undefined') {
-  // Mock IDBRequest
-  global.IDBRequest = jest.fn()
+// Mock indexedDB and related APIs
+if (typeof global !== 'undefined') {
+  // Create a mock IDBRequest with event listener support
+  class MockIDBRequest {
+    constructor() {
+      this.onsuccess = null
+      this.onerror = null
+      this.result = null
+      this.error = null
+      this.readyState = 'pending'
+    }
+    
+    addEventListener(event, handler) {
+      if (event === 'success') this.onsuccess = handler
+      if (event === 'error') this.onerror = handler
+    }
+    
+    removeEventListener() {}
+  }
+  
+  // Set up global IndexedDB mocks
+  global.IDBRequest = MockIDBRequest
   global.IDBDatabase = jest.fn()
   global.IDBTransaction = jest.fn()
   global.IDBObjectStore = jest.fn()
@@ -131,16 +149,20 @@ if (typeof indexedDB === 'undefined' && typeof global !== 'undefined') {
   }
   
   global.indexedDB = {
-    open: jest.fn(() => ({
-      onsuccess: jest.fn(),
-      onerror: jest.fn(),
-      onupgradeneeded: jest.fn(),
-      result: {
+    open: jest.fn(() => {
+      const request = new MockIDBRequest()
+      request.result = {
         transaction: jest.fn(),
         close: jest.fn(),
+        objectStoreNames: { contains: jest.fn(() => false) },
+        createObjectStore: jest.fn(),
       }
-    })),
-    deleteDatabase: jest.fn(),
+      setTimeout(() => {
+        if (request.onsuccess) request.onsuccess({ target: request })
+      }, 0)
+      return request
+    }),
+    deleteDatabase: jest.fn(() => new MockIDBRequest()),
   }
 }
 
