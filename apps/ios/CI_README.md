@@ -51,3 +51,4 @@ This ensures SwiftLint runs on every build in Xcode.
 - Build: ✅ Successful  
 - Tests: ✅ Passing
 - iOS Simulator: iPhone 16
+- Supabase.xcconfig: Auto-generated for CI
