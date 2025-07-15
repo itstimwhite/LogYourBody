@@ -111,7 +111,7 @@ jobs:
         cd apps/ios
         xcodebuild -project LogYourBody.xcodeproj \
           -scheme LogYourBody \
-          -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
           clean build
       env:
         CODE_SIGNING_REQUIRED: NO
@@ -121,7 +121,7 @@ jobs:
         cd apps/ios
         xcodebuild -project LogYourBody.xcodeproj \
           -scheme LogYourBody \
-          -destination 'platform=iOS Simulator,name=Any iOS Simulator Device' \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
           test
       continue-on-error: true
 
