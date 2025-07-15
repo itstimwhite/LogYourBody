@@ -18,8 +18,8 @@ struct LogWeightView: View {
     @State private var showError = false
     @State private var errorMessage = ""
     @State private var showSuccess = false
-    @Environment(\.dismiss) var dismiss
-    @FocusState private var focusedField: Field?
+    @Environment(\.dismiss)
+    var dismiss    @FocusState private var focusedField: Field?
     
     enum Field {
         case weight, bodyFat
@@ -300,8 +300,8 @@ struct LogWeightView: View {
         
         Task {
             do {
-                var weightValue: Double? = nil
-                var bodyFatValue: Double? = nil
+                var weightValue: Double?
+                var bodyFatValue: Double?
                 
                 // Parse weight if provided
                 if !weight.isEmpty {
@@ -395,7 +395,6 @@ struct LogWeightView: View {
                 await MainActor.run {
                     dismiss()
                 }
-                
             } catch {
                 await MainActor.run {
                     isLoading = false

@@ -33,14 +33,14 @@ class CoreDataManager: ObservableObject {
     // MARK: - Save Context
     func save(completion: (() -> Void)? = nil) {
         saveQueue.async { [weak self] in
-            guard let self = self else { 
+            guard let self = self else {
                 completion?()
-                return 
+                return
             }
             
             // Prevent recursive saves
             guard !self.isSaving else {
-                print("⚠️ Prevented recursive Core Data save")
+                // print("⚠️ Prevented recursive Core Data save")
                 completion?()
                 return
             }
@@ -55,9 +55,9 @@ class CoreDataManager: ObservableObject {
                 if context.hasChanges {
                     do {
                         try context.save()
-                        print("✅ Core Data context saved successfully")
+                        // print("✅ Core Data context saved successfully")
                     } catch {
-                        print("Failed to save Core Data context: \(error)")
+                        // print("Failed to save Core Data context: \(error)")
                     }
                 }
                 completion?()
@@ -73,9 +73,9 @@ class CoreDataManager: ObservableObject {
             if context.hasChanges {
                 do {
                     try context.save()
-                    print("✅ Core Data context saved asynchronously")
+                    // print("✅ Core Data context saved asynchronously")
                 } catch {
-                    print("Failed to save Core Data context: \(error)")
+                    // print("Failed to save Core Data context: \(error)")
                 }
             }
         }
@@ -125,11 +125,11 @@ class CoreDataManager: ObservableObject {
             cached.isMarkedDeleted = false
             
             // Debug logging
-            print("💾 Saving body metrics: ID: \(metrics.id), Weight: \(metrics.weight ?? 0)\(metrics.weightUnit ?? ""), isSynced: \(markAsSynced)")
+            // print("💾 Saving body metrics: ID: \(metrics.id), Weight: \(metrics.weight ?? 0)\(metrics.weightUnit ?? ""), isSynced: \(markAsSynced)")
             
             saveAndWait()  // Use synchronous save to ensure data is persisted before sync
         } catch {
-            print("Failed to save body metrics: \(error)")
+            // print("Failed to save body metrics: \(error)")
         }
     }
     
@@ -153,7 +153,7 @@ class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(fetchRequest)
         } catch {
-            print("Failed to fetch body metrics: \(error)")
+            // print("Failed to fetch body metrics: \(error)")
             return []
         }
     }
@@ -163,7 +163,7 @@ class CoreDataManager: ObservableObject {
         let context = viewContext
         
         let fetchRequest: NSFetchRequest<CachedDailyMetrics> = CachedDailyMetrics.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "id == %@ OR (userId == %@ AND date == %@)", 
+        fetchRequest.predicate = NSPredicate(format: "id == %@ OR (userId == %@ AND date == %@)",
                                            metrics.id, userId, metrics.date as NSDate)
         
         do {
@@ -190,7 +190,7 @@ class CoreDataManager: ObservableObject {
             
             saveAndWait()  // Use synchronous save to ensure data is persisted before sync
         } catch {
-            print("Failed to save daily metrics: \(error)")
+            // print("Failed to save daily metrics: \(error)")
         }
     }
     
@@ -208,7 +208,7 @@ class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(fetchRequest).first
         } catch {
-            print("Failed to fetch daily metrics: \(error)")
+            // print("Failed to fetch daily metrics: \(error)")
             return nil
         }
     }
@@ -250,7 +250,7 @@ class CoreDataManager: ObservableObject {
             
             saveAndWait()  // Use synchronous save to ensure data is persisted before sync
         } catch {
-            print("Failed to save profile: \(error)")
+            // print("Failed to save profile: \(error)")
         }
     }
     
@@ -262,7 +262,7 @@ class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(fetchRequest).first
         } catch {
-            print("Failed to fetch profile: \(error)")
+            // print("Failed to fetch profile: \(error)")
             return nil
         }
     }
@@ -284,17 +284,17 @@ class CoreDataManager: ObservableObject {
             let profiles = try viewContext.fetch(profilesFetch)
             
             // Debug logging
-            print("🔍 Fetched unsynced entries:")
-            print("  - Body Metrics: \(bodyMetrics.count)")
+            // print("🔍 Fetched unsynced entries:")
+            // print("  - Body Metrics: \(bodyMetrics.count)")
             for metric in bodyMetrics.prefix(3) {
-                print("    • ID: \(metric.id ?? "nil"), Weight: \(metric.weight), Date: \(metric.date ?? Date()), isSynced: \(metric.isSynced)")
+                // print("    • ID: \(metric.id ?? "nil"), Weight: \(metric.weight), Date: \(metric.date ?? Date()), isSynced: \(metric.isSynced)")
             }
-            print("  - Daily Metrics: \(dailyMetrics.count)")
-            print("  - Profiles: \(profiles.count)")
+            // print("  - Daily Metrics: \(dailyMetrics.count)")
+            // print("  - Profiles: \(profiles.count)")
             
             return (bodyMetrics, dailyMetrics, profiles)
         } catch {
-            print("Failed to fetch unsynced entries: \(error)")
+            // print("Failed to fetch unsynced entries: \(error)")
             return ([], [], [])
         }
     }
@@ -370,11 +370,11 @@ class CoreDataManager: ObservableObject {
     // MARK: - Cleanup Operations
     func cleanupDeletedEntries(olderThan date: Date) {
         let bodyMetricsFetch: NSFetchRequest<NSFetchRequestResult> = CachedBodyMetrics.fetchRequest()
-        bodyMetricsFetch.predicate = NSPredicate(format: "isMarkedDeleted == %@ AND lastModified < %@", 
+        bodyMetricsFetch.predicate = NSPredicate(format: "isMarkedDeleted == %@ AND lastModified < %@",
                                                 NSNumber(value: true), date as NSDate)
         
         let dailyMetricsFetch: NSFetchRequest<NSFetchRequestResult> = CachedDailyMetrics.fetchRequest()
-        dailyMetricsFetch.predicate = NSPredicate(format: "isMarkedDeleted == %@ AND lastModified < %@", 
+        dailyMetricsFetch.predicate = NSPredicate(format: "isMarkedDeleted == %@ AND lastModified < %@",
                                                  NSNumber(value: true), date as NSDate)
         
         let deleteBodyMetrics = NSBatchDeleteRequest(fetchRequest: bodyMetricsFetch)
@@ -385,7 +385,7 @@ class CoreDataManager: ObservableObject {
             try viewContext.execute(deleteDailyMetrics)
             save()
         } catch {
-            print("Failed to cleanup deleted entries: \(error)")
+            // print("Failed to cleanup deleted entries: \(error)")
         }
     }
     
@@ -462,7 +462,7 @@ class CoreDataManager: ObservableObject {
             
             save()
         } catch {
-            print("Error updating body metric from server: \(error)")
+            // print("Error updating body metric from server: \(error)")
         }
     }
     
@@ -493,7 +493,7 @@ class CoreDataManager: ObservableObject {
             
             save()
         } catch {
-            print("Error updating daily metric from server: \(error)")
+            // print("Error updating daily metric from server: \(error)")
         }
     }
     
@@ -529,7 +529,7 @@ class CoreDataManager: ObservableObject {
             
             save()
         } catch {
-            print("Error updating profile from server: \(error)")
+            // print("Error updating profile from server: \(error)")
         }
     }
     
@@ -544,7 +544,7 @@ class CoreDataManager: ObservableObject {
             let cachedMetrics = try viewContext.fetch(fetchRequest)
             return cachedMetrics.compactMap { $0.toBodyMetrics() }
         } catch {
-            print("Error fetching all body metrics: \(error)")
+            // print("Error fetching all body metrics: \(error)")
             return []
         }
     }
@@ -570,7 +570,7 @@ class CoreDataManager: ObservableObject {
                 )
             }
         } catch {
-            print("Error fetching all daily logs: \(error)")
+            // print("Error fetching all daily logs: \(error)")
             return []
         }
     }
@@ -582,16 +582,16 @@ class CoreDataManager: ObservableObject {
         
         do {
             let allMetrics = try viewContext.fetch(fetchRequest)
-            print("🔍 DEBUG: Total body metrics in Core Data: \(allMetrics.count)")
+            // print("🔍 DEBUG: Total body metrics in Core Data: \(allMetrics.count)")
             for (index, metric) in allMetrics.enumerated() {
-                print("  [\(index)] ID: \(metric.id ?? "nil"), UserId: \(metric.userId ?? "nil"), Weight: \(metric.weight), Date: \(metric.date ?? Date()), isSynced: \(metric.isSynced), syncStatus: \(metric.syncStatus ?? "nil")")
-                if index >= 5 { 
-                    print("  ... and \(allMetrics.count - 5) more")
-                    break 
+                // print("  [\(index)] ID: \(metric.id ?? "nil"), UserId: \(metric.userId ?? "nil"), Weight: \(metric.weight), Date: \(metric.date ?? Date()), isSynced: \(metric.isSynced), syncStatus: \(metric.syncStatus ?? "nil")")
+                if index >= 5 {
+                    // print("  ... and \(allMetrics.count - 5) more")
+                    break
                 }
             }
         } catch {
-            print("Failed to fetch all body metrics: \(error)")
+            // print("Failed to fetch all body metrics: \(error)")
         }
     }
     
@@ -609,9 +609,9 @@ class CoreDataManager: ObservableObject {
         
         do {
             let result = try viewContext.execute(deleteRequest) as? NSBatchDeleteResult
-            print("Deleted \(result?.result ?? 0) old body metrics")
+            // print("Deleted \(result?.result ?? 0) old body metrics")
         } catch {
-            print("Error cleaning up old data: \(error)")
+            // print("Error cleaning up old data: \(error)")
         }
     }
     
@@ -627,9 +627,9 @@ class CoreDataManager: ObservableObject {
                 entry.syncStatus = "synced"
             }
             save()
-            print("✅ Marked \(entries.count) HealthKit entries as synced")
+            // print("✅ Marked \(entries.count) HealthKit entries as synced")
         } catch {
-            print("Failed to mark HealthKit entries as synced: \(error)")
+            // print("Failed to mark HealthKit entries as synced: \(error)")
         }
     }
     
@@ -646,9 +646,9 @@ class CoreDataManager: ObservableObject {
                 sourceOptions: nil,
                 ofType: NSSQLiteStoreType
             )
-            print("✅ Database optimized")
+            // print("✅ Database optimized")
         } catch {
-            print("Failed to optimize database: \(error)")
+            // print("Failed to optimize database: \(error)")
         }
     }
     
@@ -698,7 +698,7 @@ class CoreDataManager: ObservableObject {
                 }
                 
                 if shouldDelete {
-                    print("🗑️ Deleting invalid body metric: \(reasons.joined(separator: ", "))")
+                    // print("🗑️ Deleting invalid body metric: \(reasons.joined(separator: ", "))")
                     context.delete(metric)
                     deletedCount += 1
                 }
@@ -710,7 +710,7 @@ class CoreDataManager: ObservableObject {
             
             return deletedCount
         } catch {
-            print("❌ Error cleaning invalid body metrics: \(error)")
+            // print("❌ Error cleaning invalid body metrics: \(error)")
             return 0
         }
     }
@@ -730,19 +730,19 @@ class CoreDataManager: ObservableObject {
                 if metric.date == nil {
                     metric.date = Date()
                     wasRepaired = true
-                    print("🔧 Repaired missing date for metric ID: \(metric.id ?? "unknown")")
+                    // print("🔧 Repaired missing date for metric ID: \(metric.id ?? "unknown")")
                 }
                 
                 if metric.createdAt == nil {
                     metric.createdAt = metric.date ?? Date()
                     wasRepaired = true
-                    print("🔧 Repaired missing createdAt for metric ID: \(metric.id ?? "unknown")")
+                    // print("🔧 Repaired missing createdAt for metric ID: \(metric.id ?? "unknown")")
                 }
                 
                 if metric.updatedAt == nil {
                     metric.updatedAt = metric.lastModified ?? metric.date ?? Date()
                     wasRepaired = true
-                    print("🔧 Repaired missing updatedAt for metric ID: \(metric.id ?? "unknown")")
+                    // print("🔧 Repaired missing updatedAt for metric ID: \(metric.id ?? "unknown")")
                 }
                 
                 if wasRepaired {
@@ -752,12 +752,12 @@ class CoreDataManager: ObservableObject {
             
             if repairedCount > 0 {
                 try context.save()
-                print("✅ Repaired \(repairedCount) corrupted entries")
+                // print("✅ Repaired \(repairedCount) corrupted entries")
             }
             
             return repairedCount
         } catch {
-            print("❌ Error repairing corrupted entries: \(error)")
+            // print("❌ Error repairing corrupted entries: \(error)")
             return 0
         }
     }
@@ -772,7 +772,7 @@ extension CachedBodyMetrics {
               let createdAt = createdAt,
               let updatedAt = updatedAt,
               let userId = userId else {
-            print("⚠️ Skipping corrupted body metric entry with missing required fields")
+            // print("⚠️ Skipping corrupted body metric entry with missing required fields")
             return nil
         }
         

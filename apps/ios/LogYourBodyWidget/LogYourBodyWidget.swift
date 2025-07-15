@@ -13,12 +13,12 @@ struct Provider: TimelineProvider {
         MetricsEntry(date: Date(), metrics: .placeholder)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (MetricsEntry) -> ()) {
+    func getSnapshot(in context: Context, completion: @escaping (MetricsEntry) -> Void) {
         let entry = MetricsEntry(date: Date(), metrics: .placeholder)
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> Void) {
         Task {
             // Fetch current metrics from shared container
             let metrics = await fetchCurrentMetrics()
@@ -67,15 +67,15 @@ struct DailyMetrics {
     static let placeholder = DailyMetrics(
         weight: 180.5,
         bodyFatPercentage: 18.2,
-        stepCount: 8432,
+        stepCount: 8_432,
         lastUpdated: Date()
     )
 }
 
-struct LogYourBodyWidgetEntryView : View {
+struct LogYourBodyWidgetEntryView: View {
     var entry: Provider.Entry
-    @Environment(\.widgetFamily) var family
-    
+    @Environment(\.widgetFamily)
+    var family    
     var body: some View {
         switch family {
         case .systemSmall:
@@ -128,7 +128,7 @@ struct SmallWidgetView: View {
                 
                 MetricRingView(
                     value: Double(metrics.stepCount),
-                    maxValue: 10000,
+                    maxValue: 10_000,
                     label: "steps",
                     icon: "figure.walk",
                     color: .orange,
@@ -196,7 +196,7 @@ struct MediumWidgetView: View {
                     
                     MetricRingView(
                         value: Double(metrics.stepCount),
-                        maxValue: 10000,
+                        maxValue: 10_000,
                         label: "steps",
                         icon: "figure.walk",
                         color: .orange,

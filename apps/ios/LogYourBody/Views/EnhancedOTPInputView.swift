@@ -33,8 +33,8 @@ struct EnhancedOTPInputView: View {
     // Accessibility
     @AccessibilityFocusState private var accessibilityFocused: Bool
     
-    init(otpCode: Binding<String>, 
-         numberOfDigits: Int = 6, 
+    init(otpCode: Binding<String>,
+         numberOfDigits: Int = 6,
          errorMessage: Binding<String?>,
          isLoading: Binding<Bool>,
          onComplete: (() -> Void)? = nil) {
@@ -239,7 +239,7 @@ struct EnhancedOTPInputView: View {
         // Check if all digits are filled
         if digits.count == numberOfDigits && digits.allSatisfy({ !$0.isEmpty }) {
             // Announce to accessibility
-            UIAccessibility.post(notification: .announcement, 
+            UIAccessibility.post(notification: .announcement,
                                argument: "Code entered, verifying")
             
             // Call completion handler
@@ -312,7 +312,7 @@ struct EnhancedOTPInputView: View {
         }
         
         // Announce to accessibility
-        UIAccessibility.post(notification: .announcement, 
+        UIAccessibility.post(notification: .announcement,
                            argument: "Code pasted")
     }
     
@@ -443,8 +443,8 @@ struct EnhancedDigitInput: View {
             
             // Visible digit with animation
             Text(digit.isEmpty ? "•" : digit)
-                .font(.system(size: digit.isEmpty ? 16 : 24, 
-                            weight: .semibold, 
+                .font(.system(size: digit.isEmpty ? 16 : 24,
+                            weight: .semibold,
                             design: .monospaced))
                 .foregroundColor(digit.isEmpty ? .appTextTertiary : .appText)
                 .opacity(digit.isEmpty ? 0.3 : 1.0)

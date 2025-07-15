@@ -96,7 +96,6 @@ struct HeightInputView: View {
                         .padding(20)
                         .background(Color.appCard)
                         .cornerRadius(12)
-                        
                     }
                     .padding(.horizontal, 24)
                     .transition(.opacity.combined(with: .scale))

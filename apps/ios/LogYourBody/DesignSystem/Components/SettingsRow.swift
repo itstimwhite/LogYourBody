@@ -1,8 +1,8 @@
 //
-//  SettingsRow.swift
-//  LogYourBody
+// SettingsRow.swift
+// LogYourBody
 //
-//  Reusable settings and list row components
+// Reusable settings and list row components
 //
 
 import SwiftUI
@@ -21,8 +21,6 @@ enum SettingsRowType {
 // MARK: - Settings Row
 
 struct DesignSettingsRow: View {
-    
-    
     let icon: String?
     let iconColor: Color?
     let title: String
@@ -228,8 +226,6 @@ struct DesignSettingsSection<Content: View>: View {
 // MARK: - List Row
 
 struct ListRow: View {
-    
-    
     let title: String
     let subtitle: String?
     let leading: AnyView?
@@ -312,8 +308,6 @@ struct ListRow: View {
 // MARK: - Destructive Row
 
 struct DestructiveRow: View {
-    
-    
     let title: String
     let icon: String?
     let action: () -> Void

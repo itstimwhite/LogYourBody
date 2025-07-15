@@ -18,10 +18,10 @@ class VisionOrientationService {
     
     /// Detects the orientation of a person in the image and returns a properly oriented image
     func correctImageOrientation(_ image: UIImage) async throws -> UIImage {
-        print("🔍 VisionOrientationService: Starting orientation detection")
+        // print("🔍 VisionOrientationService: Starting orientation detection")
         
         guard let cgImage = image.cgImage else {
-            print("❌ VisionOrientationService: Failed to get CGImage")
+            // print("❌ VisionOrientationService: Failed to get CGImage")
             return image
         }
         
@@ -37,13 +37,13 @@ class VisionOrientationService {
             try handler.perform([request])
             
             guard let observation = request.results?.first else {
-                print("⚠️ VisionOrientationService: No body pose detected, trying face detection")
+                // print("⚠️ VisionOrientationService: No body pose detected, trying face detection")
                 return try await correctUsingFaceDetection(image)
             }
             
             // Analyze the body pose to determine orientation
             let rotation = try analyzeBodyPose(observation, imageSize: image.size)
-            print("📐 VisionOrientationService: Detected rotation needed: \(rotation) degrees")
+            // print("📐 VisionOrientationService: Detected rotation needed: \(rotation) degrees")
             
             // Apply rotation if needed
             if abs(rotation) > 5 { // Only rotate if angle is significant
@@ -51,9 +51,8 @@ class VisionOrientationService {
             }
             
             return image
-            
         } catch {
-            print("❌ VisionOrientationService: Body pose detection failed: \(error)")
+            // print("❌ VisionOrientationService: Body pose detection failed: \(error)")
             // Fallback to face detection
             return try await correctUsingFaceDetection(image)
         }
@@ -61,7 +60,7 @@ class VisionOrientationService {
     
     /// Fallback method using face detection when body pose detection fails
     private func correctUsingFaceDetection(_ image: UIImage) async throws -> UIImage {
-        print("🔍 VisionOrientationService: Using face detection for orientation")
+        // print("🔍 VisionOrientationService: Using face detection for orientation")
         
         guard let cgImage = image.cgImage else {
             return image
@@ -75,22 +74,21 @@ class VisionOrientationService {
             try handler.perform([request])
             
             guard let faces = request.results, !faces.isEmpty else {
-                print("⚠️ VisionOrientationService: No faces detected, returning original image")
+                // print("⚠️ VisionOrientationService: No faces detected, returning original image")
                 return image
             }
             
             // Analyze face positions to determine orientation
             let rotation = analyzeFaceOrientation(faces, imageSize: image.size)
-            print("📐 VisionOrientationService: Face detection suggests rotation: \(rotation) degrees")
+            // print("📐 VisionOrientationService: Face detection suggests rotation: \(rotation) degrees")
             
             if abs(rotation) > 5 {
                 return rotateImage(image, byDegrees: rotation)
             }
             
             return image
-            
         } catch {
-            print("❌ VisionOrientationService: Face detection failed: \(error)")
+            // print("❌ VisionOrientationService: Face detection failed: \(error)")
             return image
         }
     }

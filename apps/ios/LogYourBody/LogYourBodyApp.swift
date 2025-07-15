@@ -49,7 +49,7 @@ struct LogYourBodyApp: App {
                     // Repair any corrupted Core Data entries on startup
                     let repairedCount = CoreDataManager.shared.repairCorruptedEntries()
                     if repairedCount > 0 {
-                        print("🔧 App startup: Repaired \(repairedCount) corrupted entries")
+                        // print("🔧 App startup: Repaired \(repairedCount) corrupted entries")
                     }
                     
                     // Initialize Clerk
@@ -143,7 +143,8 @@ struct LogYourBodyApp: App {
             showAddEntrySheet = true
             
         default:
-            print("🔗 Unhandled URL host: \(url.host ?? "nil")")
+            // Unhandled URL host
+            break
         }
     }
     

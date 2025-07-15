@@ -115,7 +115,6 @@ struct ProgressPhotosStepView: View {
                                 .opacity(animateContent ? 1 : 0)
                                 .scaleEffect(animateContent ? 1 : 0.9)
                                 .animation(.spring(response: 0.5, dampingFraction: 0.8).delay(0.3), value: animateContent)
-                                
                             } else if uploadService.totalCount > 0 {
                                 // Upload queued state
                                 VStack(spacing: 20) {
@@ -150,7 +149,6 @@ struct ProgressPhotosStepView: View {
                                 .padding(24)
                                 .modifier(LiquidGlassCardModifier())
                                 .transition(.scale.combined(with: .opacity))
-                                
                             } else {
                                 // Selected photos state
                                 VStack(spacing: 20) {

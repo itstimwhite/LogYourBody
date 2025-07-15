@@ -38,11 +38,11 @@ extension WeightEntry {
     
     static var mockArray: [WeightEntry] {
         [
-            WeightEntry(id: "1", userId: "test", weight: 75.5, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86400 * 7)),
-            WeightEntry(id: "2", userId: "test", weight: 75.2, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86400 * 6)),
-            WeightEntry(id: "3", userId: "test", weight: 75.0, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86400 * 5)),
-            WeightEntry(id: "4", userId: "test", weight: 74.8, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86400 * 4)),
-            WeightEntry(id: "5", userId: "test", weight: 74.5, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86400 * 3)),
+            WeightEntry(id: "1", userId: "test", weight: 75.5, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86_400 * 7)),
+            WeightEntry(id: "2", userId: "test", weight: 75.2, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86_400 * 6)),
+            WeightEntry(id: "3", userId: "test", weight: 75.0, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86_400 * 5)),
+            WeightEntry(id: "4", userId: "test", weight: 74.8, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86_400 * 4)),
+            WeightEntry(id: "5", userId: "test", weight: 74.5, weightUnit: "kg", notes: nil, loggedAt: Date().addingTimeInterval(-86_400 * 3))
         ]
     }
 }

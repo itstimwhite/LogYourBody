@@ -1,8 +1,8 @@
 //
-//  CommonModifiers.swift
-//  LogYourBody
+// CommonModifiers.swift
+// LogYourBody
 //
-//  Common view modifiers and styles for consistent UI
+// Common view modifiers and styles for consistent UI
 //
 
 import SwiftUI
@@ -10,7 +10,6 @@ import SwiftUI
 // MARK: - Interactive Scale Modifier
 
 struct InteractiveScale: ViewModifier {
-    
     @State private var isPressed = false
     
     let scale: CGFloat
@@ -187,7 +186,8 @@ struct ConditionalModifier<TrueModifier: ViewModifier, FalseModifier: ViewModifi
 // NOTE: Using ViewModifier instead of ButtonStyle due to compilation issues
 
 struct DesignPrimaryButtonModifier: ViewModifier {
-    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.isEnabled) 
+    var isEnabled
     
     func body(content: Content) -> some View {
         content
@@ -204,7 +204,8 @@ struct DesignPrimaryButtonModifier: ViewModifier {
 }
 
 struct DesignSecondaryButtonModifier: ViewModifier {
-    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.isEnabled) 
+    var isEnabled
     
     func body(content: Content) -> some View {
         content

@@ -89,10 +89,10 @@ struct DashboardView: View {
             }
             .onAppear {
                 // Log the current authentication state
-                print("🎯 DashboardView onAppear")
-                print("   - isAuthenticated: \(authManager.isAuthenticated)")
-                print("   - currentUser: \(authManager.currentUser?.id ?? "nil") (\(authManager.currentUser?.email ?? "nil"))")
-                print("   - clerkSession: \(authManager.clerkSession?.id ?? "nil")")
+                // print("🎯 DashboardView onAppear")
+                // print("   - isAuthenticated: \(authManager.isAuthenticated)")
+                // print("   - currentUser: \(authManager.currentUser?.id ?? "nil") (\(authManager.currentUser?.email ?? "nil"))")
+                // print("   - clerkSession: \(authManager.clerkSession?.id ?? "nil")")
                 
                 // Load cached data immediately for instant UI
                 if authManager.currentUser?.id != nil {
@@ -114,11 +114,11 @@ struct DashboardView: View {
                         await loadBodyMetrics()
                     }
                 } else {
-                    print("⚠️ No current user on appear")
+                    // print("⚠️ No current user on appear")
                 }
             }
             .onChange(of: healthKitManager.todayStepCount) { _, newStepCount in
-                print("📱 Step count changed from HealthKit: \(newStepCount)")
+                // print("📱 Step count changed from HealthKit: \(newStepCount)")
                 Task {
                     await updateStepCount(newStepCount)
                 }
@@ -148,7 +148,7 @@ struct DashboardView: View {
                 }
             }
             .onChange(of: authManager.currentUser?.id) { _, newUserId in
-                print("👤 User ID changed: \(authManager.currentUser?.id ?? "nil") -> \(newUserId ?? "nil")")
+                // print("👤 User ID changed: \(authManager.currentUser?.id ?? "nil") -> \(newUserId ?? "nil")")
                 
                 // Reset state
                 bodyMetrics = []

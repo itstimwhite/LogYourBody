@@ -47,8 +47,8 @@ class WidgetDataManager: ObservableObject {
             .sorted { ($0.date ?? Date.distantPast) > ($1.date ?? Date.distantPast) }
             .first
         
-        var weight: Double? = nil
-        var bodyFat: Double? = nil
+        var weight: Double?
+        var bodyFat: Double?
         
         if let metrics = recentMetrics {
             // Convert weight to user's preferred unit
@@ -85,7 +85,7 @@ class WidgetDataManager: ObservableObject {
                 quantityType: stepType,
                 quantitySamplePredicate: predicate,
                 options: .cumulativeSum
-            ) { _, result, error in
+            ) { _, result, _ in
                 guard let result = result,
                       let sum = result.sumQuantity() else {
                     continuation.resume(returning: 0)
@@ -120,7 +120,7 @@ class WidgetDataManager: ObservableObject {
         )
         
         // Set up timer for periodic updates (every 30 minutes)
-        Timer.scheduledTimer(withTimeInterval: 1800, repeats: true) { _ in
+        Timer.scheduledTimer(withTimeInterval: 1_800, repeats: true) { _ in
             Task { @MainActor in
                 await self.updateWidgetData()
             }

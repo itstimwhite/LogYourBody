@@ -33,7 +33,7 @@ struct DashboardEmptyStateView: View {
     let icon: String
     let title: String
     let message: String
-    var action: (() -> Void)? = nil
+    var action: (() -> Void)?
     var actionTitle: String = "Get Started"
     
     var body: some View {
@@ -79,15 +79,15 @@ struct DashboardMetricGauge: View {
     let label: String
     let unit: String
     let color: Color
-    var size: CGSize = CGSize(width: 100, height: 100)
+    var size = CGSize(width: 100, height: 100)
     
     private var normalizedValue: Double {
         min(1.0, max(0.0, value / maxValue))
     }
     
     private var displayValue: String {
-        if value >= 1000 {
-            return String(format: "%.1fK", value / 1000)
+        if value >= 1_000 {
+            return String(format: "%.1fK", value / 1_000)
         } else {
             return String(format: "%.0f", value)
         }

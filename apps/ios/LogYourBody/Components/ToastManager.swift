@@ -177,7 +177,7 @@ struct ToastContainerView: View {
     @Namespace private var namespace
     
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             if let toast = toastManager.currentToast {
                 VStack {
                     ToastView(toast: toast)
@@ -186,7 +186,7 @@ struct ToastContainerView: View {
                             insertion: .move(edge: .top).combined(with: .opacity),
                             removal: .move(edge: .top).combined(with: .opacity)
                         ))
-                        .zIndex(1000)
+                        .zIndex(1_000)
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
                         .onTapGesture {

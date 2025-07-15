@@ -86,7 +86,7 @@ struct WelcomeStepView: View {
                 #if DEBUG
                 if showDebugOptions {
                     Button(action: {
-                        print("🔧 DEBUG: Skipping onboarding via button")
+                        // print("🔧 DEBUG: Skipping onboarding via button")
                         UserDefaults.standard.set(true, forKey: Constants.hasCompletedOnboardingKey)
                         
                         // Force update profile to mark as complete

@@ -193,7 +193,7 @@ struct DashboardViewV2: View {
                     }
                     
                     if let height = authManager.currentUser?.profile?.height, height > 0 {
-                        let displayHeight = currentSystem == .imperial ? 
+                        let displayHeight = currentSystem == .imperial ?
                             formatHeightToFeetInches(height) : "\(Int(height * 2.54))cm"
                         Label(displayHeight, systemImage: "ruler")
                             .font(.system(size: 13))
@@ -358,7 +358,7 @@ struct DashboardViewV2: View {
         HStack(spacing: 24) { // Equal 24pt padding
             // Weight gauge
             let weightValue = currentMetric?.weight ?? 0
-            let weightInCurrentUnit = currentSystem == .imperial ? 
+            let weightInCurrentUnit = currentSystem == .imperial ?
                 weightValue * 2.20462 : weightValue
             
             CleanMetricGauge(
@@ -519,8 +519,8 @@ struct DashboardViewV2: View {
     }
     
     private func formatNumber(_ number: Int) -> String {
-        if number >= 1000 {
-            return String(format: "%.1fK", Double(number) / 1000.0)
+        if number >= 1_000 {
+            return String(format: "%.1fK", Double(number) / 1_000.0)
         }
         return "\(number)"
     }
@@ -599,7 +599,7 @@ struct DashboardViewV2: View {
             
             await refreshData()
         } catch {
-            print("Failed to upload photo: \(error)")
+            // print("Failed to upload photo: \(error)")
         }
     }
 }

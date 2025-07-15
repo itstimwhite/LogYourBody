@@ -9,8 +9,8 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 struct ExportDataView: View {
-    @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject var authManager: AuthManager
+    @Environment(\.dismiss)
+    private var dismiss    @EnvironmentObject var authManager: AuthManager
     @State private var isExporting = false
     @State private var exportProgress: Double = 0
     @State private var showShareSheet = false
@@ -172,7 +172,7 @@ struct ExportDataView: View {
                                 .background(Color.appCard)
                                 .cornerRadius(12)
                                 .padding(.horizontal)
-                            }
+                                }
                             }
                             
                             // Include Photos Option (only for direct download)
@@ -200,7 +200,7 @@ struct ExportDataView: View {
                                 .padding()
                                 .background(Color.appCard)
                                 .cornerRadius(12)
-                            }
+                                }
                             .buttonStyle(PlainButtonStyle())
                             .padding(.horizontal)
                             }
@@ -252,7 +252,7 @@ struct ExportDataView: View {
                         .padding(.top, 8)
                         
                         // Privacy Note
-                        Text(exportMethod == .email ? 
+                        Text(exportMethod == .email ?
                              "A secure download link will be sent to your registered email address. The link will expire after 24 hours." :
                              "Your data export will be prepared and saved to your device. You can then share it or save it to your preferred location.")
                             .font(.caption)
@@ -360,7 +360,7 @@ struct ExportDataView: View {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
             request.setValue("application/json", forHTTPHeaderField: "Content-Type")
             
-            let body = ["format": "json", "emailLink": true] as [String : Any]
+            let body = ["format": "json", "emailLink": true] as [String: Any]
             request.httpBody = try JSONSerialization.data(withJSONObject: body)
             
             let (data, response) = try await URLSession.shared.data(for: request)
@@ -386,7 +386,6 @@ struct ExportDataView: View {
             
             isExporting = false
             showSuccess = true
-            
         } catch {
             isExporting = false
             errorMessage = error.localizedDescription
@@ -481,7 +480,6 @@ struct ExportDataView: View {
             
             isExporting = false
             showShareSheet = true
-            
         } catch {
             isExporting = false
             errorMessage = error.localizedDescription

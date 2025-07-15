@@ -46,7 +46,7 @@ class ChangelogManager {
     private let hardcodedEntries: [ChangelogEntry] = [
         ChangelogEntry(
             version: "1.4.0",
-            date: Date(timeIntervalSince1970: 1720656000), // July 11, 2025 (today)
+            date: Date(timeIntervalSince1970: 1_720_656_000), // July 11, 2025 (today)
             changes: [
                 .init(type: .feature, description: "Frictionless Apple Sign In with post-auth consent"),
                 .init(type: .feature, description: "Redesigned photo carousel with 16:9 aspect ratio"),
@@ -59,7 +59,7 @@ class ChangelogManager {
         ),
         ChangelogEntry(
             version: "1.3.0",
-            date: Date(timeIntervalSince1970: 1719792000), // July 1, 2025
+            date: Date(timeIntervalSince1970: 1_719_792_000), // July 1, 2025
             changes: [
                 .init(type: .feature, description: "AI-powered background removal for progress photos"),
                 .init(type: .feature, description: "Advanced body composition analytics"),
@@ -71,7 +71,7 @@ class ChangelogManager {
         ),
         ChangelogEntry(
             version: "1.2.0",
-            date: Date(timeIntervalSince1970: 1718928000), // June 21, 2025
+            date: Date(timeIntervalSince1970: 1_718_928_000), // June 21, 2025
             changes: [
                 .init(type: .feature, description: "Import all historical data from HealthKit"),
                 .init(type: .feature, description: "What's New section in Settings"),
@@ -85,7 +85,7 @@ class ChangelogManager {
         ),
         ChangelogEntry(
             version: "1.1.0",
-            date: Date(timeIntervalSince1970: 1717718400), // June 7, 2025
+            date: Date(timeIntervalSince1970: 1_717_718_400), // June 7, 2025
             changes: [
                 .init(type: .feature, description: "Redesigned profile settings with greyscale theme"),
                 .init(type: .feature, description: "Real-time sync with cloud storage"),
@@ -97,7 +97,7 @@ class ChangelogManager {
         ),
         ChangelogEntry(
             version: "1.0.0",
-            date: Date(timeIntervalSince1970: 1716508800), // May 24, 2025
+            date: Date(timeIntervalSince1970: 1_716_508_800), // May 24, 2025
             changes: [
                 .init(type: .feature, description: "Initial release"),
                 .init(type: .feature, description: "Track body weight and body fat percentage"),

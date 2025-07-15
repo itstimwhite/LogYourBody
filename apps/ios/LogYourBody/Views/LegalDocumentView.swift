@@ -12,18 +12,24 @@ struct LegalDocumentView: View {
     @State private var documentContent: String = ""
     @State private var isLoading = true
     @State private var loadError = false
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.dismiss)
+    var dismiss    
     enum LegalDocumentType {
         case terms
         case privacy
         case healthDisclosure
+        case gdprCompliance
+        case ccpaCompliance
+        case openSourceLicenses
         
         var title: String {
             switch self {
             case .terms: return "Terms of Service"
-            case .privacy: return "Privacy Policy"  
+            case .privacy: return "Privacy Policy"
             case .healthDisclosure: return "Health Disclosure"
+            case .gdprCompliance: return "GDPR Compliance"
+            case .ccpaCompliance: return "CCPA Compliance"
+            case .openSourceLicenses: return "Open Source Licenses"
             }
         }
         
@@ -32,6 +38,9 @@ struct LegalDocumentView: View {
             case .terms: return "terms-of-service"
             case .privacy: return "privacy-policy"
             case .healthDisclosure: return "health-disclosure"
+            case .gdprCompliance: return "gdpr-compliance"
+            case .ccpaCompliance: return "ccpa-compliance"
+            case .openSourceLicenses: return "open-source-licenses"
             }
         }
         
@@ -40,6 +49,9 @@ struct LegalDocumentView: View {
             case .terms: return "doc.text"
             case .privacy: return "hand.raised"
             case .healthDisclosure: return "heart.text.square"
+            case .gdprCompliance: return "shield.lefthalf.filled"
+            case .ccpaCompliance: return "shield.righthalf.filled"
+            case .openSourceLicenses: return "text.badge.checkmark"
             }
         }
     }
@@ -165,6 +177,36 @@ struct LegalDocumentView: View {
             Please visit our website for the full Health Disclosure.
             
             LogYourBody is not a medical service and does not provide medical advice.
+            """
+        case .gdprCompliance:
+            documentContent = """
+            # GDPR Compliance
+            
+            **Last Updated: July 14, 2025**
+            
+            Please visit our website for the full GDPR Compliance information.
+            
+            We comply with the General Data Protection Regulation for EU users.
+            """
+        case .ccpaCompliance:
+            documentContent = """
+            # CCPA Compliance
+            
+            **Last Updated: July 14, 2025**
+            
+            Please visit our website for the full CCPA Compliance information.
+            
+            We respect the privacy rights of California residents.
+            """
+        case .openSourceLicenses:
+            documentContent = """
+            # Open Source Licenses
+            
+            **Last Updated: July 14, 2025**
+            
+            Please visit our website for the full list of open source licenses.
+            
+            LogYourBody is built with amazing open source software.
             """
         }
         isLoading = false

@@ -74,7 +74,7 @@ class AuthManager: NSObject, ObservableObject {
     
     override init() {
         super.init()
-        print("🔐 AuthManager initialized")
+        // print("🔐 AuthManager initialized")
         
         // Always start with no authentication until Clerk confirms session
         self.isAuthenticated = false
@@ -86,7 +86,7 @@ class AuthManager: NSObject, ObservableObject {
     }
     
     func initializeClerk() async {
-        print("🔧 Initializing Clerk SDK")
+        // print("🔧 Initializing Clerk SDK")
         
         // Configure Clerk with publishable key
         clerk.configure(publishableKey: Constants.clerkPublishableKey)
@@ -94,14 +94,14 @@ class AuthManager: NSObject, ObservableObject {
         // Load Clerk
         do {
             try await clerk.load()
-            print("✅ Clerk SDK loaded successfully")
+            // print("✅ Clerk SDK loaded successfully")
             
             await MainActor.run {
                 self.isClerkLoaded = true
                 self.observeSessionChanges()
             }
         } catch {
-            print("❌ Failed to load Clerk: \(error)")
+            // print("❌ Failed to load Clerk: \(error)")
         }
     }
     
@@ -140,13 +140,13 @@ class AuthManager: NSObject, ObservableObject {
         
         // Only update if session actually changed
         if previousSessionId != currentSessionId {
-            print("🔄 Session change detected: \(previousSessionId ?? "nil") -> \(currentSessionId ?? "nil")")
+            // print("🔄 Session change detected: \(previousSessionId ?? "nil") -> \(currentSessionId ?? "nil")")
             
             self.clerkSession = clerk.session
             
             if let _ = clerk.session, let user = clerk.user {
                 // Only authenticate if we have both a valid session AND user
-                print("🔄 Clerk session state: signed in with user \(user.id)")
+                // print("🔄 Clerk session state: signed in with user \(user.id)")
                 self.updateLocalUser(clerkUser: user)
                 // isAuthenticated will be set by updateLocalUser if successful
                 
@@ -156,7 +156,7 @@ class AuthManager: NSObject, ObservableObject {
                 self.needsEmailVerification = false
             } else {
                 // No valid session or user
-                print("🔄 Clerk session state: signed out")
+                // print("🔄 Clerk session state: signed out")
                 self.isAuthenticated = false
                 self.currentUser = nil
                 userDefaults.removeObject(forKey: userKey)
@@ -255,7 +255,7 @@ class AuthManager: NSObject, ObservableObject {
     func login(email: String, password: String) async throws {
         // Mock authentication for development
         if Constants.useMockAuth {
-            print("🧪 Using mock authentication for development")
+            // print("🧪 Using mock authentication for development")
             
             // Create mock user
             let mockUser = LocalUser(
@@ -281,7 +281,7 @@ class AuthManager: NSObject, ObservableObject {
             await MainActor.run {
                 self.currentUser = mockUser
                 self.isAuthenticated = true
-                print("✅ Mock authentication successful")
+                // print("✅ Mock authentication successful")
             }
             return
         }
@@ -297,10 +297,10 @@ class AuthManager: NSObject, ObservableObject {
                 strategy: .identifier(email, password: password)
             )
             
-            print("✅ Sign in successful")
+            // print("✅ Sign in successful")
             // The session observer will automatically update isAuthenticated
         } catch {
-            print("❌ Login failed: \(error)")
+            // print("❌ Login failed: \(error)")
             throw error
         }
     }
@@ -377,9 +377,9 @@ class AuthManager: NSObject, ObservableObject {
     func logout() async {
         do {
             try await clerk.signOut()
-            print("✅ Signed out successfully")
+            // print("✅ Signed out successfully")
         } catch {
-            print("❌ Logout error: \(error)")
+            // print("❌ Logout error: \(error)")
         }
         
         await MainActor.run {
@@ -403,12 +403,12 @@ class AuthManager: NSObject, ObservableObject {
         UserDefaults.standard.removeObject(forKey: "lastSupabaseSyncDate")
         UserDefaults.standard.removeObject(forKey: "lastHealthKitWeightSyncDate")
         
-        print("🧹 Cleared all user data from UserDefaults")
+        // print("🧹 Cleared all user data from UserDefaults")
     }
     
     private func loadUserProfile(userId: String) async {
         guard let token = await getSupabaseToken() else {
-            print("❌ No Supabase token available")
+            // print("❌ No Supabase token available")
             return
         }
         
@@ -504,7 +504,7 @@ class AuthManager: NSObject, ObservableObject {
                 }
             }
         } catch {
-            print("❌ Failed to load user profile: \(error)")
+            // print("❌ Failed to load user profile: \(error)")
         }
     }
     
@@ -557,7 +557,6 @@ class AuthManager: NSObject, ObservableObject {
             
             // Process the credentials
             try await signInWithAppleCredentials(appleIDCredential)
-            
         } catch {
             // Handle specific errors
             if let authError = error as? ASAuthorizationError {
@@ -637,7 +636,7 @@ class AuthManager: NSObject, ObservableObject {
                         do {
                             try await consolidateNameUpdate(name)
                         } catch {
-                            print("❌ Failed to update name from Apple Sign In: \(error)")
+                            // print("❌ Failed to update name from Apple Sign In: \(error)")
                             // Keep the temporary storage for later resolution
                         }
                     }
@@ -733,12 +732,12 @@ class AuthManager: NSObject, ObservableObject {
                 // For now, show an error to the user about missing requirements
                 // In a production app, you would handle legal acceptance properly
                 let missingFieldsString = (signUp.missingFields ?? []).joined(separator: ", ")
-                let errorMessage = missingFieldsString.isEmpty 
-                    ? "Additional requirements needed to complete sign up." 
+                let errorMessage = missingFieldsString.isEmpty
+                    ? "Additional requirements needed to complete sign up."
                     : "Please accept the terms of service to continue. Missing: \(missingFieldsString)"
                 let error = NSError(
                     domain: "AuthManager",
-                    code: 1001,
+                    code: 1_001,
                     userInfo: [NSLocalizedDescriptionKey: errorMessage]
                 )
                 throw error
@@ -790,7 +789,7 @@ class AuthManager: NSObject, ObservableObject {
     
     func getAccessToken() async -> String? {
         guard let session = clerk.session else {
-            print("❌ No active Clerk session")
+            // print("❌ No active Clerk session")
             return nil
         }
         
@@ -799,7 +798,7 @@ class AuthManager: NSObject, ObservableObject {
             let tokenResource = try await session.getToken()
             return tokenResource?.jwt
         } catch {
-            print("❌ Failed to get JWT token: \(error)")
+            // print("❌ Failed to get JWT token: \(error)")
             return nil
         }
     }
@@ -808,7 +807,7 @@ class AuthManager: NSObject, ObservableObject {
     
     private func createOrUpdateSupabaseProfile(user: LocalUser) async {
         guard let session = clerkSession else {
-            print("❌ No Clerk session available for profile sync")
+            // print("❌ No Clerk session available for profile sync")
             return
         }
         
@@ -816,7 +815,7 @@ class AuthManager: NSObject, ObservableObject {
             // Get JWT token from Clerk
             let tokenResource = try await session.getToken()
             guard let token = tokenResource?.jwt else {
-                print("❌ Failed to get JWT token for profile sync")
+                // print("❌ Failed to get JWT token for profile sync")
                 return
             }
             
@@ -853,13 +852,13 @@ class AuthManager: NSObject, ObservableObject {
             
             if let httpResponse = response as? HTTPURLResponse {
                 if (200...299).contains(httpResponse.statusCode) {
-                    print("✅ Profile synced to Supabase")
+                    // print("✅ Profile synced to Supabase")
                 } else {
-                    print("❌ Profile sync failed: Status \(httpResponse.statusCode)")
+                    // print("❌ Profile sync failed: Status \(httpResponse.statusCode)")
                 }
             }
         } catch {
-            print("❌ Profile sync error: \(error)")
+            // print("❌ Profile sync error: \(error)")
         }
     }
     
@@ -1055,11 +1054,11 @@ class AuthManager: NSObject, ObservableObject {
                         sessionId = child.value as? String ?? ""
                     case "lastActiveAt":
                         if let timestamp = child.value as? TimeInterval {
-                            lastActiveAt = Date(timeIntervalSince1970: timestamp / 1000)
+                            lastActiveAt = Date(timeIntervalSince1970: timestamp / 1_000)
                         }
                     case "createdAt":
                         if let timestamp = child.value as? TimeInterval {
-                            createdAt = Date(timeIntervalSince1970: timestamp / 1000)
+                            createdAt = Date(timeIntervalSince1970: timestamp / 1_000)
                         }
                     case "status":
                         status = child.value as? String ?? ""
@@ -1086,7 +1085,7 @@ class AuthManager: NSObject, ObservableObject {
                 )
             }
         } catch {
-            print("❌ Failed to fetch sessions: \(error)")
+            // print("❌ Failed to fetch sessions: \(error)")
             throw error
         }
     }
@@ -1096,7 +1095,7 @@ class AuthManager: NSObject, ObservableObject {
         guard sessionId != clerkSession?.id else {
             throw NSError(
                 domain: "AuthManager",
-                code: 1002,
+                code: 1_002,
                 userInfo: [NSLocalizedDescriptionKey: "Cannot revoke current session"]
             )
         }
@@ -1121,16 +1120,16 @@ class AuthManager: NSObject, ObservableObject {
             }) else {
                 throw NSError(
                     domain: "AuthManager",
-                    code: 1003,
+                    code: 1_003,
                     userInfo: [NSLocalizedDescriptionKey: "Session not found"]
                 )
             }
             
             // Use the session's revoke method
             try await sessionToRevoke.revoke()
-            print("✅ Session \(sessionId) revoked successfully")
+            // print("✅ Session \(sessionId) revoked successfully")
         } catch {
-            print("❌ Failed to revoke session: \(error)")
+            // print("❌ Failed to revoke session: \(error)")
             throw error
         }
     }
@@ -1207,7 +1206,7 @@ class AuthManager: NSObject, ObservableObject {
         }
         
         // Resize image to reasonable size (max 1000x1000)
-        let maxSize: CGFloat = 1000
+        let maxSize: CGFloat = 1_000
         let scale = min(maxSize / image.size.width, maxSize / image.size.height)
         let newSize = CGSize(width: image.size.width * scale, height: image.size.height * scale)
         
@@ -1225,7 +1224,7 @@ class AuthManager: NSObject, ObservableObject {
             // Use Clerk's setProfileImage method
             let imageResource = try await clerkUser.setProfileImage(imageData: imageData)
             
-            print("✅ Profile image uploaded: \(imageResource.id)")
+            // print("✅ Profile image uploaded: \(imageResource.id)")
             
             // Get updated user object
             let updatedClerkUser = clerk.user
@@ -1255,7 +1254,7 @@ class AuthManager: NSObject, ObservableObject {
                 }
             }
         } catch {
-            print("❌ Failed to upload profile picture: \(error)")
+            // print("❌ Failed to upload profile picture: \(error)")
             throw error
         }
         
@@ -1280,7 +1279,7 @@ class AuthManager: NSObject, ObservableObject {
         
         // Since Clerk iOS SDK update method is unclear, we'll update our local state
         // and sync to Supabase. The name will be synced with Clerk on next sign in.
-        print("ℹ️ Updating name locally and in Supabase")
+        // print("ℹ️ Updating name locally and in Supabase")
         
         // Update local user immediately
         if var user = currentUser {
@@ -1317,7 +1316,7 @@ class AuthManager: NSObject, ObservableObject {
             // Clear the pending update after successful local update
             UserDefaults.standard.removeObject(forKey: "pendingNameUpdate")
             
-            print("✅ Updated user name locally and in Supabase: \(trimmedName)")
+            // print("✅ Updated user name locally and in Supabase: \(trimmedName)")
         } else {
             throw AuthError.nameUpdateFailed("No current user found")
         }
@@ -1337,7 +1336,6 @@ class AuthManager: NSObject, ObservableObject {
             
             // Open Safari for authentication
             try await signIn.authenticateWithRedirect()
-            
         } catch {
             // Handle specific error cases
             let errorString = String(describing: error)
@@ -1423,11 +1421,11 @@ class AuthManager: NSObject, ObservableObject {
         }
         
         do {
-            print("📝 Resolving pending name update: \(pendingName)")
+            // print("📝 Resolving pending name update: \(pendingName)")
             try await consolidateNameUpdate(pendingName)
-            print("✅ Pending name update resolved")
+            // print("✅ Pending name update resolved")
         } catch {
-            print("❌ Failed to resolve pending name update: \(error)")
+            // print("❌ Failed to resolve pending name update: \(error)")
             // Keep the pending update for next attempt
         }
     }
@@ -1455,7 +1453,7 @@ class AuthManager: NSObject, ObservableObject {
                 return true // User has accepted legal terms
             }
         } catch {
-            print("❌ Failed to check legal consent: \(error)")
+            // print("❌ Failed to check legal consent: \(error)")
         }
         
         return false
@@ -1490,7 +1488,7 @@ class AuthManager: NSObject, ObservableObject {
             
             if let httpResponse = response as? HTTPURLResponse {
                 if (200...299).contains(httpResponse.statusCode) {
-                    print("✅ Legal consent saved")
+                    // print("✅ Legal consent saved")
                     
                     // Now complete the sign in process
                     self.needsLegalConsent = false
@@ -1499,14 +1497,13 @@ class AuthManager: NSObject, ObservableObject {
                     // Force session update to complete authentication
                     self.updateSessionState()
                 } else {
-                    print("❌ Failed to save consent: Status \(httpResponse.statusCode)")
+                    // print("❌ Failed to save consent: Status \(httpResponse.statusCode)")
                 }
             }
         } catch {
-            print("❌ Failed to save legal consent: \(error)")
+            // print("❌ Failed to save legal consent: \(error)")
         }
     }
-    
 }
 
 // MARK: - Apple Sign In Delegate
@@ -1548,4 +1545,3 @@ private class AppleSignInDelegate: NSObject, ASAuthorizationControllerDelegate, 
         fatalError("No active window found")
     }
 }
-

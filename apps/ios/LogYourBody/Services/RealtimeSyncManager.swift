@@ -183,7 +183,7 @@ class RealtimeSyncManager: ObservableObject {
             syncInterval = 900 // 15 minutes
         default:
             // Minimal sync below 20% battery
-            syncInterval = 1800 // 30 minutes
+            syncInterval = 1_800 // 30 minutes
         }
         
         // Restart timer with new interval
@@ -272,7 +272,6 @@ class RealtimeSyncManager: ObservableObject {
                     self.consecutiveFailures = 0
                     self.updatePendingSyncCount()
                 }
-                
             } catch {
                 await MainActor.run {
                     self.isSyncing = false
@@ -282,7 +281,7 @@ class RealtimeSyncManager: ObservableObject {
                     
                     // Back off if too many failures
                     if self.consecutiveFailures >= self.maxConsecutiveFailures {
-                        self.syncInterval = min(self.syncInterval * 2, 3600) // Max 1 hour
+                        self.syncInterval = min(self.syncInterval * 2, 3_600) // Max 1 hour
                         self.startAutoSync()
                     }
                 }
@@ -319,7 +318,7 @@ class RealtimeSyncManager: ObservableObject {
                     "body_fat_percentage": metric.bodyFatPercentage as Any,
                     // "muscle_mass_percentage": metric.muscleMassPercentage as Any, // Field doesn't exist
                     "logged_at": ISO8601DateFormatter().string(from: metric.date ?? Date()),
-                    "notes": metric.notes as Any,
+                    "notes": metric.notes as Any
                     // "source": metric.source as Any // Field doesn't exist
                 ]
             }
@@ -492,8 +491,8 @@ class RealtimeSyncManager: ObservableObject {
     // MARK: - Helpers
     func updatePendingSyncCount() {
         let unsynced = coreDataManager.fetchUnsyncedEntries()
-        pendingSyncCount = unsynced.bodyMetrics.count + 
-                          unsynced.dailyMetrics.count + 
+        pendingSyncCount = unsynced.bodyMetrics.count +
+                          unsynced.dailyMetrics.count +
                           unsynced.profiles.count +
                           pendingOperations.count
     }

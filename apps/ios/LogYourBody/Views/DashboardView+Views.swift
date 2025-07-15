@@ -240,11 +240,11 @@ extension DashboardView {
             .cornerRadius(12)
             
             // Weight with trend indicator
-            let weightValue = currentMetric?.weight != nil 
+            let weightValue = currentMetric?.weight != nil
                 ? convertWeight(currentMetric!.weight!, from: "kg", to: currentSystem.weightUnit)
                 : nil
             let weightTrend = calculateWeightTrend()
-            let weightTrendConverted = weightTrend != nil 
+            let weightTrendConverted = weightTrend != nil
                 ? convertWeight(weightTrend!, from: "kg", to: currentSystem.weightUnit)
                 : nil
             
@@ -316,62 +316,11 @@ extension DashboardView {
     
     @ViewBuilder
     var timelineSlider: some View {
-        VStack(spacing: 12) {
-            // Photo navigation buttons
-            if hasPhotos {
-                HStack(spacing: 16) {
-                    // Previous photo button
-                    Button(action: navigateToPreviousPhoto) {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(hasPreviousPhoto ? .white : .white.opacity(0.3))
-                            .frame(width: 32, height: 32)
-                            .background(
-                                Circle()
-                                    .fill(Color.white.opacity(hasPreviousPhoto ? 0.1 : 0.05))
-                            )
-                    }
-                    .disabled(!hasPreviousPhoto)
-                    
-                    Spacer()
-                    
-                    // Current date display
-                    if let date = currentMetric?.date {
-                        VStack(spacing: 2) {
-                            Text(date, format: .dateTime.month(.abbreviated).day())
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.white)
-                            
-                            Text(date, format: .dateTime.year())
-                                .font(.system(size: 12))
-                                .foregroundColor(.white.opacity(0.6))
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    // Next photo button
-                    Button(action: navigateToNextPhoto) {
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(hasNextPhoto ? .white : .white.opacity(0.3))
-                            .frame(width: 32, height: 32)
-                            .background(
-                                Circle()
-                                    .fill(Color.white.opacity(hasNextPhoto ? 0.1 : 0.05))
-                            )
-                    }
-                    .disabled(!hasNextPhoto)
-                }
-                .padding(.horizontal, 4)
-            }
-            
-            // Timeline slider
-            PhotoAnchoredTimelineSlider(
-                metrics: bodyMetrics,
-                selectedIndex: $selectedIndex,
-                accentColor: .appPrimary
-            )
-        }
+        // Use PhotoAnchoredTimelineSlider which already includes navigation buttons and date display
+        PhotoAnchoredTimelineSlider(
+            metrics: bodyMetrics,
+            selectedIndex: $selectedIndex,
+            accentColor: .appPrimary
+        )
     }
 }

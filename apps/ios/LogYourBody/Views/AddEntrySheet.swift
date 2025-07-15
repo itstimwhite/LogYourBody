@@ -9,8 +9,8 @@ import SwiftUI
 import PhotosUI
 
 struct AddEntrySheet: View {
-    @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var authManager: AuthManager
+    @Environment(\.dismiss)
+    var dismiss    @EnvironmentObject var authManager: AuthManager
     @Binding var isPresented: Bool
     @State private var selectedTab: Int
     @State private var selectedDate = Date()
@@ -378,9 +378,8 @@ struct AddEntrySheet: View {
                 
                 processedCount = index + 1
                 photoProgress = Double(processedCount) / Double(selectedPhotos.count)
-                
             } catch {
-                print("Failed to process photo \(index): \(error)")
+                // print("Failed to process photo \(index): \(error)")
             }
         }
         

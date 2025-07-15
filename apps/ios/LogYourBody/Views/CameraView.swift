@@ -9,8 +9,8 @@ import SwiftUI
 import UIKit
 
 struct CameraView: UIViewControllerRepresentable {
-    @Environment(\.dismiss) var dismiss
-    let onImageCaptured: (UIImage) -> Void
+    @Environment(\.dismiss)
+    var dismiss    let onImageCaptured: (UIImage) -> Void
     
     func makeUIViewController(context: Context) -> UIImagePickerController {
         let picker = UIImagePickerController()
@@ -35,7 +35,7 @@ struct CameraView: UIViewControllerRepresentable {
             self.parent = parent
         }
         
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
             if let image = info[.originalImage] as? UIImage {
                 parent.onImageCaptured(image)
             }

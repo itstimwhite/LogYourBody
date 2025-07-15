@@ -103,7 +103,6 @@ struct DateOfBirthInputView: View {
                         .padding(20)
                         .background(Color.appCard)
                         .cornerRadius(12)
-                        
                     }
                     .padding(.horizontal, 24)
                     .transition(.opacity.combined(with: .scale))
@@ -112,7 +111,7 @@ struct DateOfBirthInputView: View {
                     VStack(spacing: 16) {
                         DatePicker("", selection: Binding(
                             get: { viewModel.data.dateOfBirth ?? Date() },
-                            set: { 
+                            set: {
                                 viewModel.data.dateOfBirth = $0
                                 // Check age after selection
                                 if let newAge = calculateAge(from: $0), newAge < 17 {

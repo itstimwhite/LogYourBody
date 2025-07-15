@@ -91,7 +91,7 @@ class HealthKitManager: ObservableObject {
             
             return isAuthorized
         } catch {
-            print("HealthKit authorization failed: \(error)")
+            // print("HealthKit authorization failed: \(error)")
             return false
         }
     }
@@ -130,7 +130,7 @@ class HealthKitManager: ObservableObject {
                 predicate: nil,
                 limit: 1,
                 sortDescriptors: [sortDescriptor]
-            ) { query, samples, error in
+            ) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -189,7 +189,7 @@ class HealthKitManager: ObservableObject {
                 predicate: predicate,
                 limit: HKObjectQueryNoLimit,
                 sortDescriptors: [sortDescriptor]
-            ) { query, samples, error in
+            ) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -221,7 +221,7 @@ class HealthKitManager: ObservableObject {
                 predicate: nil,
                 limit: 1,
                 sortDescriptors: [sortDescriptor]
-            ) { query, samples, error in
+            ) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -259,7 +259,7 @@ class HealthKitManager: ObservableObject {
                 predicate: predicate,
                 limit: HKObjectQueryNoLimit,
                 sortDescriptors: [sortDescriptor]
-            ) { query, samples, error in
+            ) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -355,7 +355,7 @@ class HealthKitManager: ObservableObject {
                 predicate: nil,
                 limit: 1,
                 sortDescriptors: [sortDescriptor]
-            ) { query, samples, error in
+            ) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -382,7 +382,7 @@ class HealthKitManager: ObservableObject {
             let dateOfBirth = try healthStore.dateOfBirthComponents()
             return Calendar.current.date(from: dateOfBirth)
         } catch {
-            print("Failed to fetch date of birth: \(error)")
+            // print("Failed to fetch date of birth: \(error)")
             return nil
         }
     }
@@ -404,7 +404,7 @@ class HealthKitManager: ObservableObject {
                 return nil
             }
         } catch {
-            print("Failed to fetch biological sex: \(error)")
+            // print("Failed to fetch biological sex: \(error)")
             return nil
         }
     }
@@ -431,7 +431,7 @@ class HealthKitManager: ObservableObject {
                 quantityType: stepCountType,
                 quantitySamplePredicate: predicate,
                 options: .cumulativeSum
-            ) { query, statistics, error in
+            ) { _, statistics, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -475,7 +475,7 @@ class HealthKitManager: ObservableObject {
                 quantityType: stepCountType,
                 quantitySamplePredicate: predicate,
                 options: .cumulativeSum
-            ) { query, statistics, error in
+            ) { _, statistics, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -512,7 +512,7 @@ class HealthKitManager: ObservableObject {
                 predicate: predicate,
                 limit: HKObjectQueryNoLimit,
                 sortDescriptors: [sortDescriptor]
-            ) { query, samples, error in
+            ) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -549,34 +549,34 @@ class HealthKitManager: ObservableObject {
     func syncWeightFromHealthKit() async throws {
         // Prevent concurrent syncs
         guard !isSyncingWeight else {
-            print("⚠️ Weight sync already in progress, skipping")
+            // print("⚠️ Weight sync already in progress, skipping")
             return
         }
         
-        print("📊 Starting comprehensive weight sync from HealthKit...")
+        // print("📊 Starting comprehensive weight sync from HealthKit...")
         isSyncingWeight = true
-        defer { 
+        defer {
             isSyncingWeight = false
-            print("✅ Weight sync completed")
+            // print("✅ Weight sync completed")
         }
         
         // First, do a quick sync of recent data (last 30 days) for immediate UI update
         let endDate = Date()
         let recentStartDate = Calendar.current.date(byAdding: .day, value: -30, to: endDate)!
         
-        print("📅 Phase 1: Fetching recent data (30 days)")
+        // print("📅 Phase 1: Fetching recent data (30 days)")
         
         // Fetch recent weight and body fat data
         let recentWeightHistory = try await fetchWeightHistory(days: 30)
         let recentBodyFatHistory = try await fetchBodyFatHistory(startDate: recentStartDate)
         
-        print("📈 Found \(recentWeightHistory.count) weight entries and \(recentBodyFatHistory.count) body fat entries")
+        // print("📈 Found \(recentWeightHistory.count) weight entries and \(recentBodyFatHistory.count) body fat entries")
         
         if !recentWeightHistory.isEmpty {
-            print("  📅 Weight entries date range: \(recentWeightHistory.first?.date ?? Date()) to \(recentWeightHistory.last?.date ?? Date())")
+            // print("  📅 Weight entries date range: \(recentWeightHistory.first?.date ?? Date()) to \(recentWeightHistory.last?.date ?? Date())")
             for (index, (weight, date)) in recentWeightHistory.enumerated() {
                 if index < 5 {  // Show first 5 entries
-                    print("    - \(date): \(weight)kg")
+                    // print("    - \(date): \(weight)kg")
                 }
             }
         }
@@ -587,7 +587,7 @@ class HealthKitManager: ObservableObject {
             bodyFatHistory: recentBodyFatHistory
         )
         
-        print("📊 Recent sync: \(imported) imported, \(skipped) skipped")
+        // print("📊 Recent sync: \(imported) imported, \(skipped) skipped")
         
         // Only trigger full historical sync if this is truly the first time and we have very little data
         let hasPerformedFullSync = UserDefaults.standard.bool(forKey: "hasPerformedFullHealthKitSync")
@@ -597,15 +597,15 @@ class HealthKitManager: ObservableObject {
         }
         
         if !hasPerformedFullSync {
-            print("📊 First time sync detected, scheduling full historical sync...")
-            print("📊 Current cached entries: \(totalCachedEntries)")
+            // print("📊 First time sync detected, scheduling full historical sync...")
+            // print("📊 Current cached entries: \(totalCachedEntries)")
             Task.detached(priority: .background) {
                 await self.syncAllHistoricalHealthKitData()
                 UserDefaults.standard.set(true, forKey: "hasPerformedFullHealthKitSync")
             }
         } else if totalCachedEntries < 50 && imported > 0 {
             // Also trigger if we have very few entries despite having done a sync before
-            print("📊 Low entry count detected (\(totalCachedEntries)), triggering full sync...")
+            // print("📊 Low entry count detected (\(totalCachedEntries)), triggering full sync...")
             Task.detached(priority: .background) {
                 await self.syncAllHistoricalHealthKitData()
             }
@@ -616,21 +616,21 @@ class HealthKitManager: ObservableObject {
     func syncWeightFromHealthKitIncremental(days: Int = 30, startDate: Date? = nil) async throws {
         // Prevent concurrent syncs
         guard !isSyncingWeight else {
-            print("⚠️ Weight sync already in progress, skipping incremental sync")
+            // print("⚠️ Weight sync already in progress, skipping incremental sync")
             return
         }
         
-        print("📊 Starting incremental weight sync from HealthKit (\(days) days)...")
+        // print("📊 Starting incremental weight sync from HealthKit (\(days) days)...")
         isSyncingWeight = true
-        defer { 
+        defer {
             isSyncingWeight = false
-            print("✅ Incremental weight sync completed")
+            // print("✅ Incremental weight sync completed")
         }
         
         let endDate = startDate ?? Date()
         let batchStartDate = Calendar.current.date(byAdding: .day, value: -days, to: endDate)!
         
-        print("📅 Fetching data from \(batchStartDate) to \(endDate)")
+        // print("📅 Fetching data from \(batchStartDate) to \(endDate)")
         
         // Fetch weight and body fat data for the specified period
         // Calculate days between dates
@@ -640,13 +640,13 @@ class HealthKitManager: ObservableObject {
         let bodyFatHistory = try await fetchBodyFatHistory(startDate: batchStartDate)
             .filter { $0.date <= endDate }
         
-        print("📈 Found \(weightHistory.count) weight entries and \(bodyFatHistory.count) body fat entries")
+        // print("📈 Found \(weightHistory.count) weight entries and \(bodyFatHistory.count) body fat entries")
         
         if !weightHistory.isEmpty {
-            print("  📅 Weight entries date range: \(weightHistory.first?.date ?? Date()) to \(weightHistory.last?.date ?? Date())")
+            // print("  📅 Weight entries date range: \(weightHistory.first?.date ?? Date()) to \(weightHistory.last?.date ?? Date())")
             for (index, (weight, date)) in weightHistory.enumerated() {
                 if index < 5 {  // Show first 5 entries
-                    print("    - \(date): \(weight)kg")
+                    // print("    - \(date): \(weight)kg")
                 }
             }
         }
@@ -738,14 +738,14 @@ class HealthKitManager: ObservableObject {
     
     // Sync ALL historical HealthKit data efficiently
     func syncAllHistoricalHealthKitData() async {
-        print("📊 Starting full historical HealthKit sync...")
+        // print("📊 Starting full historical HealthKit sync...")
         
         do {
             // Get the earliest available weight data date
             let earliestDate = try await getEarliestWeightDate() ?? Date().addingTimeInterval(-10 * 365 * 24 * 60 * 60) // Default to 10 years ago
             let endDate = Date()
             
-            print("📅 Syncing data from \(earliestDate) to \(endDate)")
+            // print("📅 Syncing data from \(earliestDate) to \(endDate)")
             
             // Process in larger batches (3 months at a time) for faster sync
             var currentDate = earliestDate
@@ -757,14 +757,14 @@ class HealthKitManager: ObservableObject {
                 let batchEndDate = Calendar.current.date(byAdding: .month, value: batchSizeMonths, to: currentDate) ?? endDate
                 let actualBatchEndDate = min(batchEndDate, endDate)
                 
-                print("📦 Processing batch: \(currentDate) to \(actualBatchEndDate)")
+                // print("📦 Processing batch: \(currentDate) to \(actualBatchEndDate)")
                 
                 // Fetch weight and body fat data for this batch
                 let weightBatch = try await fetchWeightHistoryInRange(startDate: currentDate, endDate: actualBatchEndDate)
                 let bodyFatBatch = try await fetchBodyFatHistory(startDate: currentDate)
                     .filter { $0.date < actualBatchEndDate }
                 
-                print("  📊 Batch contains \(weightBatch.count) weight entries and \(bodyFatBatch.count) body fat entries")
+                // print("  📊 Batch contains \(weightBatch.count) weight entries and \(bodyFatBatch.count) body fat entries")
                 
                 // Process this batch
                 let (imported, skipped) = await processBatchHealthKitData(
@@ -775,7 +775,7 @@ class HealthKitManager: ObservableObject {
                 totalImported += imported
                 totalSkipped += skipped
                 
-                print("  ✅ Batch complete: \(imported) imported, \(skipped) skipped (Total: \(totalImported) imported)")
+                // print("  ✅ Batch complete: \(imported) imported, \(skipped) skipped (Total: \(totalImported) imported)")
                 
                 // Move to next batch
                 currentDate = actualBatchEndDate
@@ -784,10 +784,9 @@ class HealthKitManager: ObservableObject {
                 try? await Task.sleep(nanoseconds: 10_000_000) // 0.01 seconds
             }
             
-            print("✅ Historical sync completed: \(totalImported) imported, \(totalSkipped) skipped")
-            
+            // print("✅ Historical sync completed: \(totalImported) imported, \(totalSkipped) skipped")
         } catch {
-            print("❌ Historical sync error: \(error)")
+            // print("❌ Historical sync error: \(error)")
         }
     }
     
@@ -801,7 +800,7 @@ class HealthKitManager: ObservableObject {
                 predicate: nil,
                 limit: 1,
                 sortDescriptors: [sortDescriptor]
-            ) { query, samples, error in
+            ) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -892,7 +891,7 @@ class HealthKitManager: ObservableObject {
                     imported += 1
                     existingEntriesByHour.insert(hourKey) // Add to set to prevent duplicates in same batch
                 } catch {
-                    print("Failed to save entry: \(error)")
+                    // print("Failed to save entry: \(error)")
                 }
             } else {
                 skipped += 1
@@ -955,7 +954,7 @@ class HealthKitManager: ObservableObject {
     func observeWeightChanges() {
         guard isAuthorized else { return }
         
-        let query = HKObserverQuery(sampleType: weightType, predicate: nil) { [weak self] query, completionHandler, error in
+        let query = HKObserverQuery(sampleType: weightType, predicate: nil) { [weak self] _, completionHandler, error in
             if error == nil {
                 // Check if we should sync (not more than once per hour)
                 let lastSyncKey = "lastHealthKitObserverSyncDate"
@@ -992,12 +991,12 @@ class HealthKitManager: ObservableObject {
         guard isAuthorized else { return }
         
         // Stop any existing step observer queries
-        activeQueries.filter { $0 is HKObserverQuery && ($0 as? HKObserverQuery)?.sampleType == stepCountType }.forEach { 
+        activeQueries.filter { $0 is HKObserverQuery && ($0 as? HKObserverQuery)?.sampleType == stepCountType }.forEach {
             healthStore.stop($0)
         }
         activeQueries.removeAll { $0 is HKObserverQuery && ($0 as? HKObserverQuery)?.sampleType == stepCountType }
         
-        let query = HKObserverQuery(sampleType: stepCountType, predicate: nil) { [weak self] query, completionHandler, error in
+        let query = HKObserverQuery(sampleType: stepCountType, predicate: nil) { [weak self] _, completionHandler, error in
             if error == nil {
                 // New step data available, sync it
                 Task { @MainActor [weak self] in
@@ -1033,9 +1032,9 @@ class HealthKitManager: ObservableObject {
                 for: stepCountType,
                 frequency: .immediate
             )
-            print("✅ Enabled background step delivery")
+            // print("✅ Enabled background step delivery")
         } catch {
-            print("❌ Failed to enable background step delivery: \(error)")
+            // print("❌ Failed to enable background step delivery: \(error)")
         }
     }
     
@@ -1067,7 +1066,7 @@ class HealthKitManager: ObservableObject {
                 intervalComponents: interval
             )
             
-            query.initialResultsHandler = { query, statisticsCollection, error in
+            query.initialResultsHandler = { _, statisticsCollection, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -1151,7 +1150,7 @@ class HealthKitManager: ObservableObject {
     
     // Force a full HealthKit sync
     func forceFullHealthKitSync() async {
-        print("🔄 Force full HealthKit sync requested")
+        // print("🔄 Force full HealthKit sync requested")
         // Clear the flag to force a full sync
         UserDefaults.standard.set(false, forKey: "hasPerformedFullHealthKitSync")
         
@@ -1159,7 +1158,7 @@ class HealthKitManager: ObservableObject {
         do {
             try await syncWeightFromHealthKit()
         } catch {
-            print("❌ Force sync failed: \(error)")
+            // print("❌ Force sync failed: \(error)")
         }
     }
     

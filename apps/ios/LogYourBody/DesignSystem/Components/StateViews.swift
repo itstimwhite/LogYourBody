@@ -1,8 +1,8 @@
 //
-//  StateViews.swift
-//  LogYourBody
+// StateViews.swift
+// LogYourBody
 //
-//  Loading, empty, and error state views
+// Loading, empty, and error state views
 //
 
 import SwiftUI
@@ -10,8 +10,6 @@ import SwiftUI
 // MARK: - Loading View
 
 struct DesignLoadingView: View {
-    
-    
     let message: String?
     let progress: Double?
     let style: LoadingStyle
@@ -160,8 +158,6 @@ struct DesignLoadingView: View {
 // MARK: - Empty State View
 
 struct EmptyStateView: View {
-    
-    
     let icon: String
     let title: String
     let description: String
@@ -222,8 +218,6 @@ struct EmptyStateView: View {
 // MARK: - Error View
 
 struct ErrorView: View {
-    
-    
     let error: Error
     let retryAction: (() -> Void)?
     
@@ -267,8 +261,6 @@ struct ErrorView: View {
 // MARK: - Success View
 
 struct SuccessView: View {
-    
-    
     let title: String
     let description: String?
     let actionTitle: String?
@@ -333,8 +325,6 @@ struct SuccessView: View {
 // MARK: - Progress Bar
 
 struct ProgressBar: View {
-    
-    
     let progress: Double
     let showPercentage: Bool
     
@@ -383,8 +373,6 @@ struct ProgressBar: View {
 // MARK: - Skeleton Loading
 
 struct SkeletonView: View {
-    
-    
     let width: CGFloat?
     let height: CGFloat
     let cornerRadius: CGFloat

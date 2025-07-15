@@ -19,7 +19,7 @@ struct OptimizedProgressPhotoView: View {
         let cache = NSCache<NSString, UIImage>()
         // Configure cache limits
         cache.countLimit = 50
-        cache.totalCostLimit = 100 * 1024 * 1024 // 100MB
+        cache.totalCostLimit = 100 * 1_024 * 1_024 // 100MB
         return cache
     }()
     
@@ -101,8 +101,8 @@ struct OptimizedProgressPhotoView: View {
             // Configure URLSession for optimal image loading
             let config = URLSessionConfiguration.default
             config.urlCache = URLCache(
-                memoryCapacity: 50 * 1024 * 1024,  // 50MB memory cache
-                diskCapacity: 200 * 1024 * 1024,   // 200MB disk cache
+                memoryCapacity: 50 * 1_024 * 1_024,  // 50MB memory cache
+                diskCapacity: 200 * 1_024 * 1_024,   // 200MB disk cache
                 diskPath: "progress_photos"
             )
             config.requestCachePolicy = .returnCacheDataElseLoad
@@ -133,9 +133,8 @@ struct OptimizedProgressPhotoView: View {
                 self.loadedImage = processedImage
                 self.isLoading = false
             }
-            
         } catch {
-            print("❌ Failed to load progress photo: \(error)")
+            // print("❌ Failed to load progress photo: \(error)")
             isLoading = false
             loadError = true
         }
@@ -166,7 +165,7 @@ struct OptimizedProgressPhotoView: View {
                 self.isLoading = false
             }
         } catch {
-            print("❌ Failed to load local photo: \(error)")
+            // print("❌ Failed to load local photo: \(error)")
             isLoading = false
             loadError = true
         }
@@ -192,7 +191,7 @@ struct OptimizedProgressPhotoView: View {
         format.opaque = false
         
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
-        return renderer.image { context in
+        return renderer.image { _ in
             orientedImage.draw(in: CGRect(origin: .zero, size: targetSize))
         }
     }

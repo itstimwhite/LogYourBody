@@ -10,8 +10,8 @@ import Clerk
 
 struct SecuritySessionsView: View {
     @EnvironmentObject var authManager: AuthManager
-    @Environment(\.dismiss) var dismiss
-    @State private var sessions: [SessionInfo] = []
+    @Environment(\.dismiss)
+    var dismiss    @State private var sessions: [SessionInfo] = []
     @State private var isLoading = true
     @State private var showError = false
     @State private var errorMessage = ""

@@ -1,8 +1,8 @@
 //
-//  StandardCard.swift
-//  LogYourBody
+// StandardCard.swift
+// LogYourBody
 //
-//  Reusable card components for consistent UI
+// Reusable card components for consistent UI
 //
 
 import SwiftUI
@@ -19,8 +19,6 @@ enum CardStyle {
 // MARK: - Standard Card
 
 struct StandardCard<Content: View>: View {
-    
-    
     let style: CardStyle
     let padding: CGFloat?
     @ViewBuilder let content: () -> Content
@@ -51,8 +49,7 @@ struct StandardCard<Content: View>: View {
     
     // MARK: - Computed Properties
     
-    @ViewBuilder
-    private var backgroundView: some View {
+    @ViewBuilder private var backgroundView: some View {
         switch style {
         case .standard:
             Color.appCard
@@ -65,8 +62,7 @@ struct StandardCard<Content: View>: View {
         }
     }
     
-    @ViewBuilder
-    private var overlayView: some View {
+    @ViewBuilder private var overlayView: some View {
         switch style {
         case .outlined:
             RoundedRectangle(cornerRadius: 12)
@@ -116,8 +112,6 @@ struct StandardCard<Content: View>: View {
 // MARK: - Glass Background
 
 struct GlassBackground: View {
-    
-    
     var body: some View {
         ZStack {
             Color.appCard.opacity(0.8)
@@ -145,8 +139,6 @@ struct VisualEffectBlur: UIViewRepresentable {
 // MARK: - Metric Card
 
 struct MetricCard: View {
-    
-    
     let value: String
     let label: String
     let icon: String?
@@ -244,8 +236,6 @@ struct MetricCard: View {
 // MARK: - Info Card
 
 struct InfoCard: View {
-    
-    
     let icon: String
     let iconColor: Color?
     let title: String
@@ -293,8 +283,6 @@ struct InfoCard: View {
 // MARK: - Action Card
 
 struct ActionCard<Destination: View>: View {
-    
-    
     let icon: String
     let title: String
     let subtitle: String?

@@ -1,8 +1,8 @@
 //
-//  StandardTextField.swift
-//  LogYourBody
+// StandardTextField.swift
+// LogYourBody
 //
-//  Reusable text field component with consistent styling
+// Reusable text field component with consistent styling
 //
 
 import SwiftUI
@@ -18,7 +18,6 @@ enum TextFieldStyle {
 // MARK: - Standard Text Field
 
 struct StandardTextField: View {
-    
     @FocusState private var isFocused: Bool
     
     @Binding var text: String
@@ -122,20 +121,26 @@ struct StandardTextField: View {
                     
                     // Password toggle
                     if isSecureField {
-                        Button(action: { showPassword.toggle() }) {
-                            Image(systemName: showPassword ? "eye.slash" : "eye")
-                                .font(.system(size: 16))
-                                .foregroundColor(.secondary)
-                        }
+                        Button(
+                            action: { showPassword.toggle() },
+                            label: {
+                                Image(systemName: showPassword ? "eye.slash" : "eye")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(.secondary)
+                            }
+                        )
                     }
                     
                     // Clear button
                     if !text.isEmpty && isFocused {
-                        Button(action: { text = "" }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.system(size: 16))
-                                .foregroundColor(Color.secondary.opacity(0.6))
-                        }
+                        Button(
+                            action: { text = "" },
+                            label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 16))
+                                    .foregroundColor(Color.secondary.opacity(0.6))
+                            }
+                        )
                         .transition(.scale.combined(with: .opacity))
                     }
                 }
@@ -168,8 +173,7 @@ struct StandardTextField: View {
     
     // MARK: - Computed Properties
     
-    @ViewBuilder
-    private var backgroundView: some View {
+    @ViewBuilder private var backgroundView: some View {
         switch style {
         case .standard:
             Color.appCard
@@ -180,8 +184,7 @@ struct StandardTextField: View {
         }
     }
     
-    @ViewBuilder
-    private var overlayView: some View {
+    @ViewBuilder private var overlayView: some View {
         RoundedRectangle(cornerRadius: 6)
             .stroke(borderColor, lineWidth: borderWidth)
     }
@@ -223,7 +226,6 @@ struct StandardTextField: View {
 // MARK: - Search Field
 
 struct SearchField: View {
-    
     @FocusState private var isFocused: Bool
     
     @Binding var text: String
@@ -254,11 +256,14 @@ struct SearchField: View {
             .focused($isFocused)
             
             if !text.isEmpty {
-                Button(action: { text = "" }) {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 16))
-                        .foregroundColor(Color.secondary.opacity(0.6))
-                }
+                Button(
+                    action: { text = "" },
+                    label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 16))
+                            .foregroundColor(Color.secondary.opacity(0.6))
+                    }
+                )
                 .transition(.scale.combined(with: .opacity))
             }
         }
@@ -277,7 +282,6 @@ struct SearchField: View {
 // MARK: - Text Area
 
 struct TextArea: View {
-    
     @FocusState private var isFocused: Bool
     
     @Binding var text: String

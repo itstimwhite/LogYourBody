@@ -49,9 +49,9 @@ class AppVersionManager {
     
     /// Perform necessary setup and migrations
     func performStartupMaintenance() {
-        print("🚀 App Version Manager")
-        print("  Current: \(currentVersion) (\(currentBuild))")
-        print("  Previous: \(lastLaunchedVersion ?? "None") (\(lastLaunchedBuild ?? "None"))")
+        // print("🚀 App Version Manager")
+        // print("  Current: \(currentVersion) (\(currentBuild))")
+        // print("  Previous: \(lastLaunchedVersion ?? "None") (\(lastLaunchedBuild ?? "None"))")
         
         if isFreshInstall {
             handleFreshInstall()
@@ -67,7 +67,7 @@ class AppVersionManager {
     }
     
     private func handleFreshInstall() {
-        print("📱 Fresh install detected")
+        // print("📱 Fresh install detected")
         
         // Set first launch date
         UserDefaults.standard.set(Date(), forKey: firstLaunchDateKey)
@@ -77,7 +77,7 @@ class AppVersionManager {
     }
     
     private func handleAppUpdate() {
-        print("🔄 App update detected")
+        // print("🔄 App update detected")
         
         // Perform version-specific migrations
         performMigrations()
@@ -97,7 +97,7 @@ class AppVersionManager {
         
         // Version 1.1.0 - Fix HealthKit sync status
         if lastMigration.compare("1.1.0", options: .numeric) == .orderedAscending {
-            print("🔧 Running migration for v1.1.0")
+            // print("🔧 Running migration for v1.1.0")
             CoreDataManager.shared.markHealthKitEntriesAsSynced()
             Task { @MainActor in
                 RealtimeSyncManager.shared.updatePendingSyncCount()
@@ -106,7 +106,7 @@ class AppVersionManager {
         
         // Version 1.2.0 - Clear old cache data
         if lastMigration.compare("1.2.0", options: .numeric) == .orderedAscending {
-            print("🔧 Running migration for v1.2.0")
+            // print("🔧 Running migration for v1.2.0")
             clearImageCache()
             clearTempFiles()
         }
@@ -118,7 +118,7 @@ class AppVersionManager {
     }
     
     private func clearCaches() {
-        print("🧹 Clearing caches...")
+        // print("🧹 Clearing caches...")
         
         // Clear URL cache
         URLCache.shared.removeAllCachedResponses()
@@ -139,8 +139,8 @@ class AppVersionManager {
         )
         URLCache.shared = imageCache
         URLCache.shared = URLCache(
-            memoryCapacity: 50 * 1024 * 1024,  // 50 MB
-            diskCapacity: 100 * 1024 * 1024,   // 100 MB
+            memoryCapacity: 50 * 1_024 * 1_024,  // 50 MB
+            diskCapacity: 100 * 1_024 * 1_024,   // 100 MB
             diskPath: nil
         )
     }
@@ -155,9 +155,9 @@ class AppVersionManager {
             for file in tempFiles {
                 try? FileManager.default.removeItem(at: file)
             }
-            print("✅ Cleared \(tempFiles.count) temp files")
+            // print("✅ Cleared \(tempFiles.count) temp files")
         } catch {
-            print("Failed to clear temp files: \(error)")
+            // print("Failed to clear temp files: \(error)")
         }
     }
     
@@ -183,15 +183,15 @@ class AppVersionManager {
                 try? FileManager.default.removeItem(at: file)
             }
             
-            let megabytes = Double(clearedSize) / (1024 * 1024)
-            print("✅ Cleared \(String(format: "%.1f", megabytes)) MB from cache")
+            let megabytes = Double(clearedSize) / (1_024 * 1_024)
+            // print("✅ Cleared \(String(format: "%.1f", megabytes)) MB from cache")
         } catch {
-            print("Failed to clear app caches: \(error)")
+            // print("Failed to clear app caches: \(error)")
         }
     }
     
     private func cleanupOldData() {
-        print("🗑️ Cleaning up old data...")
+        // print("🗑️ Cleaning up old data...")
         
         // Clean up CoreData
         CoreDataManager.shared.cleanupOldData()
@@ -207,7 +207,7 @@ class AppVersionManager {
         // Remove deprecated keys
         let deprecatedKeys = [
             "old_setting_key",
-            "legacy_preference",
+            "legacy_preference"
             // Add any deprecated UserDefaults keys here
         ]
         
@@ -222,12 +222,12 @@ class AppVersionManager {
     }
     
     private func resetProblematicStates() {
-        print("🔄 Resetting problematic states...")
+        // print("🔄 Resetting problematic states...")
         
         // Reset any sync flags that might be stuck
         Task { @MainActor in
-            if RealtimeSyncManager.shared.pendingSyncCount > 1000 {
-                print("⚠️ Excessive pending sync count detected, marking HealthKit entries as synced")
+            if RealtimeSyncManager.shared.pendingSyncCount > 1_000 {
+                // print("⚠️ Excessive pending sync count detected, marking HealthKit entries as synced")
                 CoreDataManager.shared.markHealthKitEntriesAsSynced()
             }
         }
@@ -270,10 +270,10 @@ class AppVersionManager {
             }
             
             if cleanedCount > 0 {
-                print("✅ Cleaned \(cleanedCount) old temp files")
+                // print("✅ Cleaned \(cleanedCount) old temp files")
             }
         } catch {
-            print("Failed to clean old temp files: \(error)")
+            // print("Failed to clean old temp files: \(error)")
         }
     }
     

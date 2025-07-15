@@ -89,7 +89,7 @@ class ImageProcessingService: ObservableObject {
                     do {
                         _ = try await self?.processImage(image, imageId: id)
                     } catch {
-                        print("Failed to process image \(id): \(error)")
+                        // print("Failed to process image \(id): \(error)")
                     }
                 }
             }
@@ -142,7 +142,7 @@ class ImageProcessingService: ObservableObject {
         
         let request = VNDetectHumanRectanglesRequest { request, error in
             if let error = error {
-                print("Human detection error: \(error)")
+                // print("Human detection error: \(error)")
                 return
             }
             
@@ -187,7 +187,7 @@ class ImageProcessingService: ObservableObject {
     private func detectBodyPoseBoundingBox(in cgImage: CGImage) throws -> CGRect? {
         var detectedBox: CGRect?
         
-        let request = VNDetectHumanBodyPoseRequest { request, error in
+        let request = VNDetectHumanBodyPoseRequest { request, _ in
             guard let observations = request.results as? [VNHumanBodyPoseObservation],
                   let pose = observations.first else {
                 return
@@ -224,7 +224,7 @@ class ImageProcessingService: ObservableObject {
     private func detectFaceAndExpandBoundingBox(in cgImage: CGImage) throws -> CGRect? {
         var detectedBox: CGRect?
         
-        let request = VNDetectFaceRectanglesRequest { request, error in
+        let request = VNDetectFaceRectanglesRequest { request, _ in
             guard let observations = request.results as? [VNFaceObservation],
                   let face = observations.first else {
                 return
@@ -317,7 +317,7 @@ class ImageProcessingService: ObservableObject {
         format.opaque = false
         
         let renderer = UIGraphicsImageRenderer(size: size, format: format)
-        return renderer.image { context in
+        return renderer.image { _ in
             image.draw(in: CGRect(origin: .zero, size: size))
         }
     }

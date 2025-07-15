@@ -15,7 +15,7 @@ extension UIDevice {
 }
 
 extension UIWindow {
-    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+    override open func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         if motion == .motionShake {
             NotificationCenter.default.post(name: UIDevice.deviceDidShakeNotification, object: nil)
         }
@@ -50,7 +50,7 @@ class DebugResetManager {
     
     @MainActor
     func performCompleteReset() async {
-        print("🔴 DEBUG: Performing complete app reset...")
+        // print("🔴 DEBUG: Performing complete app reset...")
         
         // Show alert first
         guard await showResetConfirmation() else { return }
@@ -77,7 +77,7 @@ class DebugResetManager {
         // 6. Clear derived data cache
         clearDerivedDataCache()
         
-        print("✅ DEBUG: Complete reset finished")
+        // print("✅ DEBUG: Complete reset finished")
         
         // Success message removed - app will restart
         
@@ -117,7 +117,7 @@ class DebugResetManager {
     }
     
     private func clearUserDefaults() {
-        print("🗑️ Clearing UserDefaults...")
+        // print("🗑️ Clearing UserDefaults...")
         if let bundleID = Bundle.main.bundleIdentifier {
             UserDefaults.standard.removePersistentDomain(forName: bundleID)
         }
@@ -142,18 +142,18 @@ class DebugResetManager {
     }
     
     private func clearCoreData() {
-        print("🗑️ Clearing Core Data...")
+        // print("🗑️ Clearing Core Data...")
         CoreDataManager.shared.deleteAllData()
     }
     
     private func clearKeychain() {
-        print("🗑️ Clearing Keychain...")
+        // print("🗑️ Clearing Keychain...")
         // Clear Clerk session data
         // This will be handled by the Clerk SDK when we sign out
     }
     
     private func clearImageCache() {
-        print("🗑️ Clearing image cache...")
+        // print("🗑️ Clearing image cache...")
         // Clear URLCache
         URLCache.shared.removeAllCachedResponses()
         
@@ -168,17 +168,17 @@ class DebugResetManager {
                 try FileManager.default.removeItem(at: file)
             }
         } catch {
-            print("❌ Failed to clear temp directory: \(error)")
+            // print("❌ Failed to clear temp directory: \(error)")
         }
     }
     
     private func signOutFromClerk() async {
-        print("🗑️ Signing out from Clerk...")
+        // print("🗑️ Signing out from Clerk...")
         await AuthManager.shared.logout()
     }
     
     private func clearDerivedDataCache() {
-        print("🗑️ Clearing derived data cache...")
+        // print("🗑️ Clearing derived data cache...")
         // Clear any app-specific caches
         if let cacheDirectory = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
             do {
@@ -190,7 +190,7 @@ class DebugResetManager {
                     try FileManager.default.removeItem(at: file)
                 }
             } catch {
-                print("❌ Failed to clear cache directory: \(error)")
+                // print("❌ Failed to clear cache directory: \(error)")
             }
         }
     }

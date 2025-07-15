@@ -53,7 +53,7 @@ struct PhotoScanCriteria {
     let minimumDaysBetween: Int = 3
     
     // Technical filters
-    let minimumResolution: CGSize = CGSize(width: 1000, height: 1000)
+    let minimumResolution = CGSize(width: 1_000, height: 1_000)
     let preferredCameraType: ScannedPhoto.CameraType? = nil // No preference - mirror selfies use back camera
     let preferPortraitOrientation: Bool = true
     
@@ -109,13 +109,13 @@ class PhotoLibraryScanner: ObservableObject {
     
     func scanPhotoLibrary(with criteria: PhotoScanCriteria = .default) async {
         guard authorizationStatus == .authorized || authorizationStatus == .limited else {
-            print("❌ Photo library access not authorized")
+            // print("❌ Photo library access not authorized")
             return
         }
         
         // Prevent multiple concurrent scans
         guard await MainActor.run(body: { !isScanning }) else {
-            print("⚠️ Scan already in progress")
+            // print("⚠️ Scan already in progress")
             return
         }
         
@@ -143,9 +143,8 @@ class PhotoLibraryScanner: ObservableObject {
                     self.isScanning = false
                     self.scanProgress = 1.0
                 }
-                
             } catch {
-                print("❌ Error scanning photo library: \(error)")
+                // print("❌ Error scanning photo library: \(error)")
                 await MainActor.run {
                     self.isScanning = false
                     self.scanProgress = 0
@@ -248,7 +247,7 @@ class PhotoLibraryScanner: ObservableObject {
         let isScreenshot = asset.mediaSubtypes.contains(.photoScreenshot)
         
         // Check if edited
-        let hasBeenEdited = asset.mediaSubtypes.contains(.photoLive) || 
+        let hasBeenEdited = asset.mediaSubtypes.contains(.photoLive) ||
                            asset.hasAdjustments
         
         // Try to determine camera type

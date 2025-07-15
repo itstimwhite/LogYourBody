@@ -69,14 +69,14 @@ class PhotoUploadManager: ObservableObject {
     
     func uploadProgressPhoto(for metrics: BodyMetrics, image: UIImage) async throws -> String {
         guard let userId = authManager.currentUser?.id else {
-            print("❌ PhotoUploadManager: No authenticated user")
+            // print("❌ PhotoUploadManager: No authenticated user")
             throw PhotoError.notAuthenticated
         }
         
-        print("📸 PhotoUploadManager: Starting upload for metrics \(metrics.id)")
-        print("📸 PhotoUploadManager: Current user ID: \(userId)")
+        // print("📸 PhotoUploadManager: Starting upload for metrics \(metrics.id)")
+        // print("📸 PhotoUploadManager: Current user ID: \(userId)")
         let userEmail = authManager.currentUser?.email ?? "nil"
-        print("📸 PhotoUploadManager: Current user email: \(userEmail)")
+        // print("📸 PhotoUploadManager: Current user email: \(userEmail)")
         
         self.isUploading = true
         self.uploadProgress = 0.0
@@ -99,38 +99,38 @@ class PhotoUploadManager: ObservableObject {
         do {
             // Step 1: Process image with Vision framework
             updateUploadStatus(.preparing, progress: 0.1)
-            print("📸 PhotoUploadManager: Processing image with Vision framework")
+            // print("📸 PhotoUploadManager: Processing image with Vision framework")
             
             let processedResult = try await ImageProcessingService.shared.processImage(image, imageId: UUID().uuidString)
             let orientedProcessedImage = processedResult.finalImage
-            print("✅ PhotoUploadManager: Image processed successfully (cropped, aligned, background removed)")
+            // print("✅ PhotoUploadManager: Image processed successfully (cropped, aligned, background removed)")
             
             // Step 2: Prepare image for upload (PNG to preserve transparency)
             updateUploadStatus(.preparing, progress: 0.2)
-            print("📸 PhotoUploadManager: Preparing image for upload")
+            // print("📸 PhotoUploadManager: Preparing image for upload")
             guard let imageData = BackgroundRemovalService.shared.prepareForUpload(orientedProcessedImage) else {
-                print("❌ PhotoUploadManager: Failed to prepare image")
+                // print("❌ PhotoUploadManager: Failed to prepare image")
                 throw PhotoError.imageConversionFailed
             }
-            print("✅ PhotoUploadManager: Image prepared, size: \(imageData.count) bytes")
+            // print("✅ PhotoUploadManager: Image prepared, size: \(imageData.count) bytes")
             
             // Step 3: Upload to Supabase Storage
             updateUploadStatus(.uploading, progress: 0.3)
             let fileName = "\(userId)/\(metrics.id)_\(Date().timeIntervalSince1970).png"
-            print("📸 PhotoUploadManager: Uploading to Supabase Storage with fileName: \(fileName)")
+            // print("📸 PhotoUploadManager: Uploading to Supabase Storage with fileName: \(fileName)")
             let originalUrl = try await uploadToSupabase(imageData: imageData, fileName: fileName)
-            print("✅ PhotoUploadManager: Upload complete, URL: \(originalUrl)")
+            // print("✅ PhotoUploadManager: Upload complete, URL: \(originalUrl)")
             
             updateUploadStatus(.uploading, progress: 0.5)
             
             // Step 4: Trigger Cloudinary optimization via edge function
             updateUploadStatus(.processing, progress: 0.6)
-            print("📸 PhotoUploadManager: Calling edge function for Cloudinary optimization")
+            // print("📸 PhotoUploadManager: Calling edge function for Cloudinary optimization")
             let processedUrl = try await processImageWithCloudinary(
                 originalUrl: originalUrl,
                 metricsId: metrics.id
             )
-            print("✅ PhotoUploadManager: Processing complete, URL: \(processedUrl)")
+            // print("✅ PhotoUploadManager: Processing complete, URL: \(processedUrl)")
             
             updateUploadStatus(.processing, progress: 0.8)
             
@@ -144,7 +144,6 @@ class PhotoUploadManager: ObservableObject {
             updateUploadStatus(.completed, progress: 1.0)
             
             return processedUrl
-            
         } catch {
             self.uploadError = error.localizedDescription
             self.currentUploadTask = UploadTask(
@@ -166,7 +165,7 @@ class PhotoUploadManager: ObservableObject {
         let orientedImage = image.fixedOrientation()
         
         // Resize image if needed to max 2048px on longest side
-        let maxDimension: CGFloat = 2048
+        let maxDimension: CGFloat = 2_048
         let size = orientedImage.size
         
         var targetSize = size
@@ -184,7 +183,7 @@ class PhotoUploadManager: ObservableObject {
         }
         
         let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
-        let resizedImage = renderer.image { context in
+        let resizedImage = renderer.image { _ in
             orientedImage.draw(in: CGRect(origin: .zero, size: targetSize))
         }
         
@@ -250,12 +249,12 @@ class PhotoUploadManager: ObservableObject {
             
             // Step 4: Trigger Cloudinary optimization via edge function
             updateUploadStatus(.processing, progress: 0.6)
-            print("📸 PhotoUploadManager: Calling edge function for Cloudinary optimization")
+            // print("📸 PhotoUploadManager: Calling edge function for Cloudinary optimization")
             let processedUrl = try await processImageWithCloudinary(
                 originalUrl: originalUrl,
                 metricsId: metrics.id
             )
-            print("✅ PhotoUploadManager: Processing complete, URL: \(processedUrl)")
+            // print("✅ PhotoUploadManager: Processing complete, URL: \(processedUrl)")
             
             updateUploadStatus(.processing, progress: 0.8)
             
@@ -269,7 +268,6 @@ class PhotoUploadManager: ObservableObject {
             updateUploadStatus(.completed, progress: 1.0)
             
             return processedUrl
-            
         } catch {
             self.uploadError = error.localizedDescription
             self.currentUploadTask = UploadTask(
@@ -285,17 +283,17 @@ class PhotoUploadManager: ObservableObject {
     
     private func uploadToSupabase(imageData: Data, fileName: String) async throws -> String {
         guard let session = authManager.clerkSession else {
-            print("❌ PhotoUploadManager: No Clerk session for storage upload")
+            // print("❌ PhotoUploadManager: No Clerk session for storage upload")
             throw PhotoError.notAuthenticated
         }
         
         let tokenResource = try await session.getToken()
         guard let token = tokenResource?.jwt else {
-            print("❌ PhotoUploadManager: Failed to get JWT for storage upload")
+            // print("❌ PhotoUploadManager: Failed to get JWT for storage upload")
             throw PhotoError.notAuthenticated
         }
         
-        print("📸 PhotoUploadManager: Got JWT token for storage upload")
+        // print("📸 PhotoUploadManager: Got JWT token for storage upload")
         
         let url = URL(string: "\(Constants.supabaseURL)/storage/v1/object/photos/\(fileName)")!
         var request = URLRequest(url: url)
@@ -314,15 +312,15 @@ class PhotoUploadManager: ObservableObject {
         let (data, response) = try await uploadSession.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            print("❌ PhotoUploadManager: Invalid response type")
+            // print("❌ PhotoUploadManager: Invalid response type")
             throw PhotoError.uploadFailed("Invalid response")
         }
         
-        print("📸 PhotoUploadManager: Storage upload response: \(httpResponse.statusCode)")
+        // print("📸 PhotoUploadManager: Storage upload response: \(httpResponse.statusCode)")
         
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-            print("❌ PhotoUploadManager: Storage upload failed: \(errorMessage)")
+            // print("❌ PhotoUploadManager: Storage upload failed: \(errorMessage)")
             throw PhotoError.uploadFailed(errorMessage)
         }
         
@@ -332,7 +330,7 @@ class PhotoUploadManager: ObservableObject {
     
     private func processImageWithCloudinary(originalUrl: String, metricsId: String) async throws -> String {
         // Edge functions can be called with just the anon key
-        print("📸 PhotoUploadManager: Calling edge function with anon key")
+        // print("📸 PhotoUploadManager: Calling edge function with anon key")
         
         let url = URL(string: "\(Constants.supabaseURL)/functions/v1/process-progress-photo")!
         var request = URLRequest(url: url)
@@ -350,22 +348,22 @@ class PhotoUploadManager: ObservableObject {
         let (data, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse else {
-            print("❌ PhotoUploadManager: Invalid edge function response")
+            // print("❌ PhotoUploadManager: Invalid edge function response")
             throw PhotoError.processingFailed("Invalid response")
         }
         
-        print("📸 PhotoUploadManager: Edge function response: \(httpResponse.statusCode)")
+        // print("📸 PhotoUploadManager: Edge function response: \(httpResponse.statusCode)")
         
         guard (200...299).contains(httpResponse.statusCode) else {
             let errorMessage = String(data: data, encoding: .utf8) ?? "Unknown error"
-            print("❌ PhotoUploadManager: Edge function failed: \(errorMessage)")
+            // print("❌ PhotoUploadManager: Edge function failed: \(errorMessage)")
             throw PhotoError.processingFailed(errorMessage)
         }
         
         guard let result = try JSONSerialization.jsonObject(with: data) as? [String: Any],
               let processedUrl = result["processedUrl"] as? String else {
             let responseString = String(data: data, encoding: .utf8) ?? "No response data"
-            print("❌ PhotoUploadManager: Invalid edge function response format: \(responseString)")
+            // print("❌ PhotoUploadManager: Invalid edge function response format: \(responseString)")
             throw PhotoError.processingFailed("Invalid response format")
         }
         

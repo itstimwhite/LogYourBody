@@ -30,9 +30,9 @@ extension DashboardView {
     
     func calculateFFMI() -> Double? {
         guard let weight = currentMetric?.weight,
-              let bodyFat = currentMetric?.bodyFatPercentage ?? 
-              (selectedIndex < bodyMetrics.count 
-                ? PhotoMetadataService.shared.estimateBodyFat(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics)?.value 
+              let bodyFat = currentMetric?.bodyFatPercentage ??
+              (selectedIndex < bodyMetrics.count
+                ? PhotoMetadataService.shared.estimateBodyFat(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics)?.value
                 : nil),
               let heightCm = authManager.currentUser?.profile?.height,
               heightCm > 0 else { return nil }
@@ -47,9 +47,9 @@ extension DashboardView {
     func calculateLeanMass() -> Double? {
         guard let weight = currentMetric?.weight else { return nil }
         
-        let bodyFat = currentMetric?.bodyFatPercentage ?? 
-            (selectedIndex < bodyMetrics.count 
-                ? PhotoMetadataService.shared.estimateBodyFat(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics)?.value 
+        let bodyFat = currentMetric?.bodyFatPercentage ??
+            (selectedIndex < bodyMetrics.count
+                ? PhotoMetadataService.shared.estimateBodyFat(for: bodyMetrics[selectedIndex].date, metrics: bodyMetrics)?.value
                 : nil)
         
         guard let bf = bodyFat else { return nil }
@@ -134,9 +134,8 @@ extension DashboardView {
         for i in stride(from: selectedIndex - 1, through: 0, by: -1) {
             if let previousBF = bodyMetrics[i].bodyFatPercentage,
                let currentBF = currentMetric?.bodyFatPercentage {
-                
-                let daysDiff = Calendar.current.dateComponents([.day], 
-                    from: bodyMetrics[i].date, 
+                let daysDiff = Calendar.current.dateComponents([.day],
+                    from: bodyMetrics[i].date,
                     to: currentDate).day ?? 1
                 
                 // Calculate change per month (30 days)
@@ -169,8 +168,8 @@ extension DashboardView {
                 // Restore selectedIndex
                 selectedIndex = currentIndex
                 
-                let daysDiff = Calendar.current.dateComponents([.day], 
-                    from: bodyMetrics[i].date, 
+                let daysDiff = Calendar.current.dateComponents([.day],
+                    from: bodyMetrics[i].date,
                     to: currentDate).day ?? 1
                 
                 // Calculate change per month (30 days)
@@ -196,9 +195,8 @@ extension DashboardView {
         // Look for previous weight measurement
         for i in stride(from: selectedIndex - 1, through: 0, by: -1) {
             if let previousWeight = bodyMetrics[i].weight {
-                
-                let daysDiff = Calendar.current.dateComponents([.day], 
-                    from: bodyMetrics[i].date, 
+                let daysDiff = Calendar.current.dateComponents([.day],
+                    from: bodyMetrics[i].date,
                     to: currentDate).day ?? 1
                 
                 // Calculate change per month (30 days) in kg
@@ -263,8 +261,8 @@ extension DashboardView {
                 // Restore selectedIndex
                 selectedIndex = currentIndex
                 
-                let daysDiff = Calendar.current.dateComponents([.day], 
-                    from: bodyMetrics[i].date, 
+                let daysDiff = Calendar.current.dateComponents([.day],
+                    from: bodyMetrics[i].date,
                     to: currentDate).day ?? 1
                 
                 // Calculate change per month (30 days)

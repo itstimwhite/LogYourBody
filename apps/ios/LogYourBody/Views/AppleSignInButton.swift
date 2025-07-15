@@ -9,11 +9,12 @@ import SwiftUI
 import AuthenticationServices
 
 struct AppleSignInButton: UIViewRepresentable {
-    @Environment(\.colorScheme) var colorScheme
+    @Environment(\.colorScheme) 
+    var colorScheme
     @EnvironmentObject var authManager: AuthManager
     
     func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
-        print("🍎 Making Apple Sign In button UI view")
+        // print("🍎 Making Apple Sign In button UI view")
         let button = ASAuthorizationAppleIDButton(
             authorizationButtonType: .signIn,
             authorizationButtonStyle: colorScheme == .dark ? .white : .black
@@ -31,7 +32,7 @@ struct AppleSignInButton: UIViewRepresentable {
         let tapGesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTapGesture))
         button.addGestureRecognizer(tapGesture)
         
-        print("🍎 Button created - isEnabled: \(button.isEnabled), isUserInteractionEnabled: \(button.isUserInteractionEnabled)")
+        // print("🍎 Button created - isEnabled: \(button.isEnabled), isUserInteractionEnabled: \(button.isUserInteractionEnabled)")
         
         return button
     }
@@ -43,7 +44,7 @@ struct AppleSignInButton: UIViewRepresentable {
     }
     
     func makeCoordinator() -> Coordinator {
-        print("🍎 Making coordinator for Apple Sign In button")
+        // print("🍎 Making coordinator for Apple Sign In button")
         return Coordinator(self)
     }
     
@@ -52,24 +53,24 @@ struct AppleSignInButton: UIViewRepresentable {
         
         init(_ parent: AppleSignInButton) {
             self.parent = parent
-            print("🍎 Coordinator initialized")
+            // print("🍎 Coordinator initialized")
         }
         
         @objc func handleAuthorizationAppleIDButtonPress() {
-            print("🍎 Apple Sign In button pressed")
+            // print("🍎 Apple Sign In button pressed")
             performAppleSignIn()
         }
         
         @objc func handleTapGesture() {
-            print("🍎 Tap gesture recognized")
+            // print("🍎 Tap gesture recognized")
             performAppleSignIn()
         }
         
         private func performAppleSignIn() {
             #if targetEnvironment(simulator)
-            print("🍎 Running in simulator")
+            // print("🍎 Running in simulator")
             #else
-            print("🍎 Running on device")
+            // print("🍎 Running on device")
             #endif
             
             let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -80,17 +81,17 @@ struct AppleSignInButton: UIViewRepresentable {
             authorizationController.delegate = self
             authorizationController.presentationContextProvider = self
             
-            print("🍎 About to perform requests...")
+            // print("🍎 About to perform requests...")
             authorizationController.performRequests()
-            print("🍎 Authorization controller perform requests called")
+            // print("🍎 Authorization controller perform requests called")
         }
         
         func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-            print("🍎 Getting presentation anchor")
+            // print("🍎 Getting presentation anchor")
             // Get the key window
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                let window = windowScene.windows.first(where: { $0.isKeyWindow }) {
-                print("🍎 Found key window")
+                // print("🍎 Found key window")
                 return window
             }
             
@@ -99,55 +100,56 @@ struct AppleSignInButton: UIViewRepresentable {
                     .filter({ $0.activationState == .foregroundActive })
                     .first as? UIWindowScene,
                let window = windowScene.windows.first {
-                print("🍎 Found active window (fallback)")
+                // print("🍎 Found active window (fallback)")
                 return window
             }
             
-            print("🍎 ERROR: No window found!")
+            // print("🍎 ERROR: No window found!")
             fatalError("No active window found")
         }
         
         func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-            print("🍎 Authorization completed successfully")
+            // print("🍎 Authorization completed successfully")
             
             if let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential {
-                print("🍎 Got Apple ID credential")
-                print("🍎 User: \(appleIDCredential.user)")
-                print("🍎 Email: \(appleIDCredential.email ?? "no email")")
-                print("🍎 Name: \(appleIDCredential.fullName?.givenName ?? "") \(appleIDCredential.fullName?.familyName ?? "")")
+                // print("🍎 Got Apple ID credential")
+                // print("🍎 User: \(appleIDCredential.user)")
+                // print("🍎 Email: \(appleIDCredential.email ?? "no email")")
+                // print("🍎 Name: \(appleIDCredential.fullName?.givenName ?? "") \(appleIDCredential.fullName?.familyName ?? "")")
                 
                 Task {
                     do {
                         try await parent.authManager.signInWithAppleCredentials(appleIDCredential)
                     } catch {
-                        print("🍎 Error in signInWithAppleCredentials: \(error)")
+                        // print("🍎 Error in signInWithAppleCredentials: \(error)")
                     }
                 }
             }
         }
         
         func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-            print("🍎 Authorization failed: \(error)")
+            // print("🍎 Authorization failed: \(error)")
             
             // Handle error
             if let error = error as? ASAuthorizationError {
                 switch error.code {
                 case .canceled:
-                    print("🍎 User canceled authorization")
+                    // User canceled authorization
+                    break
                 case .failed:
-                    print("🍎 Authorization failed")
+                    // print("🍎 Authorization failed")
                     showErrorAlert("Apple Sign In failed. Please try again.")
                 case .invalidResponse:
-                    print("🍎 Invalid response")
+                    // print("🍎 Invalid response")
                     showErrorAlert("Invalid response from Apple Sign In.")
                 case .notHandled:
-                    print("🍎 Authorization not handled")
+                    // print("🍎 Authorization not handled")
                     showErrorAlert("Apple Sign In request was not handled.")
                 case .unknown:
-                    print("🍎 Unknown error")
+                    // print("🍎 Unknown error")
                     showErrorAlert("An unknown error occurred with Apple Sign In.")
                 @unknown default:
-                    print("🍎 Unknown error case")
+                    // print("🍎 Unknown error case")
                     showErrorAlert("An error occurred with Apple Sign In.")
                 }
             }

@@ -53,7 +53,7 @@ class BackgroundPhotoUploadService: ObservableObject {
     // MARK: - Public Methods
     
     func queuePhotosForUpload(_ photos: [PhotosPickerItem]) async {
-        print("📸 BackgroundUploadService: Queuing \(photos.count) photos for upload")
+        // print("📸 BackgroundUploadService: Queuing \(photos.count) photos for upload")
         
         // Extract dates and create tasks
         for photo in photos {
@@ -117,9 +117,8 @@ class BackgroundPhotoUploadService: ObservableObject {
                     task.progress = 1.0
                     
                     completedUploads.append(task)
-                    
                 } catch {
-                    print("❌ BackgroundUploadService: Failed to upload photo: \(error)")
+                    // print("❌ BackgroundUploadService: Failed to upload photo: \(error)")
                     task.status = .failed
                     task.error = error.localizedDescription
                     failedUploads.append(task)
@@ -130,7 +129,7 @@ class BackgroundPhotoUploadService: ObservableObject {
             
             currentUploadingPhoto = nil
             isUploading = false
-            print("✅ BackgroundUploadService: Queue processing complete")
+            // print("✅ BackgroundUploadService: Queue processing complete")
         }
     }
     

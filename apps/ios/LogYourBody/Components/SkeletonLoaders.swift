@@ -51,7 +51,7 @@ struct ProgressPhotoSkeleton: View {
             // Fixed aspect ratio container matching actual photo
             Rectangle()
                 .fill(Color.white.opacity(0.05))
-                .aspectRatio(3/4, contentMode: .fit)
+                .aspectRatio(3 / 4, contentMode: .fit)
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
                         .stroke(Color.white.opacity(0.1), lineWidth: 1)

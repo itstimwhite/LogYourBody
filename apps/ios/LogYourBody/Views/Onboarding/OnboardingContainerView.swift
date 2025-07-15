@@ -137,7 +137,7 @@ struct OnboardingContainerView: View {
             }
         }
         .preferredColorScheme(.dark)
-        .onChange(of: viewModel.currentStep) { _, newStep in
+        .onChange(of: viewModel.currentStep) { _, _ in
             // Subtle haptic feedback
             let impactFeedback = UIImpactFeedbackGenerator(style: .light)
             impactFeedback.prepare()

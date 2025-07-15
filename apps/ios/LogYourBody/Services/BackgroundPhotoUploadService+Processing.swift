@@ -10,7 +10,6 @@ import SwiftUI
 import PhotosUI
 
 extension BackgroundPhotoUploadService {
-    
     /// Process and upload photos with advanced Vision framework processing
     func processAndUploadPhotos(_ items: [PhotosPickerItem]) async {
         // Convert PhotosPickerItems to UIImages
@@ -34,7 +33,6 @@ extension BackgroundPhotoUploadService {
             // Get processed image from service
             if let task = ImageProcessingService.shared.processingTasks.first(where: { $0.imageId == imageId }),
                let processedImage = task.resultImage {
-                
                 // Upload using existing photo upload manager
                 do {
                     // Create body metrics for today
@@ -95,7 +93,7 @@ extension BackgroundPhotoUploadService {
                     
                     // Progress tracking handled by the processing service
                 } catch {
-                    print("Failed to upload processed image: \(error)")
+                    // print("Failed to upload processed image: \(error)")
                 }
             }
         }
@@ -103,4 +101,3 @@ extension BackgroundPhotoUploadService {
         // Completion notification handled by the processing service
     }
 }
-

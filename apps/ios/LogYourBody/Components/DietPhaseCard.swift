@@ -264,7 +264,7 @@ struct DietPhaseCard_Previews: PreviewProvider {
             // Bulk phase example
             DietPhaseCard(
                 phaseType: .bulk,
-                startDate: Date().addingTimeInterval(-60*60*24*56), // 8 weeks ago
+                startDate: Date().addingTimeInterval(-60 * 60 * 24 * 56), // 8 weeks ago
                 endDate: Date(),
                 startWeight: 180,
                 endWeight: 188,
@@ -276,8 +276,8 @@ struct DietPhaseCard_Previews: PreviewProvider {
             // Cut phase example
             DietPhaseCard(
                 phaseType: .cut,
-                startDate: Date().addingTimeInterval(-60*60*24*84), // 12 weeks ago
-                endDate: Date().addingTimeInterval(-60*60*24*56), // 8 weeks ago
+                startDate: Date().addingTimeInterval(-60 * 60 * 24 * 84), // 12 weeks ago
+                endDate: Date().addingTimeInterval(-60 * 60 * 24 * 56), // 8 weeks ago
                 startWeight: 195,
                 endWeight: 180,
                 startBodyFat: 20.0,
@@ -288,7 +288,7 @@ struct DietPhaseCard_Previews: PreviewProvider {
             // Maintenance phase example (no BF data)
             DietPhaseCard(
                 phaseType: .maintenance,
-                startDate: Date().addingTimeInterval(-60*60*24*28), // 4 weeks ago
+                startDate: Date().addingTimeInterval(-60 * 60 * 24 * 28), // 4 weeks ago
                 endDate: Date(),
                 startWeight: 180,
                 endWeight: 181,

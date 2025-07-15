@@ -81,7 +81,6 @@ struct NameInputView: View {
                                 .padding(.vertical, 16)
                                 .modifier(NameInputLiquidGlassFieldModifier(isFocused: isNameFieldFocused))
                         }
-                        
                     }
                     .padding(.horizontal, 24)
                     .opacity(animateField ? 1 : 0)

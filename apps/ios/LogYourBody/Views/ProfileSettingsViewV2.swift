@@ -11,12 +11,12 @@ import PhotosUI
 
 struct ProfileSettingsViewV2: View {
     @EnvironmentObject var authManager: AuthManager
-    @Environment(\.dismiss) var dismiss
-    // @StateObject private var syncManager = RealtimeSyncManager.shared // TODO: Add RealtimeSyncManager to Xcode project
+    @Environment(\.dismiss)
+    var dismiss    // @StateObject private var syncManager = RealtimeSyncManager.shared // TODO: Add RealtimeSyncManager to Xcode project
     
     // Editable fields
     @State private var editableName: String = ""
-    @State private var editableDateOfBirth: Date = Date()
+    @State private var editableDateOfBirth = Date()
     @State private var editableHeightCm: Int = 170
     @State private var editableGender: OnboardingData.Gender = .male
     @State private var useMetricHeight: Bool = false
@@ -32,7 +32,7 @@ struct ProfileSettingsViewV2: View {
     @State private var showingPhotoPicker = false
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var isUploadingPhoto = false
-    @State private var profileImageURL: String? = nil
+    @State private var profileImageURL: String?
     
     var body: some View {
         ZStack {
@@ -575,7 +575,7 @@ struct ProfileSettingsViewV2: View {
                 await MainActor.run {
                     isSaving = false
                     hasChanges = true
-                    print("Failed to update profile: \(error)")
+                    // print("Failed to update profile: \(error)")
                 }
             }
         }
@@ -588,7 +588,6 @@ struct ProfileSettingsViewV2: View {
             // Load the image data
             if let data = try await item.loadTransferable(type: Data.self),
                let image = UIImage(data: data) {
-                
                 // Upload to Clerk
                 if let newImageURL = try await authManager.uploadProfilePicture(image) {
                     await MainActor.run {
@@ -617,7 +616,7 @@ struct ProfileSettingsViewV2: View {
                 }
             }
         } catch {
-            print("Failed to upload photo: \(error)")
+            // print("Failed to upload photo: \(error)")
             await MainActor.run {
                 isUploadingPhoto = false
             }
@@ -636,8 +635,8 @@ struct ProfileHeightPickerSheet: View {
     @Binding var heightCm: Int
     @Binding var useMetric: Bool
     @Binding var hasChanges: Bool
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.dismiss)
+    var dismiss    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -712,7 +711,7 @@ struct ProfileHeightPickerSheet: View {
         )
         
         let inchesBinding = Binding(
-            get: { 
+            get: {
                 let totalInches = Double(heightCm) / 2.54
                 return Int(totalInches.truncatingRemainder(dividingBy: 12))
             },
@@ -769,8 +768,8 @@ struct ProfileHeightPickerSheet: View {
 struct DatePickerSheet: View {
     @Binding var date: Date
     @Binding var hasChanges: Bool
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.dismiss)
+    var dismiss    
     var body: some View {
         NavigationView {
             VStack {

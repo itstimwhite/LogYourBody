@@ -10,8 +10,8 @@ import Clerk
 
 struct DeleteAccountView: View {
     @EnvironmentObject var authManager: AuthManager
-    @Environment(\.dismiss) private var dismiss
-    @State private var showConfirmation = false
+    @Environment(\.dismiss)
+    private var dismiss    @State private var showConfirmation = false
     @State private var confirmationText = ""
     @State private var isDeleting = false
     @State private var showError = false

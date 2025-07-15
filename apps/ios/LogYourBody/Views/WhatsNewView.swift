@@ -30,12 +30,12 @@ struct FeatureRow: View {
 }
 
 struct WhatsNewView: View {
-    @Environment(\.dismiss) private var dismiss
-    @State private var selectedVersion: String?
+    @Environment(\.dismiss)
+    private var dismiss    @State private var selectedVersion: String?
     
     private let changelogManager = ChangelogManager.shared
     
-    public var body: some View {
+    var body: some View {
         NavigationView {
             List {
                 ForEach(changelogManager.entries, id: \.version) { entry in

@@ -14,20 +14,20 @@ extension DashboardView {
     
     @MainActor
     func loadCachedDataImmediately() {
-        guard let userId = authManager.currentUser?.id else { 
-            print("⚠️ loadCachedDataImmediately: No user ID available")
+        guard let userId = authManager.currentUser?.id else {
+            // print("⚠️ loadCachedDataImmediately: No user ID available")
             hasLoadedInitialData = true
-            return 
+            return
         }
         
-        print("🔍 Loading cached data for user: \(userId)")
+        // print("🔍 Loading cached data for user: \(userId)")
         
         do {
             let cached = CoreDataManager.shared.fetchBodyMetrics(for: userId)
             bodyMetrics = cached.compactMap { $0.toBodyMetrics() }
                 .sorted { $0.date < $1.date }
             
-            print("📊 Found \(bodyMetrics.count) body metrics for user \(userId)")
+            // print("📊 Found \(bodyMetrics.count) body metrics for user \(userId)")
             
             if !bodyMetrics.isEmpty {
                 selectedIndex = min(bodyMetrics.count - 1, max(0, selectedIndex))
@@ -36,7 +36,7 @@ extension DashboardView {
             
             hasLoadedInitialData = true
         } catch {
-            print("❌ Error loading cached data: \(error)")
+            // print("❌ Error loading cached data: \(error)")
             bodyMetrics = []
             hasLoadedInitialData = true
         }
@@ -44,18 +44,18 @@ extension DashboardView {
     
     @MainActor
     func loadDailyMetrics() {
-        guard let userId = authManager.currentUser?.id else { 
-            print("⚠️ loadDailyMetrics: No user ID available")
-            return 
+        guard let userId = authManager.currentUser?.id else {
+            // print("⚠️ loadDailyMetrics: No user ID available")
+            return
         }
         
-        print("🔍 Loading daily metrics for user: \(userId)")
+        // print("🔍 Loading daily metrics for user: \(userId)")
         
         dailyMetrics = CoreDataManager.shared.fetchDailyMetrics(for: userId, date: Date())?.toDailyMetrics()
         // Also set selectedDateMetrics for today initially
         selectedDateMetrics = dailyMetrics
         
-        print("📊 Daily metrics loaded: \(dailyMetrics?.steps ?? 0) steps")
+        // print("📊 Daily metrics loaded: \(dailyMetrics?.steps ?? 0) steps")
     }
     
     @MainActor
@@ -100,7 +100,7 @@ extension DashboardView {
     // MARK: - Photo Management
     
     func handlePhotoCapture(_ image: UIImage) async {
-        guard let currentMetric = currentMetric else { 
+        guard let currentMetric = currentMetric else {
             await MainActor.run {
                 // ToastManager.shared.show("No metric selected", type: .error)
             }
@@ -148,17 +148,17 @@ extension DashboardView {
     
     func syncStepsFromHealthKit() async {
         do {
-            print("📱 Starting HealthKit step sync...")
+            // print("📱 Starting HealthKit step sync...")
             
             let stepCount = try await healthKitManager.fetchTodayStepCount()
-            print("👟 Today's steps from HealthKit: \(stepCount)")
+            // print("👟 Today's steps from HealthKit: \(stepCount)")
             
             // Update daily metrics
             await updateStepCount(stepCount)
             
-            print("✅ HealthKit sync completed")
+            // print("✅ HealthKit sync completed")
         } catch {
-            print("❌ HealthKit sync error: \(error)")
+            // print("❌ HealthKit sync error: \(error)")
         }
     }
     
@@ -166,7 +166,7 @@ extension DashboardView {
         guard let userId = authManager.currentUser?.id else { return }
         
         do {
-            print("📱 Starting historical step sync...")
+            // print("📱 Starting historical step sync...")
             
             // Get last 30 days of step data
             let endDate = Date()
@@ -196,7 +196,7 @@ extension DashboardView {
             }
             
             UserDefaults.standard.set(true, forKey: "HasSyncedHistoricalSteps")
-            print("✅ Historical step sync completed")
+            // print("✅ Historical step sync completed")
             
             // Reload data
             await MainActor.run {
@@ -204,7 +204,7 @@ extension DashboardView {
                 loadMetricsForSelectedDate()
             }
         } catch {
-            print("❌ Historical step sync error: \(error)")
+            // print("❌ Historical step sync error: \(error)")
         }
     }
     
@@ -258,8 +258,8 @@ extension DashboardView {
     // MARK: - Helper Functions
     
     func formatStepCount(_ steps: Int) -> String {
-        if steps >= 10000 {
-            return String(format: "%.1fK", Double(steps) / 1000.0)
+        if steps >= 10_000 {
+            return String(format: "%.1fK", Double(steps) / 1_000.0)
         } else {
             return "\(steps)"
         }

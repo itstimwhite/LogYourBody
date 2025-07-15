@@ -19,8 +19,8 @@ enum HeaderStyle {
 // MARK: - Standard Header
 
 struct StandardHeader: View {
-    
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss) 
+    var dismiss
     
     let title: String
     let subtitle: String?
@@ -219,8 +219,6 @@ struct HeaderAction: Identifiable {
 // MARK: - Header Action Button
 
 struct HeaderActionButton: View {
-    
-    
     let action: HeaderAction
     @State private var isPressed = false
     
@@ -267,8 +265,6 @@ struct HeaderActionButton: View {
 // MARK: - Back Button
 
 struct BackButton: View {
-    
-    
     let action: () -> Void
     @State private var isPressed = false
     
@@ -304,8 +300,6 @@ struct BackButton: View {
 // MARK: - Progress Header
 
 struct ProgressHeader: View {
-    
-    
     let title: String
     let progress: Double
     let showBackButton: Bool
@@ -343,8 +337,6 @@ struct ProgressHeader: View {
 // MARK: - Scrollable Header Wrapper
 
 struct ScrollableHeaderView<Content: View>: View {
-    
-    
     let header: StandardHeader
     @ViewBuilder let content: () -> Content
     

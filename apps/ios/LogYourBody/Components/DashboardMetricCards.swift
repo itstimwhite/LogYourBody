@@ -1,8 +1,8 @@
 //
-//  DashboardMetricCards.swift
-//  LogYourBody
+// DashboardMetricCards.swift
+// LogYourBody
 //
-//  Metric card components for the dashboard
+// Metric card components for the dashboard
 //
 
 import SwiftUI
@@ -44,6 +44,16 @@ struct WeightMetricCard: View {
     let trendUnit: String
     let isInHealthyRange: Bool
     
+    private func formatWeightValue(_ value: Double) -> String {
+        // If the value is a whole number, don't show decimal places
+        if value.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f", value)
+        } else {
+            // Show one decimal place for fractional values
+            return String(format: "%.1f", value)
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 4) {
             ZStack(alignment: .topTrailing) {
@@ -55,7 +65,7 @@ struct WeightMetricCard: View {
                     .padding(.top, 12)
                 
                 VStack(spacing: 8) {
-                    Text(String(format: "%.1f", value))
+                    Text(formatWeightValue(value))
                         .font(.system(size: 48, weight: .bold))
                         .foregroundColor(.white)
                     
@@ -89,7 +99,8 @@ struct WeightMetricCard: View {
 struct PhotoOptionsSheet: View {
     @Binding var showCamera: Bool
     @Binding var showPhotoPicker: Bool
-    @Environment(\.dismiss) var dismiss
+    @Environment(\.dismiss)
+    var dismiss
     
     var body: some View {
         VStack(spacing: 0) {
@@ -123,98 +134,107 @@ struct PhotoOptionsSheet: View {
             
             VStack(spacing: 0) {
                 // Take Photo
-                Button(action: {
-                    dismiss()
-                    Task {
-                        try? await Task.sleep(nanoseconds: 300_000_000)
-                        await MainActor.run {
-                            showCamera = true
+                Button(
+                    action: {
+                        dismiss()
+                        Task {
+                            try? await Task.sleep(nanoseconds: 300_000_000)
+                            await MainActor.run {
+                                showCamera = true
+                            }
                         }
-                    }
-                }) {
-                    HStack(spacing: 16) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.blue.opacity(0.1))
-                                .frame(width: 44, height: 44)
+                    },
+                    label: {
+                        HStack(spacing: 16) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.blue.opacity(0.1))
+                                    .frame(width: 44, height: 44)
+                                
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.blue)
+                            }
                             
-                            Image(systemName: "camera.fill")
-                                .font(.system(size: 20))
-                                .foregroundColor(.blue)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Take Photo")
-                                .font(.system(size: 17, weight: .medium))
-                                .foregroundColor(.appText)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Take Photo")
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundColor(.appText)
+                                
+                                Text("Use camera for best results")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.appTextSecondary)
+                            }
                             
-                            Text("Use camera for best results")
-                                .font(.system(size: 13))
-                                .foregroundColor(.appTextSecondary)
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.appTextTertiary)
                         }
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.appTextTertiary)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                }
+                )
                 
                 Divider()
                     .padding(.leading, 80)
                 
                 // Choose from Library
-                Button(action: {
-                    dismiss()
-                    Task {
-                        try? await Task.sleep(nanoseconds: 300_000_000)
-                        await MainActor.run {
-                            showPhotoPicker = true
+                Button(
+                    action: {
+                        dismiss()
+                        Task {
+                            try? await Task.sleep(nanoseconds: 300_000_000)
+                            await MainActor.run {
+                                showPhotoPicker = true
+                            }
                         }
-                    }
-                }) {
-                    HStack(spacing: 16) {
-                        ZStack {
-                            Circle()
-                                .fill(Color.green.opacity(0.1))
-                                .frame(width: 44, height: 44)
+                    },
+                    label: {
+                        HStack(spacing: 16) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.green.opacity(0.1))
+                                    .frame(width: 44, height: 44)
+                                
+                                Image(systemName: "photo.fill")
+                                    .font(.system(size: 20))
+                                    .foregroundColor(.green)
+                            }
                             
-                            Image(systemName: "photo.fill")
-                                .font(.system(size: 20))
-                                .foregroundColor(.green)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("Choose from Library")
-                                .font(.system(size: 17, weight: .medium))
-                                .foregroundColor(.appText)
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Choose from Library")
+                                    .font(.system(size: 17, weight: .medium))
+                                    .foregroundColor(.appText)
+                                
+                                Text("Select existing photo")
+                                    .font(.system(size: 13))
+                                    .foregroundColor(.appTextSecondary)
+                            }
                             
-                            Text("Select existing photo")
-                                .font(.system(size: 13))
-                                .foregroundColor(.appTextSecondary)
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .medium))
+                                .foregroundColor(.appTextTertiary)
                         }
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundColor(.appTextTertiary)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 12)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 12)
-                }
+                )
             }
             
-            Button(action: { dismiss() }) {
-                Text("Cancel")
-                    .font(.system(size: 17))
-                    .foregroundColor(.appTextSecondary)
-                    .frame(maxWidth: CGFloat.infinity)
-                    .frame(height: 50)
-            }
+            Button(
+                action: { dismiss() },
+                label: {
+                    Text("Cancel")
+                        .font(.system(size: 17))
+                        .foregroundColor(.appTextSecondary)
+                        .frame(maxWidth: CGFloat.infinity)
+                        .frame(height: 50)
+                }
+            )
             .padding(.top, 16)
             .padding(.horizontal, 20)
             
@@ -244,11 +264,21 @@ struct MetricValueDisplay: View {
     
     @State private var animatedValue: Double = 0
     
+    private func formatValue(_ value: Double) -> String {
+        // If the value is a whole number, don't show decimal places
+        if value.truncatingRemainder(dividingBy: 1) == 0 {
+            return String(format: "%.0f", value)
+        } else {
+            // Show one decimal place for fractional values
+            return String(format: "%.1f", value)
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             // Value and trend
             HStack(alignment: .bottom, spacing: 6) {
-                Text(String(format: "%.1f", value))
+                Text(formatValue(value))
                     .font(.system(size: 36, weight: .bold, design: .rounded))
                     .foregroundColor(.white)
                 

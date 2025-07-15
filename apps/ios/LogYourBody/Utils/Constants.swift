@@ -33,7 +33,7 @@ struct Constants {
     static var isClerkConfigured: Bool {
         let keyValid = !clerkPublishableKey.isEmpty && clerkPublishableKey.hasPrefix("pk_")
         if !keyValid {
-            print("⚠️ Invalid Clerk publishable key format")
+            // print("⚠️ Invalid Clerk publishable key format")
         }
         return keyValid
     }

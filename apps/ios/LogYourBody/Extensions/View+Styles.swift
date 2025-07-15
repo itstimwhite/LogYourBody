@@ -35,7 +35,8 @@ struct ModernTextFieldModifier: ViewModifier {
 // MARK: - Linear-Inspired Primary Button Style
 // NOTE: Temporarily using ViewModifier instead of ButtonStyle due to compilation issues
 struct ModernPrimaryButtonModifier: ViewModifier {
-    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.isEnabled) 
+    var isEnabled
     
     func body(content: Content) -> some View {
         content

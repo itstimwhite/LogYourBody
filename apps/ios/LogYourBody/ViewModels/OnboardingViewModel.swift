@@ -152,7 +152,7 @@ class OnboardingViewModel: ObservableObject {
                 do {
                     try await authManager.consolidateNameUpdate(data.name)
                 } catch {
-                    print("❌ Failed to update name during onboarding: \(error)")
+                    // Failed to update name during onboarding
                 }
             }
             

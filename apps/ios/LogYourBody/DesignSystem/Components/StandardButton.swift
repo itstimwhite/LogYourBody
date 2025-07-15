@@ -1,8 +1,8 @@
 //
-//  StandardButton.swift
-//  LogYourBody
+// StandardButton.swift
+// LogYourBody
 //
-//  Reusable button component following Apple's design guidelines
+// Reusable button component following Apple's design guidelines
 //
 
 import SwiftUI
@@ -52,8 +52,8 @@ enum ButtonSize {
 // MARK: - Standard Button
 
 struct StandardButton: View {
-    
-    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.isEnabled)
+    var isEnabled
     
     let title: String
     let icon: String?
@@ -84,38 +84,41 @@ struct StandardButton: View {
     }
     
     var body: some View {
-        Button(action: {
-            if !isLoading {
-                // HapticManager.shared.impact(style: .light)
-                action()
-            }
-        }) {
-            HStack(spacing: 4) {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: foregroundColor))
-                        .scaleEffect(0.8)
-                } else {
-                    if let icon = icon {
-                        Image(systemName: icon)
-                            .font(.system(size: size.fontSize * 0.9, weight: .medium))
-                    }
-                    
-                    Text(title)
-                        .font(.system(size: size.fontSize, weight: .semibold, design: .rounded))
+        Button(
+            action: {
+                if !isLoading {
+                    // HapticManager.shared.impact(style: .light)
+                    action()
                 }
+            },
+            label: {
+                HStack(spacing: 4) {
+                    if isLoading {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: foregroundColor))
+                            .scaleEffect(0.8)
+                    } else {
+                        if let icon = icon {
+                            Image(systemName: icon)
+                                .font(.system(size: size.fontSize * 0.9, weight: .medium))
+                        }
+                        
+                        Text(title)
+                            .font(.system(size: size.fontSize, weight: .semibold, design: .rounded))
+                    }
+                }
+                .foregroundColor(foregroundColor)
+                .frame(maxWidth: fullWidth ? .infinity : nil)
+                .frame(height: size.height)
+                .padding(.horizontal, size.horizontalPadding)
+                .background(backgroundView)
+                .cornerRadius(8)
+                .overlay(overlayView)
+                .scaleEffect(isPressed ? 0.97 : 1.0)
+                .animation(.easeOut(duration: 0.1), value: isPressed)
+                .opacity(isEnabled && !isLoading ? 1.0 : 0.6)
             }
-            .foregroundColor(foregroundColor)
-            .frame(maxWidth: fullWidth ? .infinity : nil)
-            .frame(height: size.height)
-            .padding(.horizontal, size.horizontalPadding)
-            .background(backgroundView)
-            .cornerRadius(8)
-            .overlay(overlayView)
-            .scaleEffect(isPressed ? 0.97 : 1.0)
-            .animation(.easeOut(duration: 0.1), value: isPressed)
-            .opacity(isEnabled && !isLoading ? 1.0 : 0.6)
-        }
+        )
         .buttonStyle(PlainButtonStyle())
         .disabled(isLoading || !isEnabled)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
@@ -142,8 +145,7 @@ struct StandardButton: View {
         }
     }
     
-    @ViewBuilder
-    private var backgroundView: some View {
+    @ViewBuilder private var backgroundView: some View {
         switch style {
         case .primary:
             Color.appPrimary
@@ -158,8 +160,7 @@ struct StandardButton: View {
         }
     }
     
-    @ViewBuilder
-    private var overlayView: some View {
+    @ViewBuilder private var overlayView: some View {
         switch style {
         case .secondary:
             RoundedRectangle(cornerRadius: 8)
@@ -176,8 +177,8 @@ struct StandardButton: View {
 // MARK: - Icon Button
 
 struct IconButton: View {
-    
-    @Environment(\.isEnabled) var isEnabled
+    @Environment(\.isEnabled)
+    var isEnabled
     
     let icon: String
     let size: CGFloat
@@ -196,25 +197,28 @@ struct IconButton: View {
     }
     
     var body: some View {
-        Button(action: {
-            // HapticManager.shared.impact(style: .light)
-            action()
-        }) {
-            Image(systemName: icon)
-                .font(.system(size: size, weight: .medium))
-                .foregroundColor(.primary)
-                .frame(width: size * 1.8, height: size * 1.8)
-                .background(
-                    Circle()
-                        .fill(Color.appCard)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.appBorder, lineWidth: 1)
-                        )
-                )
-                .scaleEffect(isPressed ? 0.9 : 1.0)
-                .opacity(isEnabled ? 1.0 : 0.6)
-        }
+        Button(
+            action: {
+                // HapticManager.shared.impact(style: .light)
+                action()
+            },
+            label: {
+                Image(systemName: icon)
+                    .font(.system(size: size, weight: .medium))
+                    .foregroundColor(.primary)
+                    .frame(width: size * 1.8, height: size * 1.8)
+                    .background(
+                        Circle()
+                            .fill(Color.appCard)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.appBorder, lineWidth: 1)
+                            )
+                    )
+                    .scaleEffect(isPressed ? 0.9 : 1.0)
+                    .opacity(isEnabled ? 1.0 : 0.6)
+            }
+        )
         .buttonStyle(PlainButtonStyle())
         .disabled(!isEnabled)
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
@@ -228,8 +232,6 @@ struct IconButton: View {
 // MARK: - Text Button
 
 struct TextButton: View {
-    
-    
     let title: String
     let color: Color?
     let action: () -> Void
@@ -245,14 +247,17 @@ struct TextButton: View {
     }
     
     var body: some View {
-        Button(action: {
-            // HapticManager.shared.selection()
-            action()
-        }) {
-            Text(title)
-                .font(.footnote)
-                .foregroundColor(color ?? .appPrimary)
-        }
+        Button(
+            action: {
+                // HapticManager.shared.selection()
+                action()
+            },
+            label: {
+                Text(title)
+                    .font(.footnote)
+                    .foregroundColor(color ?? .appPrimary)
+            }
+        )
         .buttonStyle(PlainButtonStyle())
     }
 }
@@ -260,34 +265,35 @@ struct TextButton: View {
 // MARK: - Floating Action Button
 
 struct FloatingActionButton: View {
-    
-    
     let icon: String
     let action: () -> Void
     
     @State private var isPressed = false
     
     var body: some View {
-        Button(action: {
-            // HapticManager.shared.impact(style: .medium)
-            action()
-        }) {
-            Image(systemName: icon)
-                .font(.system(size: 24, weight: .semibold))
-                .foregroundColor(.white)
-                .frame(width: 56, height: 56)
-                .background(
-                    Circle()
-                        .fill(Color.appPrimary)
-                        .shadow(
-                            color: Color.appPrimary.opacity(0.3),
-                            radius: 8,
-                            x: 0,
-                            y: 4
-                        )
-                )
-                .scaleEffect(isPressed ? 0.9 : 1.0)
-        }
+        Button(
+            action: {
+                // HapticManager.shared.impact(style: .medium)
+                action()
+            },
+            label: {
+                Image(systemName: icon)
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundColor(.white)
+                    .frame(width: 56, height: 56)
+                    .background(
+                        Circle()
+                            .fill(Color.appPrimary)
+                            .shadow(
+                                color: Color.appPrimary.opacity(0.3),
+                                radius: 8,
+                                x: 0,
+                                y: 4
+                            )
+                    )
+                    .scaleEffect(isPressed ? 0.9 : 1.0)
+            }
+        )
         .buttonStyle(PlainButtonStyle())
         .onLongPressGesture(minimumDuration: 0, maximumDistance: .infinity, pressing: { pressing in
             withAnimation(.easeOut(duration: 0.1)) {

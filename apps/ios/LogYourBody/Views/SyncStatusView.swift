@@ -109,8 +109,8 @@ struct SyncStatusView: View {
 
 struct SyncDetailsView: View {
     @StateObject private var syncManager = RealtimeSyncManager.shared
-    @Environment(\.dismiss) private var dismiss
-    
+    @Environment(\.dismiss)
+    private var dismiss    
     var body: some View {
         NavigationView {
             List {

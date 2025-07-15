@@ -48,7 +48,7 @@ struct CutoutProcessingImagePlaceholder: View {
                 }
             }
         }
-        .aspectRatio(3/4, contentMode: .fit)
+        .aspectRatio(3 / 4, contentMode: .fit)
         .onAppear {
             withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
                 pulseAnimation = true
@@ -128,8 +128,8 @@ struct ProgressPhotoCutoutView: View {
         
         return LinearGradient(
             gradient: Gradient(colors: [
-                Color(hue: hue/360, saturation: 0.6, brightness: 0.8).opacity(0.3),
-                Color(hue: hue/360, saturation: 0.4, brightness: 0.6).opacity(0.1),
+                Color(hue: hue / 360, saturation: 0.6, brightness: 0.8).opacity(0.3),
+                Color(hue: hue / 360, saturation: 0.4, brightness: 0.6).opacity(0.1),
                 Color.clear
             ]),
             startPoint: .bottom,
@@ -225,7 +225,7 @@ struct CutoutPhotoView: View {
     var offset: CGSize = .zero
     var opacity: Double = 1.0
     var blur: Double = 0
-    var tintColor: Color? = nil
+    var tintColor: Color?
     var showShadow: Bool = true
     
     var body: some View {

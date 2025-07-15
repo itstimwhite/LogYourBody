@@ -1,8 +1,8 @@
 //
-//  DesignSystem.swift
-//  LogYourBody
+// DesignSystem.swift
+// LogYourBody
 //
-//  Central import for all design system components
+// Central import for all design system components
 //
 
 import SwiftUI
@@ -99,8 +99,8 @@ struct DesignSystemPreview<Content: View>: View {
 
 extension DesignSystem {
     /// Factory methods for creating common components with default styling
-    struct Components {
-        // MARK: Buttons
+    enum Components {
+        // MARK: - Buttons
         
         static func primaryButton(_ title: String, action: @escaping () -> Void) -> some View {
             StandardButton(title, style: .primary, action: action)
@@ -114,7 +114,7 @@ extension DesignSystem {
             StandardButton(title, style: .destructive, action: action)
         }
         
-        // MARK: Cards
+        // MARK: - Cards
         
         static func card<Content: View>(@ViewBuilder content: @escaping () -> Content) -> some View {
             StandardCard(content: content)
@@ -128,7 +128,7 @@ extension DesignSystem {
             StandardCard(style: .glass, content: content)
         }
         
-        // MARK: Text Fields
+        // MARK: - Text Fields
         
         static func textField(
             text: Binding<String>,
@@ -171,7 +171,7 @@ extension DesignSystem {
             )
         }
         
-        // MARK: Headers
+        // MARK: - Headers
         
         static func header(title: String, showBackButton: Bool = true) -> some View {
             StandardHeader(title: title, showBackButton: showBackButton)
@@ -181,7 +181,7 @@ extension DesignSystem {
             StandardHeader(title: title, subtitle: subtitle, style: .large)
         }
         
-        // MARK: State Views
+        // MARK: - State Views
         
         static func loading(message: String? = "Loading...") -> some View {
             DesignLoadingView(message: message, style: .standard)
@@ -205,7 +205,7 @@ extension DesignSystem {
 
 extension DesignSystem {
     /// Common layout configurations
-    struct Layout {
+    enum Layout {
         /// Standard screen padding
         static let screenPadding: CGFloat = 16
         

@@ -46,7 +46,7 @@ struct ProcessingImagePlaceholder: View {
                 }
             }
         }
-        .aspectRatio(3/4, contentMode: .fit)
+        .aspectRatio(3 / 4, contentMode: .fit)
         .onAppear {
             withAnimation(.easeInOut(duration: 1.2).repeatForever(autoreverses: true)) {
                 pulseAnimation = true

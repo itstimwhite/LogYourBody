@@ -12,8 +12,8 @@ struct BulkPhotoImportView: View {
     @EnvironmentObject var authManager: AuthManager
     @StateObject private var scanner = PhotoLibraryScanner.shared
     @StateObject private var importManager = BulkImportManager.shared
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.dismiss)
+    var dismiss    
     @State private var selectedPhotos: Set<UUID> = []
     @State private var showPermissionAlert = false
     @State private var showImportConfirmation = false

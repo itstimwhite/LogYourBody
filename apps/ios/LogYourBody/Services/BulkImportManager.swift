@@ -60,7 +60,7 @@ class BulkImportManager: ObservableObject {
     func importPhotos(_ photos: [ScannedPhoto]) async {
         // Prevent multiple concurrent imports
         guard await MainActor.run(body: { !isImporting }) else {
-            print("⚠️ Import already in progress")
+            // print("⚠️ Import already in progress")
             return
         }
         
@@ -194,9 +194,8 @@ class BulkImportManager: ObservableObject {
             await MainActor.run {
                 SyncManager.shared.syncIfNeeded()
             }
-            
         } catch {
-            print("❌ Failed to import photo: \(error)")
+            // print("❌ Failed to import photo: \(error)")
             await MainActor.run {
                 importTasks[index].status = .failed
                 importTasks[index].error = error

@@ -126,14 +126,14 @@ struct RadiusTheme {
     let lg: CGFloat = 12
     let xl: CGFloat = 16
     let xxl: CGFloat = 24
-    let full: CGFloat = 9999
+    let full: CGFloat = 9_999
     
     // Semantic radius
     let button: CGFloat = 12
     let card: CGFloat = 12
     let input: CGFloat = 8
     let chip: CGFloat = 16
-    let avatar: CGFloat = 9999
+    let avatar: CGFloat = 9_999
 }
 
 // MARK: - Animation Theme
@@ -289,7 +289,8 @@ extension View {
 // MARK: - Common View Modifiers
 
 struct CardStyleModifier: ViewModifier {
-    @Environment(\.theme) var theme
+    @Environment(\.theme) 
+    var theme
     
     func body(content: Content) -> some View {
         content
@@ -303,7 +304,8 @@ struct CardStyleModifier: ViewModifier {
 }
 
 struct SurfaceStyleModifier: ViewModifier {
-    @Environment(\.theme) var theme
+    @Environment(\.theme) 
+    var theme
     
     func body(content: Content) -> some View {
         content

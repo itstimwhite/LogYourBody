@@ -11,8 +11,8 @@ struct GenderInputView: View {
     @EnvironmentObject var viewModel: OnboardingViewModel
     @State private var isEditing = false
     @State private var hasHealthKitData = false
-    @Environment(\.colorScheme) var colorScheme
-    
+    @Environment(\.colorScheme)
+    var colorScheme    
     var body: some View {
         ZStack {
             // Edge-to-edge background
@@ -107,7 +107,6 @@ struct GenderInputView: View {
                                     .fill(.ultraThinMaterial)
                                     .shadow(color: .black.opacity(0.1), radius: 10, y: 5)
                             )
-                            
                         }
                         .padding(.horizontal, 24)
                         .transition(.asymmetric(

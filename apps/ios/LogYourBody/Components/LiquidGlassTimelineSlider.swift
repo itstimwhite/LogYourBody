@@ -165,7 +165,7 @@ struct LiquidGlassTimelineSlider: View {
         }
         
         // Calculate velocity for liquid effect
-        currentVelocity = value.velocity.width / 1000
+        currentVelocity = value.velocity.width / 1_000
         
         // Update position with magnetic anchoring
         let rawProgress = value.location.x / geometry.size.width
@@ -226,13 +226,13 @@ struct LiquidGlassTimelineSlider: View {
         // Find nearby photo anchors
         let magneticRange = 5 // indices
         let nearbyPhotos = ticks.filter { tick in
-            tick.isPhotoAnchor && 
+            tick.isPhotoAnchor &&
             abs(tick.index - targetIndex) <= magneticRange
         }
         
         // Apply magnetic effect to closest photo
-        if let closestPhoto = nearbyPhotos.min(by: { 
-            abs($0.index - targetIndex) < abs($1.index - targetIndex) 
+        if let closestPhoto = nearbyPhotos.min(by: {
+            abs($0.index - targetIndex) < abs($1.index - targetIndex)
         }) {
             let distance = abs(closestPhoto.index - targetIndex)
             let magneticStrength = 1.0 - (Double(distance) / Double(magneticRange))
@@ -563,4 +563,3 @@ struct GlassNavigationButton: View {
         }, perform: {})
     }
 }
-

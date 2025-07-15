@@ -72,29 +72,29 @@ class SyncManager: ObservableObject {
         Task.detached { [weak self] in
             guard let self = self else { return }
             
-            guard self.networkMonitor.currentPath.status == .satisfied else { 
-                print("📵 Sync skipped: No network connection")
-                return 
+            guard self.networkMonitor.currentPath.status == .satisfied else {
+                // print("📵 Sync skipped: No network connection")
+                return
             }
-            guard await self.authManager.isAuthenticated else { 
-                print("🔒 Sync skipped: Not authenticated")
-                return 
+            guard await self.authManager.isAuthenticated else {
+                // print("🔒 Sync skipped: Not authenticated")
+                return
             }
-            guard await !self.isSyncing else { 
-                print("⏳ Sync skipped: Already syncing")
-                return 
+            guard await !self.isSyncing else {
+                // print("⏳ Sync skipped: Already syncing")
+                return
             }
             
             // Log the current user ID
             let userId = await self.authManager.currentUser?.id
-            print("🔄 SyncManager: Checking sync for user: \(userId ?? "nil")")
+            // print("🔄 SyncManager: Checking sync for user: \(userId ?? "nil")")
             
             // Check if we synced recently (within last 5 minutes)
             let lastSyncKey = "lastSupabaseSyncDate"
             if let lastSync = UserDefaults.standard.object(forKey: lastSyncKey) as? Date {
                 let minutesSinceLastSync = Date().timeIntervalSince(lastSync) / 60
                 if minutesSinceLastSync < 5 {
-                    print("⏰ Sync skipped: Synced \(Int(minutesSinceLastSync)) minutes ago")
+                    // print("⏰ Sync skipped: Synced \(Int(minutesSinceLastSync)) minutes ago")
                     return
                 }
             }
@@ -102,14 +102,14 @@ class SyncManager: ObservableObject {
             let unsynced = self.coreDataManager.fetchUnsyncedEntries()
             let totalUnsynced = unsynced.bodyMetrics.count + unsynced.dailyMetrics.count + unsynced.profiles.count
             
-            print("📊 Unsynced items: \(unsynced.bodyMetrics.count) body metrics, \(unsynced.dailyMetrics.count) daily metrics, \(unsynced.profiles.count) profiles")
+            // print("📊 Unsynced items: \(unsynced.bodyMetrics.count) body metrics, \(unsynced.dailyMetrics.count) daily metrics, \(unsynced.profiles.count) profiles")
             
             if totalUnsynced > 0 {
-                print("🚀 Starting sync for \(totalUnsynced) items...")
+                // print("🚀 Starting sync for \(totalUnsynced) items...")
                 UserDefaults.standard.set(Date(), forKey: lastSyncKey)
                 await self.syncAll()
             } else {
-                print("✅ Everything is already synced")
+                // print("✅ Everything is already synced")
                 await self.updatePendingSyncCount()
             }
         }
@@ -137,19 +137,19 @@ class SyncManager: ObservableObject {
                 
                 do {
                     // Get JWT token from Clerk session (using new integration pattern)
-                    print("🔑 Getting Clerk session token for Supabase...")
+                    // print("🔑 Getting Clerk session token for Supabase...")
                     let tokenResource = try await session.getToken()
                     guard let token = tokenResource?.jwt else {
-                        print("❌ Failed to get Clerk session token")
+                        // print("❌ Failed to get Clerk session token")
                         self.isSyncing = false
                         self.syncStatus = .error("Failed to get authentication token")
                         return
                     }
                     
-                    print("✅ Got Clerk session token, starting sync...")
+                    // print("✅ Got Clerk session token, starting sync...")
                     self.performSync(token: token)
                 } catch {
-                    print("❌ Token error: \(error)")
+                    // print("❌ Token error: \(error)")
                     self.isSyncing = false
                     self.syncStatus = .error("Token error: \(error.localizedDescription)")
                 }
@@ -164,17 +164,17 @@ class SyncManager: ObservableObject {
                 let unsynced = coreDataManager.fetchUnsyncedEntries()
                 var hasErrors = false
                 
-                print("📤 Starting sync: \(unsynced.bodyMetrics.count) body metrics, \(unsynced.dailyMetrics.count) daily metrics")
+                // print("📤 Starting sync: \(unsynced.bodyMetrics.count) body metrics, \(unsynced.dailyMetrics.count) daily metrics")
                 
                 // Sync body metrics in batches
                 if !unsynced.bodyMetrics.isEmpty {
-                    print("🔍 Processing \(unsynced.bodyMetrics.count) unsynced body metrics...")
+                    // print("🔍 Processing \(unsynced.bodyMetrics.count) unsynced body metrics...")
                     let bodyMetricsBatch = unsynced.bodyMetrics.compactMap { cached -> [String: Any]? in
                         guard let userId = cached.userId,
                               let id = cached.id,
-                              let date = cached.date else { 
-                            print("⚠️ Skipping body metric with missing data: userId=\(cached.userId ?? "nil"), id=\(cached.id ?? "nil"), date=\(String(describing: cached.date))")
-                            return nil 
+                              let date = cached.date else {
+                            // print("⚠️ Skipping body metric with missing data: userId=\(cached.userId ?? "nil"), id=\(cached.id ?? "nil"), date=\(String(describing: cached.date))")
+                            return nil
                         }
                         
                         // Always include ALL fields, even if null, to satisfy Supabase's "All object keys must match" requirement
@@ -200,7 +200,7 @@ class SyncManager: ObservableObject {
                         return metrics
                     }
                     
-                    print("📊 After filtering: \(bodyMetricsBatch.count) body metrics ready to sync")
+                    // print("📊 After filtering: \(bodyMetricsBatch.count) body metrics ready to sync")
                     
                     // Send in smaller batches to avoid timeouts and debug issues
                     let batchSize = 50
@@ -210,20 +210,20 @@ class SyncManager: ObservableObject {
                         let endIndex = min(i + batchSize, bodyMetricsBatch.count)
                         let batch = Array(bodyMetricsBatch[i..<endIndex])
                         
-                        print("📦 Sending batch \(i/batchSize + 1) of \((bodyMetricsBatch.count + batchSize - 1)/batchSize): \(batch.count) items")
+                        // print("📦 Sending batch \(i / batchSize + 1) of \((bodyMetricsBatch.count + batchSize - 1) / batchSize): \(batch.count) items")
                         
                         do {
                             let result = try await supabaseManager.upsertBodyMetricsBatch(batch, token: token)
                             successCount += result.count
-                            print("✅ Batch successful: \(result.count) items")
+                            // print("✅ Batch successful: \(result.count) items")
                         } catch {
-                            print("❌ Batch failed: \(error)")
+                            // print("❌ Batch failed: \(error)")
                             // Continue with next batch even if this one fails
                         }
                     }
                     
                     if successCount > 0 {
-                        print("✅ Total synced: \(successCount) body metrics")
+                        // print("✅ Total synced: \(successCount) body metrics")
                         
                         // Mark synced items
                         for cached in unsynced.bodyMetrics {
@@ -231,15 +231,15 @@ class SyncManager: ObservableObject {
                                 coreDataManager.markAsSynced(entityName: "CachedBodyMetrics", id: id)
                             }
                         }
-                    } else if bodyMetricsBatch.count > 0 {
-                        print("❌ Failed to sync any body metrics")
+                    } else if !bodyMetricsBatch.isEmpty {
+                        // print("❌ Failed to sync any body metrics")
                         hasErrors = true
                     }
                 }
                 
                 // Sync daily metrics in batches
                 if !unsynced.dailyMetrics.isEmpty {
-                    print("🔍 Processing \(unsynced.dailyMetrics.count) unsynced daily metrics...")
+                    // print("🔍 Processing \(unsynced.dailyMetrics.count) unsynced daily metrics...")
                     let dailyMetricsBatch = unsynced.dailyMetrics.compactMap { cached -> [String: Any]? in
                         guard let userId = cached.userId,
                               let id = cached.id,
@@ -264,7 +264,7 @@ class SyncManager: ObservableObject {
                         return metrics
                     }
                     
-                    print("📊 After filtering: \(dailyMetricsBatch.count) daily metrics ready to sync")
+                    // print("📊 After filtering: \(dailyMetricsBatch.count) daily metrics ready to sync")
                     
                     // Send in smaller batches to avoid timeouts
                     let batchSize = 50 // Reduced from unlimited to 50 per batch
@@ -274,12 +274,12 @@ class SyncManager: ObservableObject {
                         let endIndex = min(i + batchSize, dailyMetricsBatch.count)
                         let batch = Array(dailyMetricsBatch[i..<endIndex])
                         
-                        print("📦 Sending daily metrics batch \(i/batchSize + 1) of \((dailyMetricsBatch.count + batchSize - 1)/batchSize): \(batch.count) items")
+                        // print("📦 Sending daily metrics batch \(i / batchSize + 1) of \((dailyMetricsBatch.count + batchSize - 1) / batchSize): \(batch.count) items")
                         
                         do {
                             let result = try await supabaseManager.upsertDailyMetricsBatch(batch, token: token)
                             successCount += result.count
-                            print("✅ Batch successful: \(result.count) items")
+                            // print("✅ Batch successful: \(result.count) items")
                             
                             // Mark synced items in this batch
                             let syncedIds = Set(result.compactMap { $0["id"] as? String })
@@ -289,15 +289,15 @@ class SyncManager: ObservableObject {
                                 }
                             }
                         } catch {
-                            print("❌ Daily metrics batch failed: \(error)")
+                            // print("❌ Daily metrics batch failed: \(error)")
                             // Continue with next batch even if this one fails
                         }
                     }
                     
                     if successCount > 0 {
-                        print("✅ Total synced: \(successCount) daily metrics")
-                    } else if dailyMetricsBatch.count > 0 {
-                        print("❌ Failed to sync any daily metrics")
+                        // print("✅ Total synced: \(successCount) daily metrics")
+                    } else if !dailyMetricsBatch.isEmpty {
+                        // print("❌ Failed to sync any daily metrics")
                         hasErrors = true
                     }
                 }
@@ -308,9 +308,8 @@ class SyncManager: ObservableObject {
                     self.syncStatus = hasErrors ? .error("Some items failed to sync") : .success
                     self.updatePendingSyncCount()
                 }
-                
             } catch {
-                print("❌ Sync error: \(error)")
+                // print("❌ Sync error: \(error)")
                 await MainActor.run {
                     self.isSyncing = false
                     self.syncStatus = .error(error.localizedDescription)
@@ -357,7 +356,6 @@ class SyncManager: ObservableObject {
                 }.value
                 return false
             }
-            
         } catch {
             await Task { @MainActor in
                 coreDataManager.updateSyncStatus(
@@ -380,7 +378,7 @@ class SyncManager: ObservableObject {
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         guard let metrics = cached.toBodyMetrics() else {
-            print("⚠️ Skipping sync for corrupted body metric")
+            // print("⚠️ Skipping sync for corrupted body metric")
             return false
         }
         
@@ -417,7 +415,6 @@ class SyncManager: ObservableObject {
             } else {
                 return false
             }
-            
         } catch {
             await Task { @MainActor in
                 coreDataManager.updateSyncStatus(
@@ -469,7 +466,6 @@ class SyncManager: ObservableObject {
                 }.value
                 return false
             }
-            
         } catch {
             await Task { @MainActor in
                 coreDataManager.updateSyncStatus(
@@ -539,11 +535,11 @@ class SyncManager: ObservableObject {
         let hourBefore = calendar.date(byAdding: .hour, value: -1, to: date) ?? date
         let hourAfter = calendar.date(byAdding: .hour, value: 1, to: date) ?? date
         
-        return coreDataManager.fetchBodyMetrics(
+        return !coreDataManager.fetchBodyMetrics(
             for: userId,
             from: hourBefore,
             to: hourAfter
-        ).count > 0
+        ).isEmpty
     }
     
     // Save weight entry from HealthKit

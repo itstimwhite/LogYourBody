@@ -108,9 +108,9 @@ struct PreferencesView: View {
                 // Security Section
                 SettingsSection(
                     header: "Security",
-                    footer: biometricType == .none ? 
+                    footer: biometricType == .none ?
                         "Biometric authentication is not available on this device" :
-                        biometricLockEnabled ? 
+                        biometricLockEnabled ?
                         "Require \(biometricType == .faceID ? "Face ID" : "Touch ID") to open the app" :
                         "App opens without authentication"
                 ) {

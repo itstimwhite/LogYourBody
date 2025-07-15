@@ -18,8 +18,8 @@ struct CompletionStepView: View {
     
     // Computed properties for cleaner code
     private var hasProfileData: Bool {
-        !viewModel.data.name.isEmpty || 
-        viewModel.data.dateOfBirth != nil || 
+        !viewModel.data.name.isEmpty ||
+        viewModel.data.dateOfBirth != nil ||
         viewModel.data.totalHeightInInches > 0 ||
         viewModel.data.gender != nil
     }

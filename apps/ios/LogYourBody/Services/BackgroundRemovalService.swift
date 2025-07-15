@@ -8,8 +8,6 @@
 import UIKit
 import Vision
 import CoreImage
-import CoreImage.CIFilterBuiltins
-
 class BackgroundRemovalService {
     static let shared = BackgroundRemovalService()
     private init() {}
@@ -88,19 +86,23 @@ class BackgroundRemovalService {
         let scaledMask = maskImage.transformed(by: CGAffineTransform(scaleX: scaleX, y: scaleY))
         
         // Apply Gaussian blur to soften mask edges for more natural cutout
-        let blurFilter = CIFilter.gaussianBlur()
-        blurFilter.inputImage = scaledMask
-        blurFilter.radius = 2.0
+        guard let blurFilter = CIFilter(name: "CIGaussianBlur") else {
+            throw BackgroundRemovalError.processingFailed
+        }
+        blurFilter.setValue(scaledMask, forKey: kCIInputImageKey)
+        blurFilter.setValue(2.0, forKey: kCIInputRadiusKey)
         
         guard let blurredMask = blurFilter.outputImage else {
             throw BackgroundRemovalError.processingFailed
         }
         
         // Create alpha mask by blending the original image with the mask
-        let blendFilter = CIFilter.blendWithMask()
-        blendFilter.inputImage = ciImage
-        blendFilter.backgroundImage = CIImage.empty()
-        blendFilter.maskImage = blurredMask
+        guard let blendFilter = CIFilter(name: "CIBlendWithMask") else {
+            throw BackgroundRemovalError.processingFailed
+        }
+        blendFilter.setValue(ciImage, forKey: kCIInputImageKey)
+        blendFilter.setValue(CIImage.empty(), forKey: kCIInputBackgroundImageKey)
+        blendFilter.setValue(blurredMask, forKey: kCIInputMaskImageKey)
         
         guard let outputImage = blendFilter.outputImage else {
             throw BackgroundRemovalError.processingFailed
@@ -116,7 +118,7 @@ class BackgroundRemovalService {
     }
     
     /// Prepare image data for upload (convert to PNG to preserve alpha channel)
-    func prepareForUpload(_ image: UIImage, maxSize: CGSize = CGSize(width: 1200, height: 1600)) -> Data? {
+    func prepareForUpload(_ image: UIImage, maxSize: CGSize = CGSize(width: 1_200, height: 1_600)) -> Data? {
         // Process on background queue to avoid blocking main thread
         return DispatchQueue.global(qos: .userInitiated).sync {
             // Resize if needed while maintaining aspect ratio
@@ -134,7 +136,7 @@ class BackgroundRemovalService {
                 format.opaque = false // Important for transparency
                 
                 let renderer = UIGraphicsImageRenderer(size: newSize, format: format)
-                resizedImage = renderer.image { context in
+                resizedImage = renderer.image { _ in
                     image.draw(in: CGRect(origin: .zero, size: newSize))
                 }
             } else {
@@ -146,4 +148,3 @@ class BackgroundRemovalService {
         }
     }
 }
-

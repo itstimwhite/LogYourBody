@@ -66,7 +66,7 @@ extension DailyLog {
             date: Date(),
             weight: 75.5,
             weightUnit: "kg",
-            stepCount: 8500,
+            stepCount: 8_500,
             notes: "Morning weight and good walking day"
         )
     }
@@ -82,7 +82,7 @@ extension DailyLog {
                 date: calendar.date(byAdding: .day, value: -6, to: today)!,
                 weight: 75.5,
                 weightUnit: "kg",
-                stepCount: 8200
+                stepCount: 8_200
             ),
             DailyLog(
                 id: "2",
@@ -90,7 +90,7 @@ extension DailyLog {
                 date: calendar.date(byAdding: .day, value: -5, to: today)!,
                 weight: 75.2,
                 weightUnit: "kg",
-                stepCount: 9100
+                stepCount: 9_100
             ),
             DailyLog(
                 id: "3",
@@ -98,7 +98,7 @@ extension DailyLog {
                 date: calendar.date(byAdding: .day, value: -4, to: today)!,
                 weight: nil,
                 weightUnit: nil,
-                stepCount: 7800
+                stepCount: 7_800
             ),
             DailyLog(
                 id: "4",
@@ -106,7 +106,7 @@ extension DailyLog {
                 date: calendar.date(byAdding: .day, value: -3, to: today)!,
                 weight: 74.8,
                 weightUnit: "kg",
-                stepCount: 12000
+                stepCount: 12_000
             ),
             DailyLog(
                 id: "5",
@@ -114,7 +114,7 @@ extension DailyLog {
                 date: calendar.date(byAdding: .day, value: -2, to: today)!,
                 weight: nil,
                 weightUnit: nil,
-                stepCount: 6500
+                stepCount: 6_500
             ),
             DailyLog(
                 id: "6",
@@ -122,7 +122,7 @@ extension DailyLog {
                 date: calendar.date(byAdding: .day, value: -1, to: today)!,
                 weight: 74.5,
                 weightUnit: "kg",
-                stepCount: 10200
+                stepCount: 10_200
             ),
             DailyLog(
                 id: "7",
@@ -130,8 +130,8 @@ extension DailyLog {
                 date: today,
                 weight: nil,
                 weightUnit: nil,
-                stepCount: 3400 // Today so far
-            ),
+                stepCount: 3_400 // Today so far
+            )
         ]
     }
 }

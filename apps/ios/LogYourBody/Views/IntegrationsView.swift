@@ -12,8 +12,8 @@ struct IntegrationsView: View {
     @StateObject private var healthKitManager = HealthKitManager.shared
     @AppStorage("healthKitSyncEnabled") private var healthKitSyncEnabled = true
     @State private var showHealthKitConnect = false
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.dismiss)
+    var dismiss    
     var body: some View {
         ZStack {
             Color.appBackground
@@ -70,7 +70,7 @@ struct IntegrationsView: View {
                                         title: "Enable Sync",
                                         isOn: $healthKitSyncEnabled
                                     )
-                                    .onChange(of: healthKitSyncEnabled) { oldValue, newValue in
+                                    .onChange(of: healthKitSyncEnabled) { _, newValue in
                                         if newValue {
                                             Task {
                                                 let authorized = await healthKitManager.requestAuthorization()

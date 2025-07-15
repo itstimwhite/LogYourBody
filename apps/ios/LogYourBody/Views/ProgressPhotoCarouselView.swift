@@ -192,7 +192,6 @@ struct PhotoCard: View {
                         }
                     }
                 }
-                
             }
         }
     }
@@ -287,7 +286,7 @@ class ImageLoader {
                 return image
             }
         } catch {
-            print("Failed to load image: \(error)")
+            // print("Failed to load image: \(error)")
         }
         
         return nil

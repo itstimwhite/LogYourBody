@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct LegalView: View {
-    @Environment(\.dismiss) var dismiss
-    
+    @Environment(\.dismiss)
+    var dismiss    
     var body: some View {
         ZStack {
             Color.appBackground
@@ -59,7 +59,7 @@ struct LegalView: View {
                     SettingsSection(header: "Compliance") {
                         VStack(spacing: 0) {
                             // GDPR
-                            NavigationLink(destination: Text("GDPR Compliance Information")) {
+                            NavigationLink(destination: LegalDocumentView(documentType: .gdprCompliance)) {
                                 SettingsRow(
                                     icon: "shield.lefthalf.filled",
                                     title: "GDPR Compliance",
@@ -72,7 +72,7 @@ struct LegalView: View {
                                 .padding(.leading, 16)
                             
                             // CCPA
-                            NavigationLink(destination: Text("CCPA Compliance Information")) {
+                            NavigationLink(destination: LegalDocumentView(documentType: .ccpaCompliance)) {
                                 SettingsRow(
                                     icon: "shield.righthalf.filled",
                                     title: "CCPA Compliance",
@@ -88,7 +88,7 @@ struct LegalView: View {
                         header: "Open Source",
                         footer: "LogYourBody uses open source software. Tap to view licenses."
                     ) {
-                        NavigationLink(destination: Text("Open Source Licenses")) {
+                        NavigationLink(destination: LegalDocumentView(documentType: .openSourceLicenses)) {
                             SettingsRow(
                                 icon: "text.badge.checkmark",
                                 title: "Open Source Licenses",

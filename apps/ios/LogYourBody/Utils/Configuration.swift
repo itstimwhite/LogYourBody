@@ -32,7 +32,7 @@ enum Configuration {
         do {
             return try Configuration.value(for: "SUPABASE_URL")
         } catch {
-            print("⚠️ SUPABASE_URL not configured in Config.xcconfig")
+            // print("⚠️ SUPABASE_URL not configured in Config.xcconfig")
             return ""
         }
     }
@@ -41,7 +41,7 @@ enum Configuration {
         do {
             return try Configuration.value(for: "SUPABASE_ANON_KEY")
         } catch {
-            print("⚠️ SUPABASE_ANON_KEY not configured in Config.xcconfig")
+            // print("⚠️ SUPABASE_ANON_KEY not configured in Config.xcconfig")
             return ""
         }
     }
@@ -54,7 +54,7 @@ enum Configuration {
             return try Configuration.value(for: "API_BASE_URL_RELEASE")
             #endif
         } catch {
-            print("⚠️ API_BASE_URL not configured in Config.xcconfig")
+            // print("⚠️ API_BASE_URL not configured in Config.xcconfig")
             #if DEBUG
             return "http://localhost:3000"
             #else

@@ -355,7 +355,7 @@ struct DebugToolsSection: View {
     
     @MainActor
     func testBodyMetricsSync() async {
-        print("\n🔍 === SYNC DEBUG TEST START ===")
+        // print("\n🔍 === SYNC DEBUG TEST START ===")
         
         let testMetric = BodyMetrics(
             id: UUID().uuidString,
@@ -377,7 +377,7 @@ struct DebugToolsSection: View {
         CoreDataManager.shared.saveBodyMetrics(testMetric, userId: testMetric.userId, markAsSynced: false)
         SyncManager.shared.syncIfNeeded()
         
-        print("\n🔍 === SYNC DEBUG TEST END ===\n")
+        // print("\n🔍 === SYNC DEBUG TEST END ===\n")
     }
 }
 #endif

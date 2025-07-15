@@ -11,8 +11,8 @@ import SafariServices
 
 struct SignUpView: View {
     @EnvironmentObject var authManager: AuthManager
-    @Environment(\.dismiss) var dismiss
-    @State private var email = ""
+    @Environment(\.dismiss)
+    var dismiss    @State private var email = ""
     @State private var password = ""
     @State private var isLoading = false
     @State private var showError = false

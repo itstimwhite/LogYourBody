@@ -92,7 +92,7 @@ class LoadingManager: ObservableObject {
             await updateProgress(for: .loadProfile, partial: 0.3)
             
             if let userId = authManager.currentUser?.id {
-                print("📱 LoadingManager: Loading profile for user \(userId)")
+                // print("📱 LoadingManager: Loading profile for user \(userId)")
                 
                 // Load profile from Core Data first
                 if let cachedProfile = coreDataManager.fetchProfile(for: userId) {
@@ -109,7 +109,7 @@ class LoadingManager: ObservableObject {
                     }
                 }
             } else {
-                print("⚠️ LoadingManager: Authenticated but no user ID available")
+                // print("⚠️ LoadingManager: Authenticated but no user ID available")
             }
             
             await updateProgress(for: .loadProfile)

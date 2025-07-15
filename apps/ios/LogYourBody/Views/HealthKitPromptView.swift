@@ -179,9 +179,9 @@ struct HealthKitPromptView: View {
                             try await healthKitManager.syncWeightFromHealthKit()
                             
                             // Fetch today's step count
-                            let _ = try await healthKitManager.fetchTodayStepCount()
+                            _ = try await healthKitManager.fetchTodayStepCount()
                         } catch {
-                            print("Initial HealthKit sync failed: \(error)")
+                            // print("Initial HealthKit sync failed: \(error)")
                         }
                     }
                 }

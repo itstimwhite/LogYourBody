@@ -9,8 +9,8 @@ import SwiftUI
 import Clerk
 
 struct ChangePasswordView: View {
-    @Environment(\.dismiss) var dismiss
-    @State private var currentPassword = ""
+    @Environment(\.dismiss)
+    var dismiss    @State private var currentPassword = ""
     @State private var newPassword = ""
     @State private var confirmPassword = ""
     @State private var isLoading = false
@@ -225,7 +225,6 @@ struct ChangePasswordView: View {
                 
                 isLoading = false
                 showSuccess = true
-                
             } catch {
                 isLoading = false
                 

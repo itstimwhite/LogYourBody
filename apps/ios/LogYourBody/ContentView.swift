@@ -64,14 +64,14 @@ struct ContentView: View {
                         if shouldShowOnboarding {
                             OnboardingContainerView()
                                 .onAppear {
-                                    print("🎯 Showing OnboardingContainerView")
-                                    print("   Profile complete: \(isProfileComplete)")
-                                    print("   Onboarding completed: \(hasCompletedOnboarding)")
+                                    // print("🎯 Showing OnboardingContainerView")
+                                    // print("   Profile complete: \(isProfileComplete)")
+                                    // print("   Onboarding completed: \(hasCompletedOnboarding)")
                                 }
                         } else {
                             MainTabView()
                                 .onAppear {
-                                    print("🏠 Showing MainTabView (Dashboard)")
+                                    // print("🏠 Showing MainTabView (Dashboard)")
                                 }
                         }
                     } else if authManager.needsEmailVerification {
@@ -79,14 +79,14 @@ struct ContentView: View {
                             EmailVerificationView()
                         }
                         .onAppear {
-                            print("📧 Showing EmailVerificationView")
+                            // print("📧 Showing EmailVerificationView")
                         }
                     } else {
                         NavigationView {
                             LoginView()
                         }
                         .onAppear {
-                            print("🔐 Showing LoginView")
+                            // print("🔐 Showing LoginView")
                         }
                     }
                 }
@@ -124,18 +124,18 @@ struct ContentView: View {
             // Update onboarding status when UserDefaults changes
             hasCompletedOnboarding = UserDefaults.standard.bool(forKey: Constants.hasCompletedOnboardingKey)
         }
-        .onChange(of: authManager.isAuthenticated) { _, newValue in
-            print("🔄 Authentication state changed to: \(newValue)")
-            print("🔄 Should show onboarding: \(shouldShowOnboarding)")
-            print("🔄 Profile complete: \(isProfileComplete)")
-            print("🔄 Onboarding completed: \(hasCompletedOnboarding)")
-            print("🔄 isLoadingComplete: \(isLoadingComplete)")
-            print("🔄 Current user: \(authManager.currentUser?.email ?? "nil")")
-            print("🔄 Clerk session: \(authManager.clerkSession?.id ?? "nil")")
+        .onChange(of: authManager.isAuthenticated) { _, _ in
+            // print("🔄 Authentication state changed to: \(newValue)")
+            // print("🔄 Should show onboarding: \(shouldShowOnboarding)")
+            // print("🔄 Profile complete: \(isProfileComplete)")
+            // print("🔄 Onboarding completed: \(hasCompletedOnboarding)")
+            // print("🔄 isLoadingComplete: \(isLoadingComplete)")
+            // print("🔄 Current user: \(authManager.currentUser?.email ?? "nil")")
+            // print("🔄 Clerk session: \(authManager.clerkSession?.id ?? "nil")")
         }
         .onChange(of: hasCompletedOnboarding) { _, newValue in
             if newValue && isLoadingComplete {
-                print("🎯 Onboarding completed, transitioning to main app...")
+                // print("🎯 Onboarding completed, transitioning to main app...")
                 // Add a small delay to ensure smooth transition
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     // Force a view refresh if needed
