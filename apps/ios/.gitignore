@@ -94,6 +94,7 @@ iOSInjectionProject/
 
 # Ruby dependencies
 vendor/bundle/
+.bundle/
 
 # Configuration files with sensitive data
 Config.xcconfig
