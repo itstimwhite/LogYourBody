@@ -2,21 +2,22 @@
 
 This directory contains GitHub Actions workflows for CI/CD automation.
 
-## Workflows
+## Active Workflows
 
-### 1. CI/CD Pipeline (`ci.yml`)
+### 1. Main CI/CD Pipeline (`main.yml`)
 - **Triggers**: Push to dev/preview/main, PRs
-- **Purpose**: Run tests, linting, and builds
-- **Environments**: Automatically uses development/preview/production based on branch
-- **Jobs**:
-  - Web lint, test, and build
-  - iOS lint, test, and build
-  - Auto-merge dev → preview on success
-  - TestFlight deployment from preview branch
+- **Purpose**: Primary CI/CD for web app
+- **Features**:
+  - Web app linting, testing, and building
+  - Vercel deployments
+  - Database migrations via Supabase
+  - Auto-merge from dev → preview → main
+  - Dependabot PR handling
+- **Environment**: Uses Vercel for deployments
 
 ### 2. Deploy to Production (`deploy-production.yml`)
 - **Triggers**: Manual (workflow_dispatch)
-- **Purpose**: Deploy to App Store
+- **Purpose**: Deploy iOS app to App Store
 - **Environment**: production (requires approval)
 - **Inputs**:
   - Version number
@@ -37,31 +38,38 @@ This directory contains GitHub Actions workflows for CI/CD automation.
   - Validates promotion path
   - Adds appropriate reviewers
 
-## Environment Configuration
+### 4. Dependabot Auto-Merge (`dependabot-auto-merge.yml`)
+- **Triggers**: Dependabot PRs
+- **Purpose**: Automate dependency updates
+- **Actions**:
+  - Auto-merge minor and patch updates
+  - Comment on major updates for manual review
+  - Run tests before merging
 
-### Development
-- **Branch**: `dev`
-- **Auto-deploy**: Yes
-- **Purpose**: Development builds and testing
+## Deployment Flow
 
-### Preview
-- **Branch**: `preview`
-- **Auto-deploy**: Yes (TestFlight)
-- **Purpose**: Beta testing
-
-### Production
-- **Branch**: `main`
-- **Auto-deploy**: No (manual approval required)
-- **Purpose**: App Store releases
+```mermaid
+graph LR
+    A[dev branch] -->|Auto CI| B[Vercel Dev]
+    A -->|Auto-merge| C[preview branch]
+    C -->|Auto CI| D[Vercel Preview]
+    C -->|Manual PR| E[main branch]
+    E -->|Auto CI| F[Vercel Production]
+    E -->|Manual Deploy| G[App Store]
+```
 
 ## Required Secrets
 
-### All Environments
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+### Repository Secrets
+- `GITHUB_TOKEN` (automatically provided)
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+- `SUPABASE_DB_URL`
+- `SUPABASE_ACCESS_TOKEN`
+- `SUPABASE_PROJECT_ID`
 
-### Preview & Production Only
+### Environment Secrets (for iOS deployment)
 - `APPLE_ID_EMAIL`
 - `APPLE_ID_PASSWORD`
 - `APPLE_TEAM_ID`
@@ -69,58 +77,46 @@ This directory contains GitHub Actions workflows for CI/CD automation.
 - `IOS_P12_BASE64`
 - `IOS_P12_PASSWORD`
 - `IOS_PROVISIONING_PROFILE_BASE64`
-- `IOS_PROVISIONING_PROFILE_NAME`
-
-### Production Only
-- `APP_STORE_CONNECT_API_KEY_ID`
-- `APP_STORE_CONNECT_API_ISSUER_ID`
-- `APP_STORE_CONNECT_API_KEY_BASE64`
-
-## Deployment Flow
-
-```mermaid
-graph LR
-    A[dev branch] -->|Auto CI| B[development env]
-    B -->|Auto-merge on success| C[preview branch]
-    C -->|Auto CI| D[preview env]
-    D -->|Auto| E[TestFlight]
-    C -->|Manual PR| F[main branch]
-    F -->|Manual Approval| G[production env]
-    G -->|Manual Deploy| H[App Store]
-```
+- `APP_STORE_CONNECT_API_KEY_ID` (production only)
+- `APP_STORE_CONNECT_API_ISSUER_ID` (production only)
+- `APP_STORE_CONNECT_API_KEY_BASE64` (production only)
 
 ## Usage Examples
 
-### Deploy to TestFlight
-Automatically happens when code is pushed to `preview` branch.
+### Deploy Web App
+Automatically happens on push to any branch (dev/preview/main).
 
-### Deploy to App Store
-1. Ensure code is merged to `main` branch
+### Deploy iOS to TestFlight
+1. Merge code to preview branch
+2. iOS CI runs automatically via Fastlane
+3. TestFlight deployment happens if iOS files changed
+
+### Deploy iOS to App Store
+1. Ensure code is merged to main branch
 2. Go to Actions → Deploy to Production
 3. Click "Run workflow"
 4. Enter version (e.g., "1.2.3")
 5. Enter release notes
 6. Approve deployment in environment settings
 
-### Promote dev to preview
+### Promote Branches
 1. Go to Actions → Promote Environment
-2. Select source: `dev`, target: `preview`
+2. Select source and target branches
 3. Review and merge the created PR
 
 ## Troubleshooting
 
-### CI Failing?
-- Check which job failed in the workflow run
-- Review logs for specific errors
-- Ensure all secrets are properly configured
-- Verify branch protection rules
+### Workflow Not Running?
+- Check branch protection rules
+- Verify workflow triggers match your branch/event
+- Review Actions tab for disabled workflows
 
-### Environment Not Found?
-- Ensure environments are created in repository settings
-- Check environment names match exactly
-- Verify secrets are added to correct environment
+### Deployment Failed?
+- Check workflow logs for specific errors
+- Verify all required secrets are set
+- Ensure environment approvals are configured
 
-### Deployment Stuck?
-- Check if environment requires approval
-- Verify all required secrets are present
-- Review deployment logs for errors
+### Dependabot Not Auto-Merging?
+- Check if update is minor/patch (major updates require manual review)
+- Verify tests are passing
+- Review branch protection rules
