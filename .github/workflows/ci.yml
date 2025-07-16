@@ -55,8 +55,21 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
+    - name: Cache node_modules
+      uses: actions/cache@v4
+      id: npm-cache
+      with:
+        path: |
+          node_modules
+          apps/web/node_modules
+          ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - name: Install dependencies
-      run: npm ci
+      if: steps.npm-cache.outputs.cache-hit != 'true'
+      run: npm ci --prefer-offline --no-audit
 
     - name: Run linter (Web)
       run: npm run lint
@@ -265,9 +278,21 @@ jobs:
         node-version: '18.x'
         cache: 'npm'
 
+    - name: Cache node_modules
+      uses: actions/cache@v4
+      id: npm-cache-lint
+      with:
+        path: |
+          node_modules
+          apps/web/node_modules
+          ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+
     - name: Install dependencies (Web)
-      if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
-      run: npm ci
+      if: (needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true') && steps.npm-cache-lint.outputs.cache-hit != 'true'
+      run: npm ci --prefer-offline --no-audit
 
     - name: Run ESLint (Web)
       if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
