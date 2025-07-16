@@ -50,3 +50,11 @@ The app communicates with the Next.js backend through REST APIs. Make sure to im
 1. Update `baseURL` in `AuthManager.swift` for your environment
 2. Add any required API keys or configuration
 3. Test on both simulator and real devices
+
+## CI/CD
+
+- Automated tests run on every push
+- TestFlight deployment triggered on preview branch
+- App Store release managed through GitHub Actions
+
+Last updated: 2025-07-16 - Testing new App Store Connect API authentication
