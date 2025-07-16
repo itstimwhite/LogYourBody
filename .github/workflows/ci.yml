@@ -73,11 +73,14 @@ jobs:
         run: npm run typecheck
         working-directory: apps/web
 
-  # Web Tests (runs in parallel)
+  # Web Tests (runs in parallel with sharding)
   web-test:
     needs: detect-changes
     if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        shard: [1, 2, 3]  # Run tests in 3 parallel shards
     steps:
       - uses: actions/checkout@v4
       
@@ -101,12 +104,20 @@ jobs:
       - name: Install dependencies
         run: npm ci --prefer-offline --no-audit
       
-      - name: Run Tests
-        run: npm test -- --passWithNoTests
+      - name: Run Tests (Shard ${{ matrix.shard }}/3)
+        run: npm test -- --shard=${{ matrix.shard }}/3 --passWithNoTests
         working-directory: apps/web
         env:
           CI: true
         continue-on-error: true
+      
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.shard }}
+          path: apps/web/coverage/
+          retention-days: 7
 
   # Web Build (runs in parallel, only waits for lint)
   web-build:
