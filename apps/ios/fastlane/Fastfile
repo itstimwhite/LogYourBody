@@ -23,7 +23,10 @@ platform :ios do
   
   before_all do
     # Ensure we're in the right directory
-    Dir.chdir("..") unless Dir.pwd.end_with?("ios")
+    # The Fastfile is in apps/ios/fastlane, so we need to be in apps/ios
+    if Dir.pwd.end_with?("fastlane")
+      Dir.chdir("..")
+    end
     
     # Set up environment
     ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "180"
