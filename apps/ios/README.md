@@ -58,3 +58,7 @@ The app communicates with the Next.js backend through REST APIs. Make sure to im
 - App Store release managed through GitHub Actions
 
 Last updated: 2025-07-16 - Testing new App Store Connect API authentication
+
+## Build Status
+- CI/CD configured with GitHub Actions
+- Automated TestFlight deployment on preview branch
