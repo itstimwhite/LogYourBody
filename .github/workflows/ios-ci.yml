@@ -57,7 +57,7 @@ jobs:
     - name: Install Ruby dependencies
       run: |
         cd apps/ios
-        gem install bundler
+        gem install bundler:2.4.10
         bundle config path vendor/bundle
         bundle install --jobs 4 --retry 3
     
@@ -157,7 +157,7 @@ jobs:
     - name: Install dependencies
       run: |
         cd apps/ios
-        gem install bundler
+        gem install bundler:2.4.10
         bundle config path vendor/bundle
         bundle install --jobs 4 --retry 3
         
