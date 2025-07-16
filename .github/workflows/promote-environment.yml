@@ -63,8 +63,8 @@ jobs:
       uses: peter-evans/create-pull-request@v5
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        source_branch: ${{ inputs.source_branch }}
-        target_branch: ${{ inputs.target_branch }}
+        branch: promote-${{ inputs.source_branch }}-to-${{ inputs.target_branch }}
+        base: ${{ inputs.target_branch }}
         title: "🚀 Promote ${{ inputs.source_branch }} to ${{ inputs.target_branch }}"
         body: |
           ## Environment Promotion
@@ -83,7 +83,7 @@ jobs:
           ### Deployment
           ${{ inputs.target_branch == 'preview' && 'Merging this PR will trigger a TestFlight deployment.' || 'Merging this PR will prepare for App Store release. Manual deployment required.' }}
         assignees: ${{ github.actor }}
-        reviewers: ${{ inputs.target_branch == 'main' && 'senior-reviewer-username' || '' }}
+        reviewers: ${{ inputs.target_branch == 'main' && 'itstimwhite' || '' }}
         labels: |
           promotion
           ${{ inputs.target_branch }}
