@@ -116,8 +116,11 @@ platform :ios do
   desc "Build for CI"
   lane :ci_build do
     # This lane is specifically for CI environments
+    # Use absolute path from current directory
+    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    
     build_app(
-      project: project,
+      project: proj_path,
       scheme: scheme,
       configuration: "Debug",
       skip_archive: true,
