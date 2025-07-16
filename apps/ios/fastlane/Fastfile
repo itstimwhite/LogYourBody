@@ -68,6 +68,15 @@ platform :ios do
     # Ensure we have a clean state
     clean_build_artifacts
     
+    # Set up App Store Connect API key if available
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+      app_store_connect_api_key(
+        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        duration: 1200, # 20 minutes
+        in_house: false
+      )
+    end
+    
     # Increment build number
     build_number = Time.now.strftime("%Y%m%d%H%M%S")
     increment_build_number(
@@ -119,6 +128,15 @@ platform :ios do
     # Ensure we have a clean state
     clean_build_artifacts
     
+    # Set up App Store Connect API key if available
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+      app_store_connect_api_key(
+        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        duration: 1200, # 20 minutes
+        in_house: false
+      )
+    end
+    
     # Build the app
     build_app(
       project: project,
@@ -133,7 +151,9 @@ platform :ios do
       skip_metadata: false,
       skip_screenshots: false,
       submit_for_review: false,
-      automatic_release: false
+      automatic_release: false,
+      apple_id: ENV["APP_STORE_APP_ID"],
+      team_id: ENV["APPLE_TEAM_ID"]
     )
     
     # Clean up

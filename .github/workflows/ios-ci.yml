@@ -177,13 +177,28 @@ jobs:
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision
     
+    - name: Setup App Store Connect API Key
+      run: |
+        cd apps/ios
+        # Create the API key JSON file from the secret
+        echo "${{ secrets.ASC_API_KEY_JSON }}" > app_store_connect_api_key.json
+        # Set environment variable for Fastlane
+        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
+    
     - name: Build and Deploy to TestFlight
       run: |
         cd apps/ios
         bundle exec fastlane beta
       env:
-        APPLE_ID_EMAIL: ${{ secrets.APPLE_ID_EMAIL }}
-        FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
         IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+        # The API key path is set in the previous step
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "180"
+        FASTLANE_XCODEBUILD_SETTINGS_RETRIES: "10"
+    
+    - name: Cleanup API Key
+      if: always()
+      run: |
+        cd apps/ios
+        rm -f app_store_connect_api_key.json
