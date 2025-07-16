@@ -46,10 +46,13 @@ platform :ios do
 
   desc "Run tests"
   lane :test do
+    # Use absolute path from current directory
+    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    
     run_tests(
-      project: project,
+      project: proj_path,
       scheme: scheme,
-      device: "iPhone 15",
+      device: "iPhone 16",
       clean: true,
       code_coverage: true
     )
