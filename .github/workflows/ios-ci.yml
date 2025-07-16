@@ -13,64 +13,52 @@ on:
       - '.github/workflows/ios-ci.yml'
 
 jobs:
-  lint-and-test:
+  # Setup job that prepares dependencies for other jobs
+  setup:
     runs-on: macos-latest
-    timeout-minutes: 20
-    
+    outputs:
+      cache-key: ${{ steps.cache-key.outputs.key }}
     steps:
     - uses: actions/checkout@v4
+    
+    - name: Generate cache key
+      id: cache-key
+      run: echo "key=${{ runner.os }}-ios-${{ hashFiles('**/Package.resolved', '**/project.pbxproj', '**/Gemfile.lock') }}" >> $GITHUB_OUTPUT
     
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '16.1'
     
-    # Improved caching with correct derived data path
-    - name: Cache Swift Package Manager and Build
+    - name: Cache Dependencies
       uses: actions/cache@v4
       with:
         path: |
-          apps/ios/build
+          apps/ios/vendor/bundle
+          /opt/homebrew/bin/swiftlint
+          /opt/homebrew/bin/xcbeautify
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
-        key: ${{ runner.os }}-spm-build-${{ hashFiles('**/Package.resolved', '**/project.pbxproj') }}
+        key: ${{ steps.cache-key.outputs.key }}
         restore-keys: |
-          ${{ runner.os }}-spm-build-
+          ${{ runner.os }}-ios-
     
-    - name: Cache SwiftLint
-      uses: actions/cache@v4
-      id: swiftlint-cache
-      with:
-        path: /opt/homebrew/bin/swiftlint
-        key: ${{ runner.os }}-swiftlint-0.55.1-homebrew
-    
-    - name: Cache Ruby gems
-      uses: actions/cache@v4
-      with:
-        path: apps/ios/vendor/bundle
-        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-gems-
-    
-    - name: Install SwiftLint
-      if: steps.swiftlint-cache.outputs.cache-hit != 'true'
-      run: brew install swiftlint
-    
-    - name: Install xcbeautify
-      run: brew install xcbeautify
-    
-    # Run lint in parallel with dependency setup
-    - name: Setup Dependencies & Lint
+    - name: Install Dependencies
       run: |
         cd apps/ios
         
-        # Start Ruby setup in background
-        (
-          gem install bundler:2.4.10
-          bundle config path vendor/bundle
-          bundle install --jobs 4 --retry 3
-        ) &
-        RUBY_PID=$!
+        # Install brew dependencies
+        if ! command -v swiftlint &> /dev/null; then
+          brew install swiftlint
+        fi
+        if ! command -v xcbeautify &> /dev/null; then
+          brew install xcbeautify
+        fi
+        
+        # Install Ruby dependencies
+        gem install bundler:2.4.10
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
         
         # Create config files
         echo "// CI Placeholder" > Supabase.xcconfig
@@ -79,30 +67,157 @@ jobs:
         
         echo "// CI Placeholder" > LogYourBody/Config.xcconfig
         echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
-        
-        # Run SwiftLint while Ruby installs
-        if command -v swiftlint &> /dev/null; then
-          swiftlint lint --strict --reporter github-actions-logging || true
-        fi
-        
-        # Wait for Ruby setup
-        wait $RUBY_PID
+
+  # Lint job runs in parallel
+  lint:
+    needs: setup
+    runs-on: macos-latest
+    timeout-minutes: 5
+    steps:
+    - uses: actions/checkout@v4
     
-    # Build and test in one step
-    - name: Build and Test
+    - name: Restore Dependencies Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          apps/ios/vendor/bundle
+          /opt/homebrew/bin/swiftlint
+          /opt/homebrew/bin/xcbeautify
+          ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ needs.setup.outputs.cache-key }}
+        restore-keys: |
+          ${{ runner.os }}-ios-
+    
+    - name: Run SwiftLint
       run: |
         cd apps/ios
+        swiftlint lint --strict --reporter github-actions-logging
+
+  # Build job - builds once for all test jobs
+  build:
+    needs: setup
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.1'
+    
+    - name: Restore Dependencies Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          apps/ios/vendor/bundle
+          /opt/homebrew/bin/swiftlint
+          /opt/homebrew/bin/xcbeautify
+          ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ needs.setup.outputs.cache-key }}
+        restore-keys: |
+          ${{ runner.os }}-ios-
+    
+    - name: Cache Build Artifacts
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/build
+        key: ${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+    
+    - name: Create Config Files
+      run: |
+        cd apps/ios
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
         
-        # Use xcodebuild directly for better performance
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+    
+    - name: Build iOS App
+      run: |
+        cd apps/ios
+        # Get processor count for optimal parallelism
+        WORKERS=$(sysctl -n hw.ncpu)
+        echo "Building with $WORKERS workers"
+        
         xcodebuild -project LogYourBody.xcodeproj \
           -scheme LogYourBody \
           -destination 'platform=iOS Simulator,name=iPhone 16' \
           -derivedDataPath build \
-          clean test \
+          clean build-for-testing \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
           COMPILER_INDEX_STORE_ENABLE=NO \
-          -quiet | xcbeautify
+          -parallel-testing-enabled YES \
+          -parallel-testing-worker-count $WORKERS \
+          -quiet | xcbeautify --renderer github-actions
+
+  # Normal test job
+  test:
+    needs: [setup, build]
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.1'
+    
+    - name: Restore Dependencies Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          apps/ios/vendor/bundle
+          /opt/homebrew/bin/swiftlint
+          /opt/homebrew/bin/xcbeautify
+          ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ needs.setup.outputs.cache-key }}
+        restore-keys: |
+          ${{ runner.os }}-ios-
+    
+    - name: Restore Build Artifacts
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/build
+        key: ${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+    
+    - name: Create Config Files
+      run: |
+        cd apps/ios
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+    
+    - name: Run Tests
+      run: |
+        cd apps/ios
+        # Get processor count for optimal parallelism
+        WORKERS=$(sysctl -n hw.ncpu)
+        echo "Running tests with $WORKERS workers"
+        
+        xcodebuild -project LogYourBody.xcodeproj \
+          -scheme LogYourBody \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -derivedDataPath build \
+          test-without-building \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          -parallel-testing-enabled YES \
+          -parallel-testing-worker-count $WORKERS \
+          -quiet | xcbeautify --renderer github-actions
     
     - name: Upload test results
       if: always()
@@ -113,9 +228,99 @@ jobs:
           apps/ios/build/Logs/Test/*.xcresult
         retention-days: 7
 
+  # Sanitizer test job - runs in parallel with normal tests
+  test-sanitizers:
+    needs: [setup, build]
+    runs-on: macos-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.1'
+    
+    - name: Restore Dependencies Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          apps/ios/vendor/bundle
+          /opt/homebrew/bin/swiftlint
+          /opt/homebrew/bin/xcbeautify
+          ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ needs.setup.outputs.cache-key }}
+        restore-keys: |
+          ${{ runner.os }}-ios-
+    
+    - name: Restore Build Artifacts
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/build
+        key: ${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+    
+    - name: Create Config Files
+      run: |
+        cd apps/ios
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+    
+    - name: Run Tests with Sanitizers
+      run: |
+        cd apps/ios
+        # Get processor count for optimal parallelism
+        WORKERS=$(sysctl -n hw.ncpu)
+        echo "Running sanitizer tests with $WORKERS workers"
+        
+        xcodebuild -project LogYourBody.xcodeproj \
+          -scheme LogYourBody \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -derivedDataPath build \
+          test-without-building \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          -enableAddressSanitizer YES \
+          -enableThreadSanitizer NO \
+          -parallel-testing-enabled YES \
+          -parallel-testing-worker-count $WORKERS \
+          -quiet | xcbeautify --renderer github-actions || true
+    
+    - name: Upload sanitizer results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-sanitizer-results
+        path: |
+          apps/ios/build/Logs/Test/*.xcresult
+        retention-days: 7
+
+  # Status check job that other workflows can depend on
+  ios-ci-status:
+    if: always()
+    needs: [lint, build, test, test-sanitizers]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check all jobs status
+      run: |
+        if [[ "${{ needs.lint.result }}" != "success" || 
+              "${{ needs.build.result }}" != "success" || 
+              "${{ needs.test.result }}" != "success" ]]; then
+          echo "One or more jobs failed"
+          exit 1
+        fi
+        # Sanitizer tests are allowed to fail
+        echo "All required jobs passed successfully"
+
   # Deploy to TestFlight from preview branch
   deploy-testflight:
-    needs: lint-and-test
+    needs: [build, test]
     if: github.ref == 'refs/heads/preview' && github.event_name == 'push'
     runs-on: macos-latest
     environment:
@@ -144,11 +349,6 @@ jobs:
         gem install bundler:2.4.10
         bundle config path vendor/bundle
         bundle install --jobs 4 --retry 3
-        
-        if [ -f "Podfile" ]; then
-          sudo gem install cocoapods
-          pod install
-        fi
     
     - name: Import Code Signing Certificates
       uses: apple-actions/import-codesign-certs@v2
@@ -164,10 +364,16 @@ jobs:
     - name: Setup App Store Connect API Key
       run: |
         cd apps/ios
-        # Create the API key JSON file from the secret
         echo "${{ secrets.ASC_API_KEY_JSON }}" > app_store_connect_api_key.json
-        # Set environment variable for Fastlane
         echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
+    
+    - name: Set unique build number
+      run: |
+        cd apps/ios
+        # Use timestamp for unique build number
+        BUILD_NUMBER=$(date +%Y%m%d%H%M%S)
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" LogYourBody/Info.plist
+        echo "Build number set to: $BUILD_NUMBER"
     
     - name: Build and Deploy to TestFlight
       run: |
@@ -177,7 +383,6 @@ jobs:
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
         IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
-        # The API key path is set in the previous step
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "180"
         FASTLANE_XCODEBUILD_SETTINGS_RETRIES: "10"
     
