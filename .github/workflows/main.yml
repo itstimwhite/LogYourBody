@@ -31,10 +31,16 @@ jobs:
       - run: npm install -g vercel
       - run: npm run typecheck
       - run: npm run lint
-      - run: npm test
+      - name: Run tests
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+        run: |
+          : "${NEXT_PUBLIC_SUPABASE_URL:=https://example.supabase.co}"
+          : "${NEXT_PUBLIC_SUPABASE_ANON_KEY:=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV4YW1wbGUiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTYxNjcyMzQ2OCwiZXhwIjoxOTMyMjk5NDY4fQ.fakekeyfakekeyfakekeyfakekeyfakekeyfakekey}"
+          export NEXT_PUBLIC_SUPABASE_URL
+          export NEXT_PUBLIC_SUPABASE_ANON_KEY
+          npm test
       
       # Deploy to Vercel if not a PR (skip for fork PRs due to environment protection)
       - name: Deploy to Vercel

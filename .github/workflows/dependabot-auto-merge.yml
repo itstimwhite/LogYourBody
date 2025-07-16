@@ -21,6 +21,15 @@ jobs:
       update-type: ${{ steps.metadata.outputs.update-type }}
     
     steps:
+    - name: Install GitHub CLI
+      run: |
+        type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update
+        sudo apt install gh -y
+    
     - name: Fetch metadata
       id: metadata
       uses: dependabot/fetch-metadata@v2
@@ -79,13 +88,23 @@ jobs:
        needs.check-tests.outputs.update-type == 'version-update:semver-minor')
     
     steps:
-    - name: Enable auto-merge for Dependabot PR
+    - name: Install GitHub CLI
       run: |
+        type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update
+        sudo apt install gh -y
+    
+    - name: Enable auto-merge for Dependabot PR
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        PR_URL="${{ github.event.pull_request.html_url }}"
+        [ -z "$PR_URL" ] && PR_URL="${{ github.event.workflow_run.pull_requests[0].html_url }}"
         gh pr merge --auto --squash "$PR_URL"
         echo "✅ Enabled auto-merge for Dependabot PR (tests passed)"
-      env:
-        PR_URL: ${{ github.event.pull_request.html_url || github.event.workflow_run.pull_requests[0].html_url }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # Comment on updates that need manual review
   comment-manual-review:
@@ -97,11 +116,22 @@ jobs:
        needs.check-tests.outputs.tests-passed == 'false')
     
     steps:
+    - name: Install GitHub CLI
+      run: |
+        type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+        sudo apt update
+        sudo apt install gh -y
+    
     - name: Comment on PR
       env:
-        PR_URL: ${{ github.event.pull_request.html_url || github.event.workflow_run.pull_requests[0].html_url }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
+        PR_URL="${{ github.event.pull_request.html_url }}"
+        [ -z "$PR_URL" ] && PR_URL="${{ github.event.workflow_run.pull_requests[0].html_url }}"
+        
         if [[ "${{ needs.check-tests.outputs.tests-passed }}" == "false" ]]; then
           COMMENT="❌ Tests are failing. This PR requires manual review and cannot be auto-merged."
         else
