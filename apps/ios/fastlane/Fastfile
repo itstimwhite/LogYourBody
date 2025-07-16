@@ -23,8 +23,11 @@ platform :ios do
   
   before_all do
     # Ensure we're in the right directory
-    # We should be in apps/ios where the xcodeproj file is
-    puts "Current directory: #{Dir.pwd}"
+    # Fastlane runs from the fastlane directory, but we need to be in the parent (ios) directory
+    if Dir.pwd.end_with?("/fastlane")
+      Dir.chdir("..")
+      puts "Changed to directory: #{Dir.pwd}"
+    end
     
     # Set up environment
     ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "180"
