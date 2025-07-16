@@ -2,6 +2,7 @@
 // LogYourBodyTests.swift
 // LogYourBody
 //
+import XCTest
 @testable import LogYourBody
 
 final class LogYourBodyTests: XCTestCase {
