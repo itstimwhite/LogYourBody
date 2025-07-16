@@ -120,11 +120,30 @@ jobs:
       with:
         xcode-version: latest-stable
 
-    - name: Install dependencies
+    - name: Cache Swift Package Manager
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/Library/Developer/Xcode/DerivedData
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    - name: Cache SwiftLint
+      uses: actions/cache@v4
+      id: swiftlint-cache
+      with:
+        path: /usr/local/bin/swiftlint
+        key: ${{ runner.os }}-swiftlint-0.55.1
+
+    - name: Install SwiftLint
+      if: steps.swiftlint-cache.outputs.cache-hit != 'true'
+      run: brew install swiftlint
+
+    - name: Setup iOS Dependencies
       run: |
         cd apps/ios
-        # Install SwiftLint
-        brew install swiftlint
         # Create placeholder Supabase.xcconfig for CI
         if [ ! -f "Supabase.xcconfig" ]; then
           echo "// Supabase Configuration (CI Placeholder)" > Supabase.xcconfig
@@ -155,7 +174,9 @@ jobs:
         xcodebuild -project LogYourBody.xcodeproj \
           -scheme LogYourBody \
           -destination 'platform=iOS Simulator,name=iPhone 16' \
-          clean build
+          -derivedDataPath build \
+          clean build \
+          COMPILER_INDEX_STORE_ENABLE=NO
       env:
         CODE_SIGNING_REQUIRED: NO
 
@@ -165,6 +186,7 @@ jobs:
         xcodebuild -project LogYourBody.xcodeproj \
           -scheme LogYourBody \
           -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -derivedDataPath build \
           test
       continue-on-error: true
 
@@ -325,9 +347,16 @@ jobs:
       with:
         xcode-version: latest-stable
 
+    - name: Cache SwiftLint
+      uses: actions/cache@v4
+      id: swiftlint-cache-lint
+      with:
+        path: /usr/local/bin/swiftlint
+        key: ${{ runner.os }}-swiftlint-0.55.1
+
     - name: Install SwiftLint
-      run: |
-        brew install swiftlint
+      if: steps.swiftlint-cache-lint.outputs.cache-hit != 'true'
+      run: brew install swiftlint
 
     - name: Run SwiftLint
       run: |
