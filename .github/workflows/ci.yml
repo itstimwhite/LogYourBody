@@ -11,6 +11,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
+# Define environment based on branch
+env:
+  ENVIRONMENT: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'development' }}
+
 jobs:
   # Detect what has changed
   detect-changes:
@@ -124,6 +128,8 @@ jobs:
     needs: [detect-changes, web-lint]
     if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
     runs-on: ubuntu-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'development' }}
     steps:
       - uses: actions/checkout@v4
       
@@ -170,6 +176,8 @@ jobs:
     needs: detect-changes
     if: needs.detect-changes.outputs.ios-changed == 'true'
     runs-on: macos-latest
+    environment:
+      name: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'development' }}
 
     steps:
     - uses: actions/checkout@v4
@@ -300,6 +308,9 @@ jobs:
   testflight-deploy:
     if: github.ref == 'refs/heads/preview' && github.event_name == 'push'
     runs-on: macos-latest
+    environment:
+      name: preview
+      url: https://testflight.apple.com
     
     steps:
     - uses: actions/checkout@v4

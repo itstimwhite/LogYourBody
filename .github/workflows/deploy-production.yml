@@ -1,0 +1,115 @@
+name: Deploy to Production
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 1.2.3)'
+        required: true
+        type: string
+      release_notes:
+        description: 'Release notes for this version'
+        required: true
+        type: string
+
+jobs:
+  deploy-app-store:
+    runs-on: macos-latest
+    environment:
+      name: production
+      url: https://apps.apple.com/app/id${{ secrets.APP_STORE_APP_ID }}
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: main
+    
+    - name: Validate branch
+      run: |
+        if [[ "${{ github.ref }}" != "refs/heads/main" ]]; then
+          echo "Error: Production deployments can only be done from main branch"
+          exit 1
+        fi
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: latest-stable
+    
+    - name: Cache Ruby gems
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+    
+    - name: Install dependencies
+      run: |
+        cd apps/ios
+        gem install bundler
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
+    
+    - name: Import Code Signing Certificates
+      uses: apple-actions/import-codesign-certs@v2
+      with:
+        p12-file-base64: ${{ secrets.IOS_P12_BASE64 }}
+        p12-password: ${{ secrets.IOS_P12_PASSWORD }}
+    
+    - name: Download Provisioning Profile
+      run: |
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision
+    
+    - name: Update version number
+      run: |
+        cd apps/ios
+        # Update version in Info.plist
+        /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString ${{ inputs.version }}" LogYourBody/Info.plist
+        
+        # Set build number to timestamp
+        BUILD_NUMBER=$(date +%Y%m%d%H%M%S)
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" LogYourBody/Info.plist
+        
+        echo "Version: ${{ inputs.version }}"
+        echo "Build: $BUILD_NUMBER"
+    
+    - name: Build and Deploy to App Store
+      run: |
+        cd apps/ios
+        bundle exec fastlane release
+      env:
+        APPLE_ID_EMAIL: ${{ secrets.APPLE_ID_EMAIL }}
+        FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
+        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+        APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+        RELEASE_NOTES: ${{ inputs.release_notes }}
+    
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ inputs.version }}
+        release_name: Release v${{ inputs.version }}
+        body: |
+          ## What's New
+          ${{ inputs.release_notes }}
+          
+          ## App Store
+          [View on App Store](https://apps.apple.com/app/id${{ secrets.APP_STORE_APP_ID }})
+        draft: false
+        prerelease: false
+    
+    - name: Notify team
+      if: always()
+      run: |
+        if [[ "${{ job.status }}" == "success" ]]; then
+          echo "✅ Successfully deployed v${{ inputs.version }} to App Store!"
+        else
+          echo "❌ Failed to deploy v${{ inputs.version }} to App Store"
+        fi

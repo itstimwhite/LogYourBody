@@ -1,0 +1,102 @@
+name: Promote Environment
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_branch:
+        description: 'Source branch to promote from'
+        required: true
+        type: choice
+        options:
+          - dev
+          - preview
+      target_branch:
+        description: 'Target branch to promote to'
+        required: true
+        type: choice
+        options:
+          - preview
+          - main
+      
+jobs:
+  validate-promotion:
+    runs-on: ubuntu-latest
+    outputs:
+      valid: ${{ steps.validate.outputs.valid }}
+    steps:
+      - name: Validate promotion path
+        id: validate
+        run: |
+          # Validate promotion paths
+          if [[ "${{ inputs.source_branch }}" == "dev" && "${{ inputs.target_branch }}" == "preview" ]]; then
+            echo "valid=true" >> $GITHUB_OUTPUT
+            echo "✅ Valid promotion: dev → preview"
+          elif [[ "${{ inputs.source_branch }}" == "preview" && "${{ inputs.target_branch }}" == "main" ]]; then
+            echo "valid=true" >> $GITHUB_OUTPUT
+            echo "✅ Valid promotion: preview → main"
+          else
+            echo "valid=false" >> $GITHUB_OUTPUT
+            echo "❌ Invalid promotion path: ${{ inputs.source_branch }} → ${{ inputs.target_branch }}"
+            exit 1
+          fi
+
+  promote:
+    needs: validate-promotion
+    if: needs.validate-promotion.outputs.valid == 'true'
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.target_branch == 'main' && 'production' || 'preview' }}
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        fetch-depth: 0
+    
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+    
+    - name: Create promotion PR
+      id: create-pr
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        source_branch: ${{ inputs.source_branch }}
+        target_branch: ${{ inputs.target_branch }}
+        title: "🚀 Promote ${{ inputs.source_branch }} to ${{ inputs.target_branch }}"
+        body: |
+          ## Environment Promotion
+          
+          Promoting `${{ inputs.source_branch }}` → `${{ inputs.target_branch }}`
+          
+          ### Checklist
+          - [ ] All tests passing
+          - [ ] No critical bugs reported
+          - [ ] Release notes prepared
+          - [ ] Team notified
+          
+          ### Changes
+          This PR includes all changes from ${{ inputs.source_branch }} that are not yet in ${{ inputs.target_branch }}.
+          
+          ### Deployment
+          ${{ inputs.target_branch == 'preview' && 'Merging this PR will trigger a TestFlight deployment.' || 'Merging this PR will prepare for App Store release. Manual deployment required.' }}
+        assignees: ${{ github.actor }}
+        reviewers: ${{ inputs.target_branch == 'main' && 'senior-reviewer-username' || '' }}
+        labels: |
+          promotion
+          ${{ inputs.target_branch }}
+        draft: ${{ inputs.target_branch == 'main' }}
+    
+    - name: Post promotion summary
+      run: |
+        echo "## Promotion Summary"
+        echo "- Source: ${{ inputs.source_branch }}"
+        echo "- Target: ${{ inputs.target_branch }}"
+        echo "- PR: ${{ steps.create-pr.outputs.pull-request-url }}"
+        echo ""
+        if [[ "${{ inputs.target_branch }}" == "main" ]]; then
+          echo "⚠️  This is a PRODUCTION promotion. Please review carefully!"
+          echo "After merging, use the 'Deploy to Production' workflow to release."
+        fi
