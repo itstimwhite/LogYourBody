@@ -17,6 +17,8 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Only use secrets when not a PR from a fork
+    environment: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork && 'external' || github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'development' }}
     
     steps:
       - uses: actions/checkout@v4
@@ -29,16 +31,14 @@ jobs:
       - run: npm install -g vercel
       - run: npm run typecheck
       - run: npm run lint
-        continue-on-error: true
       - run: npm test
-        continue-on-error: true
         env:
           NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
       
-      # Deploy to Vercel if not a PR
+      # Deploy to Vercel if not a PR (skip for fork PRs due to environment protection)
       - name: Deploy to Vercel
-        if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+        if: (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && !(github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork)
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
@@ -113,6 +113,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Install GitHub CLI
+        run: |
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          sudo apt update
+          sudo apt install gh -y
+      
       - name: Create PR
         id: pr
         env:
@@ -154,14 +161,3 @@ jobs:
           gh pr merge --auto --merge "${{ steps.pr.outputs.pr_number }}"
           echo "✅ Enabled auto-merge for PR #${{ steps.pr.outputs.pr_number }}"
 
-  # Auto-merge dependabot PRs
-  auto-merge-dependabot:
-    needs: build-and-deploy
-    runs-on: ubuntu-latest
-    if: github.actor == 'dependabot[bot]' && github.event_name == 'pull_request'
-    
-    steps:
-      - name: Auto-merge Dependabot PRs
-        run: gh pr merge --auto --merge "${{ github.event.pull_request.html_url }}"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
