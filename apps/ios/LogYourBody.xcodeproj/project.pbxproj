@@ -405,18 +405,8 @@
 		C8D57BE85A4043A0A831CFE4 /* SkeletonLoaders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SkeletonLoaders.swift; path = Components/SkeletonLoaders.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		ADF5C1D72E1DFE7A00E3FB4D /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = ADF5C1C02E1DFE7800E3FB4D /* LogYourBodyWidgetExtension */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		ADF5C1C62E1DFE7900E3FB4D /* LogYourBodyWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (ADF5C1D72E1DFE7A00E3FB4D /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = LogYourBodyWidget; sourceTree = "<group>"; };
+		ADF5C1C62E1DFE7900E3FB4D /* LogYourBodyWidget */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = LogYourBodyWidget; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1070,21 +1060,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				ADBD69572E14A7B900921A30 /* Preview Assets.xcassets in Resources */,
-				ADBD69542E14A7B900921A30 /* Assets.xcassets in Resources */,
 				AD72435C2E15FA5E002376C6 /* LaunchScreen.storyboard in Resources */,
 				AD7243322E15FA5D002376C6 /* Preview Assets.xcassets in Resources */,
 				AD7243252E15FA5D002376C6 /* CLERK_SETUP.md in Resources */,
 				AD723B1A2E15FA5D002376C6 /* CONFIGURATION.md in Resources */,
-				ADF287A92E14AFB100198D6F /* LaunchScreen.storyboard in Resources */,
 				AD723B172E15FA5D002376C6 /* icon-1024.png in Resources */,
-				ADF287AE2E1507C300198D6F /* Supabase.xcconfig in Resources */,
 				AD7243332E15FA5D002376C6 /* app-icon-180.png in Resources */,
-				AD7243572E15FA5E002376C6 /* Assets.xcassets in Resources */,
 				AD7243242E15FA5D002376C6 /* setup-local-testing.sh in Resources */,
 				AD7243592E15FA5E002376C6 /* Config.xcconfig.example in Resources */,
 				AD723B152E15FA5D002376C6 /* delete_files.sh in Resources */,
-				ADBD69582E14A7B900921A30 /* app-icon-180.png in Resources */,
 				AD723B1C2E15FA5D002376C6 /* generate_app_icons.sh in Resources */,
 				AD723B1B2E15FA5D002376C6 /* PROJECT_STRUCTURE.md in Resources */,
 				AD0054EB2E2197600029E0FF /* privacy-policy.md in Resources */,
@@ -1092,7 +1076,6 @@
 				AD0054ED2E2197600029E0FF /* health-disclosure.md in Resources */,
 				ADF287AB2E15045900198D6F /* Supabase.xcconfig in Resources */,
 				AD7243582E15FA5E002376C6 /* Config.xcconfig in Resources */,
-				ADBD69592E14A7B900921A30 /* AppIconGuide.md in Resources */,
 				AD7243342E15FA5D002376C6 /* AppIconGuide.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1488,14 +1471,13 @@
 		AD7D30BA2E1490810072AA5B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBodyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1509,14 +1491,13 @@
 		AD7D30BB2E1490810072AA5B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBodyTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1530,12 +1511,12 @@
 		AD7D30BD2E1490810072AA5B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBodyUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1549,12 +1530,12 @@
 		AD7D30BE2E1490810072AA5B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBodyUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
