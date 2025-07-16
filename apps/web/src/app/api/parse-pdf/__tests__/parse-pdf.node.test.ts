@@ -50,9 +50,9 @@ describe('PDF Parsing API', () => {
   const mockOpenAIResponse = (data: any) => {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const OpenAI = require('openai')
-    const mockInstance = new OpenAI()
     
-    mockInstance.chat.completions.create.mockResolvedValue({
+    // Create a new mock instance for each test
+    const mockCreate = jest.fn().mockResolvedValue({
       choices: [{
         message: {
           content: JSON.stringify(data)
@@ -60,7 +60,16 @@ describe('PDF Parsing API', () => {
       }]
     })
     
-    return mockInstance.chat.completions.create
+    // Override the mock implementation for this test
+    OpenAI.mockImplementation(() => ({
+      chat: {
+        completions: {
+          create: mockCreate
+        }
+      }
+    }))
+    
+    return mockCreate
   }
 
   beforeEach(() => {
@@ -162,7 +171,7 @@ describe('PDF Parsing API', () => {
       mockOpenAIResponse({
         scans: [{
           date: '2024-01-15',
-          weight: 500, // Invalid weight
+          weight: 700, // Invalid weight (>660 lbs)
           weight_unit: 'lbs',
           body_fat_percentage: 15.5,
           source: 'DEXA Scan'

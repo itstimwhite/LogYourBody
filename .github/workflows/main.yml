@@ -16,7 +16,7 @@ jobs:
   # Build, test and deploy job
   build-and-deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     # Only use secrets when not a PR from a fork
     environment: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.fork && 'external' || github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/preview' && 'preview' || 'development' }}
     

@@ -64,13 +64,15 @@ describe('PDF Parsing API', () => {
       }]
     })
     
-    ;(OpenAI as jest.MockedClass<typeof OpenAI>).mockImplementation(() => ({
+    const mockOpenAI = {
       chat: {
         completions: {
           create: mockCreate
         }
       }
-    } as any))
+    }
+    
+    ;(OpenAI as jest.MockedClass<typeof OpenAI>).mockImplementation(() => mockOpenAI as any)
     
     return mockCreate
   }
@@ -178,7 +180,7 @@ describe('PDF Parsing API', () => {
       mockOpenAIResponse({
         scans: [{
           date: '2024-01-15',
-          weight: 500, // Invalid weight
+          weight: 700, // Invalid weight (>660 lbs)
           weight_unit: 'lbs',
           body_fat_percentage: 15.5,
           source: 'DEXA Scan'

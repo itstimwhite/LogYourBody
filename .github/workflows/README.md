@@ -2,6 +2,21 @@
 
 This directory contains GitHub Actions workflows for CI/CD automation.
 
+## Branch Protection Rules Required
+
+⚠️ **IMPORTANT**: Set up these branch protection rules in GitHub:
+
+1. **All branches (dev, preview, main)**:
+   - ✅ Require status checks to pass before merging
+   - ✅ Require branches to be up to date before merging
+   - **Required status checks**: `build-and-deploy`
+   
+2. **Preview and Main branches**:
+   - ✅ Require pull request reviews before merging
+   - ✅ Dismiss stale pull request approvals when new commits are pushed
+
+This ensures Dependabot PRs must pass tests before auto-merging.
+
 ## Active Workflows
 
 ### 1. Main CI/CD Pipeline (`main.yml`)
@@ -38,13 +53,24 @@ This directory contains GitHub Actions workflows for CI/CD automation.
   - Validates promotion path
   - Adds appropriate reviewers
 
-### 4. Dependabot Auto-Merge (`dependabot-auto-merge.yml`)
-- **Triggers**: Dependabot PRs
-- **Purpose**: Automate dependency updates
+### 4. iOS CI (`ios-ci.yml`)
+- **Triggers**: Push/PR on iOS files
+- **Purpose**: iOS testing and deployment
+- **Features**:
+  - SwiftLint checking
+  - Unit tests
+  - Memory leak detection
+  - TestFlight deployment from preview branch
+- **Environment**: Uses Xcode 15.4 (pinned)
+
+### 5. Dependabot Auto-Merge (`dependabot-auto-merge.yml`)
+- **Triggers**: Dependabot PRs + test completion
+- **Purpose**: Safely automate dependency updates
 - **Actions**:
-  - Auto-merge minor and patch updates
-  - Comment on major updates for manual review
-  - Run tests before merging
+  - Wait for tests to pass before merging
+  - Auto-merge only minor and patch updates
+  - Comment on major updates or test failures
+  - Requires branch protection rules
 
 ## Deployment Flow
 

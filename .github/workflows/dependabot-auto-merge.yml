@@ -3,37 +3,109 @@ name: Dependabot Auto-Merge
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_run:
+    workflows: ["Main CI/CD"]
+    types: [completed]
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  auto-merge:
+  # First check if tests pass
+  check-tests:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    outputs:
+      tests-passed: ${{ steps.check.outputs.passed }}
+      update-type: ${{ steps.metadata.outputs.update-type }}
     
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-    
     - name: Fetch metadata
       id: metadata
       uses: dependabot/fetch-metadata@v2
       with:
         github-token: "${{ secrets.GITHUB_TOKEN }}"
     
-    - name: Auto-merge patch and minor updates
-      if: steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'version-update:semver-minor'
-      run: gh pr merge --auto --squash "$PR_URL"
-      env:
-        PR_URL: ${{ github.event.pull_request.html_url }}
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Comment on major updates
-      if: steps.metadata.outputs.update-type == 'version-update:semver-major'
+    # For workflow_run trigger, check if tests passed
+    - name: Check test status from workflow run
+      if: github.event_name == 'workflow_run'
+      id: check-workflow
       run: |
-        gh pr comment "$PR_URL" --body "⚠️ This is a major version update and requires manual review before merging."
+        if [[ "${{ github.event.workflow_run.conclusion }}" == "success" ]]; then
+          echo "passed=true" >> $GITHUB_OUTPUT
+        else
+          echo "passed=false" >> $GITHUB_OUTPUT
+        fi
+    
+    # For PR trigger, check if required checks passed
+    - name: Check PR status
+      if: github.event_name == 'pull_request'
+      id: check-pr
       env:
-        PR_URL: ${{ github.event.pull_request.html_url }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # Wait a bit for checks to start
+        sleep 30
+        
+        # Get check runs for this PR
+        PR_HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+        CHECKS=$(gh api repos/${{ github.repository }}/commits/${PR_HEAD_SHA}/check-runs --jq '.check_runs[] | select(.name == "build-and-deploy") | .conclusion')
+        
+        if [[ "$CHECKS" == "success" ]]; then
+          echo "passed=true" >> $GITHUB_OUTPUT
+        else
+          echo "passed=false" >> $GITHUB_OUTPUT
+          echo "Tests have not passed yet. Waiting for Main CI/CD workflow to complete."
+        fi
+    
+    - name: Set output
+      id: check
+      run: |
+        if [[ "${{ steps.check-workflow.outputs.passed }}" == "true" ]] || [[ "${{ steps.check-pr.outputs.passed }}" == "true" ]]; then
+          echo "passed=true" >> $GITHUB_OUTPUT
+        else
+          echo "passed=false" >> $GITHUB_OUTPUT
+        fi
+
+  # Auto-merge only after tests pass
+  auto-merge:
+    needs: check-tests
+    runs-on: ubuntu-latest
+    if: |
+      github.actor == 'dependabot[bot]' && 
+      needs.check-tests.outputs.tests-passed == 'true' &&
+      (needs.check-tests.outputs.update-type == 'version-update:semver-patch' || 
+       needs.check-tests.outputs.update-type == 'version-update:semver-minor')
+    
+    steps:
+    - name: Enable auto-merge for Dependabot PR
+      run: |
+        gh pr merge --auto --squash "$PR_URL"
+        echo "✅ Enabled auto-merge for Dependabot PR (tests passed)"
+      env:
+        PR_URL: ${{ github.event.pull_request.html_url || github.event.workflow_run.pull_requests[0].html_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Comment on updates that need manual review
+  comment-manual-review:
+    needs: check-tests
+    runs-on: ubuntu-latest
+    if: |
+      github.actor == 'dependabot[bot]' && 
+      (needs.check-tests.outputs.update-type == 'version-update:semver-major' ||
+       needs.check-tests.outputs.tests-passed == 'false')
+    
+    steps:
+    - name: Comment on PR
+      env:
+        PR_URL: ${{ github.event.pull_request.html_url || github.event.workflow_run.pull_requests[0].html_url }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [[ "${{ needs.check-tests.outputs.tests-passed }}" == "false" ]]; then
+          COMMENT="❌ Tests are failing. This PR requires manual review and cannot be auto-merged."
+        else
+          COMMENT="⚠️ This is a major version update and requires manual review before merging."
+        fi
+        
+        gh pr comment "$PR_URL" --body "$COMMENT"
