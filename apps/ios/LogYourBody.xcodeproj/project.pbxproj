@@ -1555,12 +1555,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = LogYourBodyWidget/Info.plist;
+				INFOPLIST_FILE = LogYourBodyWidget-Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LogYourBodyWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
-				MARKETING_VERSION = 1.0;
-				CURRENT_PROJECT_VERSION = 1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1585,12 +1583,10 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
-				INFOPLIST_FILE = LogYourBodyWidget/Info.plist;
+				INFOPLIST_FILE = LogYourBodyWidget-Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LogYourBodyWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
-				MARKETING_VERSION = 1.0;
-				CURRENT_PROJECT_VERSION = 1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
