@@ -114,8 +114,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - uses: cli/gh-action@v2  # installs GitHub CLI in ~1 s
-      
       - name: Create PR
         id: pr
         env:

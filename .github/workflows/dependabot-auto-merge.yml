@@ -21,8 +21,6 @@ jobs:
       update-type: ${{ steps.metadata.outputs.update-type }}
     
     steps:
-    - uses: cli/gh-action@v2  # installs GitHub CLI in ~1 s
-    
     - name: Fetch metadata
       id: metadata
       uses: dependabot/fetch-metadata@v2
@@ -81,8 +79,6 @@ jobs:
        needs.check-tests.outputs.update-type == 'version-update:semver-minor')
     
     steps:
-    - uses: cli/gh-action@v2  # installs GitHub CLI in ~1 s
-    
     - name: Enable auto-merge for Dependabot PR
       run: |
         gh pr merge --auto --squash "$PR_URL"
@@ -101,8 +97,6 @@ jobs:
        needs.check-tests.outputs.tests-passed == 'false')
     
     steps:
-    - uses: cli/gh-action@v2  # installs GitHub CLI in ~1 s
-    
     - name: Comment on PR
       env:
         PR_URL: ${{ github.event.pull_request.html_url || github.event.workflow_run.pull_requests[0].html_url }}
