@@ -21,14 +21,7 @@ jobs:
       update-type: ${{ steps.metadata.outputs.update-type }}
     
     steps:
-    - name: Install GitHub CLI
-      run: |
-        type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update
-        sudo apt install gh -y
+    - uses: cli/gh-action@v2  # installs GitHub CLI in ~1 s
     
     - name: Fetch metadata
       id: metadata
@@ -88,14 +81,7 @@ jobs:
        needs.check-tests.outputs.update-type == 'version-update:semver-minor')
     
     steps:
-    - name: Install GitHub CLI
-      run: |
-        type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update
-        sudo apt install gh -y
+    - uses: cli/gh-action@v2  # installs GitHub CLI in ~1 s
     
     - name: Enable auto-merge for Dependabot PR
       run: |
@@ -115,14 +101,7 @@ jobs:
        needs.check-tests.outputs.tests-passed == 'false')
     
     steps:
-    - name: Install GitHub CLI
-      run: |
-        type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
-        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
-        sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
-        echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-        sudo apt update
-        sudo apt install gh -y
+    - uses: cli/gh-action@v2  # installs GitHub CLI in ~1 s
     
     - name: Comment on PR
       env:
