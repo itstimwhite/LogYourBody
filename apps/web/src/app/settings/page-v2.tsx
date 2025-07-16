@@ -100,7 +100,7 @@ export default function SettingsPageV2() {
 
         {/* Settings List - Clean and Simple */}
         <div className="space-y-px bg-linear-card rounded-lg overflow-hidden border border-linear-border">
-          {settingsItems.map((item, index) => (
+          {settingsItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}

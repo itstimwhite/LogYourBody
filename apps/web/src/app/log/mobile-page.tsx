@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/ClerkAuthContext'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+// import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Progress } from '@/components/ui/progress'
-import { Separator } from '@/components/ui/separator'
+// import { Progress } from '@/components/ui/progress'
+// import { Separator } from '@/components/ui/separator'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { WeightWheelPicker, BodyFatWheelPicker } from '@/components/ui/weight-wheel-picker'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -17,17 +17,14 @@ import { toast } from '@/hooks/use-toast'
 import { 
   ArrowLeft, 
   ArrowRight,
-  Ruler,
-  CheckCircle,
   Camera,
-  Calculator,
   X,
   Check,
   Percent,
   User,
   AlertCircle
 } from 'lucide-react'
-import Link from 'next/link'
+// import Link from 'next/link'
 import { format } from 'date-fns'
 import { calculateNavyBodyFat, calculate3SiteBodyFat, calculateFFMI, calculateBodyComposition, convertMeasurement } from '@/utils/body-calculations'
 import { UserProfile } from '@/types/body-metrics'
@@ -48,13 +45,13 @@ type Step = 'weight' | 'method' | 'measurements' | 'photo' | 'review'
 
 const STEPS: Step[] = ['weight', 'method', 'measurements', 'photo', 'review']
 
-const STEP_TITLES = {
-  weight: 'Weight',
-  method: 'Method',
-  measurements: 'Body Fat',
-  photo: 'Photo',
-  review: 'Review',
-} as const
+// const STEP_TITLES = {
+//   weight: 'Weight',
+//   method: 'Method',
+//   measurements: 'Body Fat',
+//   photo: 'Photo',
+//   review: 'Review',
+// } as const
 
 export default function MobileLogPage() {
   const { user, loading } = useAuth()

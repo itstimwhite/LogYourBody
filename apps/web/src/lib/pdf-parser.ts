@@ -5,7 +5,7 @@ export async function parsePDFServer(buffer: Buffer): Promise<string> {
   try {
     // Dynamically import pdf-parse only on server
     if (typeof window === 'undefined') {
-      const pdfParse = require('pdf-parse')
+      const pdfParse = await import('pdf-parse')
       const data = await pdfParse(buffer)
       return data.text
     }

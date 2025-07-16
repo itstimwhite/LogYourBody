@@ -12,13 +12,12 @@ import { Badge } from '@/components/ui/badge'
 import { toast } from '@/hooks/use-toast'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
-import { Checkbox } from '@/components/ui/checkbox'
 import {
   ArrowLeft,
   Upload,
   FileSpreadsheet,
   FileText,
-  Image,
+  Image as ImageIcon,
   CheckCircle,
   Check,
   X as XIcon,
@@ -596,10 +595,10 @@ export default function ImportPage() {
 
   const getFileIcon = (fileType: FileType) => {
     switch (fileType) {
-      case 'image': return <Image className="h-5 w-5" />
-      case 'pdf': return <FileText className="h-5 w-5" />
-      case 'csv': return <FileSpreadsheet className="h-5 w-5" />
-      default: return <FileText className="h-5 w-5" />
+      case 'image': return <ImageIcon className="h-5 w-5" />
+      case 'pdf': return <FileText className="h-5 w-5" aria-hidden="true" />
+      case 'csv': return <FileSpreadsheet className="h-5 w-5" aria-hidden="true" />
+      default: return <FileText className="h-5 w-5" aria-hidden="true" />
     }
   }
 
@@ -711,21 +710,21 @@ export default function ImportPage() {
                 <h3 className="text-sm font-medium text-linear-text">Supported File Types</h3>
                 <div className="grid gap-3 text-xs sm:text-sm">
                   <div className="flex gap-3">
-                    <Image className="h-5 w-5 text-linear-text-secondary flex-shrink-0 mt-0.5" />
+                    <ImageIcon className="h-5 w-5 text-linear-text-secondary flex-shrink-0 mt-0.5" />
                     <div>
                       <p className="font-medium text-linear-text">Photos (JPG, PNG, HEIC)</p>
                       <p className="text-linear-text-secondary">Automatically extracts date from EXIF data</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <FileText className="h-5 w-5 text-linear-text-secondary flex-shrink-0 mt-0.5" />
+                    <FileText className="h-5 w-5 text-linear-text-secondary flex-shrink-0 mt-0.5" aria-hidden="true" />
                     <div>
                       <p className="font-medium text-linear-text">PDFs (DEXA, InBody, etc.)</p>
                       <p className="text-linear-text-secondary">AI-powered extraction of body composition data</p>
                     </div>
                   </div>
                   <div className="flex gap-3">
-                    <FileSpreadsheet className="h-5 w-5 text-linear-text-secondary flex-shrink-0 mt-0.5" />
+                    <FileSpreadsheet className="h-5 w-5 text-linear-text-secondary flex-shrink-0 mt-0.5" aria-hidden="true" />
                     <div>
                       <p className="font-medium text-linear-text">Spreadsheets (CSV, Excel)</p>
                       <p className="text-linear-text-secondary">Import historical tracking data with dates, weight, and body fat</p>
@@ -792,7 +791,7 @@ export default function ImportPage() {
                             {entry.photo_url && (
                               <img
                                 src={entry.photo_url}
-                                alt={`Progress entry ${index + 1}`}
+                                alt={`From ${format(new Date(entry.date), 'MMM d, yyyy')}`}
                                 className="object-cover w-full h-full"
                               />
                             )}

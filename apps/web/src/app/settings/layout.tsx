@@ -11,7 +11,6 @@ import {
   Heart,
   ArrowLeft
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 const settingsNav = [
   {

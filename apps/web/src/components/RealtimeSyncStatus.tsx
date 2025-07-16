@@ -3,7 +3,6 @@
 import { useRealtimeSync } from '@/hooks/use-realtime-sync'
 import { 
   Cloud, 
-  CloudOff, 
   Loader2, 
   Check, 
   AlertCircle,

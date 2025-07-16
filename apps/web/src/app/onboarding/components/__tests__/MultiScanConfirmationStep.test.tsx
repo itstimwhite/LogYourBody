@@ -1,5 +1,5 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import '@testing-library/jest-dom'
 import { MultiScanConfirmationStep } from '../MultiScanConfirmationStep'
 import { useOnboarding } from '@/contexts/OnboardingContext'
@@ -183,8 +183,7 @@ describe('MultiScanConfirmationStep', () => {
       render(<MultiScanConfirmationStep />)
       
       // Click on the first scan card (not the checkbox)
-      const firstScanCard = screen.getByText('January 15, 2024').closest('div[class*="border"]')
-      fireEvent.click(firstScanCard!)
+      fireEvent.click(screen.getByText('January 15, 2024').closest('div[class*="border"]')!)
       
       const firstCheckbox = screen.getAllByRole('checkbox')[0]
       expect(firstCheckbox).not.toBeChecked()
@@ -194,7 +193,6 @@ describe('MultiScanConfirmationStep', () => {
       render(<MultiScanConfirmationStep />)
       
       const firstCheckbox = screen.getAllByRole('checkbox')[0]
-      const firstScanCard = firstCheckbox.closest('div[class*="border"]')
       
       // Click checkbox directly
       fireEvent.click(firstCheckbox)

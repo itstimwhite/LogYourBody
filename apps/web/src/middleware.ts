@@ -12,7 +12,7 @@ const isProtectedRoute = createRouteMatcher([
   '/import(.*)',
 ])
 
-const isPublicRoute = createRouteMatcher([
+const _isPublicRoute = createRouteMatcher([
   '/signin(.*)',
   '/signup(.*)',
   '/login(.*)', // Keep for backwards compatibility

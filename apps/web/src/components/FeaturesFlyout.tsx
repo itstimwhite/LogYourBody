@@ -119,7 +119,7 @@ export function FeaturesFlyout({ onFeatureClick }: FeaturesFlyoutProps) {
                 <div className="relative">
                   {/* Features grid - Linear style */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-gray-800">
-                    {featureSections.map((section, sectionIdx) => (
+                    {featureSections.map((section) => (
                       <div key={section.title} className="px-6 py-5">
                         <h3 className="mb-4 text-[11px] font-semibold uppercase tracking-wider text-gray-500">
                           {section.title}

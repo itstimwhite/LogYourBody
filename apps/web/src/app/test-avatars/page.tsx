@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import Image from 'next/image'
 import { getAvatarUrl } from '@/utils/avatar-utils-smplx'
@@ -44,9 +43,9 @@ export default function TestAvatarsPage() {
               {/* Controls */}
               <div className="space-y-6">
                 <div>
-                  <label className="text-sm font-medium text-linear-text mb-2 block">
+                  <div className="text-sm font-medium text-linear-text mb-2 block">
                     Gender
-                  </label>
+                  </div>
                   <ToggleGroup
                     type="single"
                     value={gender}
@@ -62,9 +61,9 @@ export default function TestAvatarsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-linear-text mb-2 block">
+                  <div className="text-sm font-medium text-linear-text mb-2 block">
                     Body Fat: {bodyFat}%
-                  </label>
+                  </div>
                   <Slider
                     value={[bodyFat]}
                     onValueChange={([value]) => setBodyFat(value)}
@@ -80,9 +79,9 @@ export default function TestAvatarsPage() {
                 </div>
 
                 <div>
-                  <label className="text-sm font-medium text-linear-text mb-2 block">
+                  <div className="text-sm font-medium text-linear-text mb-2 block">
                     FFMI: {ffmi}
-                  </label>
+                  </div>
                   <Slider
                     value={[ffmi]}
                     onValueChange={([value]) => setFFMI(value)}
@@ -98,9 +97,9 @@ export default function TestAvatarsPage() {
                 </div>
 
                 <div className="pt-4 space-y-2">
-                  <label className="text-sm font-medium text-linear-text mb-2 block">
+                  <div className="text-sm font-medium text-linear-text mb-2 block">
                     Avatar System
-                  </label>
+                  </div>
                   <ToggleGroup
                     type="single"
                     value={avatarSystem}
@@ -164,7 +163,7 @@ export default function TestAvatarsPage() {
               </h3>
               {(avatarSystem === 'demo' || avatarSystem === 'smpl') && (
                 <div className="grid grid-cols-4 md:grid-cols-8 gap-2">
-                  {[10, 20, 30, 40].map((bf) => (
+                  {[10, 20, 30, 40].flatMap((bf) => 
                     [17.5, 20, 22.5].map((ffmiVal) => (
                       <div
                         key={`${bf}-${ffmiVal}`}
@@ -190,7 +189,7 @@ export default function TestAvatarsPage() {
                         </div>
                       </div>
                     ))
-                  ))}
+                  )}
                 </div>
               )}
             </div>

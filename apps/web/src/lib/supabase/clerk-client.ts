@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { useAuth } from '@clerk/nextjs'
 import { useSession } from '@clerk/nextjs'
 import { useMemo } from 'react'
 

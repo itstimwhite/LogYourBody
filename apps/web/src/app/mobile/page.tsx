@@ -1,26 +1,22 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
+// import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Card } from '@/components/ui/card'
+// import { Card } from '@/components/ui/card'
 import {
   Apple,
-  Smartphone,
-  Download,
   CheckCircle2,
   ArrowRight,
   Zap,
   Shield,
   Camera,
-  BarChart3,
   TrendingUp,
   Sparkles,
   QrCode,
   Bell,
   Target,
-  Calendar,
   Activity,
   Timer,
   Hand,
@@ -31,16 +27,16 @@ import { Footer } from '@/components/Footer'
 import { cn } from '@/lib/utils'
 
 export default function MobilePage() {
-  const [isIOS, setIsIOS] = useState(false)
+  // const [isIOS, setIsIOS] = useState(false)
   const [showQR, setShowQR] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
 
   useEffect(() => {
     const userAgent = navigator.userAgent || navigator.vendor
-    const isIOSDevice = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream
+    // const isIOSDevice = /iPad|iPhone|iPod/.test(userAgent) && !(window as any).MSStream
     const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(userAgent)
     
-    setIsIOS(isIOSDevice)
+    // setIsIOS(isIOSDevice)
     setIsMobile(isMobileDevice)
     // Show QR code by default on desktop
     setShowQR(!isMobileDevice)

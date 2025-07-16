@@ -102,7 +102,7 @@ export default function TestClerkSupabasePage() {
     setError(null)
 
     try {
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('weight_logs')
         .insert({
           user_id: user.id,

@@ -32,10 +32,11 @@ export default function CompareAvatarsPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             <div>
-              <label className="text-sm font-medium text-linear-text mb-2 block">
+              <label htmlFor="gender-toggle" className="text-sm font-medium text-linear-text mb-2 block">
                 Gender
               </label>
               <ToggleGroup
+                id="gender-toggle"
                 type="single"
                 value={gender}
                 onValueChange={(value) => value && setGender(value as 'male' | 'female')}
@@ -51,10 +52,11 @@ export default function CompareAvatarsPage() {
             </div>
 
             <div>
-              <label className="text-sm font-medium text-linear-text mb-2 block">
+              <label htmlFor="bodyfat-slider" className="text-sm font-medium text-linear-text mb-2 block">
                 Body Fat: {bodyFat}%
               </label>
               <Slider
+                id="bodyfat-slider"
                 value={[bodyFat]}
                 onValueChange={([value]) => setBodyFat(value)}
                 min={5}

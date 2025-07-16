@@ -8,12 +8,10 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { ArrowLeft, Download, Mail, FileJson, FileSpreadsheet, CheckCircle2, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { MobileNavbar } from '@/components/MobileNavbar'
 
 export default function DataExportPage() {
   const { user } = useAuth()
-  const router = useRouter()
   const [exportMethod, setExportMethod] = useState('email')
   const [exportFormat, setExportFormat] = useState('json')
   const [isExporting, setIsExporting] = useState(false)

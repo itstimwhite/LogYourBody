@@ -24,7 +24,7 @@ export default function AuthCallbackPage() {
           } else {
             router.push('/onboarding')
           }
-        } catch (error) {
+        } catch {
           // If profile doesn't exist, redirect to onboarding
           router.push('/onboarding')
         }

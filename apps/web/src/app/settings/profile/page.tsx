@@ -25,7 +25,6 @@ import { UserProfile } from '@/types/body-metrics'
 import { HeightWheelPicker, DateWheelPicker } from '@/components/ui/wheel-picker'
 import { format, parseISO } from 'date-fns'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { getProfileAvatarUrl, getRandomAvatarUrl } from '@/utils/pravatar-utils'
 
 export default function ProfileSettingsPage() {
@@ -37,7 +36,7 @@ export default function ProfileSettingsPage() {
   const [showDOBModal, setShowDOBModal] = useState(false)
   
   const [profile, setProfile] = useState<Partial<UserProfile>>({
-    email: user?.email || '',
+    email: '',
     full_name: '',
     username: '',
     height: 71,
@@ -52,30 +51,35 @@ export default function ProfileSettingsPage() {
   const [heightInCm, setHeightInCm] = useState(180) // Default height in cm
   const [dateOfBirthDate, setDateOfBirthDate] = useState(new Date(1990, 0, 1)) // Default date
 
-  // Initialize height in cm from profile
-  useEffect(() => {
-    if (profile.height && profile.height_unit) {
-      if (profile.height_unit === 'cm') {
-        setHeightInCm(profile.height)
-      } else {
-        // Convert feet/inches to cm
-        const totalInches = profile.height
-        setHeightInCm(Math.round(totalInches * 2.54))
-      }
+  // Auto-save function
+  const saveProfile = useCallback(async (profileData: Partial<UserProfile>) => {
+    if (!user) return
+    
+    setIsSaving(true)
+    try {
+      await updateProfile(user.id, profileData)
+      setLastSaved(new Date())
+      
+      // Show subtle feedback instead of toast for auto-save
+      // Only show toast for errors
+    } catch {
+      toast({
+        title: "Error",
+        description: "Failed to save changes. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsSaving(false)
     }
-  }, [profile.height, profile.height_unit])
+  }, [user])
 
-  // Initialize date from profile
-  useEffect(() => {
-    if (profile.date_of_birth) {
-      try {
-        const date = parseISO(profile.date_of_birth)
-        setDateOfBirthDate(date)
-      } catch {
-        // Invalid date
-      }
-    }
-  }, [profile.date_of_birth])
+  // Debounced auto-save  
+  const debouncedSave = useCallback(
+    debounce((profileData: Partial<UserProfile>) => {
+      saveProfile(profileData)
+    }, 1000),
+    [saveProfile]
+  )
 
   useEffect(() => {
     if (!loading && !user) {
@@ -105,6 +109,37 @@ export default function ProfileSettingsPage() {
     }
   }, [user])
 
+  // Initialize height in cm from profile
+  useEffect(() => {
+    if (profile.height && profile.height_unit) {
+      if (profile.height_unit === 'cm') {
+        setHeightInCm(profile.height)
+      } else {
+        // Convert feet/inches to cm
+        const totalInches = profile.height
+        setHeightInCm(Math.round(totalInches * 2.54))
+      }
+    }
+  }, [profile.height, profile.height_unit])
+
+  // Initialize date from profile
+  useEffect(() => {
+    if (profile.date_of_birth) {
+      try {
+        const date = parseISO(profile.date_of_birth)
+        setDateOfBirthDate(date)
+      } catch {
+        // Invalid date
+      }
+    }
+  }, [profile.date_of_birth])
+
+  const updateLocalProfile = useCallback((updates: Partial<UserProfile>) => {
+    const newProfile = { ...profile, ...updates }
+    setProfile(newProfile)
+    debouncedSave(newProfile)
+  }, [profile, debouncedSave])
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-linear-bg">
@@ -115,42 +150,6 @@ export default function ProfileSettingsPage() {
 
   if (!user) {
     return null
-  }
-
-  // Auto-save function
-  const saveProfile = useCallback(async (profileData: Partial<UserProfile>) => {
-    if (!user) return
-    
-    setIsSaving(true)
-    try {
-      await updateProfile(user.id, profileData)
-      setLastSaved(new Date())
-      
-      // Show subtle feedback instead of toast for auto-save
-      // Only show toast for errors
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to save changes. Please try again.",
-        variant: "destructive"
-      })
-    } finally {
-      setIsSaving(false)
-    }
-  }, [user])
-
-  // Debounced auto-save
-  const debouncedSave = useCallback(
-    debounce((profileData: Partial<UserProfile>) => {
-      saveProfile(profileData)
-    }, 1000),
-    [saveProfile]
-  )
-
-  const updateLocalProfile = (updates: Partial<UserProfile>) => {
-    const newProfile = { ...profile, ...updates }
-    setProfile(newProfile)
-    debouncedSave(newProfile)
   }
 
   const getInitials = (name: string) => {

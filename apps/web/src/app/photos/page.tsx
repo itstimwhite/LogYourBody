@@ -26,8 +26,6 @@ import Link from 'next/link'
 import { format, differenceInDays } from 'date-fns'
 import Image from 'next/image'
 import { loadUserPhotos, deletePhoto, PhotoData, uploadPhotoWithMetrics } from '@/utils/photo-utils'
-import { uploadToStorage } from '@/utils/storage-utils'
-import { createClient } from '@/lib/supabase/client'
 import { 
   compressImage, 
   validateImageFile, 

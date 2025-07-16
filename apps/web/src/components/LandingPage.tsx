@@ -21,7 +21,6 @@ import {
   Shield,
   Clock,
   Check,
-  ArrowRight,
   Monitor,
   Tablet,
   Zap,
@@ -32,15 +31,12 @@ import { Header } from "./Header";
 import { LandingTimelineDemo } from "./LandingTimelineDemo";
 import { StepTrackerSection } from "./StepTrackerModule";
 import { LandingPredictionSection } from "./LandingPredictionSection";
-import { FeaturesFlyout } from "./FeaturesFlyout";
 import { Prefooter } from "./Prefooter";
 
 export function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
-  const { user, signOut } = useAuth();
+  const { } = useAuth();
 
-  const slugify = (text: string) =>
-    text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 
   const pricing = {
     monthly: {
@@ -496,7 +492,6 @@ export function LandingPage() {
               {appFeatures.map((feature, index) => (
                 <div
                   key={index}
-                  id={slugify(feature.title)}
                   className="group rounded-lg border border-linear-border bg-linear-card p-6 transition-colors hover:border-linear-text-tertiary"
                 >
                   <feature.icon className="mb-4 h-8 w-8 text-white" />

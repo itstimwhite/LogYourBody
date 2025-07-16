@@ -76,7 +76,7 @@ export async function checkSMPLXAvailability(): Promise<boolean> {
       const manifest = await response.json()
       return manifest.avatars !== undefined
     }
-  } catch (error) {
+  } catch {
     console.log('SMPL-X avatars not available, using pravatar system')
   }
   return false

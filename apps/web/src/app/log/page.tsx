@@ -41,7 +41,7 @@ import { getProfile } from '@/lib/supabase/profile'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
 import { useMediaQuery } from '@/hooks/use-media-query'
-import { useSync } from '@/hooks/use-sync'
+// import { useSync } from '@/hooks/use-sync'
 import { syncManager } from '@/lib/sync/sync-manager'
 import { indexedDB } from '@/lib/db/indexed-db'
 

@@ -205,7 +205,7 @@ export function ProfileSetupStepV2() {
                           }))
                         }}
                       >
-                        <SelectTrigger className="bg-linear-bg border-linear-border" tabIndex={1}>
+                        <SelectTrigger className="bg-linear-bg border-linear-border">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -232,7 +232,7 @@ export function ProfileSetupStepV2() {
                           }))
                         }}
                       >
-                        <SelectTrigger className="bg-linear-bg border-linear-border" tabIndex={1}>
+                        <SelectTrigger className="bg-linear-bg border-linear-border">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -259,7 +259,7 @@ export function ProfileSetupStepV2() {
                           }))
                         }}
                       >
-                        <SelectTrigger className="bg-linear-bg border-linear-border" tabIndex={1}>
+                        <SelectTrigger className="bg-linear-bg border-linear-border">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>

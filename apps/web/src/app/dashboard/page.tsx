@@ -645,7 +645,7 @@ export default function DashboardPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
   const isOnline = useNetworkStatus()
-  const syncState = useSync()
+  const _syncState = useSync()
   const [activeTabIndex, setActiveTabIndex] = useState(0)
   const [selectedDateIndex, setSelectedDateIndex] = useState(-1)
   const [_latestMetrics, setLatestMetrics] = useState<BodyMetrics | null>(null)
@@ -863,7 +863,7 @@ export default function DashboardPage() {
   } : null
 
   // Format helpers
-  const getFormattedWeight = (weight?: number) => {
+  const _getFormattedWeight = (weight?: number) => {
     if (!weight) return '--'
     return `${weight.toFixed(1)} ${profile?.settings?.units?.weight || 'lbs'}`
   }

@@ -197,7 +197,7 @@ export class RealtimeSyncManager {
     this.notifyListeners();
   }
 
-  private async handleRealtimeUpdate(table: string, newData: any, oldData: any) {
+  private async handleRealtimeUpdate(table: string, newData: any, _oldData: any) {
     if (!newData) return;
 
     // Check for conflicts with local unsynced changes

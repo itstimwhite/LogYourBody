@@ -81,7 +81,7 @@ export default function AccountSettingsPage() {
       
       // Redirect to home page
       router.push('/')
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Failed to delete account. Please try again.",

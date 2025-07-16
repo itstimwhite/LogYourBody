@@ -18,7 +18,6 @@ export const WeightWheelPicker: React.FC<WeightWheelPickerProps> = ({
   // Generate weight ranges
   const minWeight = unit === 'kg' ? 20 : 44 // 20kg or 44lbs min
   const maxWeight = unit === 'kg' ? 300 : 660 // 300kg or 660lbs max
-  const step = 0.1
 
   // Generate whole numbers
   const wholeNumbers: number[] = []

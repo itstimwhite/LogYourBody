@@ -11,7 +11,7 @@ export function NotificationsStep() {
   const { updateData, nextStep, previousStep } = useOnboarding()
   const [permission, setPermission] = useState<NotificationPermission>('default')
   const [isSupported, setIsSupported] = useState(true)
-  const [hasAsked, setHasAsked] = useState(false)
+  // const [hasAsked, setHasAsked] = useState(false)
 
   useEffect(() => {
     // Check if notifications are supported
@@ -25,7 +25,7 @@ export function NotificationsStep() {
   const requestPermission = async () => {
     if (!isSupported) return
     
-    setHasAsked(true)
+    // setHasAsked(true)
     
     try {
       const result = await Notification.requestPermission()
@@ -147,7 +147,7 @@ export function NotificationsStep() {
           <Button
             variant="ghost"
             onClick={previousStep}
-            tabIndex={1}
+            tabIndex={0}
           >
             Back
           </Button>
@@ -157,7 +157,7 @@ export function NotificationsStep() {
               <Button
                 onClick={requestPermission}
                 className="ml-auto bg-linear-purple hover:bg-linear-purple/90 text-white"
-                tabIndex={2}
+                tabIndex={0}
                 autoFocus
               >
                 <Bell className="h-4 w-4 mr-2" />
@@ -170,7 +170,7 @@ export function NotificationsStep() {
             <Button
               onClick={nextStep}
               className="ml-auto bg-linear-purple hover:bg-linear-purple/90 text-white"
-              tabIndex={2}
+              tabIndex={0}
               autoFocus
             >
               Continue
@@ -182,7 +182,7 @@ export function NotificationsStep() {
               onClick={nextStep}
               className="ml-auto"
               variant="default"
-              tabIndex={2}
+              tabIndex={0}
             >
               Continue without notifications
             </Button>
@@ -194,7 +194,7 @@ export function NotificationsStep() {
             <button
               onClick={skip}
               className="text-xs text-linear-text-tertiary hover:text-linear-text-secondary transition-colors underline-offset-4 hover:underline"
-              tabIndex={3}
+              tabIndex={0}
             >
               Skip for now
             </button>

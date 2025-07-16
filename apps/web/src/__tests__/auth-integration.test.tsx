@@ -126,7 +126,7 @@ describe('Authentication Integration Tests', () => {
     it('should complete sign in flow successfully', async () => {
       const user = userEvent.setup()
       const mockUser = { id: '123', email: 'test@example.com' }
-      const mockSession = { user: mockUser, access_token: 'token' }
+      const _mockSession = { user: mockUser, access_token: 'token' }
       
       mockSignIn.mockResolvedValue({
         status: 'complete',
