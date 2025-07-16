@@ -87,6 +87,15 @@ jobs:
         CI: true
       continue-on-error: true
 
+    - name: Cache Next.js build
+      uses: actions/cache@v4
+      with:
+        path: |
+          apps/web/.next/cache
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+        restore-keys: |
+          ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+
     - name: Build (Web)
       run: npm run build
       working-directory: apps/web
@@ -94,6 +103,8 @@ jobs:
         NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
         NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
         NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2xlcmsudGVzdC5jbGVyay5kZXYk' }}
+        # Disable telemetry during builds
+        NEXT_TELEMETRY_DISABLED: 1
 
   # iOS CI/CD Pipeline
   ios-ci:
