@@ -1,0 +1,166 @@
+# Customise this file, documentation can be found here:
+# https://docs.fastlane.tools/actions/
+# All available actions: https://docs.fastlane.tools/actions
+# can also be listed using the `fastlane actions` command
+
+# Change the syntax highlighting to Ruby
+# All lines starting with a # are ignored when running `fastlane`
+
+# If you want to automatically update fastlane if a new version is available:
+# update_fastlane
+
+# This is the minimum version number required.
+# Update this, if you use features of a newer version
+fastlane_version "2.219.0"
+
+default_platform :ios
+
+platform :ios do
+  
+  # Define workspace and scheme
+  scheme = "LogYourBody"
+  project = "LogYourBody.xcodeproj"
+  
+  before_all do
+    # Ensure we're in the right directory
+    Dir.chdir("..") unless Dir.pwd.end_with?("ios")
+    
+    # Set up environment
+    ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "180"
+    ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "10"
+  end
+
+  desc "Run SwiftLint"
+  lane :lint do
+    swiftlint(
+      mode: :lint,
+      strict: true,
+      raise_if_swiftlint_error: true,
+      reporter: "json"
+    )
+  end
+
+  desc "Run tests"
+  lane :test do
+    run_tests(
+      project: project,
+      scheme: scheme,
+      device: "iPhone 15",
+      clean: true,
+      code_coverage: true
+    )
+  end
+
+  desc "Build for development"
+  lane :build_dev do
+    build_app(
+      project: project,
+      scheme: scheme,
+      configuration: "Debug",
+      skip_archive: true,
+      skip_codesigning: true,
+      destination: "generic/platform=iOS Simulator"
+    )
+  end
+
+  desc "Build and upload to TestFlight"
+  lane :beta do
+    # Ensure we have a clean state
+    clean_build_artifacts
+    
+    # Increment build number
+    build_number = Time.now.strftime("%Y%m%d%H%M%S")
+    increment_build_number(
+      build_number: build_number,
+      xcodeproj: project
+    )
+    
+    # Build the app
+    build_app(
+      project: project,
+      scheme: scheme,
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "com.logyourbody.app" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
+        }
+      }
+    )
+    
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      apple_id: ENV["APP_STORE_APP_ID"],
+      team_id: ENV["APPLE_TEAM_ID"],
+      groups: ["Beta Testers"]
+    )
+    
+    # Clean up
+    clean_build_artifacts
+  end
+
+  desc "Build for CI"
+  lane :ci_build do
+    # This lane is specifically for CI environments
+    build_app(
+      project: project,
+      scheme: scheme,
+      configuration: "Debug",
+      skip_archive: true,
+      skip_codesigning: true,
+      derived_data_path: "build",
+      destination: "platform=iOS Simulator,name=iPhone 16"
+    )
+  end
+
+  desc "Deploy to App Store"
+  lane :release do
+    # Ensure we have a clean state
+    clean_build_artifacts
+    
+    # Build the app
+    build_app(
+      project: project,
+      scheme: scheme,
+      configuration: "Release",
+      export_method: "app-store"
+    )
+    
+    # Upload to App Store Connect
+    upload_to_app_store(
+      force: true,
+      skip_metadata: false,
+      skip_screenshots: false,
+      submit_for_review: false,
+      automatic_release: false
+    )
+    
+    # Clean up
+    clean_build_artifacts
+  end
+
+  desc "Create development certificates and profiles"
+  lane :setup_certificates do
+    match(
+      type: "development",
+      app_identifier: "com.logyourbody.app",
+      readonly: false
+    )
+  end
+
+  desc "Create distribution certificates and profiles"
+  lane :setup_distribution do
+    match(
+      type: "appstore",
+      app_identifier: "com.logyourbody.app",
+      readonly: false
+    )
+  end
+
+  error do |lane, exception|
+    # Handle errors
+    UI.error("Something went wrong in lane #{lane}: #{exception.message}")
+  end
+
+end

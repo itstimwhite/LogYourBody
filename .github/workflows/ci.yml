@@ -196,9 +196,24 @@ jobs:
         path: /usr/local/bin/swiftlint
         key: ${{ runner.os }}-swiftlint-0.55.1
 
+    - name: Cache Ruby gems
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+
     - name: Install SwiftLint
       if: steps.swiftlint-cache.outputs.cache-hit != 'true'
       run: brew install swiftlint
+
+    - name: Install Ruby dependencies
+      run: |
+        cd apps/ios
+        gem install bundler
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
 
     - name: Setup iOS Dependencies
       run: |
@@ -223,36 +238,26 @@ jobs:
     - name: Run SwiftLint Check
       run: |
         cd apps/ios
-        echo "Running SwiftLint..."
-        swiftlint lint --strict --reporter github-actions-logging
-        echo "✅ SwiftLint passed with no violations"
+        bundle exec fastlane lint
 
     - name: Build iOS App
       run: |
         cd apps/ios
-        xcodebuild -project LogYourBody.xcodeproj \
-          -scheme LogYourBody \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
-          -derivedDataPath build \
-          clean build \
-          COMPILER_INDEX_STORE_ENABLE=NO
+        bundle exec fastlane ci_build
       env:
         CODE_SIGNING_REQUIRED: NO
 
     - name: Run iOS Tests
       run: |
         cd apps/ios
-        xcodebuild -project LogYourBody.xcodeproj \
-          -scheme LogYourBody \
-          -destination 'platform=iOS Simulator,name=iPhone 16' \
-          -derivedDataPath build \
-          test
+        bundle exec fastlane test
       continue-on-error: true
 
     - name: Archive for TestFlight (if on dev branch)
       if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
       run: |
         cd apps/ios
+        # For now, continue using xcodebuild until match is set up
         xcodebuild -project LogYourBody.xcodeproj \
           -scheme LogYourBody \
           -configuration Release \
@@ -304,9 +309,20 @@ jobs:
       with:
         xcode-version: latest-stable
 
+    - name: Cache Ruby gems
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+
     - name: Install dependencies
       run: |
         cd apps/ios
+        gem install bundler
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
         if [ -f "Podfile" ]; then
           sudo gem install cocoapods
           pod install
@@ -323,35 +339,15 @@ jobs:
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
         echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision
 
-    - name: Build and Archive for TestFlight
+    - name: Build and Deploy to TestFlight
       run: |
         cd apps/ios
-        
-        # Increment build number
-        BUILD_NUMBER=$(date +%Y%m%d%H%M%S)
-        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" LogYourBody/Info.plist
-        
-        # Archive
-        xcodebuild -project LogYourBody.xcodeproj \
-          -scheme LogYourBody \
-          -configuration Release \
-          -destination 'generic/platform=iOS' \
-          -archivePath build/LogYourBody.xcarchive \
-          archive
-        
-        # Export IPA
-        xcodebuild -exportArchive \
-          -archivePath build/LogYourBody.xcarchive \
-          -exportOptionsPlist ExportOptions.plist \
-          -exportPath build/
-
-    - name: Upload to TestFlight
-      run: |
-        cd apps/ios
-        xcrun altool --upload-app \
-          --type ios \
-          --file build/LogYourBody.ipa \
-          --username "${{ secrets.APPLE_ID_EMAIL }}" \
-          --password "${{ secrets.APPLE_ID_PASSWORD }}"
+        bundle exec fastlane beta
+      env:
+        APPLE_ID_EMAIL: ${{ secrets.APPLE_ID_EMAIL }}
+        FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.APPLE_ID_PASSWORD }}
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
+        IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
 
 
