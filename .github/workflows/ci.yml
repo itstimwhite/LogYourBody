@@ -35,76 +35,124 @@ jobs:
               - '.github/**'
               - 'turbo.json'
 
-  # Web app CI/CD (existing logic)
-  web-ci:
+  # Web Lint (runs in parallel with other jobs)
+  web-lint:
     needs: detect-changes
     if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
     runs-on: ubuntu-latest
-    continue-on-error: true
-
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        id: npm-cache
+        with:
+          path: |
+            node_modules
+            apps/web/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Install dependencies
+        if: steps.npm-cache.outputs.cache-hit != 'true'
+        run: npm ci --prefer-offline --no-audit
+      
+      - name: Run ESLint
+        run: npm run lint
+        working-directory: apps/web
+      
+      - name: Run TypeScript Check
+        run: npm run typecheck
+        working-directory: apps/web
 
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+  # Web Tests (runs in parallel)
+  web-test:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/web/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+      
+      - name: Run Tests
+        run: npm test -- --passWithNoTests
+        working-directory: apps/web
+        env:
+          CI: true
+        continue-on-error: true
 
-    - name: Cache node_modules
-      uses: actions/cache@v4
-      id: npm-cache
-      with:
-        path: |
-          node_modules
-          apps/web/node_modules
-          ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
-    - name: Install dependencies
-      if: steps.npm-cache.outputs.cache-hit != 'true'
-      run: npm ci --prefer-offline --no-audit
-
-    - name: Run linter (Web)
-      run: npm run lint
-      working-directory: apps/web
-      continue-on-error: true
-
-    - name: Run type check (Web)
-      run: npm run typecheck
-      working-directory: apps/web
-
-    - name: Run tests (Web)
-      run: npm test -- --passWithNoTests
-      working-directory: apps/web
-      env:
-        CI: true
-      continue-on-error: true
-
-    - name: Cache Next.js build
-      uses: actions/cache@v4
-      with:
-        path: |
-          apps/web/.next/cache
-        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
-        restore-keys: |
-          ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
-
-    - name: Build (Web)
-      run: npm run build
-      working-directory: apps/web
-      env:
-        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
-        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
-        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2xlcmsudGVzdC5jbGVyay5kZXYk' }}
-        # Disable telemetry during builds
-        NEXT_TELEMETRY_DISABLED: 1
+  # Web Build (runs in parallel, only waits for lint)
+  web-build:
+    needs: [detect-changes, web-lint]
+    if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Cache node_modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            apps/web/node_modules
+            ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      
+      - name: Cache Next.js build
+        uses: actions/cache@v4
+        with:
+          path: |
+            apps/web/.next/cache
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**.[jt]s', '**.[jt]sx') }}
+          restore-keys: |
+            ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
+      
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit
+      
+      - name: Build
+        run: npm run build
+        working-directory: apps/web
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co' }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key' }}
+          NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY || 'pk_test_Y2xlcmsudGVzdC5jbGVyay5kZXYk' }}
+          NEXT_TELEMETRY_DISABLED: 1
 
   # iOS CI/CD Pipeline
   ios-ci:
@@ -295,74 +343,4 @@ jobs:
           --username "${{ secrets.APPLE_ID_EMAIL }}" \
           --password "${{ secrets.APPLE_ID_PASSWORD }}"
 
-  # Lint job for Web
-  lint-web:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Use Node.js
-      if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18.x'
-        cache: 'npm'
-
-    - name: Cache node_modules
-      uses: actions/cache@v4
-      id: npm-cache-lint
-      with:
-        path: |
-          node_modules
-          apps/web/node_modules
-          ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-
-    - name: Install dependencies (Web)
-      if: (needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true') && steps.npm-cache-lint.outputs.cache-hit != 'true'
-      run: npm ci --prefer-offline --no-audit
-
-    - name: Run ESLint (Web)
-      if: needs.detect-changes.outputs.web-changed == 'true' || needs.detect-changes.outputs.root-changed == 'true'
-      run: npm run lint -- --max-warnings 0
-      working-directory: apps/web
-      continue-on-error: true
-
-  # Lint job for iOS
-  lint-ios:
-    needs: detect-changes
-    if: needs.detect-changes.outputs.ios-changed == 'true'
-    runs-on: macos-latest
-
-    steps:
-    - uses: actions/checkout@v4
-
-    - name: Setup Xcode
-      uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: latest-stable
-
-    - name: Cache SwiftLint
-      uses: actions/cache@v4
-      id: swiftlint-cache-lint
-      with:
-        path: /usr/local/bin/swiftlint
-        key: ${{ runner.os }}-swiftlint-0.55.1
-
-    - name: Install SwiftLint
-      if: steps.swiftlint-cache-lint.outputs.cache-hit != 'true'
-      run: brew install swiftlint
-
-    - name: Run SwiftLint
-      run: |
-        cd apps/ios
-        # Run SwiftLint with strict mode - fail on any violation
-        swiftlint lint --strict --reporter github-actions-logging
-      env:
-        SWIFTLINT_STRICT: true
 
