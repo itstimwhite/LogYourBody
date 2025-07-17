@@ -92,6 +92,8 @@ jobs:
     - name: Run SwiftLint
       run: |
         cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
         swiftlint lint --strict --reporter github-actions-logging
 
   # Build job - builds once for all test jobs
@@ -141,6 +143,9 @@ jobs:
     - name: Build iOS App
       run: |
         cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
         # Get processor count for optimal parallelism
         WORKERS=$(sysctl -n hw.ncpu)
         echo "Building with $WORKERS workers"
@@ -204,6 +209,9 @@ jobs:
     - name: Run Tests
       run: |
         cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
         # Get processor count for optimal parallelism
         WORKERS=$(sysctl -n hw.ncpu)
         echo "Running tests with $WORKERS workers"
@@ -275,6 +283,9 @@ jobs:
     - name: Run Tests with Sanitizers
       run: |
         cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
         # Get processor count for optimal parallelism
         WORKERS=$(sysctl -n hw.ncpu)
         echo "Running sanitizer tests with $WORKERS workers"
