@@ -35,8 +35,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ steps.cache-key.outputs.key }}
@@ -81,8 +80,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ needs.setup.outputs.cache-key }}
@@ -94,6 +92,13 @@ jobs:
         cd apps/ios
         # Add homebrew bin to PATH for cached tools
         export PATH="/opt/homebrew/bin:$PATH"
+        
+        # Check if swiftlint is available, install if not
+        if ! command -v swiftlint &> /dev/null; then
+          echo "SwiftLint not found in cache, installing..."
+          brew install swiftlint
+        fi
+        
         swiftlint lint --strict --reporter github-actions-logging
 
   # Build job - builds once for all test jobs
@@ -114,8 +119,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ needs.setup.outputs.cache-key }}
@@ -180,8 +184,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ needs.setup.outputs.cache-key }}
@@ -254,8 +257,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ needs.setup.outputs.cache-key }}
