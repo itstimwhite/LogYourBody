@@ -2,6 +2,8 @@
 // LogYourBodyUITestsLaunchTests.swift
 // LogYourBody
 //
+import XCTest
+
 final class LogYourBodyUITestsLaunchTests: XCTestCase {
     override static var runsForEachTargetApplicationUIConfiguration: Bool {
         true
