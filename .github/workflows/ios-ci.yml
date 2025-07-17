@@ -105,7 +105,7 @@ jobs:
   build:
     needs: setup
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v4
     
@@ -170,7 +170,7 @@ jobs:
   test:
     needs: [setup, build]
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v4
     
@@ -243,7 +243,7 @@ jobs:
   test-sanitizers:
     needs: [setup, build]
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v4
     
