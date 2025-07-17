@@ -35,8 +35,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ steps.cache-key.outputs.key }}
@@ -81,8 +80,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ needs.setup.outputs.cache-key }}
@@ -92,13 +90,22 @@ jobs:
     - name: Run SwiftLint
       run: |
         cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
+        # Check if swiftlint is available, install if not
+        if ! command -v swiftlint &> /dev/null; then
+          echo "SwiftLint not found in cache, installing..."
+          brew install swiftlint
+        fi
+        
         swiftlint lint --strict --reporter github-actions-logging
 
   # Build job - builds once for all test jobs
   build:
     needs: setup
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v4
     
@@ -112,8 +119,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ needs.setup.outputs.cache-key }}
@@ -141,6 +147,9 @@ jobs:
     - name: Build iOS App
       run: |
         cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
         # Get processor count for optimal parallelism
         WORKERS=$(sysctl -n hw.ncpu)
         echo "Building with $WORKERS workers"
@@ -161,7 +170,7 @@ jobs:
   test:
     needs: [setup, build]
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v4
     
@@ -175,8 +184,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ needs.setup.outputs.cache-key }}
@@ -204,6 +212,9 @@ jobs:
     - name: Run Tests
       run: |
         cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
         # Get processor count for optimal parallelism
         WORKERS=$(sysctl -n hw.ncpu)
         echo "Running tests with $WORKERS workers"
@@ -232,7 +243,7 @@ jobs:
   test-sanitizers:
     needs: [setup, build]
     runs-on: macos-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@v4
     
@@ -246,8 +257,7 @@ jobs:
       with:
         path: |
           apps/ios/vendor/bundle
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
+          /opt/homebrew
           ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
           ~/Library/Caches/org.swift.swiftpm
         key: ${{ needs.setup.outputs.cache-key }}
@@ -275,6 +285,9 @@ jobs:
     - name: Run Tests with Sanitizers
       run: |
         cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
         # Get processor count for optimal parallelism
         WORKERS=$(sysctl -n hw.ncpu)
         echo "Running sanitizer tests with $WORKERS workers"
