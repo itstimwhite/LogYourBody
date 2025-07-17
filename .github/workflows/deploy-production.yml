@@ -52,7 +52,7 @@ jobs:
         bundle install --jobs 4 --retry 3
     
     - name: Import Code Signing Certificates
-      uses: apple-actions/import-codesign-certs@v2
+      uses: apple-actions/import-codesign-certs@v5
       with:
         p12-file-base64: ${{ secrets.IOS_P12_BASE64 }}
         p12-password: ${{ secrets.IOS_P12_PASSWORD }}
