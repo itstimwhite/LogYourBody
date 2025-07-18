@@ -1,0 +1,81 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ "main", "dev", "preview" ]
+  pull_request:
+    branches: [ "main", "dev", "preview" ]
+  schedule:
+    - cron: '28 23 * * 5'
+
+jobs:
+  analyze:
+    name: Analyze (${{ matrix.language }})
+    runs-on: ${{ (matrix.language == 'swift' && 'macos-latest') || 'ubuntu-latest' }}
+    timeout-minutes: ${{ (matrix.language == 'swift' && 120) || 360 }}
+    permissions:
+      # required for all workflows
+      security-events: write
+      # required to fetch internal or private CodeQL packs
+      packages: read
+      # only required for workflows in private repositories
+      actions: read
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+        - language: javascript-typescript
+          build-mode: none
+        - language: python
+          build-mode: none
+        - language: c-cpp
+          build-mode: manual
+        - language: ruby
+          build-mode: none
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Initializes the CodeQL tools for scanning.
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v3
+      with:
+        languages: ${{ matrix.language }}
+        build-mode: ${{ matrix.build-mode }}
+        config-file: ./.github/codeql/codeql-config.yml
+        
+    # If the analyze step fails for one of the languages you are analyzing with
+    # "We were unable to automatically build your code", modify the matrix above
+    # to set the build-mode to "manual" for that language. Then modify this step
+    # to build your code.
+    - if: matrix.language == 'c-cpp' && matrix.build-mode == 'manual'
+      name: Build C++ Code
+      run: |
+        echo "Building iOS project for CodeQL analysis..."
+        cd apps/ios
+        
+        # Create placeholder config files
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+        
+        # Build the project
+        xcodebuild -project LogYourBody.xcodeproj \
+          -scheme LogYourBody \
+          -destination 'generic/platform=iOS' \
+          -configuration Debug \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          ONLY_ACTIVE_ARCH=NO \
+          build || true
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3
+      with:
+        category: "/language:${{matrix.language}}"
