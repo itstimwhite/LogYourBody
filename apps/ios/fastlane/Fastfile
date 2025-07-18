@@ -99,6 +99,9 @@ platform :ios do
     # When running from bundle exec, we're in the fastlane directory
     ios_dir = File.expand_path("..", Dir.pwd)
     
+    # Run script to remove widget references before building
+    system("ruby ../remove_widget_references.rb") if File.exist?("../remove_widget_references.rb")
+    
     build_app(
       project: File.join(ios_dir, project),
       scheme: scheme,
@@ -119,8 +122,8 @@ platform :ios do
       skip_package_dependencies_resolution: true,
       disable_package_automatic_updates: true,
       cloned_source_packages_path: "SourcePackages",
-      # Skip widget extension target
-      xcargs: "-allowProvisioningUpdates -skipPackagePluginValidation"
+      # Build settings
+      xcargs: "-allowProvisioningUpdates"
     )
     
     # Read release notes if provided
