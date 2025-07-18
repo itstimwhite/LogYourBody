@@ -104,17 +104,23 @@ platform :ios do
       scheme: scheme,
       configuration: "Release",
       export_method: "app-store",
+      export_team_id: ENV["APPLE_TEAM_ID"],
       export_options: {
+        teamID: ENV["APPLE_TEAM_ID"],
         provisioningProfiles: {
           "LogYourBody.LogYourBody" => "Github CI App Store"
-        }
+        },
+        compileBitcode: false,
+        uploadBitcode: false,
+        uploadSymbols: true
       },
       # Speed optimizations
       skip_package_dependencies_resolution: true,
       disable_package_automatic_updates: true,
       cloned_source_packages_path: "SourcePackages",
-      # Temporary: Use xcargs to exclude widget
-      xcargs: "-skipPackagePluginValidation"
+      # Code signing settings
+      codesigning_identity: "Apple Distribution",
+      xcargs: "-allowProvisioningUpdates"
     )
     
     # Read release notes if provided

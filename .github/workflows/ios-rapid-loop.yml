@@ -125,7 +125,13 @@ jobs:
     - name: Download Provisioning Profile
       run: |
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision
+        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > provision.mobileprovision
+        
+        # Extract UUID and install with proper name
+        uuid=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(security cms -D -i provision.mobileprovision))
+        cp provision.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${uuid}.mobileprovision
+        
+        echo "Installed provisioning profile: ${uuid}.mobileprovision"
     
     - name: Setup App Store Connect API Key
       run: |
