@@ -25,16 +25,17 @@ platform :ios do
   project = "LogYourBody.xcodeproj"
   
   before_all do
-    # Ensure we're in the right directory
-    # Fastlane runs from the fastlane directory, but we need to be in the parent (ios) directory
-    if Dir.pwd.end_with?("/fastlane")
-      Dir.chdir("..")
-      puts "Changed to directory: #{Dir.pwd}"
-    end
-    
     # Set up environment
     ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "180"
     ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "10"
+    
+    # Ensure project path is correct
+    ios_dir = File.expand_path("..", Dir.pwd.end_with?("/fastlane") ? Dir.pwd : "#{Dir.pwd}/fastlane")
+    project_path = File.join(ios_dir, project)
+    
+    unless File.exist?(project_path)
+      UI.user_error!("Project file not found at: #{project_path}")
+    end
   end
 
   desc "Run SwiftLint"
@@ -95,7 +96,7 @@ platform :ios do
     
     # Build the app (fast, minimal processing)
     build_app(
-      project: project,
+      project: File.join(Dir.pwd, project),
       scheme: scheme,
       configuration: "Release",
       export_method: "app-store",
