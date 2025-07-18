@@ -106,7 +106,7 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "com.logyourbody.app" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
+          "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
         }
       },
       # Speed optimizations
@@ -186,7 +186,7 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "com.logyourbody.app" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
+          "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
         }
       }
     )
@@ -230,7 +230,7 @@ platform :ios do
       export_method: "app-store",
       export_options: {
         provisioningProfiles: {
-          "com.logyourbody.app" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
+          "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
         }
       },
       output_directory: "build",
@@ -393,7 +393,7 @@ platform :ios do
   lane :setup_certificates do
     match(
       type: "development",
-      app_identifier: "com.logyourbody.app",
+      app_identifier: "LogYourBody.LogYourBody",
       readonly: false
     )
   end
@@ -402,7 +402,7 @@ platform :ios do
   lane :setup_distribution do
     match(
       type: "appstore",
-      app_identifier: "com.logyourbody.app",
+      app_identifier: "LogYourBody.LogYourBody",
       readonly: false
     )
   end
