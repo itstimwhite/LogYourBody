@@ -224,6 +224,8 @@ jobs:
 
   deploy-app-store:
     name: Deploy to App Store
+    permissions:
+      contents: read
     needs: [validate-release, build-release]
     if: github.event.inputs.release_type == 'app_store'
     runs-on: macos-latest
