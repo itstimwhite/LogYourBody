@@ -1,0 +1,442 @@
+[
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-rapid-loop.yml",
+    "line": 13,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/web-rapid-loop.yml",
+    "line": 18,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/web-release-loop.yml",
+    "line": 165,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-release-loop.yml",
+    "line": 281,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/web-release-loop.yml",
+    "line": 49,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/web-release-loop.yml",
+    "line": 15,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-release-loop.yml",
+    "line": 228,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-release-loop.yml",
+    "line": 161,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-release-loop.yml",
+    "line": 89,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-release-loop.yml",
+    "line": 68,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-release-loop.yml",
+    "line": 22,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/promote-preview.yml",
+    "line": 215,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/promote-preview.yml",
+    "line": 134,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/web-confidence-loop.yml",
+    "line": 120,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/promote-preview.yml",
+    "line": 64,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/web-confidence-loop.yml",
+    "line": 18,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/promote-preview.yml",
+    "line": 18,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 193,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 500,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 157,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 463,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 149,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 142,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 122,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 386,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 105,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 97,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 90,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 82,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 75,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 319,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 50,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/main-orchestrator.yml",
+    "line": 19,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-rapid-loop.yml",
+    "line": 88,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 244,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 171,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 106,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 72,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "actions/missing-workflow-permissions",
+    "message": "Workflow does not contain permissions",
+    "file": ".github/workflows/ios-confidence-loop.yml",
+    "line": 18,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "js/prototype-polluting-assignment",
+    "message": "Prototype-polluting assignment",
+    "file": "apps/web/venv/lib/python3.12/site-packages/urllib3/contrib/emscripten/emscripten_fetch_worker.js",
+    "line": 60,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "js/prototype-polluting-assignment",
+    "message": "Prototype-polluting assignment",
+    "file": "apps/web/venv/lib/python3.12/site-packages/urllib3/contrib/emscripten/emscripten_fetch_worker.js",
+    "line": 37,
+    "severity": "warning",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "js/bad-code-sanitization",
+    "message": "Improper code sanitization",
+    "file": "apps/web/dist/assets/index-BWixOZri.js",
+    "line": 2,
+    "severity": "error",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "js/bad-code-sanitization",
+    "message": "Improper code sanitization",
+    "file": "apps/web/dist/assets/index-BWixOZri.js",
+    "line": 2,
+    "severity": "error",
+    "security_severity": "medium"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-wireframe-avatars-demo.py",
+    "line": 161,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-final-avatars.py",
+    "line": 250,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-smplx-avatars.py",
+    "line": 211,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-smpl-avatars.py",
+    "line": 213,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-avatars-stable-diffusion.py",
+    "line": 204,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-avatars-replicate.py",
+    "line": 115,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-avatars-openai.py",
+    "line": 182,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-avatars-example.py",
+    "line": 73,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-avatars-huggingface.py",
+    "line": 114,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-avatars-huggingface.py",
+    "line": 112,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-avatars-huggingface.py",
+    "line": 68,
+    "severity": "error",
+    "security_severity": "high"
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-avatars-consistent-base.py",
+    "line": 189,
+    "severity": "error",
+    "security_severity": "high"
+  }
+]
