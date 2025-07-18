@@ -70,7 +70,66 @@ platform :ios do
     )
   end
 
-  desc "Build and upload to TestFlight"
+  desc "Build and upload Alpha to TestFlight (dev branch - rapid)"
+  lane :alpha do |options|
+    # Ensure we have a clean state
+    clean_build_artifacts
+    
+    # Set up App Store Connect API key if available
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+      app_store_connect_api_key(
+        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        duration: 1200, # 20 minutes
+        in_house: false
+      )
+    end
+    
+    # Build number should be passed in
+    if options[:build_number]
+      increment_build_number(
+        build_number: options[:build_number],
+        xcodeproj: project
+      )
+    end
+    
+    # Build the app (fast, minimal processing)
+    build_app(
+      project: project,
+      scheme: scheme,
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "com.logyourbody.app" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
+        }
+      },
+      # Speed optimizations
+      skip_package_dependencies_resolution: true,
+      disable_package_automatic_updates: true,
+      cloned_source_packages_path: "SourcePackages"
+    )
+    
+    # Read release notes if provided
+    release_notes = "Alpha Build"
+    if options[:release_notes_file] && File.exist?(options[:release_notes_file])
+      release_notes = File.read(options[:release_notes_file])
+    end
+    
+    # Upload to TestFlight
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      apple_id: ENV["APP_STORE_APP_ID"],
+      team_id: ENV["APPLE_TEAM_ID"],
+      groups: ["Internal Testers"], # Alpha goes to internal only
+      changelog: release_notes,
+      distribute_external: false
+    )
+    
+    # Clean up
+    clean_build_artifacts
+  end
+
+  desc "Build and upload to TestFlight (preview branch - beta)"
   lane :beta do
     # Ensure we have a clean state
     clean_build_artifacts
@@ -109,7 +168,8 @@ platform :ios do
       skip_waiting_for_build_processing: true,
       apple_id: ENV["APP_STORE_APP_ID"],
       team_id: ENV["APPLE_TEAM_ID"],
-      groups: ["Beta Testers"]
+      groups: ["Beta Testers"],
+      distribute_external: true # Beta includes external testers
     )
     
     # Clean up
