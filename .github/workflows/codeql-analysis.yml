@@ -30,8 +30,9 @@ jobs:
           build-mode: none
         - language: python
           build-mode: none
-        - language: c-cpp
-          build-mode: manual
+        # Disabled C++ analysis - conflicts with default CodeQL setup
+        # - language: c-cpp
+        #   build-mode: manual
         - language: ruby
           build-mode: none
 
