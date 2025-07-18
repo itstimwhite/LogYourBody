@@ -120,7 +120,7 @@ platform :ios do
       cloned_source_packages_path: "SourcePackages",
       # Code signing settings
       codesigning_identity: "Apple Distribution",
-      xcargs: "-allowProvisioningUpdates"
+      xcargs: "-allowProvisioningUpdates -allowProvisioningDeviceRegistration DEVELOPMENT_TEAM=#{ENV["APPLE_TEAM_ID"]}"
     )
     
     # Read release notes if provided
