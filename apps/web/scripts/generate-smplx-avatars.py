@@ -208,7 +208,7 @@ class SMPLXAvatarGenerator:
                     filename = f'{gender}_ffmi{ffmi}_bf{bf}.png'.replace('.', '_')
                     filepath = os.path.join(ffmi_dir, filename)
                     
-                    print(f'Generating {gender} avatar: FFMI={ffmi}, BF={bf}%...')
+                    logger.info(f'Generating {gender} avatar: FFMI={ffmi}, BF={bf}%...')
                     
                     try:
                         # Generate mesh

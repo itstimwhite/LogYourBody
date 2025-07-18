@@ -247,7 +247,7 @@ class AvatarGenerator:
                 filename = f'{gender[0]}_bf{bf}.png'
                 filepath = os.path.join(OUTPUT_DIR, filename)
                 
-                print(f'Generating {gender} avatar: BF={bf}%...')
+                logger.info(f'Generating {gender} avatar: BF={bf}%...')
                 
                 try:
                     # Generate mesh

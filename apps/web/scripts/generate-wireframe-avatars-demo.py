@@ -158,7 +158,7 @@ class WireframeAvatarGenerator:
                     filename = f'{gender}_ffmi{str(ffmi).replace(".", "_")}_bf{bf}.png'
                     filepath = os.path.join(ffmi_dir, filename)
                     
-                    print(f'Generating {gender} avatar: FFMI={ffmi}, BF={bf}%...')
+                    logger.info(f'Generating {gender} avatar: FFMI={ffmi}, BF={bf}%...')
                     
                     # Generate and save avatar
                     avatar = self.generate_avatar(gender, bf, ffmi)
