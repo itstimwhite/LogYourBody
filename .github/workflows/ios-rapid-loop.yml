@@ -130,7 +130,8 @@ jobs:
     - name: Setup App Store Connect API Key
       run: |
         cd apps/ios
-        echo "${{ secrets.ASC_API_KEY_JSON }}" > app_store_connect_api_key.json
+        # Use printf to avoid issues with special characters
+        printf '%s' '${{ secrets.ASC_API_KEY_JSON }}' > app_store_connect_api_key.json
         echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
     
     - name: Update version and build number
