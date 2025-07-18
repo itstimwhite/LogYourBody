@@ -160,6 +160,10 @@ jobs:
         echo "This is an automated alpha build from the dev branch." >> release_notes.txt
         echo "For internal testing only." >> release_notes.txt
         
+        # Ensure we're in the right directory for Fastlane
+        pwd
+        ls -la
+        
         # Use Fastlane to build and upload
         bundle exec fastlane alpha \
           release_notes_file:release_notes.txt

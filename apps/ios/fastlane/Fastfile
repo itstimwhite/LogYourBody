@@ -22,7 +22,7 @@ platform :ios do
   
   # Define workspace and scheme
   scheme = "LogYourBody"
-  project = "./LogYourBody.xcodeproj"
+  project = "LogYourBody.xcodeproj"
   
   before_all do
     # Ensure we're in the right directory
