@@ -193,7 +193,72 @@ platform :ios do
     )
   end
 
-  desc "Deploy to App Store"
+  desc "Build for release (archive only)"
+  lane :build_release do
+    build_app(
+      project: project,
+      scheme: scheme,
+      configuration: "Release",
+      export_method: "app-store",
+      export_options: {
+        provisioningProfiles: {
+          "com.logyourbody.app" => ENV["IOS_PROVISIONING_PROFILE_NAME"]
+        }
+      },
+      output_directory: "build",
+      output_name: "LogYourBody"
+    )
+  end
+
+  desc "Upload existing IPA to TestFlight"
+  lane :upload_testflight do |options|
+    # Set up App Store Connect API key if available
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+      app_store_connect_api_key(
+        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        duration: 1200, # 20 minutes
+        in_house: false
+      )
+    end
+    
+    # Upload IPA
+    upload_to_testflight(
+      ipa: options[:ipa_path],
+      skip_waiting_for_build_processing: true,
+      apple_id: ENV["APP_STORE_APP_ID"],
+      team_id: ENV["APPLE_TEAM_ID"],
+      groups: options[:groups] ? options[:groups].split(",") : ["Beta Testers"],
+      changelog: options[:changelog_file] ? File.read(options[:changelog_file]) : "New build",
+      distribute_external: true
+    )
+  end
+
+  desc "Submit existing IPA to App Store"
+  lane :submit_app_store do |options|
+    # Set up App Store Connect API key if available
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+      app_store_connect_api_key(
+        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        duration: 1200, # 20 minutes
+        in_house: false
+      )
+    end
+    
+    # Upload to App Store Connect
+    upload_to_app_store(
+      ipa: options[:ipa_path],
+      force: true,
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: options[:submit_for_review] || false,
+      automatic_release: options[:automatic_release] || false,
+      phased_release: options[:phased_release] || false,
+      apple_id: ENV["APP_STORE_APP_ID"],
+      team_id: ENV["APPLE_TEAM_ID"]
+    )
+  end
+
+  desc "Deploy to App Store (build + upload)"
   lane :release do
     # Ensure we have a clean state
     clean_build_artifacts
