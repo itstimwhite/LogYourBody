@@ -9,6 +9,9 @@
 # If you want to automatically update fastlane if a new version is available:
 # update_fastlane
 
+require 'tempfile'
+require 'json'
+
 # This is the minimum version number required.
 # Update this, if you use features of a newer version
 fastlane_version "2.219.0"
@@ -76,12 +79,24 @@ platform :ios do
     clean_build_artifacts
     
     # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_PATH"])
+      require 'json'
+      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_PATH"]))
+      
+      # Create a temporary file with just the key content
+      key_file = Tempfile.new(['asc_key', '.p8'])
+      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
+      key_file.close
+      
       app_store_connect_api_key(
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        key_id: api_key_data['key_id'],
+        issuer_id: api_key_data['issuer_id'],
+        key_filepath: key_file.path,
         duration: 1200, # 20 minutes
-        in_house: false
+        in_house: api_key_data['in_house'] || false
       )
+      
+      # Clean up temp file will happen automatically
     end
     
     # Build number should be passed in
@@ -135,12 +150,24 @@ platform :ios do
     clean_build_artifacts
     
     # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_PATH"])
+      require 'json'
+      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_PATH"]))
+      
+      # Create a temporary file with just the key content
+      key_file = Tempfile.new(['asc_key', '.p8'])
+      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
+      key_file.close
+      
       app_store_connect_api_key(
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        key_id: api_key_data['key_id'],
+        issuer_id: api_key_data['issuer_id'],
+        key_filepath: key_file.path,
         duration: 1200, # 20 minutes
-        in_house: false
+        in_house: api_key_data['in_house'] || false
       )
+      
+      # Clean up temp file will happen automatically
     end
     
     # Increment build number
@@ -213,12 +240,24 @@ platform :ios do
   desc "Upload existing IPA to TestFlight"
   lane :upload_testflight do |options|
     # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_PATH"])
+      require 'json'
+      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_PATH"]))
+      
+      # Create a temporary file with just the key content
+      key_file = Tempfile.new(['asc_key', '.p8'])
+      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
+      key_file.close
+      
       app_store_connect_api_key(
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        key_id: api_key_data['key_id'],
+        issuer_id: api_key_data['issuer_id'],
+        key_filepath: key_file.path,
         duration: 1200, # 20 minutes
-        in_house: false
+        in_house: api_key_data['in_house'] || false
       )
+      
+      # Clean up temp file will happen automatically
     end
     
     # Upload IPA
@@ -236,12 +275,24 @@ platform :ios do
   desc "Submit existing IPA to App Store"
   lane :submit_app_store do |options|
     # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_PATH"])
+      require 'json'
+      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_PATH"]))
+      
+      # Create a temporary file with just the key content
+      key_file = Tempfile.new(['asc_key', '.p8'])
+      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
+      key_file.close
+      
       app_store_connect_api_key(
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        key_id: api_key_data['key_id'],
+        issuer_id: api_key_data['issuer_id'],
+        key_filepath: key_file.path,
         duration: 1200, # 20 minutes
-        in_house: false
+        in_house: api_key_data['in_house'] || false
       )
+      
+      # Clean up temp file will happen automatically
     end
     
     # Upload to App Store Connect
@@ -264,12 +315,24 @@ platform :ios do
     clean_build_artifacts
     
     # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+    if ENV["APP_STORE_CONNECT_API_KEY_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_PATH"])
+      require 'json'
+      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_PATH"]))
+      
+      # Create a temporary file with just the key content
+      key_file = Tempfile.new(['asc_key', '.p8'])
+      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
+      key_file.close
+      
       app_store_connect_api_key(
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        key_id: api_key_data['key_id'],
+        issuer_id: api_key_data['issuer_id'],
+        key_filepath: key_file.path,
         duration: 1200, # 20 minutes
-        in_house: false
+        in_house: api_key_data['in_house'] || false
       )
+      
+      # Clean up temp file will happen automatically
     end
     
     # Build the app
