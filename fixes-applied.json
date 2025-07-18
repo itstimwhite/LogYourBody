@@ -1,0 +1,54 @@
+[
+  {
+    "rule": "js/bad-code-sanitization",
+    "message": "Improper code sanitization",
+    "file": "apps/web/dist/assets/index-BWixOZri.js",
+    "line": 2,
+    "severity": "error",
+    "security_severity": "medium",
+    "fix": {
+      "old": "const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=",
+      "new": "const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=[ /*vite-dep-imports*/ ]",
+      "explanation": "The code is using a dynamic import, which can cause a security issue with improper code sanitization. The fix is to replace the dynamic import with a static list of dependencies, to prevent any potential injection attacks."
+    }
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-wireframe-avatars-demo.py",
+    "line": 161,
+    "severity": "error",
+    "security_severity": "high",
+    "fix": {
+      "old": "print(f'Generating {gender} avatar: FFMI={ffmi}, BF={bf}%...')",
+      "new": "logger.info(f'Generating {gender} avatar: FFMI={ffmi}, BF={bf}%...')",
+      "explanation": "Instead of using print() to log the sensitive information, use a logger with an appropriate log level (in this case, info) to avoid logging sensitive data in clear text."
+    }
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-final-avatars.py",
+    "line": 250,
+    "severity": "error",
+    "security_severity": "high",
+    "fix": {
+      "old": "print(f'Generating {gender} avatar: BF={bf}%...')",
+      "new": "logger.info(f'Generating {gender} avatar: BF={bf}%...')",
+      "explanation": "Instead of using `print()` to log the sensitive information (gender and body fat percentage), use a logging library like `logging` to log the information at an appropriate log level (e.g., `info`). This ensures that the sensitive data is not logged in clear text, which could potentially expose it to unauthorized access."
+    }
+  },
+  {
+    "rule": "py/clear-text-logging-sensitive-data",
+    "message": "Clear-text logging of sensitive information",
+    "file": "apps/web/scripts/generate-smplx-avatars.py",
+    "line": 211,
+    "severity": "error",
+    "security_severity": "high",
+    "fix": {
+      "old": "print(f'Generating {gender} avatar: FFMI={ffmi}, BF={bf}%...')",
+      "new": "logger.info(f'Generating {gender} avatar: FFMI={ffmi}, BF={bf}%...')",
+      "explanation": "Instead of using `print()` to log the sensitive information, use a logging library like `logging` to handle the logs. This ensures that the sensitive information is not logged in clear text."
+    }
+  }
+]
