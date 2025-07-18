@@ -40,11 +40,11 @@ jobs:
         LINT_PID=$!
         
         # Type check (parallel)
-        npm run type-check &
+        npm run typecheck &
         TYPE_PID=$!
         
         # Unit tests (smoke tests only)
-        npm run test:unit -- --testPathPattern="(auth|api|utils)" --maxWorkers=4 &
+        npm run test -- --testPathPattern="(auth|api|utils)" --maxWorkers=4 &
         TEST_PID=$!
         
         # Wait for all parallel jobs
