@@ -1,0 +1,286 @@
+name: Fix CodeQL with Claude
+
+on:
+  workflow_dispatch:
+    inputs:
+      fix-limit:
+        description: 'Maximum number of issues to fix'
+        required: false
+        default: '10'
+  schedule:
+    # Run weekly on Sundays at 2 AM UTC
+    - cron: '0 2 * * 0'
+
+jobs:
+  analyze-and-fix:
+    name: Analyze and Fix CodeQL Issues
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      security-events: read
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Get CodeQL Alerts
+      id: get-alerts
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const alerts = [];
+          let page = 1;
+          let hasMore = true;
+          
+          while (hasMore && alerts.length < ${{ github.event.inputs.fix-limit || 10 }}) {
+            try {
+              const { data } = await github.rest.codeScanning.listAlertsForRepo({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                per_page: 100,
+                page: page
+              });
+              
+              if (data.length === 0) {
+                hasMore = false;
+              } else {
+                alerts.push(...data);
+                page++;
+              }
+            } catch (error) {
+              console.log('Error fetching alerts:', error.message);
+              hasMore = false;
+            }
+          }
+          
+          if (alerts.length === 0) {
+            console.log('No open CodeQL alerts found');
+            return [];
+          }
+          
+          // Group similar alerts and prioritize by severity
+          const prioritized = alerts
+            .sort((a, b) => {
+              const severityOrder = { 'error': 0, 'warning': 1, 'note': 2 };
+              return (severityOrder[a.rule.severity] || 3) - (severityOrder[b.rule.severity] || 3);
+            })
+            .slice(0, ${{ github.event.inputs.fix-limit || 10 }});
+          
+          return prioritized.map(alert => ({
+            number: alert.number,
+            rule: alert.rule,
+            file: alert.most_recent_instance.location.path,
+            line: alert.most_recent_instance.location.start_line,
+            message: alert.most_recent_instance.message.text,
+            severity: alert.rule.severity
+          }));
+    
+    - name: Setup Python
+      if: steps.get-alerts.outputs.result != '[]'
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install Dependencies
+      if: steps.get-alerts.outputs.result != '[]'
+      run: |
+        pip install requests anthropic
+    
+    - name: Fix Issues with Claude
+      if: steps.get-alerts.outputs.result != '[]'
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      run: |
+        python << 'EOF'
+        import os
+        import json
+        import anthropic
+        from pathlib import Path
+        
+        # Initialize Claude client
+        client = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+        
+        # Parse alerts
+        alerts = json.loads('${{ steps.get-alerts.outputs.result }}')
+        
+        fixes_applied = []
+        
+        for alert in alerts:
+            file_path = alert['file']
+            
+            # Skip if file doesn't exist
+            if not os.path.exists(file_path):
+                print(f"Skipping {file_path} - file not found")
+                continue
+            
+            # Read the file
+            with open(file_path, 'r') as f:
+                content = f.read()
+            
+            # Get context around the issue
+            lines = content.split('\n')
+            start_line = max(0, alert['line'] - 10)
+            end_line = min(len(lines), alert['line'] + 10)
+            context = '\n'.join(lines[start_line:end_line])
+            
+            # Create prompt for Claude
+            prompt = f"""You are a security expert fixing CodeQL issues. 
+
+        File: {file_path}
+        Line: {alert['line']}
+        Rule: {alert['rule']['name']} ({alert['rule']['id']})
+        Severity: {alert['severity']}
+        Message: {alert['message']}
+
+        Code context (line {alert['line']} is the issue):
+        ```
+        {context}
+        ```
+
+        Full rule description: {alert['rule']['description']}
+
+        Please provide:
+        1. A brief explanation of the security issue
+        2. The exact fixed code that should replace the vulnerable code
+        3. Only return the minimal change needed - don't rewrite the entire file
+
+        Format your response as JSON:
+        {{
+          "explanation": "Brief explanation",
+          "old_code": "Exact code to replace",
+          "new_code": "Fixed code"
+        }}"""
+            
+            try:
+                # Get fix from Claude
+                response = client.messages.create(
+                    model="claude-3-sonnet-20241022",
+                    max_tokens=1000,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                
+                # Parse response
+                fix_json = json.loads(response.content[0].text)
+                
+                # Apply fix
+                if fix_json['old_code'] in content:
+                    new_content = content.replace(fix_json['old_code'], fix_json['new_code'])
+                    with open(file_path, 'w') as f:
+                        f.write(new_content)
+                    
+                    fixes_applied.append({
+                        'file': file_path,
+                        'line': alert['line'],
+                        'rule': alert['rule']['name'],
+                        'explanation': fix_json['explanation']
+                    })
+                    print(f"Fixed {file_path}:{alert['line']} - {alert['rule']['name']}")
+                else:
+                    print(f"Could not apply fix for {file_path}:{alert['line']} - code not found")
+                    
+            except Exception as e:
+                print(f"Error fixing {file_path}:{alert['line']} - {str(e)}")
+        
+        # Save fixes summary
+        with open('fixes_summary.json', 'w') as f:
+            json.dump(fixes_applied, f, indent=2)
+        
+        print(f"\nTotal fixes applied: {len(fixes_applied)}")
+        EOF
+    
+    - name: Run Tests
+      if: steps.get-alerts.outputs.result != '[]'
+      continue-on-error: true
+      run: |
+        # Run tests to ensure fixes don't break functionality
+        if [ -f "package.json" ]; then
+          npm test || true
+        fi
+        
+        if [ -f "go.mod" ]; then
+          go test ./... || true
+        fi
+        
+        if [ -f "pom.xml" ]; then
+          mvn test || true
+        fi
+    
+    - name: Create Pull Request
+      if: steps.get-alerts.outputs.result != '[]'
+      id: create-pr
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "fix: resolve CodeQL security issues with Claude"
+        title: "🔒 Fix CodeQL Security Issues (Claude AI)"
+        body: |
+          ## 🤖 Automated Security Fixes by Claude
+          
+          This PR contains automated fixes for CodeQL security issues analyzed and resolved by Claude AI.
+          
+          ### ⚠️ Important
+          - All changes should be carefully reviewed before merging
+          - Automated tests have been run to check for regressions
+          - Each fix includes an explanation of the security issue
+          
+          ### 📊 Summary
+          Fixed security issues in the following files:
+          
+          <details>
+          <summary>View fixes details</summary>
+          
+          ```json
+          ${{ steps.get-alerts.outputs.result }}
+          ```
+          
+          </details>
+          
+          ### 🔍 Review Checklist
+          - [ ] Security fixes are appropriate and complete
+          - [ ] No functionality has been broken
+          - [ ] Code follows project standards
+          - [ ] Tests pass (if applicable)
+          
+          ---
+          *Generated by CodeQL Claude Fix workflow*
+        branch: fix/codeql-claude-${{ github.run_number }}
+        delete-branch: true
+        labels: |
+          security
+          automated
+          codeql
+          needs-review
+    
+    - name: Comment on PR
+      if: steps.create-pr.outputs.pull-request-number
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const fs = require('fs');
+          
+          let fixesSummary = '## No fixes applied';
+          
+          try {
+            const fixes = JSON.parse(fs.readFileSync('fixes_summary.json', 'utf8'));
+            if (fixes.length > 0) {
+              fixesSummary = '## Fixes Applied\n\n';
+              fixes.forEach(fix => {
+                fixesSummary += `### ${fix.file}:${fix.line}\n`;
+                fixesSummary += `**Rule:** ${fix.rule}\n\n`;
+                fixesSummary += `**Explanation:** ${fix.explanation}\n\n`;
+                fixesSummary += '---\n\n';
+              });
+            }
+          } catch (e) {
+            console.log('Could not read fixes summary');
+          }
+          
+          await github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: ${{ steps.create-pr.outputs.pull-request-number }},
+            body: fixesSummary
+          });

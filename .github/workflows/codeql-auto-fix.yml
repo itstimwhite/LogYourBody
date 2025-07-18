@@ -1,0 +1,210 @@
+name: Auto-Fix CodeQL Issues
+
+on:
+  workflow_dispatch:
+  # Run after CodeQL analysis completes
+  workflow_run:
+    workflows: ["CodeQL Analysis"]
+    types:
+      - completed
+    branches: [dev, main]
+
+permissions:
+  contents: write
+  pull-requests: write
+  security-events: read
+
+jobs:
+  auto-fix:
+    name: Auto Fix Security Issues
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install anthropic requests
+    
+    - name: Download CodeQL Results
+      uses: actions/github-script@v7
+      id: download-sarif
+      with:
+        script: |
+          const fs = require('fs');
+          
+          // Get the latest CodeQL results
+          const { data: analyses } = await github.rest.codeScanning.listRecentAnalyses({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tool_name: 'CodeQL',
+            per_page: 1
+          });
+          
+          if (analyses.length === 0) {
+            console.log('No CodeQL analyses found');
+            return false;
+          }
+          
+          const latestAnalysis = analyses[0];
+          console.log(`Found analysis: ${latestAnalysis.id} from ${latestAnalysis.created_at}`);
+          
+          // Get alerts from this analysis
+          const { data: alerts } = await github.rest.codeScanning.listAlertsForRepo({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            state: 'open',
+            per_page: 100
+          });
+          
+          // Convert to our format
+          const issues = alerts.map(alert => ({
+            rule: alert.rule.id,
+            message: alert.rule.description,
+            file: alert.most_recent_instance.location.path,
+            line: alert.most_recent_instance.location.start_line,
+            severity: alert.rule.severity,
+            security_severity: alert.rule.security_severity_level
+          }));
+          
+          // Save as JSON for our script
+          fs.writeFileSync('codeql-alerts.json', JSON.stringify(issues, null, 2));
+          
+          return issues.length > 0;
+    
+    - name: Run Auto-Fix Script
+      if: steps.download-sarif.outputs.result == 'true'
+      env:
+        ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      run: |
+        # Create a simple fix script
+        cat > fix_codeql.py << 'EOF'
+        import os
+        import json
+        import anthropic
+        
+        # Load alerts
+        with open('codeql-alerts.json', 'r') as f:
+            alerts = json.load(f)
+        
+        # Filter to high severity issues only
+        high_severity = [a for a in alerts if a.get('security_severity') in ['critical', 'high'] or a.get('severity') == 'error']
+        
+        if not high_severity:
+            print("No high severity issues to fix")
+            exit(0)
+        
+        print(f"Found {len(high_severity)} high severity issues")
+        
+        # Initialize Claude
+        client = anthropic.Anthropic(api_key=os.environ['ANTHROPIC_API_KEY'])
+        
+        fixes = []
+        
+        for alert in high_severity[:5]:  # Limit to 5 fixes per run
+            print(f"\nProcessing {alert['file']}:{alert['line']} - {alert['rule']}")
+            
+            # Read file
+            try:
+                with open(alert['file'], 'r') as f:
+                    lines = f.readlines()
+                
+                # Get context
+                start = max(0, alert['line'] - 10)
+                end = min(len(lines), alert['line'] + 10)
+                context = ''.join(lines[start:end])
+                
+                # Ask Claude for fix
+                prompt = f"""Fix this security issue:
+        Rule: {alert['rule']}
+        File: {alert['file']}
+        Line: {alert['line']}
+        Issue: {alert['message']}
+        
+        Code context:
+        ```
+        {context}
+        ```
+        
+        Provide a minimal fix. Return JSON: {{"old": "exact text to replace", "new": "replacement text", "explanation": "why"}}"""
+                
+                response = client.messages.create(
+                    model="claude-3-haiku-20240307",
+                    max_tokens=500,
+                    messages=[{"role": "user", "content": prompt}]
+                )
+                
+                # Parse response
+                import re
+                json_match = re.search(r'\{.*\}', response.content[0].text, re.DOTALL)
+                if json_match:
+                    fix = json.loads(json_match.group())
+                    
+                    # Apply fix
+                    content = ''.join(lines)
+                    if fix['old'] in content:
+                        new_content = content.replace(fix['old'], fix['new'], 1)
+                        with open(alert['file'], 'w') as f:
+                            f.write(new_content)
+                        print(f"✓ Fixed: {fix['explanation']}")
+                        fixes.append({**alert, 'fix': fix})
+                    else:
+                        print("✗ Could not find code to replace")
+                        
+            except Exception as e:
+                print(f"✗ Error: {str(e)}")
+        
+        # Save summary
+        with open('fixes-applied.json', 'w') as f:
+            json.dump(fixes, f, indent=2)
+        
+        print(f"\nApplied {len(fixes)} fixes")
+        EOF
+        
+        python fix_codeql.py
+    
+    - name: Create Pull Request
+      if: steps.download-sarif.outputs.result == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: "fix: auto-fix high severity CodeQL issues"
+        title: "🔒 Auto-fix High Severity CodeQL Issues"
+        body: |
+          ## Automated Security Fixes
+          
+          This PR contains automated fixes for high-severity CodeQL security issues.
+          
+          ### ⚠️ Important
+          - Only high/critical severity issues are fixed
+          - All changes must be reviewed before merging
+          - Fixes are minimal and focused on security
+          
+          ### Review Checklist
+          - [ ] Fixes address the security issues appropriately
+          - [ ] No functionality is broken
+          - [ ] Changes follow coding standards
+          
+          <details>
+          <summary>Fixed Issues</summary>
+          
+          See `fixes-applied.json` for details.
+          
+          </details>
+          
+          ---
+          *Automated by CodeQL Auto-Fix workflow using Claude AI*
+        branch: auto-fix/codeql-${{ github.run_number }}
+        delete-branch: true
+        labels: |
+          security
+          automated
+          codeql
