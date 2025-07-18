@@ -49,9 +49,12 @@ yarn-error.log*
 # TypeScript
 *.tsbuildinfo
 
-# Local scripts (optional - uncomment if needed)
-# apps/web/scripts/local/
-# apps/ios/scripts/
+# Local scripts
+apps/web/scripts/
+!apps/web/scripts/seed-database.ts
+!apps/web/scripts/test-seeded-users.ts
+!apps/web/scripts/tsconfig.json
+!apps/web/scripts/README.md
 # Note: Root scripts/ folder contains CI/CD tools and should be committed
 next-env.d.ts
 
