@@ -64,3 +64,4 @@ Last updated: 2025-07-16 - Testing new App Store Connect API authentication
 - Automated TestFlight deployment on preview branch
 - Using App Store Connect API for authentication
 - Parallel test execution for faster CI runs
+- Code signing configured for all environments (2025-07-18)
