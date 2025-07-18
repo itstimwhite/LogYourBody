@@ -122,19 +122,16 @@ jobs:
     - name: Setup App Store Connect API Key
       run: |
         cd apps/ios
-        # Parse the JSON and set individual environment variables
-        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key_id' > /tmp/key_id
-        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.issuer_id' > /tmp/issuer_id
-        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key' > /tmp/api_key.p8
+        # Parse the JSON and set environment variables for Fastlane
+        echo "APP_STORE_CONNECT_API_KEY_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key_id')" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.issuer_id')" >> $GITHUB_ENV
         
-        # Set environment variables for Fastlane
-        echo "APP_STORE_CONNECT_API_KEY_ID=$(cat /tmp/key_id)" >> $GITHUB_ENV
-        echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=$(cat /tmp/issuer_id)" >> $GITHUB_ENV
-        echo "APP_STORE_CONNECT_API_KEY_PATH=/tmp/api_key.p8" >> $GITHUB_ENV
+        # Write the key content to a file and set as environment variable
+        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key' > /tmp/AuthKey.p8
+        echo "APP_STORE_CONNECT_API_KEY=$(cat /tmp/AuthKey.p8)" >> $GITHUB_ENV
         
-        # Also save the full JSON for the Fastfile
-        echo '${{ secrets.ASC_API_KEY_JSON }}' > app_store_connect_api_key.json
-        echo "APP_STORE_CONNECT_API_KEY_JSON_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
+        # Also set the file path in case it's needed
+        echo "APP_STORE_CONNECT_API_KEY_PATH=/tmp/AuthKey.p8" >> $GITHUB_ENV
     
     - name: Update version and build number
       run: |

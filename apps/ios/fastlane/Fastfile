@@ -78,36 +78,12 @@ platform :ios do
     # Ensure we have a clean state
     clean_build_artifacts
     
-    # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
-      # Use environment variables directly
-      app_store_connect_api_key(
-        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
-        duration: 1200, # 20 minutes
-        in_house: false
-      )
-    elsif ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"])
-      # Fallback to JSON parsing
-      require 'json'
-      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"]))
-      
-      # Create a temporary file with just the key content
-      key_file = Tempfile.new(['asc_key', '.p8'])
-      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
-      key_file.close
-      
-      app_store_connect_api_key(
-        key_id: api_key_data['key_id'],
-        issuer_id: api_key_data['issuer_id'],
-        key_filepath: key_file.path,
-        duration: 1200, # 20 minutes
-        in_house: api_key_data['in_house'] || false
-      )
-      
-      # Clean up temp file will happen automatically
-    end
+    # Skip app_store_connect_api_key due to OpenSSL curve issue
+    # Fastlane will use these environment variables automatically:
+    # FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD
+    # APP_STORE_CONNECT_API_KEY_ID
+    # APP_STORE_CONNECT_API_KEY_ISSUER_ID
+    # APP_STORE_CONNECT_API_KEY
     
     # Build number should be passed in
     if options[:build_number]
