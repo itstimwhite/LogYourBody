@@ -1,0 +1,118 @@
+# AI Issue Triage Configuration
+# This file configures how issues are triaged to different AI tools
+
+tools:
+  sweep:
+    description: "Best for code refactoring, cleanup, and maintenance tasks"
+    label: "ai:sweep"
+    keywords:
+      - refactor
+      - cleanup
+      - organize
+      - rename
+      - move
+      - extract
+      - simplify
+      - optimize performance
+      - remove duplicate
+      - update dependencies
+      - improve readability
+      - code style
+      - formatting
+    patterns:
+      - "make.*more.*readable"
+      - "improve.*code.*quality"
+      - "follow.*best.*practices"
+      - "add.*tests.*for"
+      - "update.*documentation"
+      - "split.*into.*smaller"
+      - "extract.*method"
+    examples:
+      - "Refactor the authentication module to use dependency injection"
+      - "Clean up unused imports across the codebase"
+      - "Add unit tests for the payment service"
+  
+  copilot:
+    description: "Best for implementing new features and generating code"
+    label: "ai:copilot"
+    keywords:
+      - implement
+      - create
+      - add feature
+      - build
+      - generate
+      - new component
+      - api endpoint
+      - integrate
+      - develop
+      - scaffold
+    patterns:
+      - "create.*new.*(?:component|service|function|module)"
+      - "implement.*(?:feature|functionality)"
+      - "add.*support.*for"
+      - "generate.*code.*for"
+      - "build.*(?:api|interface|ui)"
+      - "integrate.*with"
+    examples:
+      - "Implement user profile editing feature"
+      - "Create REST API endpoints for inventory management"
+      - "Add OAuth integration with Google"
+  
+  claude:
+    description: "Best for complex debugging, architectural decisions, and deep analysis"
+    label: "ai:claude"
+    keywords:
+      - debug
+      - fix bug
+      - analyze
+      - investigate
+      - architecture
+      - design
+      - complex
+      - performance issue
+      - security
+      - explain
+      - troubleshoot
+      - race condition
+      - memory leak
+    patterns:
+      - "(?:debug|fix).*(?:error|bug|issue|crash)"
+      - "analyze.*(?:performance|security|architecture)"
+      - "investigate.*(?:problem|issue|behavior)"
+      - "design.*(?:system|architecture|solution)"
+      - "explain.*(?:how|why).*works"
+      - "troubleshoot.*(?:issue|problem)"
+      - "optimize.*(?:performance|memory|database)"
+    examples:
+      - "Debug intermittent connection timeout in production"
+      - "Analyze and fix memory leak in image processing service"
+      - "Design scalable architecture for real-time notifications"
+
+# Scoring weights
+scoring:
+  keyword_match: 2
+  pattern_match: 3
+  title_weight: 1.5  # Keywords in title are weighted higher
+  complexity_threshold: 500  # Issues longer than this get bonus points for Claude
+  
+# Additional rules
+rules:
+  - condition: "contains_error_logs"
+    action: "add_points"
+    tool: "claude"
+    points: 3
+  
+  - condition: "mentions_tests"
+    action: "add_points"
+    tool: "sweep"
+    points: 2
+  
+  - condition: "has_code_snippet"
+    action: "add_points"
+    tool: "claude"
+    points: 1
+  
+  - condition: "mentions_ui_ux"
+    action: "add_points"
+    tool: "copilot"
+    points: 2

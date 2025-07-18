@@ -6,6 +6,15 @@ A comprehensive body metrics tracking platform with native iOS and web applicati
 
 LogYourBody helps users track their body composition changes over time through manual logging and automated data imports from DEXA scans, InBody analyses, and other body composition measurement devices.
 
+## AI Issue Triage
+
+This repository uses an intelligent AI-powered issue triage system. When you create a new issue, it will automatically:
+- Analyze the content and recommend the best AI tool (Sweep, Copilot, or Claude)
+- Add appropriate labels
+- Comment with instructions
+
+[Learn more about AI triage →](docs/ai-issue-triage.md)
+
 ## Project Structure
 
 This monorepo contains two main applications:
