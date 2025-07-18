@@ -1,16 +1,16 @@
-name: iOS CI
+name: iOS Confidence Loop
 
 on:
   push:
-    branches: [main, preview, dev]
+    branches: [preview]
     paths:
       - 'apps/ios/**'
-      - '.github/workflows/ios-ci.yml'
-  pull_request:
-    branches: [main, preview, dev]
-    paths:
-      - 'apps/ios/**'
-      - '.github/workflows/ios-ci.yml'
+      - '.github/workflows/ios-confidence-loop.yml'
+  schedule:
+    # Run at 2 AM PT (9 AM UTC)
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+  workflow_call:
 
 jobs:
   # Setup job that prepares dependencies for other jobs
@@ -105,7 +105,7 @@ jobs:
   build:
     needs: setup
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
     - uses: actions/checkout@v4
     
@@ -166,11 +166,11 @@ jobs:
           -parallel-testing-worker-count $WORKERS \
           -quiet | xcbeautify --renderer github-actions
 
-  # Normal test job
+  # Full UI and integration tests
   test:
     needs: [setup, build]
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
     - uses: actions/checkout@v4
     
@@ -243,7 +243,7 @@ jobs:
   test-sanitizers:
     needs: [setup, build]
     runs-on: macos-latest
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
     - uses: actions/checkout@v4
     
@@ -314,22 +314,186 @@ jobs:
           apps/ios/build/Logs/Test/*.xcresult
         retention-days: 7
 
+  # Snapshot tests for UI regression
+  snapshot-tests:
+    needs: [setup, build]
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.1'
+    
+    - name: Restore Dependencies Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          apps/ios/vendor/bundle
+          /opt/homebrew
+          ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ needs.setup.outputs.cache-key }}
+        restore-keys: |
+          ${{ runner.os }}-ios-
+    
+    - name: Restore Build Artifacts
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/build
+        key: ${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+    
+    - name: Create Config Files
+      run: |
+        cd apps/ios
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+    
+    - name: Run Snapshot Tests
+      run: |
+        cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
+        xcodebuild -project LogYourBody.xcodeproj \
+          -scheme LogYourBody \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -derivedDataPath build \
+          -only-testing:LogYourBodyUITests/SnapshotTests \
+          test-without-building \
+          -quiet | xcbeautify --renderer github-actions
+    
+    - name: Upload snapshot results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-snapshot-results
+        path: |
+          apps/ios/build/Logs/Test/*.xcresult
+          apps/ios/__Snapshots__/
+        retention-days: 7
+
+  # Performance profiling
+  performance-tests:
+    needs: [setup, build]
+    runs-on: macos-latest
+    timeout-minutes: 25
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.1'
+    
+    - name: Restore Dependencies Cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          apps/ios/vendor/bundle
+          /opt/homebrew
+          ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
+          ~/Library/Caches/org.swift.swiftpm
+        key: ${{ needs.setup.outputs.cache-key }}
+        restore-keys: |
+          ${{ runner.os }}-ios-
+    
+    - name: Restore Build Artifacts
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/build
+        key: ${{ runner.os }}-build-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-build-
+    
+    - name: Create Config Files
+      run: |
+        cd apps/ios
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+    
+    - name: Run Performance Tests
+      run: |
+        cd apps/ios
+        # Add homebrew bin to PATH for cached tools
+        export PATH="/opt/homebrew/bin:$PATH"
+        
+        # Run with Time Profiler
+        xcodebuild -project LogYourBody.xcodeproj \
+          -scheme LogYourBody \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -derivedDataPath build \
+          -only-testing:LogYourBodyTests/PerformanceTests \
+          test-without-building \
+          -enablePerformanceTestsDiagnostics YES \
+          -quiet | xcbeautify --renderer github-actions
+    
+    - name: Analyze performance results
+      run: |
+        cd apps/ios
+        echo "📊 Performance Test Results:"
+        # Extract and analyze performance metrics
+        find build/Logs/Test -name "*.xcresult" -exec xcrun xcresulttool get --path {} --format json \; | \
+          jq -r '.metrics.testsMetrics[] | select(.identifier | contains("performance")) | 
+          "\(.identifier): \(.measurements[].value) \(.measurements[].unit)"' || true
+    
+    - name: Upload performance results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-performance-results
+        path: |
+          apps/ios/build/Logs/Test/*.xcresult
+        retention-days: 7
+
   # Status check job that other workflows can depend on
-  ios-ci-status:
+  ios-confidence-status:
     if: always()
-    needs: [lint, build, test, test-sanitizers]
+    needs: [lint, build, test, test-sanitizers, snapshot-tests, performance-tests]
     runs-on: ubuntu-latest
     steps:
     - name: Check all jobs status
       run: |
+        echo "🛡️ iOS Confidence Loop Results:"
+        echo "  Lint: ${{ needs.lint.result }}"
+        echo "  Build: ${{ needs.build.result }}"
+        echo "  Tests: ${{ needs.test.result }}"
+        echo "  Sanitizers: ${{ needs.test-sanitizers.result }}"
+        echo "  Snapshots: ${{ needs.snapshot-tests.result }}"
+        echo "  Performance: ${{ needs.performance-tests.result }}"
+        
+        # Core jobs must pass
         if [[ "${{ needs.lint.result }}" != "success" || 
               "${{ needs.build.result }}" != "success" || 
               "${{ needs.test.result }}" != "success" ]]; then
-          echo "One or more jobs failed"
+          echo "❌ Core jobs failed"
           exit 1
         fi
-        # Sanitizer tests are allowed to fail
-        echo "All required jobs passed successfully"
+        
+        # Optional jobs can fail with warning
+        if [[ "${{ needs.test-sanitizers.result }}" != "success" ]]; then
+          echo "⚠️ Sanitizer tests failed - memory issues detected"
+        fi
+        if [[ "${{ needs.snapshot-tests.result }}" != "success" ]]; then
+          echo "⚠️ Snapshot tests failed - UI regressions detected"
+        fi
+        if [[ "${{ needs.performance-tests.result }}" != "success" ]]; then
+          echo "⚠️ Performance tests failed - performance regressions detected"
+        fi
+        
+        echo "✅ All core jobs passed successfully"
 
   # Deploy to TestFlight from preview branch
   deploy-testflight:

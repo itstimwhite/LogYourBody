@@ -1,148 +1,204 @@
-# GitHub Workflows
+# Three-Loop CI/CD System
 
-This directory contains GitHub Actions workflows for CI/CD automation.
+This repository uses a three-loop CI/CD system designed for rapid feedback, comprehensive testing, and safe production deployments.
 
-## Branch Protection Rules Required
+## Overview
 
-⚠️ **IMPORTANT**: Set up these branch protection rules in GitHub:
-
-1. **All branches (dev, preview, main)**:
-   - ✅ Require status checks to pass before merging
-   - ✅ Require branches to be up to date before merging
-   - **Required status checks**: `build-and-deploy`
-   
-2. **Preview and Main branches**:
-   - ✅ Require pull request reviews before merging
-   - ✅ Dismiss stale pull request approvals when new commits are pushed
-
-This ensures Dependabot PRs must pass tests before auto-merging.
-
-## Active Workflows
-
-### 1. Main CI/CD Pipeline (`main.yml`)
-- **Triggers**: Push to dev/preview/main, PRs
-- **Purpose**: Primary CI/CD for web app
-- **Features**:
-  - Web app linting, testing, and building
-  - Vercel deployments
-  - Database migrations via Supabase
-  - Auto-merge from dev → preview → main
-  - Dependabot PR handling
-- **Environment**: Uses Vercel for deployments
-
-### 2. Deploy to Production (`deploy-production.yml`)
-- **Triggers**: Manual (workflow_dispatch)
-- **Purpose**: Deploy iOS app to App Store
-- **Environment**: production (requires approval)
-- **Inputs**:
-  - Version number
-  - Release notes
-- **Actions**:
-  - Updates version in Info.plist
-  - Builds and uploads to App Store
-  - Creates GitHub release
-
-### 3. Promote Environment (`promote-environment.yml`)
-- **Triggers**: Manual (workflow_dispatch)
-- **Purpose**: Promote code between environments
-- **Valid Paths**:
-  - dev → preview
-  - preview → main
-- **Actions**:
-  - Creates PR for promotion
-  - Validates promotion path
-  - Adds appropriate reviewers
-
-### 4. iOS CI (`ios-ci.yml`)
-- **Triggers**: Push/PR on iOS files
-- **Purpose**: iOS testing and deployment
-- **Features**:
-  - SwiftLint checking
-  - Unit tests
-  - Memory leak detection
-  - TestFlight deployment from preview branch
-- **Environment**: Uses Xcode 15.4 (pinned)
-
-### 5. Dependabot Auto-Merge (`dependabot-auto-merge.yml`)
-- **Triggers**: Dependabot PRs + test completion
-- **Purpose**: Safely automate dependency updates
-- **Actions**:
-  - Wait for tests to pass before merging
-  - Auto-merge only minor and patch updates
-  - Comment on major updates or test failures
-  - Requires branch protection rules
-
-## Deployment Flow
-
-```mermaid
-graph LR
-    A[dev branch] -->|Auto CI| B[Vercel Dev]
-    A -->|Auto-merge| C[preview branch]
-    C -->|Auto CI| D[Vercel Preview]
-    C -->|Manual PR| E[main branch]
-    E -->|Auto CI| F[Vercel Production]
-    E -->|Manual Deploy| G[App Store]
+```
+dev branch → Rapid Loop → Alpha/Preview Deployments (< 5 min)
+    ↓
+preview branch → Confidence Loop → Beta/Staging Deployments (nightly)
+    ↓
+main branch → Release Loop → Production Deployments (manual)
 ```
 
-## Required Secrets
+## 🚀 Rapid Loop (dev branch)
 
-### Repository Secrets
-- `GITHUB_TOKEN` (automatically provided)
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
-- `SUPABASE_DB_URL`
-- `SUPABASE_ACCESS_TOKEN`
-- `SUPABASE_PROJECT_ID`
+**Goal**: Fast feedback for developers  
+**Target Time**: < 5 min for web, < 15 min for iOS  
+**Deployments**: Vercel Alpha, TestFlight Alpha (internal only)
 
-### Environment Secrets (for iOS deployment)
-- `APPLE_ID_EMAIL`
-- `APPLE_ID_PASSWORD`
-- `APPLE_TEAM_ID`
-- `APP_STORE_APP_ID`
-- `IOS_P12_BASE64`
-- `IOS_P12_PASSWORD`
-- `IOS_PROVISIONING_PROFILE_BASE64`
-- `APP_STORE_CONNECT_API_KEY_ID` (production only)
-- `APP_STORE_CONNECT_API_ISSUER_ID` (production only)
-- `APP_STORE_CONNECT_API_KEY_BASE64` (production only)
+### Workflows
+- `web-rapid-loop.yml`: Lint, type-check, unit tests → Vercel deploy
+- `ios-rapid-loop.yml`: SwiftLint, smoke tests → TestFlight Alpha
 
-## Usage Examples
+### Features
+- Runs on every push to dev branch
+- Minimal test suite (smoke tests only)
+- Timestamp + SHA versioning
+- Auto-deploys for immediate testing
 
-### Deploy Web App
-Automatically happens on push to any branch (dev/preview/main).
+## 🛡️ Confidence Loop (preview branch)
 
-### Deploy iOS to TestFlight
-1. Merge code to preview branch
-2. iOS CI runs automatically via Fastlane
-3. TestFlight deployment happens if iOS files changed
+**Goal**: Catch quality issues before release  
+**Schedule**: Nightly at 2 AM PT (9 AM UTC) or on-demand  
+**Deployments**: Vercel Beta, TestFlight Beta (external testers)
 
-### Deploy iOS to App Store
-1. Ensure code is merged to main branch
-2. Go to Actions → Deploy to Production
-3. Click "Run workflow"
-4. Enter version (e.g., "1.2.3")
-5. Enter release notes
-6. Approve deployment in environment settings
+### Workflows
+- `web-confidence-loop.yml`: E2E tests, Lighthouse, accessibility → Vercel Beta
+- `ios-confidence-loop.yml`: Full UI tests, sanitizers, snapshots, performance → TestFlight Beta
 
-### Promote Branches
-1. Go to Actions → Promote Environment
-2. Select source and target branches
-3. Review and merge the created PR
+### Features
+- Comprehensive test suite
+- Performance profiling
+- Memory leak detection (iOS)
+- Visual regression testing
+- Slack notifications on failure
+
+## 🎯 Release Loop (main branch)
+
+**Goal**: Production-ready deployments  
+**Trigger**: Manual PR from preview → main  
+**Deployments**: Vercel Production, App Store
+
+### Workflows
+- `web-release-loop.yml`: Validates preview is green → Production deploy
+- `ios-release-loop.yml`: Builds release → TestFlight/App Store
+
+### Features
+- Requires all preview checks passing
+- Creates GitHub releases and tags
+- Supports phased rollouts
+- Post-deployment validation
+
+## 🔄 Supporting Workflows
+
+### main-orchestrator.yml
+Central dispatcher that:
+- Detects which files changed (web/iOS/docs)
+- Routes to appropriate loop based on branch
+- Provides unified `ci-summary` status check
+
+### promote-preview.yml
+Automatic promotion from dev → preview:
+- Triggers when dev CI passes
+- Creates/updates PR automatically
+- Enables auto-merge when checks pass
+- Mentions @itstimwhite for visibility
+
+### dependabot-auto-merge.yml
+Handles dependency updates:
+- Auto-approves minor/patch updates
+- Requires manual review for major updates
+- Runs security checks before merge
+
+## Branch Protection
+
+All branches use `ci-summary` as the required status check:
+
+- **dev**: No PR reviews (optimized for speed)
+- **preview**: 0 reviews required (enables auto-merge)
+- **main**: 1 review + code owners (production safety)
+
+## Configuration
+
+### Environment Variables
+
+#### Web Deployments
+- `VERCEL_TOKEN`: Vercel authentication
+- `VERCEL_ORG_ID`: Organization ID
+- `VERCEL_PROJECT_ID`: Project ID
+- `{ENV}_SUPABASE_URL`: Supabase URL per environment
+- `{ENV}_SUPABASE_ANON_KEY`: Supabase anon key
+- `{ENV}_CLERK_PUBLISHABLE_KEY`: Clerk public key
+- `{ENV}_CLERK_SECRET_KEY`: Clerk secret key
+
+#### iOS Deployments
+- `IOS_P12_BASE64`: Code signing certificate
+- `IOS_P12_PASSWORD`: Certificate password
+- `IOS_PROVISIONING_PROFILE_BASE64`: Provisioning profile
+- `ASC_API_KEY_JSON`: App Store Connect API key
+- `APPLE_TEAM_ID`: Apple Developer Team ID
+- `APP_STORE_APP_ID`: App Store app identifier
+
+#### Notifications
+- `SLACK_WEBHOOK_URL`: Slack webhook for confidence loop failures
+
+### GitHub Environments
+
+1. **development**: Used for dev branch deployments
+2. **preview**: Used for preview branch deployments
+3. **production**: Used for main branch deployments
+4. **production-testflight**: iOS TestFlight releases
+5. **production-app-store**: iOS App Store releases
+
+## Usage
+
+### Deploying Changes
+
+1. **Development**: Push to `dev` branch
+   - Rapid tests run automatically
+   - Alpha builds deploy within minutes
+
+2. **Staging**: Merge dev → preview (automatic)
+   - Comprehensive tests run nightly
+   - Beta builds available for testing
+
+3. **Production**: Create PR preview → main
+   - Requires manual approval
+   - Deploys same tested artifacts
+
+### Manual Workflows
+
+#### Force iOS Release
+```bash
+gh workflow run ios-release-loop.yml \
+  -f release_type=testflight
+```
+
+#### Run Confidence Tests
+```bash
+gh workflow run web-confidence-loop.yml
+gh workflow run ios-confidence-loop.yml
+```
+
+## Monitoring
+
+### Check Workflow Status
+```bash
+# View recent runs
+gh run list --workflow=main-orchestrator.yml
+
+# Watch specific run
+gh run watch <run-id>
+```
+
+### View Deployments
+- Web Alpha: https://dev-latest.logyourbody.com
+- Web Beta: https://preview.logyourbody.com
+- Web Production: https://logyourbody.com
+- iOS: TestFlight app
 
 ## Troubleshooting
 
-### Workflow Not Running?
-- Check branch protection rules
-- Verify workflow triggers match your branch/event
-- Review Actions tab for disabled workflows
+### Common Issues
 
-### Deployment Failed?
-- Check workflow logs for specific errors
-- Verify all required secrets are set
-- Ensure environment approvals are configured
+1. **Rapid loop timeout**: Increase timeout in workflow or optimize tests
+2. **Confidence loop failures**: Check Slack for detailed error reports
+3. **Auto-merge not working**: Verify branch protection settings
+4. **iOS signing errors**: Check certificate/profile expiration
 
-### Dependabot Not Auto-Merging?
-- Check if update is minor/patch (major updates require manual review)
-- Verify tests are passing
-- Review branch protection rules
+### Debug Commands
+
+```bash
+# Check branch protection
+gh api repos/itstimwhite/LogYourBody/branches/{branch}/protection
+
+# View workflow logs
+gh run view <run-id> --log
+
+# Re-run failed job
+gh run rerun <run-id> --failed
+```
+
+## Best Practices
+
+1. **Keep rapid tests fast**: Only critical smoke tests
+2. **Fix flaky tests**: Don't ignore intermittent failures
+3. **Monitor costs**: GitHub Actions and Vercel usage
+4. **Regular cleanup**: Remove old artifacts and deployments
+5. **Security**: Never commit secrets, use GitHub Secrets
+
+---
+
+For more information, see the individual workflow files or contact the maintainers.

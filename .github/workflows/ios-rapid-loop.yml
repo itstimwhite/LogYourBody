@@ -1,0 +1,196 @@
+name: iOS Rapid Loop
+
+on:
+  push:
+    branches: [dev]
+    paths:
+      - 'apps/ios/**'
+      - '.github/workflows/ios-rapid-loop.yml'
+  workflow_dispatch:
+
+jobs:
+  rapid-checks:
+    name: Rapid Checks
+    runs-on: macos-latest
+    timeout-minutes: 5
+    outputs:
+      short_sha: ${{ steps.build-info.outputs.short_sha }}
+      timestamp: ${{ steps.build-info.outputs.timestamp }}
+      build_number: ${{ steps.build-info.outputs.build_number }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.1'
+    
+    - name: Cache Swift packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          apps/ios/.build
+          ~/Library/Developer/Xcode/DerivedData
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    
+    - name: Generate build info
+      id: build-info
+      run: |
+        SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
+        TIMESTAMP=$(date -u +%Y%m%d%H%M%S)
+        echo "short_sha=$SHORT_SHA" >> $GITHUB_OUTPUT
+        echo "timestamp=$TIMESTAMP" >> $GITHUB_OUTPUT
+        echo "build_number=$TIMESTAMP" >> $GITHUB_OUTPUT
+    
+    - name: Install dependencies
+      run: |
+        cd apps/ios
+        gem install bundler:2.4.10
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
+        
+        # Create placeholder configs
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+    
+    - name: Run SwiftLint
+      run: |
+        cd apps/ios
+        if ! command -v swiftlint &> /dev/null; then
+          brew install swiftlint
+        fi
+        swiftlint lint --strict --reporter github-actions-logging
+    
+    - name: Build and run smoke tests
+      run: |
+        cd apps/ios
+        
+        # Build for testing (fast, debug config)
+        xcodebuild -project LogYourBody.xcodeproj \
+          -scheme LogYourBody \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -configuration Debug \
+          build-for-testing \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          COMPILER_INDEX_STORE_ENABLE=NO \
+          -quiet | xcbeautify --renderer github-actions
+        
+        # Run only smoke tests (core model & view-model tests)
+        xcodebuild -project LogYourBody.xcodeproj \
+          -scheme LogYourBody \
+          -destination 'platform=iOS Simulator,name=iPhone 16' \
+          -only-testing:LogYourBodyTests/CoreTests \
+          -only-testing:LogYourBodyTests/ViewModelTests \
+          test-without-building \
+          -quiet | xcbeautify --renderer github-actions
+
+  deploy-alpha:
+    name: Deploy TestFlight Alpha
+    needs: rapid-checks
+    runs-on: macos-latest
+    timeout-minutes: 10
+    environment:
+      name: dev
+      url: https://testflight.apple.com
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.1'
+    
+    - name: Install dependencies
+      run: |
+        cd apps/ios
+        gem install bundler:2.4.10
+        bundle config path vendor/bundle
+        bundle install --jobs 4 --retry 3
+    
+    - name: Import Code Signing Certificates
+      uses: apple-actions/import-codesign-certs@v5
+      with:
+        p12-file-base64: ${{ secrets.IOS_P12_BASE64 }}
+        p12-password: ${{ secrets.IOS_P12_PASSWORD }}
+    
+    - name: Download Provisioning Profile
+      run: |
+        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision
+    
+    - name: Setup App Store Connect API Key
+      run: |
+        cd apps/ios
+        echo "${{ secrets.ASC_API_KEY_JSON }}" > app_store_connect_api_key.json
+        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
+    
+    - name: Update version and build number
+      run: |
+        cd apps/ios
+        
+        # Use timestamp as build number
+        BUILD_NUMBER="${{ needs.rapid-checks.outputs.build_number }}"
+        /usr/libexec/PlistBuddy -c "Set :CFBundleVersion $BUILD_NUMBER" LogYourBody/Info.plist
+        
+        # Keep marketing version from Info.plist
+        echo "Build number: $BUILD_NUMBER"
+    
+    - name: Build and upload to TestFlight
+      run: |
+        cd apps/ios
+        
+        # Create release notes with timestamp and SHA
+        echo "Alpha Build ${{ needs.rapid-checks.outputs.timestamp }}" > release_notes.txt
+        echo "Commit: ${{ needs.rapid-checks.outputs.short_sha }}" >> release_notes.txt
+        echo "" >> release_notes.txt
+        echo "This is an automated alpha build from the dev branch." >> release_notes.txt
+        echo "For internal testing only." >> release_notes.txt
+        
+        # Use Fastlane to build and upload
+        bundle exec fastlane alpha \
+          release_notes_file:release_notes.txt
+      env:
+        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
+        IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "180"
+        FASTLANE_XCODEBUILD_SETTINGS_RETRIES: "10"
+    
+    - name: Cleanup
+      if: always()
+      run: |
+        cd apps/ios
+        rm -f app_store_connect_api_key.json
+        rm -f release_notes.txt
+    
+    - name: Post deployment status
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const timestamp = '${{ needs.rapid-checks.outputs.timestamp }}';
+          const shortSha = '${{ needs.rapid-checks.outputs.short_sha }}';
+          
+          const body = `📱 **iOS Alpha Deployed to TestFlight!**
+          
+          - **Build**: ${timestamp}
+          - **Commit**: ${shortSha}
+          - **Time**: < 15 minutes ⚡
+          - **TestFlight**: Available for internal testers
+          
+          This is an alpha build for rapid testing. Full tests run nightly on preview.`;
+          
+          github.rest.repos.createCommitComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            commit_sha: context.sha,
+            body: body
+          });

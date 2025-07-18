@@ -1,0 +1,189 @@
+name: Web Confidence Loop
+
+on:
+  push:
+    branches: [preview]
+    paths:
+      - 'apps/web/**'
+      - 'packages/**'
+      - '.github/workflows/web-confidence-loop.yml'
+  schedule:
+    # Run at 2 AM PT (9 AM UTC)
+    - cron: '0 9 * * *'
+  workflow_dispatch:
+  workflow_call:
+
+jobs:
+  comprehensive-tests:
+    name: Comprehensive Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Install Playwright browsers
+      run: npx playwright install --with-deps chromium
+    
+    - name: Run comprehensive test suite
+      run: |
+        echo "🛡️ Running confidence loop tests..."
+        
+        # Run all tests in parallel
+        npm run lint &
+        LINT_PID=$!
+        
+        npm run typecheck &
+        TYPE_PID=$!
+        
+        npm run test:unit -- --coverage &
+        UNIT_PID=$!
+        
+        # Wait for quick checks to complete
+        wait $LINT_PID || (echo "❌ Lint failed" && exit 1)
+        wait $TYPE_PID || (echo "❌ Type check failed" && exit 1)
+        wait $UNIT_PID || (echo "❌ Unit tests failed" && exit 1)
+        
+        echo "✅ Quick checks passed"
+    
+    - name: Build application
+      run: |
+        npm run build
+        echo "✅ Build successful"
+    
+    - name: Run E2E tests
+      run: |
+        # Start the app in the background
+        npm run start &
+        SERVER_PID=$!
+        
+        # Wait for server to be ready
+        npx wait-on http://localhost:3000 -t 30000
+        
+        # Run E2E tests
+        npm run test:e2e
+        
+        # Stop the server
+        kill $SERVER_PID
+    
+    - name: Performance analysis
+      run: |
+        # Bundle size analysis
+        npm run analyze:bundle || true
+        
+        # Check for performance regressions
+        echo "📊 Bundle Analysis:"
+        if [ -f ".next/analyze/client.html" ]; then
+          echo "Client bundle analysis available"
+        fi
+    
+    - name: Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v11
+      with:
+        urls: |
+          http://localhost:3000
+          http://localhost:3000/dashboard
+          http://localhost:3000/settings
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+    
+    - name: Accessibility tests
+      run: |
+        # Run accessibility tests
+        npm run test:a11y || echo "⚠️ Accessibility issues found"
+    
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: confidence-test-results
+        path: |
+          coverage/
+          playwright-report/
+          .lighthouseci/
+          .next/analyze/
+        retention-days: 7
+
+  deploy-beta:
+    name: Deploy to Vercel Beta
+    needs: comprehensive-tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: preview
+      url: ${{ steps.deploy.outputs.url }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Vercel CLI
+      run: npm install --global vercel@latest
+    
+    - name: Pull Vercel Environment
+      run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+    
+    - name: Build Project
+      run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      env:
+        NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.PREVIEW_SUPABASE_URL }}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PREVIEW_SUPABASE_ANON_KEY }}
+        NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.PREVIEW_CLERK_PUBLISHABLE_KEY }}
+        CLERK_SECRET_KEY: ${{ secrets.PREVIEW_CLERK_SECRET_KEY }}
+        NEXT_PUBLIC_API_URL: ${{ vars.PREVIEW_API_URL }}
+    
+    - name: Deploy to Vercel
+      id: deploy
+      run: |
+        DEPLOYMENT_URL=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+        echo "url=$DEPLOYMENT_URL" >> $GITHUB_OUTPUT
+        
+        # Set beta alias
+        vercel alias set $DEPLOYMENT_URL preview.logyourbody.com --token=${{ secrets.VERCEL_TOKEN }}
+        
+        echo "✅ Deployed to: $DEPLOYMENT_URL"
+        echo "✅ Beta URL: https://preview.logyourbody.com"
+    
+    - name: Run smoke tests on deployment
+      run: |
+        # Wait for deployment to be ready
+        npx wait-on ${{ steps.deploy.outputs.url }} -t 60000
+        
+        # Run basic smoke tests against deployed URL
+        DEPLOYMENT_URL=${{ steps.deploy.outputs.url }} npm run test:smoke
+    
+    - name: Notify deployment
+      if: github.event_name == 'schedule'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const url = '${{ steps.deploy.outputs.url }}';
+          const date = new Date().toISOString();
+          
+          // Create deployment record
+          const deployment = await github.rest.repos.createDeployment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: context.sha,
+            environment: 'preview',
+            description: 'Nightly confidence deployment',
+            auto_merge: false,
+            required_contexts: []
+          });
+          
+          await github.rest.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: deployment.data.id,
+            state: 'success',
+            environment_url: url,
+            description: 'Deployed to Vercel Beta'
+          });
