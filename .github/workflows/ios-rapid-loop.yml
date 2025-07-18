@@ -101,6 +101,14 @@ jobs:
       with:
         xcode-version: '16.1'
     
+    - name: Cache Ruby dependencies
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+    
     - name: Install dependencies
       run: |
         cd apps/ios
@@ -126,12 +134,9 @@ jobs:
         echo "APP_STORE_CONNECT_API_KEY_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key_id')" >> $GITHUB_ENV
         echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.issuer_id')" >> $GITHUB_ENV
         
-        # Write the key content to a file and set as environment variable
-        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key' > /tmp/AuthKey.p8
-        echo "APP_STORE_CONNECT_API_KEY=$(cat /tmp/AuthKey.p8)" >> $GITHUB_ENV
-        
-        # Also set the file path in case it's needed
-        echo "APP_STORE_CONNECT_API_KEY_PATH=/tmp/AuthKey.p8" >> $GITHUB_ENV
+        # Write the key content to a file (Fastlane will read from here)
+        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key' > /tmp/AuthKey_A76CPV6UUL.p8
+        echo "APP_STORE_CONNECT_API_KEY_PATH=/tmp/AuthKey_A76CPV6UUL.p8" >> $GITHUB_ENV
     
     - name: Update version and build number
       run: |
