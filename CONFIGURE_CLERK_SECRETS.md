@@ -1,8 +1,12 @@
 # Configure Clerk Secrets for CI/CD
 
+## Important: Environment-Based Secrets
+
+Your workflows use GitHub environments (dev, preview, production), so secrets must be added to **each environment** separately, not to the repository level.
+
 ## Required Secrets
 
-The following secrets need to be added to your GitHub repository:
+The following secrets need to be added to EACH environment:
 
 1. **NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY** - Your Clerk publishable key (starts with `pk_`)
 2. **CLERK_SECRET_KEY** - Your Clerk secret key (starts with `sk_`)
@@ -19,20 +23,28 @@ The following secrets need to be added to your GitHub repository:
    - **Publishable key** (starts with `pk_test_` or `pk_live_`)
    - **Secret key** (starts with `sk_test_` or `sk_live_`)
 
-### 2. Add Secrets to GitHub
+### 2. Add Secrets to GitHub Environments
 
+You need to add secrets to EACH environment that uses them:
+
+#### For the `dev` environment:
 1. Go to your repository: https://github.com/itstimwhite/LogYourBody
 2. Click on **Settings** tab
-3. In the left sidebar, click **Secrets and variables** → **Actions**
-4. Click **New repository secret**
-5. Add the first secret:
+3. In the left sidebar, click **Environments**
+4. Click on **dev**
+5. Under **Environment secrets**, click **Add secret**
+6. Add the first secret:
    - **Name**: `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-   - **Secret**: Paste your publishable key (e.g., `pk_test_YmVhdXRpZnVsLWJlYXZlci0yNC5jbGVyay5hY2NvdW50cy5kZXYk`)
+   - **Value**: Paste your publishable key (e.g., `pk_test_...`)
    - Click **Add secret**
-6. Add the second secret:
+7. Add the second secret:
    - **Name**: `CLERK_SECRET_KEY`
-   - **Secret**: Paste your secret key (e.g., `sk_test_...`)
+   - **Value**: Paste your secret key (e.g., `sk_test_...`)
    - Click **Add secret**
+
+#### Repeat for other environments:
+- Do the same for **preview** environment
+- Do the same for **production** environment (use production keys `pk_live_` and `sk_live_`)
 
 ### 3. Optional: Environment-Specific Secrets
 
