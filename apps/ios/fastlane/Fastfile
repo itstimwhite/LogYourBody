@@ -88,15 +88,19 @@ platform :ios do
     
     # Build number should be passed in
     if options[:build_number]
+      ios_dir = File.expand_path("..", Dir.pwd)
       increment_build_number(
         build_number: options[:build_number],
-        xcodeproj: project
+        xcodeproj: File.join(ios_dir, project)
       )
     end
     
     # Build the app (fast, minimal processing)
+    # When running from bundle exec, we're in the fastlane directory
+    ios_dir = File.expand_path("..", Dir.pwd)
+    
     build_app(
-      project: File.join(Dir.pwd, project),
+      project: File.join(ios_dir, project),
       scheme: scheme,
       configuration: "Release",
       export_method: "app-store",
