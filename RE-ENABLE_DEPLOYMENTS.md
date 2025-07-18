@@ -6,8 +6,8 @@ Once you've configured the Clerk secrets in the appropriate GitHub environments,
 
 1. **Verify secrets are configured**:
    ```bash
-   # Check dev environment has Clerk secrets
-   gh api repos/itstimwhite/LogYourBody/environments/dev/secrets --jq '.secrets[].name' | grep CLERK
+   # Check development environment has Clerk secrets
+   gh api repos/itstimwhite/LogYourBody/environments/development/secrets --jq '.secrets[].name' | grep CLERK
    ```
 
 2. **Edit the web-rapid-loop.yml file**:
@@ -30,7 +30,7 @@ Once you've configured the Clerk secrets in the appropriate GitHub environments,
      runs-on: ubuntu-latest
      timeout-minutes: 5
      environment:
-       name: dev
+       name: development
        url: ${{ steps.deploy.outputs.url }}
      
      steps:

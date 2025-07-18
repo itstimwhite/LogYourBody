@@ -51,7 +51,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     environment:
-      name: production
+      name: Production
       url: https://logyourbody.com
     
     steps:
@@ -98,7 +98,7 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             ref: context.sha,
-            environment: 'production',
+            environment: 'Production',
             description: 'Production deployment v${{ needs.validate-release.outputs.version }}',
             auto_merge: false,
             required_contexts: [],

@@ -501,7 +501,7 @@ jobs:
     if: github.ref == 'refs/heads/preview' && github.event_name == 'push'
     runs-on: macos-latest
     environment:
-      name: preview
+      name: Preview
       url: https://testflight.apple.com
     
     steps:

@@ -98,7 +98,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 10
     environment:
-      name: dev
+      name: development
       url: https://testflight.apple.com
     
     steps:
