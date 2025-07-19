@@ -8,28 +8,29 @@ content = File.read(project_file)
 
 puts "Removing widget references from project file..."
 
-# Count removals for debugging
-removals = 0
+# Track what we're removing for debugging
+removed_patterns = []
 
 # Remove widget target references from dependencies
-removals += content.gsub!(/.*LogYourBodyWidgetExtension.*dependency.*\n/, '').to_s.scan(//).length
+if content.gsub!(/.*LogYourBodyWidgetExtension.*dependency.*\n/, '')
+  removed_patterns << "widget dependencies"
+end
 
-# Remove widget from embed extensions phase
-removals += content.gsub!(/.*LogYourBodyWidgetExtension.*in Embed.*\n/, '').to_s.scan(//).length
+# Remove widget from embed extensions phase  
+if content.gsub!(/.*LogYourBodyWidgetExtension.*in Embed.*\n/, '')
+  removed_patterns << "embed extensions"
+end
 
-# Remove widget target definition
-removals += content.gsub!(/.*LogYourBodyWidgetExtension.*isa = PBXNativeTarget.*\n/, '').to_s.scan(//).length
-
-# Remove any line containing LogYourBodyWidget
-removals += content.gsub!(/.*LogYourBodyWidget.*\n/, '').to_s.scan(//).length
-
-# Remove widget build configurations
-removals += content.gsub!(/.*LogYourBodyWidgetExtension.*buildConfigurationList.*\n/, '').to_s.scan(//).length
-
-# Remove widget from target list
-removals += content.gsub!(/.*LogYourBodyWidgetExtension.*,\s*\n/, '').to_s.scan(//).length
+# Remove widget from target references (but not the target definition itself yet)
+if content.gsub!(/.*LogYourBodyWidgetExtension.*,\s*\n/, '')
+  removed_patterns << "target references"
+end
 
 # Write back
 File.write(project_file, content)
 
-puts "Widget references removed from project file (#{removals} lines removed)"
+if removed_patterns.empty?
+  puts "No widget references found to remove"
+else
+  puts "Widget references removed: #{removed_patterns.join(', ')}"
+end
