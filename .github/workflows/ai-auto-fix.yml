@@ -1,0 +1,191 @@
+name: AI Auto-Fix
+
+on:
+  workflow_run:
+    workflows: ["AI Issue Triage"]
+    types:
+      - completed
+
+permissions:
+  issues: write
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-fix:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download triage result
+        uses: actions/github-script@v7
+        id: download-artifact
+        with:
+          script: |
+            const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              run_id: ${{ github.event.workflow_run.id }}
+            });
+            
+            const matchArtifact = artifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "triage-result"
+            })[0];
+            
+            if (!matchArtifact) {
+              core.setFailed('No triage result found');
+              return;
+            }
+            
+            const download = await github.rest.actions.downloadArtifact({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              artifact_id: matchArtifact.id,
+              archive_format: 'zip',
+            });
+            
+            const fs = require('fs');
+            fs.writeFileSync('triage-result.zip', Buffer.from(download.data));
+
+      - name: Extract triage result
+        run: |
+          unzip -o triage-result.zip
+          cat triage-result.json
+
+      - name: Parse triage result
+        id: parse-triage
+        run: |
+          RECOMMENDED_TOOL=$(jq -r '.recommended_tool' triage-result.json)
+          ISSUE_NUMBER=$(jq -r '.issue_number' triage-result.json)
+          ISSUE_TITLE=$(jq -r '.issue_title' triage-result.json)
+          ISSUE_BODY=$(jq -r '.issue_body' triage-result.json)
+          
+          echo "recommended_tool=$RECOMMENDED_TOOL" >> $GITHUB_OUTPUT
+          echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          echo "issue_title=$ISSUE_TITLE" >> $GITHUB_OUTPUT
+          
+          # Save issue body to file for multiline content
+          echo "$ISSUE_BODY" > issue_body.txt
+
+      # Sweep Auto-Fix
+      - name: Invoke Sweep
+        if: steps.parse-triage.outputs.recommended_tool == 'sweep'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = ${{ steps.parse-triage.outputs.issue_number }};
+            
+            // Add a comment to trigger Sweep
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `@sweep ${core.getInput('sweep_prompt')}`
+            });
+            
+            // Add sweep label if not already present
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['sweep']
+              });
+            } catch (error) {
+              console.log('Label might already exist:', error.message);
+            }
+        env:
+          sweep_prompt: |
+            Please fix this issue. Analyze the problem described and implement the appropriate solution.
+
+      # Claude Auto-Fix
+      - name: Invoke Claude
+        if: steps.parse-triage.outputs.recommended_tool == 'claude'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python scripts/claude-auto-fix.py \
+            --issue-number ${{ steps.parse-triage.outputs.issue_number }} \
+            --repo ${{ github.repository }}
+
+      # Copilot Instructions
+      - name: Add Copilot Instructions
+        if: steps.parse-triage.outputs.recommended_tool == 'copilot'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = ${{ steps.parse-triage.outputs.issue_number }};
+            
+            // Add a comment with Copilot instructions
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `## 🤖 GitHub Copilot Instructions
+            
+            This issue has been triaged for GitHub Copilot. To implement the fix:
+            
+            1. **Open the relevant files** in VS Code or your IDE with Copilot enabled
+            2. **Start with a comment** describing what you want to implement:
+               \`\`\`
+               // TODO: ${await core.getInput('issue_title')}
+               // ${(await core.getInput('issue_body')).split('\n')[0]}
+               \`\`\`
+            3. **Use Copilot Chat** for complex implementations:
+               - Press \`Cmd+I\` (Mac) or \`Ctrl+I\` (Windows/Linux)
+               - Ask: "Help me implement ${await core.getInput('issue_title')}"
+            4. **Review suggestions** carefully before accepting
+            5. **Test your implementation** thoroughly
+            6. **Create a PR** when complete
+            
+            ### Copilot Tips:
+            - Break down complex tasks into smaller functions
+            - Write descriptive function names and Copilot will suggest the implementation
+            - Use Copilot Chat for architectural decisions
+            - Ask Copilot to write tests for your implementation
+            
+            **Note**: Since Copilot requires interactive development, this issue has been marked for manual implementation with AI assistance.`
+            });
+            
+            // Add copilot-required label
+            try {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                labels: ['copilot-required', 'needs-human']
+              });
+            } catch (error) {
+              console.log('Label might already exist:', error.message);
+            }
+
+      - name: Update issue status
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issueNumber = ${{ steps.parse-triage.outputs.issue_number }};
+            const tool = '${{ steps.parse-triage.outputs.recommended_tool }}';
+            
+            let status = '✅ Auto-fix initiated';
+            if (tool === 'copilot') {
+              status = '👤 Requires human intervention with Copilot';
+            }
+            
+            // Add a status comment
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issueNumber,
+              body: `### ${status}
+            
+            The AI triage system recommended **${tool.toUpperCase()}** for this issue and has taken the following action:
+            ${tool === 'sweep' ? '- Triggered Sweep to create a PR' : ''}
+            ${tool === 'claude' ? '- Initiated Claude analysis and fix' : ''}
+            ${tool === 'copilot' ? '- Added instructions for manual implementation with Copilot' : ''}
+            
+            You can track progress in the comments below.`
+            });

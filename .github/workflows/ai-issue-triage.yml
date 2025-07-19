@@ -67,3 +67,11 @@ jobs:
             } catch (error) {
               console.log('No triage result found or error reading file:', error);
             }
+
+      - name: Upload triage result
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: triage-result
+          path: triage-result.json
+          retention-days: 1

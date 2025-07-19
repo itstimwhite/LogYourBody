@@ -1,0 +1,195 @@
+name: AI Triage and Fix
+
+on:
+  issues:
+    types: [opened, labeled]
+
+permissions:
+  issues: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  triage-and-fix:
+    runs-on: ubuntu-latest
+    # Only run if it's a new issue OR if the 'ai:auto-fix' label was just added
+    # Skip if 'no-auto-fix' label is present
+    if: |
+      (github.event.action == 'opened' || 
+       (github.event.action == 'labeled' && github.event.label.name == 'ai:auto-fix')) &&
+      !contains(github.event.issue.labels.*.name, 'no-auto-fix')
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install anthropic PyGithub PyYAML
+
+      - name: Analyze and triage issue
+        id: triage
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/ai-issue-triage.py \
+            --issue-number ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }}
+          
+          # Extract the recommended tool
+          TOOL=$(jq -r '.recommended_tool' triage-result.json)
+          echo "recommended_tool=$TOOL" >> $GITHUB_OUTPUT
+
+      - name: Add triage labels and comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const result = JSON.parse(fs.readFileSync('triage-result.json', 'utf8'));
+            
+            // Add labels
+            if (result.labels && result.labels.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: result.labels
+              });
+            }
+            
+            // Add initial comment
+            if (result.comment) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: result.comment
+              });
+            }
+
+      # Auto-fix with Sweep
+      - name: Trigger Sweep
+        if: steps.triage.outputs.recommended_tool == 'sweep' && github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            // Wait a bit to ensure labels are set
+            await new Promise(resolve => setTimeout(resolve, 3000));
+            
+            // Get issue details
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            // Create Sweep command based on issue
+            let sweepCommand = '@sweep ';
+            
+            // Analyze issue title for better commands
+            const title = issue.data.title.toLowerCase();
+            if (title.includes('refactor')) {
+              sweepCommand += 'Please refactor the code as described in this issue. ';
+            } else if (title.includes('test')) {
+              sweepCommand += 'Please add tests as described in this issue. ';
+            } else if (title.includes('cleanup') || title.includes('clean up')) {
+              sweepCommand += 'Please clean up the code as described in this issue. ';
+            } else {
+              sweepCommand += 'Please implement the changes described in this issue. ';
+            }
+            
+            sweepCommand += 'Follow all best practices and ensure the code is well-documented.';
+            
+            // Add the Sweep command
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: sweepCommand
+            });
+            
+            // Add status update
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `### ✅ Auto-Fix Initiated with Sweep\n\nI've triggered Sweep to automatically create a PR for this issue. Sweep will analyze the codebase and implement the necessary changes.\n\nYou can track Sweep's progress in the comments above. The PR will be linked here once created.`
+            });
+
+      # Auto-fix with Claude
+      - name: Trigger Claude Analysis
+        if: steps.triage.outputs.recommended_tool == 'claude' && github.event.action == 'opened'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          python scripts/claude-auto-fix.py \
+            --issue-number ${{ github.event.issue.number }} \
+            --repo ${{ github.repository }}
+
+      # Copilot instructions (can't be automated)
+      - name: Add Copilot Instructions
+        if: steps.triage.outputs.recommended_tool == 'copilot' && github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = await github.rest.issues.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number
+            });
+            
+            // Create implementation guide
+            const title = issue.data.title;
+            const body = issue.data.body || '';
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `### 🚀 Ready for Implementation with GitHub Copilot
+            
+            This issue requires interactive development with GitHub Copilot. Here's your implementation guide:
+            
+            #### Quick Start:
+            1. **Create a new branch**: \`git checkout -b fix/issue-${context.issue.number}\`
+            2. **Open your IDE** with GitHub Copilot enabled
+            3. **Start with this comment** in the relevant file:
+            \`\`\`
+            // TODO: ${title}
+            // ${body.split('\n')[0]}
+            \`\`\`
+            
+            #### Copilot Prompts to Try:
+            - "Implement ${title.substring(0, 50)}..."
+            - "Create a function that ${body.substring(0, 100)}..."
+            - "Add error handling for this implementation"
+            - "Write unit tests for this feature"
+            
+            #### Best Practices:
+            - Let Copilot see the full context by opening related files
+            - Use Copilot Chat (Cmd/Ctrl + I) for complex logic
+            - Review all suggestions carefully
+            - Ask Copilot to explain complex implementations
+            
+            #### When You're Done:
+            1. Test your implementation thoroughly
+            2. Run linting and tests: \`npm run lint && npm test\`
+            3. Commit with a descriptive message
+            4. Push and create a PR referencing this issue
+            
+            **Need help?** Try asking Copilot: "How do I implement ${title}?"`
+            });
+            
+            // Add labels
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: ['needs-implementation', 'copilot-ready']
+            });

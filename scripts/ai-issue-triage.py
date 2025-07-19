@@ -286,7 +286,10 @@ Example: `@sweep refactor the authentication module to use async/await`"""
             'recommended_tool': analysis['recommended_tool'],
             'analysis': analysis,
             'comment': comment,
-            'labels': labels
+            'labels': labels,
+            'issue_number': issue_number,
+            'issue_title': issue.title,
+            'issue_body': issue.body or ""
         }
 
 

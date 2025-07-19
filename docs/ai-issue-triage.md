@@ -1,15 +1,38 @@
-# AI Issue Triage System
+# AI Issue Triage and Auto-Fix System
 
-This repository uses an intelligent AI-powered issue triage system that automatically analyzes new issues and recommends the most appropriate AI tool for resolution.
+This repository uses an intelligent AI-powered system that automatically analyzes new issues, recommends the most appropriate AI tool, and can even initiate fixes automatically.
 
 ## Overview
 
-When you create a new issue, our triage system will:
+When you create a new issue, our system will:
 1. Analyze the issue title and description
 2. Score it against criteria for each AI tool
 3. Use Claude AI for nuanced analysis
 4. Add appropriate labels
-5. Comment with recommendations and instructions
+5. Comment with recommendations
+6. **Automatically trigger the recommended AI tool to start fixing the issue**
+
+## Auto-Fix Features
+
+### 🧹 Sweep Auto-Fix
+For refactoring and cleanup tasks:
+- Automatically triggers Sweep with appropriate commands
+- Sweep creates a PR with the requested changes
+- You review and merge the PR
+
+### 🧠 Claude Auto-Fix
+For complex debugging and analysis:
+- Claude analyzes the issue in depth
+- Provides detailed implementation plans
+- Suggests specific code changes
+- Posts analysis directly in issue comments
+
+### 🤖 Copilot Guidance
+For new features and implementations:
+- Provides detailed implementation guide
+- Suggests specific Copilot prompts
+- Adds quick-start code comments
+- Guides you through the implementation process
 
 ## Available AI Tools
 
@@ -100,12 +123,24 @@ The triage rules can be customized in `.github/ai-triage-config.yml`:
 - **Triaged to:** Claude
 - **Why:** Contains "debug" and "memory leak", complex issue
 
-## Manual Override
+## Manual Controls
 
+### Override Triage Decision
 The triage is just a recommendation. You can:
 - Use any tool you prefer
 - Remove/change labels
 - Ignore the recommendation
+
+### Trigger Auto-Fix Manually
+If auto-fix wasn't triggered (e.g., for older issues), you can:
+1. Add the `ai:auto-fix` label to any issue
+2. The system will re-analyze and trigger the appropriate AI tool
+3. Remove the label if you want to stop auto-fix
+
+### Disable Auto-Fix
+To prevent automatic fixes on an issue:
+- Add the `no-auto-fix` label
+- The system will only triage without triggering tools
 
 ## Privacy & Security
 
