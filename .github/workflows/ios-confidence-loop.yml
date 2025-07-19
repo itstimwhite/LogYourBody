@@ -244,6 +244,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-latest
     timeout-minutes: 30
+    if: github.event_name == 'schedule'
     steps:
     - uses: actions/checkout@v4
     
@@ -319,6 +320,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-latest
     timeout-minutes: 20
+    if: github.event_name == 'schedule'
     steps:
     - uses: actions/checkout@v4
     
@@ -386,6 +388,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-latest
     timeout-minutes: 25
+    if: github.event_name == 'schedule'
     steps:
     - uses: actions/checkout@v4
     
@@ -482,15 +485,20 @@ jobs:
           exit 1
         fi
         
-        # Optional jobs can fail with warning
-        if [[ "${{ needs.test-sanitizers.result }}" != "success" ]]; then
+        # Optional jobs can fail with warning (only check if they ran)
+        if [[ "${{ needs.test-sanitizers.result }}" == "failure" ]]; then
           echo "⚠️ Sanitizer tests failed - memory issues detected"
         fi
-        if [[ "${{ needs.snapshot-tests.result }}" != "success" ]]; then
+        if [[ "${{ needs.snapshot-tests.result }}" == "failure" ]]; then
           echo "⚠️ Snapshot tests failed - UI regressions detected"
         fi
-        if [[ "${{ needs.performance-tests.result }}" != "success" ]]; then
+        if [[ "${{ needs.performance-tests.result }}" == "failure" ]]; then
           echo "⚠️ Performance tests failed - performance regressions detected"
+        fi
+        
+        # Note about scheduled jobs
+        if [[ "${{ github.event_name }}" != "schedule" ]]; then
+          echo "ℹ️ Heavy test jobs (sanitizers, snapshots, performance) only run on schedule"
         fi
         
         echo "✅ All core jobs passed successfully"
