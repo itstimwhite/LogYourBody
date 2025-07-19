@@ -3,7 +3,7 @@
 # This script removes widget references from the project file
 # Run this before building in CI
 
-project_file = 'LogYourBody.xcodeproj/project.pbxproj'
+project_file = '../LogYourBody.xcodeproj/project.pbxproj'
 content = File.read(project_file)
 
 # Remove widget target references from dependencies
