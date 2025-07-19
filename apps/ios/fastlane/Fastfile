@@ -99,8 +99,7 @@ platform :ios do
     # When running from bundle exec, we're in the fastlane directory
     ios_dir = File.expand_path("..", Dir.pwd)
     
-    # Run script to remove widget references before building
-    system("ruby ../remove_widget_references.rb") if File.exist?("../remove_widget_references.rb")
+    # Widget has been removed from Xcode project
     
     build_app(
       project: File.join(ios_dir, project),
