@@ -137,6 +137,7 @@ jobs:
         cp provision.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${uuid}.mobileprovision
         
         echo "Installed provisioning profile: ${uuid}.mobileprovision"
+        echo "PROVISIONING_PROFILE_UUID=${uuid}" >> $GITHUB_ENV
     
     - name: Setup App Store Connect API Key
       run: |

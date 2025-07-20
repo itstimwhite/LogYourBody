@@ -122,7 +122,7 @@ platform :ios do
       disable_package_automatic_updates: true,
       cloned_source_packages_path: "SourcePackages",
       skip_profile_detection: true,
-      xcargs: "-allowProvisioningUpdates"
+      xcargs: ENV["PROVISIONING_PROFILE_UUID"] ? "PROVISIONING_PROFILE_SPECIFIER='#{ENV["PROVISIONING_PROFILE_UUID"]}' CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']}" : "-allowProvisioningUpdates"
     )
     
     # Read release notes if provided
