@@ -3,23 +3,6 @@
 // LogYourBody
 //
 import SwiftUI
-struct SmartBlurModifier: ViewModifier {
-    let isPresented: Bool
-    let radius: CGFloat
-    
-    func body(content: Content) -> some View {
-        content
-            .blur(radius: isPresented ? radius : 0)
-            .animation(.easeInOut(duration: 0.3), value: isPresented)
-            .allowsHitTesting(!isPresented)
-    }
-}
-
-extension View {
-    func smartBlur(isPresented: Bool, radius: CGFloat = 8) -> some View {
-        modifier(SmartBlurModifier(isPresented: isPresented, radius: radius))
-    }
-}
 
 // MARK: - Empty State View
 
