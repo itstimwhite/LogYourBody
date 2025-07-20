@@ -8,28 +8,16 @@
 
 /* Begin PBXBuildFile section */
 		2D1DA922F6460921ECD833D9 /* ProgressPhotosStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AAFBFC0D80800E741DDB7B5 /* ProgressPhotosStepView.swift */; };
-		AD0054D92E20AEF10029E0FF /* ImageProcessingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054D82E20AEF10029E0FF /* ImageProcessingService.swift */; };
-		AD0054DB2E20C6270029E0FF /* HealthDisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054DA2E20C6270029E0FF /* HealthDisclaimerView.swift */; };
-		AD0054DD2E20C9DF0029E0FF /* LegalConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054DC2E20C9DF0029E0FF /* LegalConsentView.swift */; };
-		AD0054DF2E20CDB00029E0FF /* ProgressPhotoCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054DE2E20CDB00029E0FF /* ProgressPhotoCarouselView.swift */; };
 		AD0054EB2E2197600029E0FF /* privacy-policy.md in Resources */ = {isa = PBXBuildFile; fileRef = AD0054E82E2197600029E0FF /* privacy-policy.md */; };
 		AD0054EC2E2197600029E0FF /* terms-of-service.md in Resources */ = {isa = PBXBuildFile; fileRef = AD0054E92E2197600029E0FF /* terms-of-service.md */; };
 		AD0054ED2E2197600029E0FF /* health-disclosure.md in Resources */ = {isa = PBXBuildFile; fileRef = AD0054E72E2197600029E0FF /* health-disclosure.md */; };
 		AD0054EF2E2197B00029E0FF /* LegalDocumentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054EE2E2197B00029E0FF /* LegalDocumentView.swift */; };
-		AD0054F42E2228F70029E0FF /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054F32E2228F70029E0FF /* SettingsComponents.swift */; };
 		AD1B2C462E15A00A00123456 /* OnboardingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C3D2E15A00100123456 /* OnboardingData.swift */; };
-		AD1B2C472E15A00B00123456 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C3E2E15A00200123456 /* OnboardingViewModel.swift */; };
 		AD25A7822E17439500611A56 /* Clerk in Frameworks */ = {isa = PBXBuildFile; productRef = AD25A7812E17439500611A56 /* Clerk */; };
 		AD2C3D5F2E16B10A00234567 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2C3D5E2E16B10900234567 /* HealthKitManager.swift */; };
 		AD3304C02E241FE80043C4AC /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3304BF2E241FE80043C4AC /* AppVersion.swift */; };
-		AD3B4C5F2E25A7B100123456 /* DietPhaseHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3B4C5E2E25A7B100123456 /* DietPhaseHistoryView.swift */; };
 		AD3E4F652E17A12300345678 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AD3E4F642E17A12300345678 /* HealthKit.framework */; };
 		AD4F5E7B2E18C23500456789 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4F5E7A2E18C23400456789 /* PreferencesView.swift */; };
-		AD5C4B012E25B10100123456 /* Components/DashboardComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B002E25B10100123456 /* Components/DashboardComponents.swift */; };
-		AD5C4B032E25B10200123456 /* Components/DashboardMetricCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B022E25B10200123456 /* Components/DashboardMetricCards.swift */; };
-		AD5C4B052E25B10300123456 /* DashboardView+Views.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B042E25B10300123456 /* DashboardView+Views.swift */; };
-		AD5C4B072E25B10400123456 /* DashboardView+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B062E25B10400123456 /* DashboardView+Helpers.swift */; };
-		AD5C4B092E25B10500123456 /* DashboardView+Calculations.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B082E25B10500123456 /* DashboardView+Calculations.swift */; };
 		AD5C4B0B2E25B10600123456 /* Components/PhotoAnchoredTimelineSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B0A2E25B10600123456 /* Components/PhotoAnchoredTimelineSlider.swift */; };
 		AD6F7F9D2E1AE45700678901 /* DailyLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD6F7F9C2E1AE45600678901 /* DailyLog.swift */; };
 		AD723B152E15FA5D002376C6 /* delete_files.sh in Resources */ = {isa = PBXBuildFile; fileRef = AD722F0E2E15FA5A002376C6 /* delete_files.sh */; };
@@ -46,68 +34,36 @@
 		AD7243322E15FA5D002376C6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD723ADD2E15FA5C002376C6 /* Preview Assets.xcassets */; };
 		AD7243332E15FA5D002376C6 /* app-icon-180.png in Resources */ = {isa = PBXBuildFile; fileRef = AD723AE12E15FA5C002376C6 /* app-icon-180.png */; };
 		AD7243342E15FA5D002376C6 /* AppIconGuide.md in Resources */ = {isa = PBXBuildFile; fileRef = AD723AE22E15FA5C002376C6 /* AppIconGuide.md */; };
-		AD7243372E15FA5D002376C6 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AE62E15FA5C002376C6 /* CoreDataManager.swift */; };
-		AD7243392E15FA5D002376C6 /* LoadingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AE82E15FA5C002376C6 /* LoadingManager.swift */; };
 		AD72433B2E15FA5D002376C6 /* SupabaseDataClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AEA2E15FA5C002376C6 /* SupabaseDataClient.swift */; };
 		AD72433D2E15FA5E002376C6 /* SyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AEC2E15FA5C002376C6 /* SyncManager.swift */; };
-		AD72433E2E15FA5E002376C6 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AEE2E15FA5C002376C6 /* Configuration.swift */; };
-		AD7243412E15FA5E002376C6 /* CompletionStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AF32E15FA5C002376C6 /* CompletionStepView.swift */; };
-		AD7243442E15FA5E002376C6 /* HealthKitStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AF62E15FA5C002376C6 /* HealthKitStepView.swift */; };
-		AD7243452E15FA5E002376C6 /* NotificationsStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AF72E15FA5C002376C6 /* NotificationsStepView.swift */; };
 		AD7243462E15FA5E002376C6 /* OnboardingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AF82E15FA5C002376C6 /* OnboardingContainerView.swift */; };
 		AD7243482E15FA5E002376C6 /* WelcomeStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AFA2E15FA5C002376C6 /* WelcomeStepView.swift */; };
-		AD72434B2E15FA5E002376C6 /* DeleteAccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AFE2E15FA5C002376C6 /* DeleteAccountView.swift */; };
 		AD72434C2E15FA5E002376C6 /* EmailVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AFF2E15FA5C002376C6 /* EmailVerificationView.swift */; };
-		AD72434D2E15FA5E002376C6 /* ExportDataView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B002E15FA5C002376C6 /* ExportDataView.swift */; };
-		AD72434E2E15FA5E002376C6 /* HealthKitPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B012E15FA5C002376C6 /* HealthKitPromptView.swift */; };
-		AD72434F2E15FA5E002376C6 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B022E15FA5C002376C6 /* LoadingView.swift */; };
 		AD7243502E15FA5E002376C6 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B032E15FA5C002376C6 /* LoginView.swift */; };
-		AD7243522E15FA5E002376C6 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B052E15FA5C002376C6 /* MainTabView.swift */; };
 		AD7243582E15FA5E002376C6 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = AD723B0C2E15FA5C002376C6 /* Config.xcconfig */; };
 		AD7243592E15FA5E002376C6 /* Config.xcconfig.example in Resources */ = {isa = PBXBuildFile; fileRef = AD723B0D2E15FA5C002376C6 /* Config.xcconfig.example */; };
 		AD72435C2E15FA5E002376C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD723B102E15FA5C002376C6 /* LaunchScreen.storyboard */; };
-		AD786A322E1F410A000A5756 /* LiquidGlassComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD786A312E1F410A000A5756 /* LiquidGlassComponents.swift */; };
 		AD7D30962E14907F0072AA5B /* LogYourBodyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30952E14907F0072AA5B /* LogYourBodyApp.swift */; };
-		AD7D30982E14907F0072AA5B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30972E14907F0072AA5B /* ContentView.swift */; };
 		AD7D30A72E1490810072AA5B /* LogYourBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30A62E1490810072AA5B /* LogYourBodyTests.swift */; };
 		AD7D30B12E1490810072AA5B /* LogYourBodyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30B02E1490810072AA5B /* LogYourBodyUITests.swift */; };
 		AD7D30B32E1490810072AA5B /* LogYourBodyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30B22E1490810072AA5B /* LogYourBodyUITestsLaunchTests.swift */; };
-		AD8056FD2E25F5180028C0DD /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8056FC2E25F5180028C0DD /* CameraView.swift */; };
 		AD8552562E19A5B5003552EE /* RealtimeSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552552E19A5B5003552EE /* RealtimeSyncManager.swift */; };
-		AD85525E2E19DC01003552EE /* AppVersionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85525D2E19DC01003552EE /* AppVersionManager.swift */; };
-		AD8552602E19DC44003552EE /* Changelog.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85525F2E19DC44003552EE /* Changelog.swift */; };
 		AD8552622E19DC9C003552EE /* VersionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552612E19DC9C003552EE /* VersionInfo.swift */; };
-		AD8552662E19DCB6003552EE /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552632E19DCB6003552EE /* SyncStatusView.swift */; };
 		AD85526C2E19E4CD003552EE /* VersionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526A2E19E4CD003552EE /* VersionRow.swift */; };
 		AD85526D2E19E4CD003552EE /* WhatsNewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526B2E19E4CD003552EE /* WhatsNewRow.swift */; };
-		AD85527F2E1C3653003552EE /* PhotoUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85527E2E1C3653003552EE /* PhotoUploadManager.swift */; };
-		AD933DFD2E249DAD00801078 /* BulkPhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933DFC2E249DAD00801078 /* BulkPhotoImportView.swift */; };
 		AD933E002E249EA000801078 /* BulkImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933DFE2E249EA000801078 /* BulkImportManager.swift */; };
 		AD933E012E249EA000801078 /* PhotoLibraryScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933DFF2E249EA000801078 /* PhotoLibraryScanner.swift */; };
 		AD933E052E24A22D00801078 /* LegalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933E042E24A22D00801078 /* LegalView.swift */; };
 		ADA922E92E22E4AC00B82C49 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922E82E22E4AC00B82C49 /* HapticManager.swift */; };
-		ADA922F12E22E7D500B82C49 /* SecuritySessionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F02E22E7D500B82C49 /* SecuritySessionsView.swift */; };
 		ADA922F92E22EE9D00B82C49 /* ImageProcessingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F42E22EE9D00B82C49 /* ImageProcessingStatusView.swift */; };
 		ADA922FA2E22EE9D00B82C49 /* AuthComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F22E22EE9D00B82C49 /* AuthComponents.swift */; };
 		ADA922FB2E22EE9D00B82C49 /* CommonComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F32E22EE9D00B82C49 /* CommonComponents.swift */; };
-		ADA922FD2E22EE9D00B82C49 /* OnboardingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F72E22EE9D00B82C49 /* OnboardingComponents.swift */; };
-		ADA922FE2E22EE9D00B82C49 /* ProcessingImagePlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F82E22EE9D00B82C49 /* ProcessingImagePlaceholder.swift */; };
 		ADA923022E22EF4600B82C49 /* UIComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA923002E22EF4600B82C49 /* UIComponents.swift */; };
 		ADBD69472E14A7B900921A30 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692A2E14A7B900921A30 /* AuthManager.swift */; };
-		ADBD69482E14A7B900921A30 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692C2E14A7B900921A30 /* DashboardView.swift */; };
-		ADBD694A2E14A7B900921A30 /* LogWeightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692E2E14A7B900921A30 /* LogWeightView.swift */; };
-		ADBD694D2E14A7B900921A30 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69312E14A7B900921A30 /* SettingsView.swift */; };
 		ADBD694E2E14A7B900921A30 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69322E14A7B900921A30 /* SignUpView.swift */; };
-		ADBD69502E14A7B900921A30 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69352E14A7B900921A30 /* Constants.swift */; };
 		ADBD69512E14A7B900921A30 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69372E14A7B900921A30 /* Color+Theme.swift */; };
 		ADBD69522E14A7B900921A30 /* Font+Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69382E14A7B900921A30 /* Font+Custom.swift */; };
-		ADBD69532E14A7B900921A30 /* View+Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69392E14A7B900921A30 /* View+Styles.swift */; };
-		ADFC6A1F2E185913004FCE40 /* NameInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1B2E185913004FCE40 /* NameInputView.swift */; };
 		ADFC6A202E185913004FCE40 /* GenderInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1C2E185913004FCE40 /* GenderInputView.swift */; };
-		ADFC6A212E185913004FCE40 /* DateOfBirthInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1D2E185913004FCE40 /* DateOfBirthInputView.swift */; };
-		ADFC6A222E185913004FCE40 /* HeightInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1E2E185913004FCE40 /* HeightInputView.swift */; };
-		ADFC6A242E187717004FCE40 /* SupabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A232E187717004FCE40 /* SupabaseManager.swift */; };
-		ADFC6A262E188F96004FCE40 /* OTPInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A252E188F96004FCE40 /* OTPInputView.swift */; };
 		C8D57BE95A4043A0A831CFE4 /* SkeletonLoaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D57BE85A4043A0A831CFE4 /* SkeletonLoaders.swift */; };
 		D56A396072E89A737861FADF /* ProgressPhotoCutoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7BBB537ECEB5AB2B287F0B05 /* ProgressPhotoCutoutView.swift */; };
 /* End PBXBuildFile section */
@@ -977,7 +933,6 @@
 				AD0054EB2E2197600029E0FF /* privacy-policy.md in Resources */,
 				AD0054EC2E2197600029E0FF /* terms-of-service.md in Resources */,
 				AD0054ED2E2197600029E0FF /* health-disclosure.md in Resources */,
-				ADF287AB2E15045900198D6F /* Supabase.xcconfig in Resources */,
 				AD7243582E15FA5E002376C6 /* Config.xcconfig in Resources */,
 				AD7243342E15FA5D002376C6 /* AppIconGuide.md in Resources */,
 			);
@@ -1008,22 +963,14 @@
 				ADFC6A202E185913004FCE40 /* GenderInputView.swift in Sources */,
 				AD7243482E15FA5E002376C6 /* WelcomeStepView.swift in Sources */,
 				AD7243462E15FA5E002376C6 /* OnboardingContainerView.swift in Sources */,
-				ADF5C1BC2E1DFE4000E3FB4D /* WidgetDataManager.swift in Sources */,
-				AD8552942E1CC15B003552EE /* BackgroundRemovalService.swift in Sources */,
 				ADBD69522E14A7B900921A30 /* Font+Custom.swift in Sources */,
 				ADBD69512E14A7B900921A30 /* Color+Theme.swift in Sources */,
 				AD72434C2E15FA5E002376C6 /* EmailVerificationView.swift in Sources */,
 				ADA923022E22EF4600B82C49 /* UIComponents.swift in Sources */,
 				AD7243302E15FA5D002376C6 /* User.swift in Sources */,
-				AD933DFB2E24328A00801078 /* DietPhaseHistoryView.swift in Sources */,
-				ADA922ED2E22E7A600B82C49 /* VisionOrientationService.swift in Sources */,
-				ADA922EE2E22E7A600B82C49 /* BackgroundPhotoUploadService+Processing.swift in Sources */,
-				ADA922EF2E22E7A600B82C49 /* ImageProcessingService.swift in Sources */,
-				ADF5C1FD2E1E2E9100E3FB4D /* BiometricLockView.swift in Sources */,
 				AD7243502E15FA5E002376C6 /* LoginView.swift in Sources */,
 				AD7D30962E14907F0072AA5B /* LogYourBodyApp.swift in Sources */,
 				AD3304C02E241FE80043C4AC /* AppVersion.swift in Sources */,
-				ADF5C1B62E1CF89E00E3FB4D /* BackgroundPhotoUploadService.swift in Sources */,
 				AD85526C2E19E4CD003552EE /* VersionRow.swift in Sources */,
 				ADA922F92E22EE9D00B82C49 /* ImageProcessingStatusView.swift in Sources */,
 				ADA922FA2E22EE9D00B82C49 /* AuthComponents.swift in Sources */,
@@ -1036,34 +983,19 @@
 				ADBD694E2E14A7B900921A30 /* SignUpView.swift in Sources */,
 				ADA922E92E22E4AC00B82C49 /* HapticManager.swift in Sources */,
 				AD72433D2E15FA5E002376C6 /* SyncManager.swift in Sources */,
-				ADE6D39C2E24AD30001F82A8 /* LiquidGlassComponents.swift in Sources */,
-				ADE6D38F2E24A948001F82A8 /* AnimatedTabView.swift in Sources */,
-				ADE6D3902E24A948001F82A8 /* LiquidGlassTimelineSlider.swift in Sources */,
-				ADE6D3912E24A948001F82A8 /* LiquidGlassTabBar.swift in Sources */,
-				ADE6D3922E24A948001F82A8 /* DietPhaseCard.swift in Sources */,
 				C8D57BE95A4043A0A831CFE4 /* SkeletonLoaders.swift in Sources */,
-				ADF5C1B42E1CDB9C00E3FB4D /* PhotoMetadataService.swift in Sources */,
-				ADF287A72E14AC6300198D6F /* AppleSignInButton.swift in Sources */,
 				AD72432B2E15FA5D002376C6 /* BodyMetrics.swift in Sources */,
 				AD0054EF2E2197B00029E0FF /* LegalDocumentView.swift in Sources */,
 				AD1B2C462E15A00A00123456 /* OnboardingData.swift in Sources */,
-				AD8552712E19E4DF003552EE /* WhatsNewView.swift in Sources */,
-				AD8552722E19E4DF003552EE /* ProfileSettingsViewV2.swift in Sources */,
 				AD933E002E249EA000801078 /* BulkImportManager.swift in Sources */,
 				AD933E012E249EA000801078 /* PhotoLibraryScanner.swift in Sources */,
 				AD5C4B0B2E25B10600123456 /* Components/PhotoAnchoredTimelineSlider.swift in Sources */,
-				AD8552732E19E4DF003552EE /* SyncStatusView.swift in Sources */,
-				ADFC6A0E2E1858A3004FCE40 /* NotificationsStepView.swift in Sources */,
-				ADFC6A162E1858A3004FCE40 /* WelcomeStepView.swift in Sources */,
 				AD8552622E19DC9C003552EE /* VersionInfo.swift in Sources */,
-				ADFC6A182E1858A3004FCE40 /* CompletionStepView.swift in Sources */,
-				ADE6D3A12E24ADB5001F82A8 /* IntegrationsView.swift in Sources */,
 				AD2C3D5F2E16B10A00234567 /* HealthKitManager.swift in Sources */,
 				AD4F5E7B2E18C23500456789 /* PreferencesView.swift in Sources */,
 				AD8552562E19A5B5003552EE /* RealtimeSyncManager.swift in Sources */,
 				AD6F7F9D2E1AE45700678901 /* DailyLog.swift in Sources */,
 				D56A396072E89A737861FADF /* ProgressPhotoCutoutView.swift in Sources */,
-				ADE6D3992E24A96A001F82A8 /* ShakeDetector.swift in Sources */,
 				2D1DA922F6460921ECD833D9 /* ProgressPhotosStepView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1226,10 +1158,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LogYourBody/LogYourBody.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LogYourBody/Preview Content\"";
 				DEVELOPMENT_TEAM = G24T327LXT;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G24T327LXT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
@@ -1249,6 +1183,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBody;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Github CI App Store";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1261,10 +1196,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LogYourBody/LogYourBody.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LogYourBody/Preview Content\"";
 				DEVELOPMENT_TEAM = G24T327LXT;
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G24T327LXT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
@@ -1284,6 +1221,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBody;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "Github CI App Store";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

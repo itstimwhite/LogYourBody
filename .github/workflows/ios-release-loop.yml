@@ -117,7 +117,8 @@ jobs:
     - name: Download Provisioning Profile
       run: |
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > provision.mobileprovision
+        # Use printf to handle multi-line base64 correctly
+        printf '%s' "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > provision.mobileprovision
         
         # Extract UUID and install with proper name
         uuid=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(security cms -D -i provision.mobileprovision))
