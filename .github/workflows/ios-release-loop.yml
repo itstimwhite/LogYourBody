@@ -185,6 +185,19 @@ jobs:
         printf '%s' '${{ secrets.ASC_API_KEY_JSON }}' > app_store_connect_api_key.json
         echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
     
+    - name: Create config files
+      run: |
+        cd apps/ios
+        
+        # Create Supabase config
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        
+        # Create LogYourBody config
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+    
     - name: Update version and build
       run: |
         cd apps/ios
