@@ -151,6 +151,10 @@ jobs:
         echo "  App ID: ${app_id}"
         echo "  Team ID: ${team_id}"
         
+        # Debug: Show all entitlements
+        echo "Profile Entitlements:"
+        /usr/libexec/PlistBuddy -c "Print :Entitlements" profile_info.plist || echo "Failed to print entitlements"
+        
         # Check for required capabilities
         echo "Checking required capabilities..."
         capabilities_ok=true
@@ -171,6 +175,8 @@ jobs:
         if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.associated-domains:0" profile_info.plist &>/dev/null; then
           echo "::warning::Missing Associated Domains capability"
           capabilities_ok=false
+        else
+          echo "✓ Associated Domains found"
         fi
         
         # Check for Sign in with Apple
