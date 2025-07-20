@@ -45,10 +45,6 @@
 		ADDC47AC2E2D89F3003C97E7 /* OnboardingData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AD92E15FA5C002376C6 /* OnboardingData.swift */; };
 		ADDC47AD2E2D89F3003C97E7 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723ADA2E15FA5C002376C6 /* User.swift */; };
 		ADDC47AE2E2D89F3003C97E7 /* WeightEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723ADB2E15FA5C002376C6 /* WeightEntry.swift */; };
-		ADDC47B12E2D89F3003C97E7 /* health-disclosure.md in Sources */ = {isa = PBXBuildFile; fileRef = AD0054E72E2197600029E0FF /* health-disclosure.md */; };
-		ADDC47B22E2D89F3003C97E7 /* privacy-policy.md in Sources */ = {isa = PBXBuildFile; fileRef = AD0054E82E2197600029E0FF /* privacy-policy.md */; };
-		ADDC47B32E2D89F3003C97E7 /* terms-of-service.md in Sources */ = {isa = PBXBuildFile; fileRef = AD0054E92E2197600029E0FF /* terms-of-service.md */; };
-		ADDC47B42E2D89F3003C97E7 /* AppIconGuide.md in Sources */ = {isa = PBXBuildFile; fileRef = AD723AE22E15FA5C002376C6 /* AppIconGuide.md */; };
 		ADDC47B52E2D89F3003C97E7 /* BackgroundPhotoUploadService+Processing.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922EA2E22E7A600B82C49 /* BackgroundPhotoUploadService+Processing.swift */; };
 		ADDC47B62E2D89F3003C97E7 /* ImageProcessingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922EB2E22E7A600B82C49 /* ImageProcessingService.swift */; };
 		ADDC47B72E2D89F3003C97E7 /* VisionOrientationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922EC2E22E7A600B82C49 /* VisionOrientationService.swift */; };
@@ -121,19 +117,6 @@
 		ADDC48002E2D89F3003C97E7 /* LogYourBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723ACE2E15FA5C002376C6 /* LogYourBodyTests.swift */; };
 		ADDC48012E2D89F3003C97E7 /* LogYourBodyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD722F112E15FA5A002376C6 /* LogYourBodyUITests.swift */; };
 		ADDC48022E2D89F3003C97E7 /* LogYourBodyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD722F122E15FA5A002376C6 /* LogYourBodyUITestsLaunchTests.swift */; };
-		ADDC48032E2D89F3003C97E7 /* PROJECT_STRUCTURE.md in Sources */ = {isa = PBXBuildFile; fileRef = AD722F152E15FA5A002376C6 /* PROJECT_STRUCTURE.md */; };
-		ADDC48042E2D89F3003C97E7 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = AD722F0F2E15FA5A002376C6 /* README.md */; };
-		ADDC48052E2D89F3003C97E7 /* setup-local-testing.sh in Sources */ = {isa = PBXBuildFile; fileRef = AD723ACC2E15FA5C002376C6 /* setup-local-testing.sh */; };
-		ADDC48062E2D89F3003C97E7 /* setup-xcode-config.sh in Sources */ = {isa = PBXBuildFile; fileRef = ADF287AC2E1507AF00198D6F /* setup-xcode-config.sh */; };
-		ADDC48092E2D89F3003C97E7 /* Assets.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = ADBD693C2E14A7B900921A30 /* Assets.xcassets */; };
-		ADDC48522E2D89F3003C97E7 /* LogYourBody.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = ADF287A72E14AFA900198D6F /* LogYourBody.entitlements */; };
-		ADDC48582E2D89F3003C97E7 /* Preview Assets.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = AD7D309C2E1490810072AA5B /* Preview Assets.xcassets */; };
-		ADDC485C2E2D89F3003C97E7 /* LogYourBody.app in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30922E14907F0072AA5B /* LogYourBody.app */; };
-		ADDC485D2E2D89F3003C97E7 /* LogYourBodyTests.xctest in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30A22E1490810072AA5B /* LogYourBodyTests.xctest */; };
-		ADDC485E2E2D89F3003C97E7 /* LogYourBodyUITests.xctest in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30AC2E1490810072AA5B /* LogYourBodyUITests.xctest */; };
-		ADDC485F2E2D89F3003C97E7 /* HealthKit.framework in Sources */ = {isa = PBXBuildFile; fileRef = AD3E4F642E17A12300345678 /* HealthKit.framework */; };
-		ADDC48602E2D89F3003C97E7 /* WidgetKit.framework in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1C22E1DFE7800E3FB4D /* WidgetKit.framework */; };
-		ADDC48612E2D89F3003C97E7 /* SwiftUI.framework in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1C42E1DFE7900E3FB4D /* SwiftUI.framework */; };
 		ADDC48662E2D8A33003C97E7 /* LogYourBody.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48642E2D8A33003C97E7 /* LogYourBody.xcdatamodeld */; };
 		ADDC486A2E2D8A4C003C97E7 /* ccpa-compliance.md in Resources */ = {isa = PBXBuildFile; fileRef = ADDC48672E2D8A4C003C97E7 /* ccpa-compliance.md */; };
 		ADDC486B2E2D8A4C003C97E7 /* open-source-licenses.md in Resources */ = {isa = PBXBuildFile; fileRef = ADDC48692E2D8A4C003C97E7 /* open-source-licenses.md */; };
@@ -999,10 +982,6 @@
 				ADDC48892E2D8A6B003C97E7 /* VersionRow.swift in Sources */,
 				ADDC488A2E2D8A6B003C97E7 /* WhatsNewRow.swift in Sources */,
 				ADDC47AE2E2D89F3003C97E7 /* WeightEntry.swift in Sources */,
-				ADDC47B12E2D89F3003C97E7 /* health-disclosure.md in Sources */,
-				ADDC47B22E2D89F3003C97E7 /* privacy-policy.md in Sources */,
-				ADDC47B32E2D89F3003C97E7 /* terms-of-service.md in Sources */,
-				ADDC47B42E2D89F3003C97E7 /* AppIconGuide.md in Sources */,
 				ADDC47B52E2D89F3003C97E7 /* BackgroundPhotoUploadService+Processing.swift in Sources */,
 				ADDC47B62E2D89F3003C97E7 /* ImageProcessingService.swift in Sources */,
 				ADDC47B72E2D89F3003C97E7 /* VisionOrientationService.swift in Sources */,
@@ -1076,19 +1055,6 @@
 				ADDC48002E2D89F3003C97E7 /* LogYourBodyTests.swift in Sources */,
 				ADDC48012E2D89F3003C97E7 /* LogYourBodyUITests.swift in Sources */,
 				ADDC48022E2D89F3003C97E7 /* LogYourBodyUITestsLaunchTests.swift in Sources */,
-				ADDC48032E2D89F3003C97E7 /* PROJECT_STRUCTURE.md in Sources */,
-				ADDC48042E2D89F3003C97E7 /* README.md in Sources */,
-				ADDC48052E2D89F3003C97E7 /* setup-local-testing.sh in Sources */,
-				ADDC48062E2D89F3003C97E7 /* setup-xcode-config.sh in Sources */,
-				ADDC48092E2D89F3003C97E7 /* Assets.xcassets in Sources */,
-				ADDC48522E2D89F3003C97E7 /* LogYourBody.entitlements in Sources */,
-				ADDC48582E2D89F3003C97E7 /* Preview Assets.xcassets in Sources */,
-				ADDC485C2E2D89F3003C97E7 /* LogYourBody.app in Sources */,
-				ADDC485D2E2D89F3003C97E7 /* LogYourBodyTests.xctest in Sources */,
-				ADDC485E2E2D89F3003C97E7 /* LogYourBodyUITests.xctest in Sources */,
-				ADDC485F2E2D89F3003C97E7 /* HealthKit.framework in Sources */,
-				ADDC48602E2D89F3003C97E7 /* WidgetKit.framework in Sources */,
-				ADDC48612E2D89F3003C97E7 /* SwiftUI.framework in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
