@@ -138,6 +138,24 @@ jobs:
         
         echo "Installed provisioning profile: ${uuid}.mobileprovision"
         echo "PROVISIONING_PROFILE_UUID=${uuid}" >> $GITHUB_ENV
+        
+        # Validate provisioning profile
+        security cms -D -i provision.mobileprovision > profile_info.plist
+        app_id=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile_info.plist)
+        team_id=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" profile_info.plist)
+        
+        echo "Provisioning Profile Info:"
+        echo "  UUID: ${uuid}"
+        echo "  App ID: ${app_id}"
+        echo "  Team ID: ${team_id}"
+        
+        # Verify it matches our expected values
+        if [[ ! "$app_id" =~ "LogYourBody.LogYourBody" ]]; then
+          echo "::error::Provisioning profile app ID mismatch. Expected LogYourBody.LogYourBody, got ${app_id}"
+          exit 1
+        fi
+        
+        rm -f profile_info.plist
     
     - name: Setup App Store Connect API Key
       run: |
@@ -176,10 +194,16 @@ jobs:
         pwd
         ls -la
         
-        # Use Fastlane to build and upload
+        # Use Fastlane to build and upload, capturing output for error detection
         bundle exec fastlane alpha \
           release_notes_file:release_notes.txt \
-          groups:"Internal Testers"
+          groups:"Internal Testers" 2>&1 | tee fastlane.log
+        
+        # Check for errors and surface them in the summary
+        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" fastlane.log; then
+          echo "::error::Build errors detected - see highlighted lines above"
+          exit 1
+        fi
       env:
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}

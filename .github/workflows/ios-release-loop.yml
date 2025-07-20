@@ -116,7 +116,32 @@ jobs:
     - name: Download Provisioning Profile
       run: |
         mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > ~/Library/MobileDevice/Provisioning\ Profiles/distribution.mobileprovision
+        echo "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > provision.mobileprovision
+        
+        # Extract UUID and install with proper name
+        uuid=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(security cms -D -i provision.mobileprovision))
+        cp provision.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${uuid}.mobileprovision
+        
+        echo "Installed provisioning profile: ${uuid}.mobileprovision"
+        echo "PROVISIONING_PROFILE_UUID=${uuid}" >> $GITHUB_ENV
+        
+        # Validate provisioning profile
+        security cms -D -i provision.mobileprovision > profile_info.plist
+        app_id=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile_info.plist)
+        team_id=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" profile_info.plist)
+        
+        echo "Provisioning Profile Info:"
+        echo "  UUID: ${uuid}"
+        echo "  App ID: ${app_id}"
+        echo "  Team ID: ${team_id}"
+        
+        # Verify it matches our expected values
+        if [[ ! "$app_id" =~ "LogYourBody.LogYourBody" ]]; then
+          echo "::error::Provisioning profile app ID mismatch. Expected LogYourBody.LogYourBody, got ${app_id}"
+          exit 1
+        fi
+        
+        rm -f profile_info.plist
     
     - name: Setup App Store Connect API Key
       run: |
@@ -138,8 +163,14 @@ jobs:
       run: |
         cd apps/ios
         
-        # Use Fastlane to build
-        bundle exec fastlane build_release
+        # Use Fastlane to build, capturing output for error detection
+        bundle exec fastlane build_release 2>&1 | tee fastlane.log
+        
+        # Check for errors and surface them in the summary
+        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" fastlane.log; then
+          echo "::error::Build errors detected - see highlighted lines above"
+          exit 1
+        fi
       env:
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
@@ -193,7 +224,13 @@ jobs:
     - name: Run Fastlane Precheck
       run: |
         cd apps/ios
-        bundle exec fastlane precheck
+        bundle exec fastlane precheck 2>&1 | tee precheck.log
+        
+        # Check for errors and surface them in the summary
+        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" precheck.log; then
+          echo "::error::Precheck errors detected - see highlighted lines above"
+          exit 1
+        fi
       env:
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
@@ -220,7 +257,13 @@ jobs:
         bundle exec fastlane upload_testflight \
           ipa_path:build/*.ipa \
           groups:"Production Testers,Beta Testers" \
-          changelog_file:release_notes.txt
+          changelog_file:release_notes.txt 2>&1 | tee upload.log
+        
+        # Check for errors and surface them in the summary
+        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" upload.log; then
+          echo "::error::Upload errors detected - see highlighted lines above"
+          exit 1
+        fi
       env:
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
@@ -268,7 +311,13 @@ jobs:
     - name: Run Fastlane Precheck
       run: |
         cd apps/ios
-        bundle exec fastlane precheck
+        bundle exec fastlane precheck 2>&1 | tee precheck.log
+        
+        # Check for errors and surface them in the summary
+        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" precheck.log; then
+          echo "::error::Precheck errors detected - see highlighted lines above"
+          exit 1
+        fi
       env:
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
@@ -282,7 +331,13 @@ jobs:
           ipa_path:build/*.ipa \
           submit_for_review:false \
           automatic_release:false \
-          phased_release:true
+          phased_release:true 2>&1 | tee submit.log
+        
+        # Check for errors and surface them in the summary
+        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" submit.log; then
+          echo "::error::Submission errors detected - see highlighted lines above"
+          exit 1
+        fi
       env:
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
         APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}

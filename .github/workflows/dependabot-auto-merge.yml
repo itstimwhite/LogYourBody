@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
   workflow_run:
-    workflows: ["Main CI/CD"]
+    workflows: ["CI/CD Orchestrator"]
     types: [completed]
 
 permissions:
