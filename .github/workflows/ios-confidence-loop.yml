@@ -1,20 +1,22 @@
 name: iOS Confidence Loop
 
 on:
+  workflow_run:
+    workflows: ["iOS Rapid Loop"]
+    branches: [dev]
+    types: [completed]
   push:
     branches: [preview]
     paths:
       - 'apps/ios/**'
       - '.github/workflows/ios-confidence-loop.yml'
-  schedule:
-    # Run at 2 AM PT (9 AM UTC)
-    - cron: '0 9 * * *'
   workflow_dispatch:
   workflow_call:
 
 jobs:
   # Setup job that prepares dependencies for other jobs
   setup:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: macos-latest
     outputs:
       cache-key: ${{ steps.cache-key.outputs.key }}
@@ -244,7 +246,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-latest
     timeout-minutes: 30
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'workflow_run'
     steps:
     - uses: actions/checkout@v4
     
@@ -320,7 +322,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-latest
     timeout-minutes: 20
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'workflow_run'
     steps:
     - uses: actions/checkout@v4
     
@@ -388,7 +390,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-latest
     timeout-minutes: 25
-    if: github.event_name == 'schedule'
+    if: github.event_name == 'workflow_run'
     steps:
     - uses: actions/checkout@v4
     

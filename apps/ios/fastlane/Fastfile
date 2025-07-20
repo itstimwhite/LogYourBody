@@ -133,11 +133,14 @@ platform :ios do
     end
     
     # Upload to TestFlight
+    # Get groups from options or default to Internal Testers
+    test_groups = options[:groups] ? options[:groups].split(",") : ["Internal Testers"]
+    
     upload_to_testflight(
       skip_waiting_for_build_processing: true,
       apple_id: ENV["APP_STORE_APP_ID"],
       team_id: ENV["APPLE_TEAM_ID"],
-      groups: ["Internal Testers"], # Alpha goes to internal only
+      groups: test_groups,
       changelog: release_notes,
       distribute_external: false
     )
