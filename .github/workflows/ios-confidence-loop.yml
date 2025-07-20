@@ -566,9 +566,42 @@ jobs:
         echo "  App ID: ${app_id}"
         echo "  Team ID: ${team_id}"
         
+        # Check for required capabilities
+        echo "Checking required capabilities..."
+        capabilities_ok=true
+        
+        # Check for HealthKit
+        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.healthkit" profile_info.plist &>/dev/null; then
+          echo "::warning::Missing HealthKit capability"
+          capabilities_ok=false
+        fi
+        
+        # Check for App Groups
+        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.security.application-groups:0" profile_info.plist &>/dev/null; then
+          echo "::warning::Missing App Groups capability"
+          capabilities_ok=false
+        fi
+        
+        # Check for Associated Domains
+        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.associated-domains:0" profile_info.plist &>/dev/null; then
+          echo "::warning::Missing Associated Domains capability"
+          capabilities_ok=false
+        fi
+        
+        # Check for Sign in with Apple
+        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.applesignin" profile_info.plist &>/dev/null; then
+          echo "::warning::Missing Sign in with Apple capability"
+          capabilities_ok=false
+        fi
+        
         # Verify it matches our expected values
         if [[ ! "$app_id" =~ "LogYourBody.LogYourBody" ]]; then
           echo "::error::Provisioning profile app ID mismatch. Expected LogYourBody.LogYourBody, got ${app_id}"
+          exit 1
+        fi
+        
+        if [[ "$capabilities_ok" == "false" ]]; then
+          echo "::error::Provisioning profile is missing required capabilities. Please regenerate the profile with all required entitlements."
           exit 1
         fi
         
