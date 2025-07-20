@@ -20,7 +20,7 @@ on:
 jobs:
   validate-release:
     name: Validate Release
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 5
     outputs:
       version: ${{ steps.version.outputs.version }}
@@ -89,7 +89,7 @@ jobs:
     name: Build Release
     needs: [validate-release, check-existing-build]
     if: needs.check-existing-build.outputs.has_artifact != 'true'
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 30
     
     steps:
@@ -240,7 +240,7 @@ jobs:
     name: Deploy to TestFlight
     needs: [validate-release, build-release]
     if: github.event.inputs.release_type != 'app_store'
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 20
     environment:
       name: production-testflight
@@ -327,7 +327,7 @@ jobs:
     name: Deploy to App Store
     needs: [validate-release, build-release]
     if: github.event.inputs.release_type == 'app_store'
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 30
     environment:
       name: production-app-store

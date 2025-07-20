@@ -17,7 +17,7 @@ jobs:
   # Setup job that prepares dependencies for other jobs
   setup:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
-    runs-on: macos-latest
+    runs-on: macos-14
     outputs:
       cache-key: ${{ steps.cache-key.outputs.key }}
     steps:
@@ -72,7 +72,7 @@ jobs:
   # Lint job runs in parallel
   lint:
     needs: setup
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 5
     steps:
     - uses: actions/checkout@v4
@@ -106,7 +106,7 @@ jobs:
   # Build job - builds once for all test jobs
   build:
     needs: setup
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 20
     steps:
     - uses: actions/checkout@v4
@@ -171,7 +171,7 @@ jobs:
   # Full UI and integration tests
   test:
     needs: [setup, build]
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 30
     steps:
     - uses: actions/checkout@v4
@@ -244,7 +244,7 @@ jobs:
   # Sanitizer test job - runs in parallel with normal tests
   test-sanitizers:
     needs: [setup, build]
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 30
     if: github.event_name == 'workflow_run'
     steps:
@@ -320,7 +320,7 @@ jobs:
   # Snapshot tests for UI regression
   snapshot-tests:
     needs: [setup, build]
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 20
     if: github.event_name == 'workflow_run'
     steps:
@@ -388,7 +388,7 @@ jobs:
   # Performance profiling
   performance-tests:
     needs: [setup, build]
-    runs-on: macos-latest
+    runs-on: macos-14
     timeout-minutes: 25
     if: github.event_name == 'workflow_run'
     steps:
@@ -509,7 +509,7 @@ jobs:
   deploy-testflight:
     needs: [build, test]
     if: github.ref == 'refs/heads/preview' && github.event_name == 'push'
-    runs-on: macos-latest
+    runs-on: macos-14
     environment:
       name: Preview
       url: https://testflight.apple.com

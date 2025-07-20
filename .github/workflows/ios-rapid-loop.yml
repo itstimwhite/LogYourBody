@@ -60,6 +60,18 @@ jobs:
         export PATH="/opt/homebrew/bin:$PATH"
         swiftlint lint --strict --reporter github-actions-logging
     
+    - name: Validate signing configuration
+      run: |
+        cd apps/ios
+        
+        # Quick validation of signing setup using Fastlane
+        bundle exec fastlane run validate_project 2>&1 | tee validation.log || true
+        
+        # Check for common signing issues
+        if grep -E "provisioning|certificate|signing|codesign" validation.log | grep -E "error|Error|ERROR"; then
+          echo "::warning::Potential signing issues detected - check logs"
+        fi
+    
     - name: Quick build check
       run: |
         cd apps/ios
