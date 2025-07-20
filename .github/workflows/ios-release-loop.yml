@@ -154,7 +154,7 @@ jobs:
         fi
         
         # Check for Associated Domains
-        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.associated-domains:0" profile_info.plist &>/dev/null; then
+        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.associated-domains" profile_info.plist &>/dev/null; then
           echo "::warning::Missing Associated Domains capability"
           capabilities_ok=false
         fi
