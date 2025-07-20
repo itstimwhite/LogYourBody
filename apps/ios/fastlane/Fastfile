@@ -121,8 +121,7 @@ platform :ios do
       skip_package_dependencies_resolution: true,
       disable_package_automatic_updates: true,
       cloned_source_packages_path: "SourcePackages",
-      skip_profile_detection: true,
-      xcargs: ENV["PROVISIONING_PROFILE_UUID"] ? "PROVISIONING_PROFILE_SPECIFIER='#{ENV["PROVISIONING_PROFILE_UUID"]}' CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_IDENTITY='iPhone Distribution'" : "-allowProvisioningUpdates"
+      skip_profile_detection: false
     )
     
     # Read release notes if provided
@@ -212,8 +211,7 @@ platform :ios do
       skip_package_dependencies_resolution: true,
       disable_package_automatic_updates: true,
       cloned_source_packages_path: "SourcePackages",
-      skip_profile_detection: true,
-      xcargs: ENV["PROVISIONING_PROFILE_UUID"] ? "PROVISIONING_PROFILE_SPECIFIER='#{ENV["PROVISIONING_PROFILE_UUID"]}' CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_IDENTITY='iPhone Distribution'" : "-allowProvisioningUpdates"
+      skip_profile_detection: false
     )
     
     # Upload to TestFlight
@@ -271,7 +269,7 @@ platform :ios do
       disable_package_automatic_updates: true,
       cloned_source_packages_path: "SourcePackages",
       skip_profile_detection: true,
-      xcargs: ENV["PROVISIONING_PROFILE_UUID"] ? "PROVISIONING_PROFILE_SPECIFIER='#{ENV["PROVISIONING_PROFILE_UUID"]}' CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_IDENTITY='iPhone Distribution'" : "-allowProvisioningUpdates"
+      xcargs: "-allowProvisioningUpdates"
     )
   end
 
