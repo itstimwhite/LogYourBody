@@ -22,7 +22,6 @@
 		AD7243322E15FA5D002376C6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AD723ADD2E15FA5C002376C6 /* Preview Assets.xcassets */; };
 		AD7243332E15FA5D002376C6 /* app-icon-180.png in Resources */ = {isa = PBXBuildFile; fileRef = AD723AE12E15FA5C002376C6 /* app-icon-180.png */; };
 		AD7243342E15FA5D002376C6 /* AppIconGuide.md in Resources */ = {isa = PBXBuildFile; fileRef = AD723AE22E15FA5C002376C6 /* AppIconGuide.md */; };
-		AD7243582E15FA5E002376C6 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = AD723B0C2E15FA5C002376C6 /* Config.xcconfig */; };
 		AD7243592E15FA5E002376C6 /* Config.xcconfig.example in Resources */ = {isa = PBXBuildFile; fileRef = AD723B0D2E15FA5C002376C6 /* Config.xcconfig.example */; };
 		AD72435C2E15FA5E002376C6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AD723B102E15FA5C002376C6 /* LaunchScreen.storyboard */; };
 		AD7D30A72E1490810072AA5B /* LogYourBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30A62E1490810072AA5B /* LogYourBodyTests.swift */; };
@@ -108,11 +107,7 @@
 		ADDC47EC2E2D89F3003C97E7 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B062E15FA5C002376C6 /* PreferencesView.swift */; };
 		ADDC47ED2E2D89F3003C97E7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B082E15FA5C002376C6 /* SettingsView.swift */; };
 		ADDC47EE2E2D89F3003C97E7 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B092E15FA5C002376C6 /* SignUpView.swift */; };
-		ADDC47F02E2D89F3003C97E7 /* Config.xcconfig in Sources */ = {isa = PBXBuildFile; fileRef = AD723B0C2E15FA5C002376C6 /* Config.xcconfig */; };
-		ADDC47F12E2D89F3003C97E7 /* Config.xcconfig.example in Sources */ = {isa = PBXBuildFile; fileRef = AD723B0D2E15FA5C002376C6 /* Config.xcconfig.example */; };
 		ADDC47F22E2D89F3003C97E7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B0E2E15FA5C002376C6 /* ContentView.swift */; };
-		ADDC47F32E2D89F3003C97E7 /* Info.plist in Sources */ = {isa = PBXBuildFile; fileRef = AD723B0F2E15FA5C002376C6 /* Info.plist */; };
-		ADDC47F52E2D89F3003C97E7 /* LogYourBody.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = AD723B112E15FA5C002376C6 /* LogYourBody.entitlements */; };
 		ADDC47F62E2D89F3003C97E7 /* LogYourBodyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723B122E15FA5C002376C6 /* LogYourBodyApp.swift */; };
 		ADDC47F72E2D89F3003C97E7 /* AnimatedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38B2E24A948001F82A8 /* AnimatedTabView.swift */; };
 		ADDC47F82E2D89F3003C97E7 /* Components/DashboardComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B002E25B10100123456 /* Components/DashboardComponents.swift */; };
@@ -130,57 +125,9 @@
 		ADDC48042E2D89F3003C97E7 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = AD722F0F2E15FA5A002376C6 /* README.md */; };
 		ADDC48052E2D89F3003C97E7 /* setup-local-testing.sh in Sources */ = {isa = PBXBuildFile; fileRef = AD723ACC2E15FA5C002376C6 /* setup-local-testing.sh */; };
 		ADDC48062E2D89F3003C97E7 /* setup-xcode-config.sh in Sources */ = {isa = PBXBuildFile; fileRef = ADF287AC2E1507AF00198D6F /* setup-xcode-config.sh */; };
-		ADDC48072E2D89F3003C97E7 /* Supabase.xcconfig in Sources */ = {isa = PBXBuildFile; fileRef = ADF287AD2E1507C300198D6F /* Supabase.xcconfig */; };
-		ADDC48082E2D89F3003C97E7 /* AppleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF287A62E14AC6300198D6F /* AppleSignInButton.swift */; };
 		ADDC48092E2D89F3003C97E7 /* Assets.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = ADBD693C2E14A7B900921A30 /* Assets.xcassets */; };
-		ADDC480A2E2D89F3003C97E7 /* Supabase.xcconfig in Sources */ = {isa = PBXBuildFile; fileRef = ADF287AA2E15045900198D6F /* Supabase.xcconfig */; };
-		ADDC48252E2D89F3003C97E7 /* OTPInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A252E188F96004FCE40 /* OTPInputView.swift */; };
-		ADDC48262E2D89F3003C97E7 /* BulkPhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D39D2E24ADB5001F82A8 /* BulkPhotoImportView.swift */; };
-		ADDC48272E2D89F3003C97E7 /* IntegrationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D39E2E24ADB5001F82A8 /* IntegrationsView.swift */; };
-		ADDC48282E2D89F3003C97E7 /* LegalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D39F2E24ADB5001F82A8 /* LegalView.swift */; };
-		ADDC48292E2D89F3003C97E7 /* SecuritySessionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1F32E1E1B3600E3FB4D /* SecuritySessionsView.swift */; };
-		ADDC482A2E2D89F3003C97E7 /* ProfilePreparationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1EA2E1E1B1B00E3FB4D /* ProfilePreparationView.swift */; };
-		ADDC482B2E2D89F3003C97E7 /* DateOfBirthInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1D2E185913004FCE40 /* DateOfBirthInputView.swift */; };
-		ADDC482C2E2D89F3003C97E7 /* GenderInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1C2E185913004FCE40 /* GenderInputView.swift */; };
-		ADDC482D2E2D89F3003C97E7 /* HeightInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1E2E185913004FCE40 /* HeightInputView.swift */; };
-		ADDC482E2E2D89F3003C97E7 /* NameInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1B2E185913004FCE40 /* NameInputView.swift */; };
-		ADDC482F2E2D89F3003C97E7 /* OnboardingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C3F2E15A00300123456 /* OnboardingContainerView.swift */; };
-		ADDC48302E2D89F3003C97E7 /* WelcomeStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C402E15A00400123456 /* WelcomeStepView.swift */; };
-		ADDC48312E2D89F3003C97E7 /* HealthKitStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2C3D602E16B10B00234567 /* HealthKitStepView.swift */; };
-		ADDC48322E2D89F3003C97E7 /* NotificationsStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C442E15A00800123456 /* NotificationsStepView.swift */; };
-		ADDC48332E2D89F3003C97E7 /* CompletionStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C452E15A00900123456 /* CompletionStepView.swift */; };
-		ADDC48342E2D89F3003C97E7 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692C2E14A7B900921A30 /* DashboardView.swift */; };
-		ADDC48352E2D89F3003C97E7 /* DietPhaseHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD3B4C5E2E25A7B100123456 /* DietPhaseHistoryView.swift */; };
-		ADDC48362E2D89F3003C97E7 /* HealthKitPromptView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2C3D622E16B10D00234567 /* HealthKitPromptView.swift */; };
-		ADDC48372E2D89F3003C97E7 /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7B8C992E1CE56600789012 /* LoadingView.swift */; };
-		ADDC48382E2D89F3003C97E7 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692D2E14A7B900921A30 /* LoginView.swift */; };
-		ADDC48392E2D89F3003C97E7 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8056FC2E25F5180028C0DD /* CameraView.swift */; };
-		ADDC483A2E2D89F3003C97E7 /* HealthDisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054DA2E20C6270029E0FF /* HealthDisclaimerView.swift */; };
-		ADDC483B2E2D89F3003C97E7 /* LogWeightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692E2E14A7B900921A30 /* LogWeightView.swift */; };
-		ADDC483C2E2D89F3003C97E7 /* LegalConsentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054DC2E20C9DF0029E0FF /* LegalConsentView.swift */; };
-		ADDC483D2E2D89F3003C97E7 /* EmailVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C2002E1F2BD900E3FB4D /* EmailVerificationView.swift */; };
-		ADDC483E2E2D89F3003C97E7 /* EnhancedOTPInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C2012E1F2BD900E3FB4D /* EnhancedOTPInputView.swift */; };
-		ADDC483F2E2D89F3003C97E7 /* ProgressPhotoCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054DE2E20CDB00029E0FF /* ProgressPhotoCarouselView.swift */; };
-		ADDC48402E2D89F3003C97E7 /* ProfileSettingsViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526E2E19E4DF003552EE /* ProfileSettingsViewV2.swift */; };
-		ADDC48412E2D89F3003C97E7 /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526F2E19E4DF003552EE /* SyncStatusView.swift */; };
-		ADDC48422E2D89F3003C97E7 /* OptimizedProgressPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1FE2E1EFE3100E3FB4D /* OptimizedProgressPhotoView.swift */; };
-		ADDC48432E2D89F3003C97E7 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552702E19E4DF003552EE /* WhatsNewView.swift */; };
-		ADDC48442E2D89F3003C97E7 /* VersionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526A2E19E4CD003552EE /* VersionRow.swift */; };
-		ADDC48452E2D89F3003C97E7 /* WhatsNewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526B2E19E4CD003552EE /* WhatsNewRow.swift */; };
-		ADDC48462E2D89F3003C97E7 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD692F2E14A7B900921A30 /* MainTabView.swift */; };
-		ADDC48472E2D89F3003C97E7 /* PreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD4F5E7A2E18C23400456789 /* PreferencesView.swift */; };
-		ADDC48482E2D89F3003C97E7 /* BiometricLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1FC2E1E2E9100E3FB4D /* BiometricLockView.swift */; };
-		ADDC48492E2D89F3003C97E7 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69312E14A7B900921A30 /* SettingsView.swift */; };
-		ADDC484A2E2D89F3003C97E7 /* SignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69322E14A7B900921A30 /* SignUpView.swift */; };
 		ADDC48522E2D89F3003C97E7 /* LogYourBody.entitlements in Sources */ = {isa = PBXBuildFile; fileRef = ADF287A72E14AFA900198D6F /* LogYourBody.entitlements */; };
-		ADDC48532E2D89F3003C97E7 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD99F2982E1491FA00F5ECE4 /* AuthManager.swift */; };
-		ADDC48542E2D89F3003C97E7 /* LogYourBodyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30952E14907F0072AA5B /* LogYourBodyApp.swift */; };
-		ADDC48552E2D89F3003C97E7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30972E14907F0072AA5B /* ContentView.swift */; };
-		ADDC48572E2D89F3003C97E7 /* Assets.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30992E1490810072AA5B /* Assets.xcassets */; };
 		ADDC48582E2D89F3003C97E7 /* Preview Assets.xcassets in Sources */ = {isa = PBXBuildFile; fileRef = AD7D309C2E1490810072AA5B /* Preview Assets.xcassets */; };
-		ADDC48592E2D89F3003C97E7 /* LogYourBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30A62E1490810072AA5B /* LogYourBodyTests.swift */; };
-		ADDC485A2E2D89F3003C97E7 /* LogYourBodyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30B02E1490810072AA5B /* LogYourBodyUITests.swift */; };
-		ADDC485B2E2D89F3003C97E7 /* LogYourBodyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30B22E1490810072AA5B /* LogYourBodyUITestsLaunchTests.swift */; };
 		ADDC485C2E2D89F3003C97E7 /* LogYourBody.app in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30922E14907F0072AA5B /* LogYourBody.app */; };
 		ADDC485D2E2D89F3003C97E7 /* LogYourBodyTests.xctest in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30A22E1490810072AA5B /* LogYourBodyTests.xctest */; };
 		ADDC485E2E2D89F3003C97E7 /* LogYourBodyUITests.xctest in Sources */ = {isa = PBXBuildFile; fileRef = AD7D30AC2E1490810072AA5B /* LogYourBodyUITests.xctest */; };
@@ -211,12 +158,6 @@
 		ADDC48922E2D8A73003C97E7 /* HeightInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC488D2E2D8A73003C97E7 /* HeightInputView.swift */; };
 		ADDC48932E2D8A73003C97E7 /* GenderInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC488C2E2D8A73003C97E7 /* GenderInputView.swift */; };
 		ADDC48942E2D8A73003C97E7 /* NameInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC488E2E2D8A73003C97E7 /* NameInputView.swift */; };
-		ADDC489B2E2D8A84003C97E7 /* LiquidGlassCTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48982E2D8A84003C97E7 /* LiquidGlassCTAButton.swift */; };
-		ADDC489C2E2D8A84003C97E7 /* CommonComponents 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48962E2D8A84003C97E7 /* CommonComponents 2.swift */; };
-		ADDC489D2E2D8A84003C97E7 /* AuthComponents 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48952E2D8A84003C97E7 /* AuthComponents 2.swift */; };
-		ADDC489E2E2D8A84003C97E7 /* ImageProcessingStatusView 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48972E2D8A84003C97E7 /* ImageProcessingStatusView 2.swift */; };
-		ADDC489F2E2D8A84003C97E7 /* ToastManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC489A2E2D8A84003C97E7 /* ToastManager.swift */; };
-		ADDC48A02E2D8A84003C97E7 /* SettingsComponents 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48992E2D8A84003C97E7 /* SettingsComponents 2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -406,12 +347,6 @@
 		ADDC488D2E2D8A73003C97E7 /* HeightInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeightInputView.swift; sourceTree = "<group>"; };
 		ADDC488E2E2D8A73003C97E7 /* NameInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NameInputView.swift; sourceTree = "<group>"; };
 		ADDC488F2E2D8A73003C97E7 /* ProgressPhotosStepView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgressPhotosStepView.swift; sourceTree = "<group>"; };
-		ADDC48952E2D8A84003C97E7 /* AuthComponents 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AuthComponents 2.swift"; sourceTree = "<group>"; };
-		ADDC48962E2D8A84003C97E7 /* CommonComponents 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CommonComponents 2.swift"; sourceTree = "<group>"; };
-		ADDC48972E2D8A84003C97E7 /* ImageProcessingStatusView 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ImageProcessingStatusView 2.swift"; sourceTree = "<group>"; };
-		ADDC48982E2D8A84003C97E7 /* LiquidGlassCTAButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiquidGlassCTAButton.swift; sourceTree = "<group>"; };
-		ADDC48992E2D8A84003C97E7 /* SettingsComponents 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SettingsComponents 2.swift"; sourceTree = "<group>"; };
-		ADDC489A2E2D8A84003C97E7 /* ToastManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastManager.swift; sourceTree = "<group>"; };
 		ADE6D3892E24A566001F82A8 /* IntegrationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegrationsView.swift; sourceTree = "<group>"; };
 		ADE6D38B2E24A948001F82A8 /* AnimatedTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AnimatedTabView.swift; path = Components/AnimatedTabView.swift; sourceTree = "<group>"; };
 		ADE6D38C2E24A948001F82A8 /* DietPhaseCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = DietPhaseCard.swift; path = Components/DietPhaseCard.swift; sourceTree = "<group>"; };
@@ -482,12 +417,6 @@
 		60C9D5106098C441A5EF3D53 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				ADDC48952E2D8A84003C97E7 /* AuthComponents 2.swift */,
-				ADDC48962E2D8A84003C97E7 /* CommonComponents 2.swift */,
-				ADDC48972E2D8A84003C97E7 /* ImageProcessingStatusView 2.swift */,
-				ADDC48982E2D8A84003C97E7 /* LiquidGlassCTAButton.swift */,
-				ADDC48992E2D8A84003C97E7 /* SettingsComponents 2.swift */,
-				ADDC489A2E2D8A84003C97E7 /* ToastManager.swift */,
 				ADE6D38B2E24A948001F82A8 /* AnimatedTabView.swift */,
 				AD5C4B002E25B10100123456 /* Components/DashboardComponents.swift */,
 				AD5C4B022E25B10200123456 /* Components/DashboardMetricCards.swift */,
@@ -930,7 +859,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1640;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2600;
 				TargetAttributes = {
 					AD7D30912E14907F0072AA5B = {
 						CreatedOnToolsVersion = 15.4;
@@ -987,7 +916,6 @@
 				AD0054EB2E2197600029E0FF /* privacy-policy.md in Resources */,
 				AD0054EC2E2197600029E0FF /* terms-of-service.md in Resources */,
 				AD0054ED2E2197600029E0FF /* health-disclosure.md in Resources */,
-				AD7243582E15FA5E002376C6 /* Config.xcconfig in Resources */,
 				AD7243342E15FA5D002376C6 /* AppIconGuide.md in Resources */,
 				ADDC486A2E2D8A4C003C97E7 /* ccpa-compliance.md in Resources */,
 				ADDC486B2E2D8A4C003C97E7 /* open-source-licenses.md in Resources */,
@@ -1071,8 +999,6 @@
 				ADDC48892E2D8A6B003C97E7 /* VersionRow.swift in Sources */,
 				ADDC488A2E2D8A6B003C97E7 /* WhatsNewRow.swift in Sources */,
 				ADDC47AE2E2D89F3003C97E7 /* WeightEntry.swift in Sources */,
-				ADDC47AF2E2D89F3003C97E7 /* Preview Assets.xcassets in Sources */,
-				ADDC47B02E2D89F3003C97E7 /* app-icon-180.png in Sources */,
 				ADDC47B12E2D89F3003C97E7 /* health-disclosure.md in Sources */,
 				ADDC47B22E2D89F3003C97E7 /* privacy-policy.md in Sources */,
 				ADDC47B32E2D89F3003C97E7 /* terms-of-service.md in Sources */,
@@ -1154,63 +1080,9 @@
 				ADDC48042E2D89F3003C97E7 /* README.md in Sources */,
 				ADDC48052E2D89F3003C97E7 /* setup-local-testing.sh in Sources */,
 				ADDC48062E2D89F3003C97E7 /* setup-xcode-config.sh in Sources */,
-				ADDC48072E2D89F3003C97E7 /* Supabase.xcconfig in Sources */,
-				ADDC48082E2D89F3003C97E7 /* AppleSignInButton.swift in Sources */,
 				ADDC48092E2D89F3003C97E7 /* Assets.xcassets in Sources */,
-				ADDC480A2E2D89F3003C97E7 /* Supabase.xcconfig in Sources */,
-				ADDC48252E2D89F3003C97E7 /* OTPInputView.swift in Sources */,
-				ADDC48262E2D89F3003C97E7 /* BulkPhotoImportView.swift in Sources */,
-				ADDC48272E2D89F3003C97E7 /* IntegrationsView.swift in Sources */,
-				ADDC48282E2D89F3003C97E7 /* LegalView.swift in Sources */,
-				ADDC48292E2D89F3003C97E7 /* SecuritySessionsView.swift in Sources */,
-				ADDC482A2E2D89F3003C97E7 /* ProfilePreparationView.swift in Sources */,
-				ADDC482B2E2D89F3003C97E7 /* DateOfBirthInputView.swift in Sources */,
-				ADDC482C2E2D89F3003C97E7 /* GenderInputView.swift in Sources */,
-				ADDC482D2E2D89F3003C97E7 /* HeightInputView.swift in Sources */,
-				ADDC482E2E2D89F3003C97E7 /* NameInputView.swift in Sources */,
-				ADDC482F2E2D89F3003C97E7 /* OnboardingContainerView.swift in Sources */,
-				ADDC48302E2D89F3003C97E7 /* WelcomeStepView.swift in Sources */,
-				ADDC48312E2D89F3003C97E7 /* HealthKitStepView.swift in Sources */,
-				ADDC48322E2D89F3003C97E7 /* NotificationsStepView.swift in Sources */,
-				ADDC48332E2D89F3003C97E7 /* CompletionStepView.swift in Sources */,
-				ADDC48342E2D89F3003C97E7 /* DashboardView.swift in Sources */,
-				ADDC48352E2D89F3003C97E7 /* DietPhaseHistoryView.swift in Sources */,
-				ADDC48362E2D89F3003C97E7 /* HealthKitPromptView.swift in Sources */,
-				ADDC48372E2D89F3003C97E7 /* LoadingView.swift in Sources */,
-				ADDC48382E2D89F3003C97E7 /* LoginView.swift in Sources */,
-				ADDC48392E2D89F3003C97E7 /* CameraView.swift in Sources */,
-				ADDC483A2E2D89F3003C97E7 /* HealthDisclaimerView.swift in Sources */,
-				ADDC483B2E2D89F3003C97E7 /* LogWeightView.swift in Sources */,
-				ADDC483C2E2D89F3003C97E7 /* LegalConsentView.swift in Sources */,
-				ADDC483D2E2D89F3003C97E7 /* EmailVerificationView.swift in Sources */,
-				ADDC483E2E2D89F3003C97E7 /* EnhancedOTPInputView.swift in Sources */,
-				ADDC483F2E2D89F3003C97E7 /* ProgressPhotoCarouselView.swift in Sources */,
-				ADDC48402E2D89F3003C97E7 /* ProfileSettingsViewV2.swift in Sources */,
-				ADDC48412E2D89F3003C97E7 /* SyncStatusView.swift in Sources */,
-				ADDC48422E2D89F3003C97E7 /* OptimizedProgressPhotoView.swift in Sources */,
-				ADDC48432E2D89F3003C97E7 /* WhatsNewView.swift in Sources */,
-				ADDC48442E2D89F3003C97E7 /* VersionRow.swift in Sources */,
-				ADDC48452E2D89F3003C97E7 /* WhatsNewRow.swift in Sources */,
-				ADDC489B2E2D8A84003C97E7 /* LiquidGlassCTAButton.swift in Sources */,
-				ADDC489C2E2D8A84003C97E7 /* CommonComponents 2.swift in Sources */,
-				ADDC489D2E2D8A84003C97E7 /* AuthComponents 2.swift in Sources */,
-				ADDC489E2E2D8A84003C97E7 /* ImageProcessingStatusView 2.swift in Sources */,
-				ADDC489F2E2D8A84003C97E7 /* ToastManager.swift in Sources */,
-				ADDC48A02E2D8A84003C97E7 /* SettingsComponents 2.swift in Sources */,
-				ADDC48462E2D89F3003C97E7 /* MainTabView.swift in Sources */,
-				ADDC48472E2D89F3003C97E7 /* PreferencesView.swift in Sources */,
-				ADDC48482E2D89F3003C97E7 /* BiometricLockView.swift in Sources */,
-				ADDC48492E2D89F3003C97E7 /* SettingsView.swift in Sources */,
-				ADDC484A2E2D89F3003C97E7 /* SignUpView.swift in Sources */,
 				ADDC48522E2D89F3003C97E7 /* LogYourBody.entitlements in Sources */,
-				ADDC48532E2D89F3003C97E7 /* AuthManager.swift in Sources */,
-				ADDC48542E2D89F3003C97E7 /* LogYourBodyApp.swift in Sources */,
-				ADDC48552E2D89F3003C97E7 /* ContentView.swift in Sources */,
-				ADDC48572E2D89F3003C97E7 /* Assets.xcassets in Sources */,
 				ADDC48582E2D89F3003C97E7 /* Preview Assets.xcassets in Sources */,
-				ADDC48592E2D89F3003C97E7 /* LogYourBodyTests.swift in Sources */,
-				ADDC485A2E2D89F3003C97E7 /* LogYourBodyUITests.swift in Sources */,
-				ADDC485B2E2D89F3003C97E7 /* LogYourBodyUITestsLaunchTests.swift in Sources */,
 				ADDC485C2E2D89F3003C97E7 /* LogYourBody.app in Sources */,
 				ADDC485D2E2D89F3003C97E7 /* LogYourBodyTests.xctest in Sources */,
 				ADDC485E2E2D89F3003C97E7 /* LogYourBodyUITests.xctest in Sources */,
@@ -1271,6 +1143,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = G24T327LXT;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1294,6 +1167,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1334,6 +1208,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = G24T327LXT;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1350,6 +1225,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -1365,7 +1241,6 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LogYourBody/Preview Content\"";
-				DEVELOPMENT_TEAM = G24T327LXT;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G24T327LXT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -1403,7 +1278,6 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"LogYourBody/Preview Content\"";
-				DEVELOPMENT_TEAM = G24T327LXT;
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = G24T327LXT;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -1437,7 +1311,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -1457,7 +1330,6 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -1476,7 +1348,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
@@ -1495,7 +1366,6 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = G24T327LXT;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = LogYourBody/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
