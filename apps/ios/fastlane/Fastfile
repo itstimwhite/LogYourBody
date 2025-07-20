@@ -107,6 +107,7 @@ platform :ios do
       configuration: "Release",
       export_method: "app-store",
       export_team_id: ENV["APPLE_TEAM_ID"],
+      codesigning_identity: "iPhone Distribution",
       export_options: {
         teamID: ENV["APPLE_TEAM_ID"],
         provisioningProfiles: {
@@ -115,7 +116,8 @@ platform :ios do
         compileBitcode: false,
         uploadBitcode: false,
         uploadSymbols: true,
-        signingStyle: "manual"
+        signingStyle: "manual",
+        signingCertificate: "iPhone Distribution"
       },
       # Speed optimizations
       skip_package_dependencies_resolution: true,
@@ -123,7 +125,7 @@ platform :ios do
       cloned_source_packages_path: "SourcePackages",
       skip_profile_detection: true,
       # Build settings
-      xcargs: "PROVISIONING_PROFILE_SPECIFIER='Github CI App Store' CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']} CODE_SIGN_IDENTITY='iPhone Distribution'"
+      xcargs: "DEVELOPMENT_TEAM=#{ENV['APPLE_TEAM_ID']}"
     )
     
     # Read release notes if provided
