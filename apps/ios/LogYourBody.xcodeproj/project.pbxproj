@@ -80,21 +80,12 @@
 		AD8552662E19DCB6003552EE /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552632E19DCB6003552EE /* SyncStatusView.swift */; };
 		AD85526C2E19E4CD003552EE /* VersionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526A2E19E4CD003552EE /* VersionRow.swift */; };
 		AD85526D2E19E4CD003552EE /* WhatsNewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526B2E19E4CD003552EE /* WhatsNewRow.swift */; };
-		AD8552712E19E4DF003552EE /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552702E19E4DF003552EE /* WhatsNewView.swift */; };
-		AD8552722E19E4DF003552EE /* ProfileSettingsViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526E2E19E4DF003552EE /* ProfileSettingsViewV2.swift */; };
-		AD8552732E19E4DF003552EE /* SyncStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85526F2E19E4DF003552EE /* SyncStatusView.swift */; };
 		AD85527F2E1C3653003552EE /* PhotoUploadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD85527E2E1C3653003552EE /* PhotoUploadManager.swift */; };
-		AD8552922E1CC13B003552EE /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552912E1CC13B003552EE /* ChangePasswordView.swift */; };
-		AD8552942E1CC15B003552EE /* BackgroundRemovalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD8552932E1CC15B003552EE /* BackgroundRemovalService.swift */; };
-		AD933DFB2E24328A00801078 /* DietPhaseHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933DFA2E24328A00801078 /* DietPhaseHistoryView.swift */; };
 		AD933DFD2E249DAD00801078 /* BulkPhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933DFC2E249DAD00801078 /* BulkPhotoImportView.swift */; };
 		AD933E002E249EA000801078 /* BulkImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933DFE2E249EA000801078 /* BulkImportManager.swift */; };
 		AD933E012E249EA000801078 /* PhotoLibraryScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933DFF2E249EA000801078 /* PhotoLibraryScanner.swift */; };
 		AD933E052E24A22D00801078 /* LegalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD933E042E24A22D00801078 /* LegalView.swift */; };
 		ADA922E92E22E4AC00B82C49 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922E82E22E4AC00B82C49 /* HapticManager.swift */; };
-		ADA922ED2E22E7A600B82C49 /* VisionOrientationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922EC2E22E7A600B82C49 /* VisionOrientationService.swift */; };
-		ADA922EE2E22E7A600B82C49 /* BackgroundPhotoUploadService+Processing.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922EA2E22E7A600B82C49 /* BackgroundPhotoUploadService+Processing.swift */; };
-		ADA922EF2E22E7A600B82C49 /* ImageProcessingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922EB2E22E7A600B82C49 /* ImageProcessingService.swift */; };
 		ADA922F12E22E7D500B82C49 /* SecuritySessionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F02E22E7D500B82C49 /* SecuritySessionsView.swift */; };
 		ADA922F92E22EE9D00B82C49 /* ImageProcessingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F42E22EE9D00B82C49 /* ImageProcessingStatusView.swift */; };
 		ADA922FA2E22EE9D00B82C49 /* AuthComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F22E22EE9D00B82C49 /* AuthComponents.swift */; };
@@ -111,36 +102,6 @@
 		ADBD69512E14A7B900921A30 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69372E14A7B900921A30 /* Color+Theme.swift */; };
 		ADBD69522E14A7B900921A30 /* Font+Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69382E14A7B900921A30 /* Font+Custom.swift */; };
 		ADBD69532E14A7B900921A30 /* View+Styles.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD69392E14A7B900921A30 /* View+Styles.swift */; };
-		ADBD69562E14A7B900921A30 /* WeightEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADBD693E2E14A7B900921A30 /* WeightEntry.swift */; };
-		ADE6D38A2E24A566001F82A8 /* IntegrationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D3892E24A566001F82A8 /* IntegrationsView.swift */; };
-		ADE6D38F2E24A948001F82A8 /* AnimatedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38B2E24A948001F82A8 /* AnimatedTabView.swift */; };
-		ADE6D3902E24A948001F82A8 /* LiquidGlassTimelineSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38E2E24A948001F82A8 /* LiquidGlassTimelineSlider.swift */; };
-		ADE6D3912E24A948001F82A8 /* LiquidGlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38D2E24A948001F82A8 /* LiquidGlassTabBar.swift */; };
-		ADE6D3922E24A948001F82A8 /* DietPhaseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38C2E24A948001F82A8 /* DietPhaseCard.swift */; };
-		ADE6D3992E24A96A001F82A8 /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D3962E24A96A001F82A8 /* ShakeDetector.swift */; };
-		ADE6D39C2E24AD30001F82A8 /* LiquidGlassComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D39B2E24AD30001F82A8 /* LiquidGlassComponents.swift */; };
-		ADE6D3A02E24ADB5001F82A8 /* BulkPhotoImportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D39D2E24ADB5001F82A8 /* BulkPhotoImportView.swift */; };
-		ADE6D3A12E24ADB5001F82A8 /* IntegrationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D39E2E24ADB5001F82A8 /* IntegrationsView.swift */; };
-		ADE6D3A52E24ADC4001F82A8 /* BulkImportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D3A32E24ADC4001F82A8 /* BulkImportManager.swift */; };
-		ADE6D3A62E24ADC4001F82A8 /* PhotoLibraryScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D3A42E24ADC4001F82A8 /* PhotoLibraryScanner.swift */; };
-		ADE6D3B02E24AE51001F82A8 /* LiquidGlassCTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D3AF2E24AE51001F82A8 /* LiquidGlassCTAButton.swift */; };
-		ADF287A72E14AC6300198D6F /* AppleSignInButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF287A62E14AC6300198D6F /* AppleSignInButton.swift */; };
-		ADF287AB2E15045900198D6F /* Supabase.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = ADF287AA2E15045900198D6F /* Supabase.xcconfig */; };
-		ADF5C1B22E1CD2FD00E3FB4D /* AddEntrySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1B12E1CD2FD00E3FB4D /* AddEntrySheet.swift */; };
-		ADF5C1B42E1CDB9C00E3FB4D /* PhotoMetadataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1B32E1CDB9C00E3FB4D /* PhotoMetadataService.swift */; };
-		ADF5C1B62E1CF89E00E3FB4D /* BackgroundPhotoUploadService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1B52E1CF89E00E3FB4D /* BackgroundPhotoUploadService.swift */; };
-		ADF5C1BC2E1DFE4000E3FB4D /* WidgetDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1BB2E1DFE4000E3FB4D /* WidgetDataManager.swift */; };
-		ADF5C1E22E1E018C00E3FB4D /* WidgetDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1E12E1E018C00E3FB4D /* WidgetDataManager.swift */; };
-		ADF5C1EB2E1E1B1B00E3FB4D /* ProfilePreparationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1EA2E1E1B1B00E3FB4D /* ProfilePreparationView.swift */; };
-		ADF5C1FD2E1E2E9100E3FB4D /* BiometricLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1FC2E1E2E9100E3FB4D /* BiometricLockView.swift */; };
-		ADF5C1FF2E1EFE3100E3FB4D /* OptimizedProgressPhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C1FE2E1EFE3100E3FB4D /* OptimizedProgressPhotoView.swift */; };
-		ADF5C2022E1F2BD900E3FB4D /* EmailVerificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C2002E1F2BD900E3FB4D /* EmailVerificationView.swift */; };
-		ADF5C2032E1F2BD900E3FB4D /* EnhancedOTPInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADF5C2012E1F2BD900E3FB4D /* EnhancedOTPInputView.swift */; };
-		ADFC6A0E2E1858A3004FCE40 /* NotificationsStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C442E15A00800123456 /* NotificationsStepView.swift */; };
-		ADFC6A122E1858A3004FCE40 /* HealthKitStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2C3D602E16B10B00234567 /* HealthKitStepView.swift */; };
-		ADFC6A162E1858A3004FCE40 /* WelcomeStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C402E15A00400123456 /* WelcomeStepView.swift */; };
-		ADFC6A182E1858A3004FCE40 /* CompletionStepView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C452E15A00900123456 /* CompletionStepView.swift */; };
-		ADFC6A1A2E1858A3004FCE40 /* OnboardingContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD1B2C3F2E15A00300123456 /* OnboardingContainerView.swift */; };
 		ADFC6A1F2E185913004FCE40 /* NameInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1B2E185913004FCE40 /* NameInputView.swift */; };
 		ADFC6A202E185913004FCE40 /* GenderInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1C2E185913004FCE40 /* GenderInputView.swift */; };
 		ADFC6A212E185913004FCE40 /* DateOfBirthInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADFC6A1D2E185913004FCE40 /* DateOfBirthInputView.swift */; };
@@ -1046,26 +1007,8 @@
 				AD72433B2E15FA5D002376C6 /* SupabaseDataClient.swift in Sources */,
 				ADFC6A202E185913004FCE40 /* GenderInputView.swift in Sources */,
 				AD7243482E15FA5E002376C6 /* WelcomeStepView.swift in Sources */,
-				ADE6D38A2E24A566001F82A8 /* IntegrationsView.swift in Sources */,
-				ADFC6A1F2E185913004FCE40 /* NameInputView.swift in Sources */,
-				ADF5C1FF2E1EFE3100E3FB4D /* OptimizedProgressPhotoView.swift in Sources */,
 				AD7243462E15FA5E002376C6 /* OnboardingContainerView.swift in Sources */,
-				AD85525E2E19DC01003552EE /* AppVersionManager.swift in Sources */,
-				AD0054DF2E20CDB00029E0FF /* ProgressPhotoCarouselView.swift in Sources */,
-				AD3B4C5F2E25A7B100123456 /* DietPhaseHistoryView.swift in Sources */,
-				AD786A322E1F410A000A5756 /* LiquidGlassComponents.swift in Sources */,
-				AD8056FD2E25F5180028C0DD /* CameraView.swift in Sources */,
-				AD7243522E15FA5E002376C6 /* MainTabView.swift in Sources */,
-				ADBD69502E14A7B900921A30 /* Constants.swift in Sources */,
-				AD3304C02E241FE80043C4AC /* AppVersion.swift in Sources */,
-				ADF5C2022E1F2BD900E3FB4D /* EmailVerificationView.swift in Sources */,
-				ADF5C2032E1F2BD900E3FB4D /* EnhancedOTPInputView.swift in Sources */,
-				AD0054D92E20AEF10029E0FF /* ImageProcessingService.swift in Sources */,
-				AD7243392E15FA5D002376C6 /* LoadingManager.swift in Sources */,
 				ADF5C1BC2E1DFE4000E3FB4D /* WidgetDataManager.swift in Sources */,
-				ADBD69482E14A7B900921A30 /* DashboardView.swift in Sources */,
-				AD8552602E19DC44003552EE /* Changelog.swift in Sources */,
-				ADBD69532E14A7B900921A30 /* View+Styles.swift in Sources */,
 				AD8552942E1CC15B003552EE /* BackgroundRemovalService.swift in Sources */,
 				ADBD69522E14A7B900921A30 /* Font+Custom.swift in Sources */,
 				ADBD69512E14A7B900921A30 /* Color+Theme.swift in Sources */,
@@ -1073,36 +1016,18 @@
 				ADA923022E22EF4600B82C49 /* UIComponents.swift in Sources */,
 				AD7243302E15FA5D002376C6 /* User.swift in Sources */,
 				AD933DFB2E24328A00801078 /* DietPhaseHistoryView.swift in Sources */,
-				AD7D30982E14907F0072AA5B /* ContentView.swift in Sources */,
-				AD0054DB2E20C6270029E0FF /* HealthDisclaimerView.swift in Sources */,
-				AD0054DD2E20C9DF0029E0FF /* LegalConsentView.swift in Sources */,
 				ADA922ED2E22E7A600B82C49 /* VisionOrientationService.swift in Sources */,
 				ADA922EE2E22E7A600B82C49 /* BackgroundPhotoUploadService+Processing.swift in Sources */,
 				ADA922EF2E22E7A600B82C49 /* ImageProcessingService.swift in Sources */,
-				AD7243412E15FA5E002376C6 /* CompletionStepView.swift in Sources */,
-				ADBD694D2E14A7B900921A30 /* SettingsView.swift in Sources */,
-				AD72434E2E15FA5E002376C6 /* HealthKitPromptView.swift in Sources */,
-				ADA922F12E22E7D500B82C49 /* SecuritySessionsView.swift in Sources */,
-				ADBD694A2E14A7B900921A30 /* LogWeightView.swift in Sources */,
-				ADF5C1E22E1E018C00E3FB4D /* WidgetDataManager.swift in Sources */,
 				ADF5C1FD2E1E2E9100E3FB4D /* BiometricLockView.swift in Sources */,
 				AD7243502E15FA5E002376C6 /* LoginView.swift in Sources */,
 				AD7D30962E14907F0072AA5B /* LogYourBodyApp.swift in Sources */,
 				AD3304C02E241FE80043C4AC /* AppVersion.swift in Sources */,
-				AD7243452E15FA5E002376C6 /* NotificationsStepView.swift in Sources */,
-				ADFC6A262E188F96004FCE40 /* OTPInputView.swift in Sources */,
-				ADF5C1EB2E1E1B1B00E3FB4D /* ProfilePreparationView.swift in Sources */,
 				ADF5C1B62E1CF89E00E3FB4D /* BackgroundPhotoUploadService.swift in Sources */,
 				AD85526C2E19E4CD003552EE /* VersionRow.swift in Sources */,
 				ADA922F92E22EE9D00B82C49 /* ImageProcessingStatusView.swift in Sources */,
 				ADA922FA2E22EE9D00B82C49 /* AuthComponents.swift in Sources */,
 				ADA922FB2E22EE9D00B82C49 /* CommonComponents.swift in Sources */,
-				ADA922FD2E22EE9D00B82C49 /* OnboardingComponents.swift in Sources */,
-				ADE6D3A52E24ADC4001F82A8 /* BulkImportManager.swift in Sources */,
-				ADE6D3A62E24ADC4001F82A8 /* PhotoLibraryScanner.swift in Sources */,
-				ADE6D3B02E24AE51001F82A8 /* LiquidGlassCTAButton.swift in Sources */,
-				ADA922FE2E22EE9D00B82C49 /* ProcessingImagePlaceholder.swift in Sources */,
-				AD933DFD2E249DAD00801078 /* BulkPhotoImportView.swift in Sources */,
 				AD933E052E24A22D00801078 /* LegalView.swift in Sources */,
 				AD85526D2E19E4CD003552EE /* WhatsNewRow.swift in Sources */,
 				ADBD69472E14A7B900921A30 /* AuthManager.swift in Sources */,
@@ -1112,9 +1037,6 @@
 				ADA922E92E22E4AC00B82C49 /* HapticManager.swift in Sources */,
 				AD72433D2E15FA5E002376C6 /* SyncManager.swift in Sources */,
 				ADE6D39C2E24AD30001F82A8 /* LiquidGlassComponents.swift in Sources */,
-				ADBD69562E14A7B900921A30 /* WeightEntry.swift in Sources */,
-				AD7243372E15FA5D002376C6 /* CoreDataManager.swift in Sources */,
-				AD72434D2E15FA5E002376C6 /* ExportDataView.swift in Sources */,
 				ADE6D38F2E24A948001F82A8 /* AnimatedTabView.swift in Sources */,
 				ADE6D3902E24A948001F82A8 /* LiquidGlassTimelineSlider.swift in Sources */,
 				ADE6D3912E24A948001F82A8 /* LiquidGlassTabBar.swift in Sources */,
@@ -1129,33 +1051,12 @@
 				AD8552722E19E4DF003552EE /* ProfileSettingsViewV2.swift in Sources */,
 				AD933E002E249EA000801078 /* BulkImportManager.swift in Sources */,
 				AD933E012E249EA000801078 /* PhotoLibraryScanner.swift in Sources */,
-				AD0054F42E2228F70029E0FF /* SettingsComponents.swift in Sources */,
-				AD5C4B012E25B10100123456 /* Components/DashboardComponents.swift in Sources */,
-				AD5C4B032E25B10200123456 /* Components/DashboardMetricCards.swift in Sources */,
-				AD5C4B052E25B10300123456 /* DashboardView+Views.swift in Sources */,
-				AD5C4B072E25B10400123456 /* DashboardView+Helpers.swift in Sources */,
-				AD5C4B092E25B10500123456 /* DashboardView+Calculations.swift in Sources */,
 				AD5C4B0B2E25B10600123456 /* Components/PhotoAnchoredTimelineSlider.swift in Sources */,
 				AD8552732E19E4DF003552EE /* SyncStatusView.swift in Sources */,
-				AD1B2C472E15A00B00123456 /* OnboardingViewModel.swift in Sources */,
-				ADF5C1B22E1CD2FD00E3FB4D /* AddEntrySheet.swift in Sources */,
-				AD7243442E15FA5E002376C6 /* HealthKitStepView.swift in Sources */,
-				ADFC6A212E185913004FCE40 /* DateOfBirthInputView.swift in Sources */,
-				AD72434F2E15FA5E002376C6 /* LoadingView.swift in Sources */,
-				AD72434B2E15FA5E002376C6 /* DeleteAccountView.swift in Sources */,
 				ADFC6A0E2E1858A3004FCE40 /* NotificationsStepView.swift in Sources */,
-				ADFC6A222E185913004FCE40 /* HeightInputView.swift in Sources */,
-				ADFC6A122E1858A3004FCE40 /* HealthKitStepView.swift in Sources */,
-				AD8552922E1CC13B003552EE /* ChangePasswordView.swift in Sources */,
 				ADFC6A162E1858A3004FCE40 /* WelcomeStepView.swift in Sources */,
 				AD8552622E19DC9C003552EE /* VersionInfo.swift in Sources */,
 				ADFC6A182E1858A3004FCE40 /* CompletionStepView.swift in Sources */,
-				ADFC6A1A2E1858A3004FCE40 /* OnboardingContainerView.swift in Sources */,
-				ADFC6A242E187717004FCE40 /* SupabaseManager.swift in Sources */,
-				AD85527F2E1C3653003552EE /* PhotoUploadManager.swift in Sources */,
-				AD8552662E19DCB6003552EE /* SyncStatusView.swift in Sources */,
-				AD72433E2E15FA5E002376C6 /* Configuration.swift in Sources */,
-				ADE6D3A02E24ADB5001F82A8 /* BulkPhotoImportView.swift in Sources */,
 				ADE6D3A12E24ADB5001F82A8 /* IntegrationsView.swift in Sources */,
 				AD2C3D5F2E16B10A00234567 /* HealthKitManager.swift in Sources */,
 				AD4F5E7B2E18C23500456789 /* PreferencesView.swift in Sources */,
