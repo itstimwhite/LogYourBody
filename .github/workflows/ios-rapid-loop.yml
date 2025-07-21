@@ -30,9 +30,7 @@ jobs:
       with:
         xcode-version: '16.1'
         setup-ruby: 'true'
-    
-    - name: Bootstrap iOS environment
-      uses: ./.github/actions/ios-bootstrap
+        create-config-files: 'true'
     
     - name: Cache Swift packages and DerivedData
       uses: actions/cache@v4
