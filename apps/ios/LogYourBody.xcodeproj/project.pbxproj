@@ -32,7 +32,6 @@
 		ADDC479F2E2D89F3003C97E7 /* ImageProcessingStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F42E22EE9D00B82C49 /* ImageProcessingStatusView.swift */; };
 		ADDC47A02E2D89F3003C97E7 /* OnboardingComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F72E22EE9D00B82C49 /* OnboardingComponents.swift */; };
 		ADDC47A12E2D89F3003C97E7 /* ProcessingImagePlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922F82E22EE9D00B82C49 /* ProcessingImagePlaceholder.swift */; };
-		ADDC47A22E2D89F3003C97E7 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA922E82E22E4AC00B82C49 /* HapticManager.swift */; };
 		ADDC47A32E2D89F3003C97E7 /* SettingsComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD0054F32E2228F70029E0FF /* SettingsComponents.swift */; };
 		ADDC47A42E2D89F3003C97E7 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AD12E15FA5C002376C6 /* Color+Theme.swift */; };
 		ADDC47A52E2D89F3003C97E7 /* Font+Custom.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723AD22E15FA5C002376C6 /* Font+Custom.swift */; };
@@ -133,7 +132,6 @@
 		ADDC48852E2D8A6B003C97E7 /* BiometricLockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC486D2E2D8A6B003C97E7 /* BiometricLockView.swift */; };
 		ADDC48862E2D8A6B003C97E7 /* HealthDisclaimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48732E2D8A6B003C97E7 /* HealthDisclaimerView.swift */; };
 		ADDC48872E2D8A6B003C97E7 /* ProgressPhotoCutoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48782E2D8A6B003C97E7 /* ProgressPhotoCutoutView.swift */; };
-		ADDC48882E2D8A6B003C97E7 /* DashboardView_Clean.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48702E2D8A6B003C97E7 /* DashboardView_Clean.swift */; };
 		ADDC48892E2D8A6B003C97E7 /* VersionRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48792E2D8A6B003C97E7 /* VersionRow.swift */; };
 		ADDC488A2E2D8A6B003C97E7 /* WhatsNewRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC487A2E2D8A6B003C97E7 /* WhatsNewRow.swift */; };
 		ADDC48902E2D8A73003C97E7 /* DateOfBirthInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC488B2E2D8A73003C97E7 /* DateOfBirthInputView.swift */; };
@@ -288,7 +286,6 @@
 		AD933DFF2E249EA000801078 /* PhotoLibraryScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryScanner.swift; sourceTree = "<group>"; };
 		AD933E042E24A22D00801078 /* LegalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegalView.swift; sourceTree = "<group>"; };
 		AD99F2982E1491FA00F5ECE4 /* AuthManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AuthManager.swift; path = Services/AuthManager.swift; sourceTree = "<group>"; };
-		ADA922E82E22E4AC00B82C49 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		ADA922EA2E22E7A600B82C49 /* BackgroundPhotoUploadService+Processing.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BackgroundPhotoUploadService+Processing.swift"; sourceTree = "<group>"; };
 		ADA922EB2E22E7A600B82C49 /* ImageProcessingService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageProcessingService.swift; sourceTree = "<group>"; };
 		ADA922EC2E22E7A600B82C49 /* VisionOrientationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisionOrientationService.swift; sourceTree = "<group>"; };
@@ -313,7 +310,6 @@
 		ADDC486D2E2D8A6B003C97E7 /* BiometricLockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricLockView.swift; sourceTree = "<group>"; };
 		ADDC486E2E2D8A6B003C97E7 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		ADDC486F2E2D8A6B003C97E7 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
-		ADDC48702E2D8A6B003C97E7 /* DashboardView_Clean.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView_Clean.swift; sourceTree = "<group>"; };
 		ADDC48712E2D8A6B003C97E7 /* DashboardViewV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewV2.swift; sourceTree = "<group>"; };
 		ADDC48722E2D8A6B003C97E7 /* EnhancedOTPInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnhancedOTPInputView.swift; sourceTree = "<group>"; };
 		ADDC48732E2D8A6B003C97E7 /* HealthDisclaimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthDisclaimerView.swift; sourceTree = "<group>"; };
@@ -586,7 +582,6 @@
 				ADDC486D2E2D8A6B003C97E7 /* BiometricLockView.swift */,
 				ADDC486E2E2D8A6B003C97E7 /* CameraView.swift */,
 				ADDC486F2E2D8A6B003C97E7 /* ChangePasswordView.swift */,
-				ADDC48702E2D8A6B003C97E7 /* DashboardView_Clean.swift */,
 				ADDC48712E2D8A6B003C97E7 /* DashboardViewV2.swift */,
 				ADDC48722E2D8A6B003C97E7 /* EnhancedOTPInputView.swift */,
 				ADDC48732E2D8A6B003C97E7 /* HealthDisclaimerView.swift */,
@@ -636,7 +631,6 @@
 				ADA922F42E22EE9D00B82C49 /* ImageProcessingStatusView.swift */,
 				ADA922F72E22EE9D00B82C49 /* OnboardingComponents.swift */,
 				ADA922F82E22EE9D00B82C49 /* ProcessingImagePlaceholder.swift */,
-				ADA922E82E22E4AC00B82C49 /* HapticManager.swift */,
 				AD0054F32E2228F70029E0FF /* SettingsComponents.swift */,
 				AD723AD42E15FA5C002376C6 /* Extensions */,
 				AD723ADC2E15FA5C002376C6 /* Models */,
@@ -949,7 +943,6 @@
 				ADDC479F2E2D89F3003C97E7 /* ImageProcessingStatusView.swift in Sources */,
 				ADDC47A02E2D89F3003C97E7 /* OnboardingComponents.swift in Sources */,
 				ADDC47A12E2D89F3003C97E7 /* ProcessingImagePlaceholder.swift in Sources */,
-				ADDC47A22E2D89F3003C97E7 /* HapticManager.swift in Sources */,
 				ADDC47A32E2D89F3003C97E7 /* SettingsComponents.swift in Sources */,
 				ADDC47A42E2D89F3003C97E7 /* Color+Theme.swift in Sources */,
 				ADDC47A52E2D89F3003C97E7 /* Font+Custom.swift in Sources */,
@@ -978,7 +971,6 @@
 				ADDC48852E2D8A6B003C97E7 /* BiometricLockView.swift in Sources */,
 				ADDC48862E2D8A6B003C97E7 /* HealthDisclaimerView.swift in Sources */,
 				ADDC48872E2D8A6B003C97E7 /* ProgressPhotoCutoutView.swift in Sources */,
-				ADDC48882E2D8A6B003C97E7 /* DashboardView_Clean.swift in Sources */,
 				ADDC48892E2D8A6B003C97E7 /* VersionRow.swift in Sources */,
 				ADDC488A2E2D8A6B003C97E7 /* WhatsNewRow.swift in Sources */,
 				ADDC47AE2E2D89F3003C97E7 /* WeightEntry.swift in Sources */,
