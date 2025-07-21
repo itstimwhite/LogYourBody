@@ -17,6 +17,10 @@ on:
           - app_store
   workflow_call:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   validate-release:
     name: Validate Release
@@ -132,10 +136,11 @@ jobs:
         app_id=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile_info.plist)
         team_id=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" profile_info.plist)
         
-        echo "Provisioning Profile Info:"
-        echo "  UUID: ${uuid}"
-        echo "  App ID: ${app_id}"
-        echo "  Team ID: ${team_id}"
+        # Mask sensitive information
+        echo "::add-mask::${app_id}"
+        echo "::add-mask::${team_id}"
+        echo "::add-mask::${uuid}"
+        echo "Provisioning profile validated successfully"
         
         # Check for required capabilities
         echo "Checking required capabilities..."

@@ -1,12 +1,12 @@
 name: 'Setup iOS Build Environment'
-description: 'Common setup steps for iOS builds'
+description: 'Complete setup for iOS CI/CD jobs including Xcode, tools, Ruby, and config files'
 inputs:
   xcode-version:
     description: 'Xcode version to use'
     required: false
     default: '16.1'
-  install-swiftlint:
-    description: 'Install SwiftLint'
+  install-tools:
+    description: 'Install SwiftLint and xcbeautify'
     required: false
     default: 'true'
   setup-ruby:
@@ -26,8 +26,8 @@ runs:
       with:
         xcode-version: ${{ inputs.xcode-version }}
     
-    - name: Cache Homebrew
-      if: inputs.install-swiftlint == 'true'
+    - name: Cache Homebrew tools
+      if: inputs.install-tools == 'true'
       uses: actions/cache@v4
       with:
         path: |
@@ -40,7 +40,7 @@ runs:
           ${{ runner.os }}-homebrew-tools-
     
     - name: Install SwiftLint and xcbeautify
-      if: inputs.install-swiftlint == 'true'
+      if: inputs.install-tools == 'true'
       shell: bash
       run: |
         export PATH="/opt/homebrew/bin:$PATH"
@@ -56,6 +56,15 @@ runs:
         else
           echo "xcbeautify already installed"
         fi
+    
+    - name: Cache Ruby dependencies
+      if: inputs.setup-ruby == 'true'
+      uses: actions/cache@v4
+      with:
+        path: apps/ios/vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
     
     - name: Setup Ruby and Bundler
       if: inputs.setup-ruby == 'true'

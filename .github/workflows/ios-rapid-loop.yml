@@ -29,9 +29,10 @@ jobs:
       uses: ./.github/actions/setup-ios-build
       with:
         xcode-version: '16.1'
-        install-swiftlint: 'true'
         setup-ruby: 'true'
-        create-config-files: 'true'
+    
+    - name: Bootstrap iOS environment
+      uses: ./.github/actions/ios-bootstrap
     
     - name: Cache Swift packages and DerivedData
       uses: actions/cache@v4
@@ -57,7 +58,6 @@ jobs:
     - name: Run SwiftLint
       run: |
         cd apps/ios
-        export PATH="/opt/homebrew/bin:$PATH"
         swiftlint lint --strict --reporter github-actions-logging
     
     - name: Validate signing configuration
@@ -146,14 +146,12 @@ jobs:
         app_id=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile_info.plist)
         team_id=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" profile_info.plist)
         
-        echo "Provisioning Profile Info:"
-        echo "  UUID: ${uuid}"
-        echo "  App ID: ${app_id}"
-        echo "  Team ID: ${team_id}"
+        # Mask sensitive information
+        echo "::add-mask::${app_id}"
+        echo "::add-mask::${team_id}"
+        echo "::add-mask::${uuid}"
         
-        # Debug: Show all entitlements
-        echo "Profile Entitlements:"
-        /usr/libexec/PlistBuddy -c "Print :Entitlements" profile_info.plist || echo "Failed to print entitlements"
+        echo "Provisioning profile validated successfully"
         
         # Check for required capabilities
         echo "Checking required capabilities..."
@@ -205,9 +203,11 @@ jobs:
         echo "APP_STORE_CONNECT_API_KEY_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key_id')" >> $GITHUB_ENV
         echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.issuer_id')" >> $GITHUB_ENV
         
-        # Write the key content to a file (Fastlane will read from here)
-        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key' > /tmp/AuthKey_A76CPV6UUL.p8
-        echo "APP_STORE_CONNECT_API_KEY_PATH=/tmp/AuthKey_A76CPV6UUL.p8" >> $GITHUB_ENV
+        # Write the key content to a secure temp file
+        ASC_KEY_FILE=$(mktemp)
+        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key' > "$ASC_KEY_FILE"
+        echo "APP_STORE_CONNECT_API_KEY_PATH=$ASC_KEY_FILE" >> $GITHUB_ENV
+        echo "ASC_KEY_FILE=$ASC_KEY_FILE" >> $GITHUB_ENV
     
     - name: Create config files
       run: |
@@ -269,8 +269,13 @@ jobs:
       if: always()
       run: |
         cd apps/ios
-        rm -f app_store_connect_api_key.json
         rm -f release_notes.txt
+        # Clean up the App Store Connect key file
+        if [ -n "$ASC_KEY_FILE" ] && [ -f "$ASC_KEY_FILE" ]; then
+          rm -f "$ASC_KEY_FILE"
+        fi
+        # Clean up any other temp files
+        rm -f /tmp/AuthKey_*.p8 2>/dev/null || true
     
     - name: Post deployment status
       uses: actions/github-script@v7

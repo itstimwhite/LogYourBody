@@ -8,14 +8,16 @@ on:
     types: [completed]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read  # Default to read-only
 
 jobs:
   # First check if tests pass
   check-tests:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
+    permissions:
+      contents: read
+      pull-requests: read
     outputs:
       tests-passed: ${{ steps.check.outputs.passed }}
       update-type: ${{ steps.metadata.outputs.update-type }}
@@ -72,6 +74,9 @@ jobs:
   auto-merge:
     needs: check-tests
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
     if: |
       github.actor == 'dependabot[bot]' && 
       needs.check-tests.outputs.tests-passed == 'true' &&
@@ -91,6 +96,8 @@ jobs:
   comment-manual-review:
     needs: check-tests
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     if: |
       github.actor == 'dependabot[bot]' && 
       (needs.check-tests.outputs.update-type == 'version-update:semver-major' ||

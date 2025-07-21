@@ -10,8 +10,14 @@ on:
     paths:
       - 'apps/ios/**'
       - '.github/workflows/ios-confidence-loop.yml'
+  schedule:
+    - cron: '0 2 * * *'  # Nightly at 2 AM UTC
   workflow_dispatch:
   workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   # Setup job that prepares dependencies for other jobs
@@ -226,11 +232,34 @@ jobs:
           -destination 'platform=iOS Simulator,name=iPhone 16' \
           -derivedDataPath build \
           test-without-building \
+          -enableCodeCoverage YES \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
           -parallel-testing-enabled YES \
           -parallel-testing-worker-count $WORKERS \
+          -resultBundlePath TestResults.xcresult \
           -quiet | xcbeautify --renderer github-actions
+    
+    - name: Process code coverage
+      run: |
+        cd apps/ios
+        
+        # Extract coverage data
+        xcrun xccov view --report --json TestResults.xcresult > coverage.json
+        
+        # Calculate total coverage
+        COVERAGE=$(jq '.lineCoverage * 100' coverage.json)
+        echo "Code coverage: ${COVERAGE}%"
+        
+        # Fail if coverage is below threshold
+        THRESHOLD=70
+        if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+          echo "::error::Code coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
+          exit 1
+        fi
+        
+        # Add coverage to summary
+        echo "### Code Coverage: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
     
     - name: Upload test results
       if: always()
@@ -238,15 +267,16 @@ jobs:
       with:
         name: ios-test-results
         path: |
-          apps/ios/build/Logs/Test/*.xcresult
+          apps/ios/TestResults.xcresult
+          apps/ios/coverage.json
         retention-days: 7
 
-  # Sanitizer test job - runs in parallel with normal tests
+  # Sanitizer test job - runs only on nightly schedule
   test-sanitizers:
     needs: [setup, build]
     runs-on: macos-14
     timeout-minutes: 30
-    if: github.event_name == 'workflow_run'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
     - uses: actions/checkout@v4
     
@@ -317,12 +347,12 @@ jobs:
           apps/ios/build/Logs/Test/*.xcresult
         retention-days: 7
 
-  # Snapshot tests for UI regression
+  # Snapshot tests for UI regression - runs only on nightly schedule
   snapshot-tests:
     needs: [setup, build]
     runs-on: macos-14
     timeout-minutes: 20
-    if: github.event_name == 'workflow_run'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
     - uses: actions/checkout@v4
     
@@ -385,12 +415,12 @@ jobs:
           apps/ios/__Snapshots__/
         retention-days: 7
 
-  # Performance profiling
+  # Performance profiling - runs only on nightly schedule
   performance-tests:
     needs: [setup, build]
     runs-on: macos-14
     timeout-minutes: 25
-    if: github.event_name == 'workflow_run'
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     steps:
     - uses: actions/checkout@v4
     
@@ -562,10 +592,11 @@ jobs:
         app_id=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile_info.plist)
         team_id=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" profile_info.plist)
         
-        echo "Provisioning Profile Info:"
-        echo "  UUID: ${uuid}"
-        echo "  App ID: ${app_id}"
-        echo "  Team ID: ${team_id}"
+        # Mask sensitive information
+        echo "::add-mask::${app_id}"
+        echo "::add-mask::${team_id}"
+        echo "::add-mask::${uuid}"
+        echo "Provisioning profile validated successfully"
         
         # Check for required capabilities
         echo "Checking required capabilities..."
