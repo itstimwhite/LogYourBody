@@ -107,6 +107,7 @@
 		ADDC47F72E2D89F3003C97E7 /* AnimatedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38B2E24A948001F82A8 /* AnimatedTabView.swift */; };
 		ADDC47F82E2D89F3003C97E7 /* Components/DashboardComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B002E25B10100123456 /* Components/DashboardComponents.swift */; };
 		ADDC47F92E2D89F3003C97E7 /* Components/DashboardMetricCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B022E25B10200123456 /* Components/DashboardMetricCards.swift */; };
+		ADE6D3B02E24AE51001F82A8 /* LiquidGlassCTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D3AF2E24AE51001F82A8 /* LiquidGlassCTAButton.swift */; };
 		ADDC47FA2E2D89F3003C97E7 /* DietPhaseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38C2E24A948001F82A8 /* DietPhaseCard.swift */; };
 		ADDC47FB2E2D89F3003C97E7 /* LiquidGlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38D2E24A948001F82A8 /* LiquidGlassTabBar.swift */; };
 		ADDC47FC2E2D89F3003C97E7 /* LiquidGlassTimelineSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38E2E24A948001F82A8 /* LiquidGlassTimelineSlider.swift */; };
@@ -116,7 +117,6 @@
 		ADDC48002E2D89F3003C97E7 /* LogYourBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723ACE2E15FA5C002376C6 /* LogYourBodyTests.swift */; };
 		ADDC48012E2D89F3003C97E7 /* LogYourBodyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD722F112E15FA5A002376C6 /* LogYourBodyUITests.swift */; };
 		ADDC48022E2D89F3003C97E7 /* LogYourBodyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD722F122E15FA5A002376C6 /* LogYourBodyUITestsLaunchTests.swift */; };
-		ADDC48662E2D8A33003C97E7 /* LogYourBody.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = ADDC48642E2D8A33003C97E7 /* LogYourBody.xcdatamodeld */; };
 		ADDC486A2E2D8A4C003C97E7 /* ccpa-compliance.md in Resources */ = {isa = PBXBuildFile; fileRef = ADDC48672E2D8A4C003C97E7 /* ccpa-compliance.md */; };
 		ADDC486B2E2D8A4C003C97E7 /* open-source-licenses.md in Resources */ = {isa = PBXBuildFile; fileRef = ADDC48692E2D8A4C003C97E7 /* open-source-licenses.md */; };
 		ADDC486C2E2D8A4C003C97E7 /* gdpr-compliance.md in Resources */ = {isa = PBXBuildFile; fileRef = ADDC48682E2D8A4C003C97E7 /* gdpr-compliance.md */; };
@@ -941,6 +941,7 @@
 				ADDC479D2E2D89F3003C97E7 /* AuthComponents.swift in Sources */,
 				ADDC479E2E2D89F3003C97E7 /* CommonComponents.swift in Sources */,
 				ADDC479F2E2D89F3003C97E7 /* ImageProcessingStatusView.swift in Sources */,
+				ADE6D3B02E24AE51001F82A8 /* LiquidGlassCTAButton.swift in Sources */,
 				ADDC47A02E2D89F3003C97E7 /* OnboardingComponents.swift in Sources */,
 				ADDC47A12E2D89F3003C97E7 /* ProcessingImagePlaceholder.swift in Sources */,
 				ADDC47A32E2D89F3003C97E7 /* SettingsComponents.swift in Sources */,
@@ -1023,7 +1024,6 @@
 				ADDC47E32E2D89F3003C97E7 /* DietPhaseHistoryView.swift in Sources */,
 				ADDC47E42E2D89F3003C97E7 /* EmailVerificationView.swift in Sources */,
 				ADDC47E52E2D89F3003C97E7 /* AddEntrySheet.swift in Sources */,
-				ADDC48662E2D8A33003C97E7 /* LogYourBody.xcdatamodeld in Sources */,
 				ADDC47E62E2D89F3003C97E7 /* ExportDataView.swift in Sources */,
 				ADDC47E72E2D89F3003C97E7 /* HealthKitPromptView.swift in Sources */,
 				ADDC47E82E2D89F3003C97E7 /* LoadingView.swift in Sources */,

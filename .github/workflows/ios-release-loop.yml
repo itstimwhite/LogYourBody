@@ -128,7 +128,6 @@ jobs:
         uuid=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(security cms -D -i provision.mobileprovision))
         cp provision.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${uuid}.mobileprovision
         
-        echo "Installed provisioning profile: ${uuid}.mobileprovision"
         echo "PROVISIONING_PROFILE_UUID=${uuid}" >> $GITHUB_ENV
         
         # Validate provisioning profile
@@ -136,11 +135,12 @@ jobs:
         app_id=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile_info.plist)
         team_id=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" profile_info.plist)
         
-        # Mask sensitive information
+        # Mask sensitive information before any output
         echo "::add-mask::${app_id}"
         echo "::add-mask::${team_id}"
         echo "::add-mask::${uuid}"
-        echo "Provisioning profile validated successfully"
+        
+        echo "Provisioning profile installed and validated successfully"
         
         # Check for required capabilities
         echo "Checking required capabilities..."
