@@ -286,7 +286,7 @@ extension DashboardView {
         for i in stride(from: selectedIndex - 1, through: 0, by: -1) {
             if bodyMetrics[i].photoUrl != nil {
                 selectedIndex = i
-                HapticManager.shared.impact(style: .light)
+                HapticManager.shared.impact(.light)
                 break
             }
         }
@@ -299,7 +299,7 @@ extension DashboardView {
         for i in (selectedIndex + 1)..<bodyMetrics.count {
             if bodyMetrics[i].photoUrl != nil {
                 selectedIndex = i
-                HapticManager.shared.impact(style: .light)
+                HapticManager.shared.impact(.light)
                 break
             }
         }

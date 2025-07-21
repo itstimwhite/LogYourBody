@@ -2,6 +2,9 @@
 // HapticManager.swift
 // LogYourBody
 //
+
+import UIKit
+
 class HapticManager {
     static let shared = HapticManager()
     
