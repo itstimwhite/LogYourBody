@@ -109,13 +109,11 @@ platform :ios do
       export_team_id: ENV["APPLE_TEAM_ID"],
       export_options: {
         teamID: ENV["APPLE_TEAM_ID"],
-        provisioningProfiles: {
-          "LogYourBody.LogYourBody" => "Github CI App Store"
-        },
         compileBitcode: false,
         uploadBitcode: false,
         uploadSymbols: true,
-        signingStyle: "manual"
+        signingStyle: "automatic",
+        signingCertificate: "Apple Distribution"
       },
       # Speed optimizations
       skip_package_dependencies_resolution: true,
@@ -199,13 +197,11 @@ platform :ios do
       export_team_id: ENV["APPLE_TEAM_ID"],
       export_options: {
         teamID: ENV["APPLE_TEAM_ID"],
-        provisioningProfiles: {
-          "LogYourBody.LogYourBody" => "Github CI App Store"
-        },
         compileBitcode: false,
         uploadBitcode: false,
         uploadSymbols: true,
-        signingStyle: "manual"
+        signingStyle: "automatic",
+        signingCertificate: "Apple Distribution"
       },
       # Speed optimizations
       skip_package_dependencies_resolution: true,
@@ -254,13 +250,11 @@ platform :ios do
       export_team_id: ENV["APPLE_TEAM_ID"],
       export_options: {
         teamID: ENV["APPLE_TEAM_ID"],
-        provisioningProfiles: {
-          "LogYourBody.LogYourBody" => "Github CI App Store"
-        },
         compileBitcode: false,
         uploadBitcode: false,
         uploadSymbols: true,
-        signingStyle: "manual"
+        signingStyle: "automatic",
+        signingCertificate: "Apple Distribution"
       },
       output_directory: "build",
       output_name: "LogYourBody",
