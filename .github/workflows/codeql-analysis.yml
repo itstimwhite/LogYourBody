@@ -30,43 +30,44 @@ jobs:
           build-mode: none
         - language: python
           build-mode: none
-        # Disabled C++ analysis - conflicts with default CodeQL setup
-        # - language: c-cpp
-        #   build-mode: manual
         - language: ruby
           build-mode: none
+        - language: swift
+          build-mode: autobuild
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
         build-mode: ${{ matrix.build-mode }}
         config-file: ./.github/codeql/codeql-config.yml
-        
-    # If the analyze step fails for one of the languages you are analyzing with
-    # "We were unable to automatically build your code", modify the matrix above
-    # to set the build-mode to "manual" for that language. Then modify this step
-    # to build your code.
-    - if: matrix.language == 'c-cpp' && matrix.build-mode == 'manual'
-      name: Build C++ Code
+
+    - name: Setup Xcode (Swift only)
+      if: matrix.language == 'swift'
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '16.1'
+
+    - name: Create config files (Swift only)
+      if: matrix.language == 'swift'
       run: |
-        echo "Building iOS project for CodeQL analysis..."
         cd apps/ios
-        
-        # Create placeholder config files
+        # Create placeholder config files for build
         echo "// CI Placeholder" > Supabase.xcconfig
         echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
         echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
         
         echo "// CI Placeholder" > LogYourBody/Config.xcconfig
         echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
-        
-        # Build the project
+
+    - name: Build Swift project
+      if: matrix.language == 'swift' && matrix.build-mode == 'manual'
+      run: |
+        cd apps/ios
         xcodebuild -project LogYourBody.xcodeproj \
           -scheme LogYourBody \
           -destination 'generic/platform=iOS' \
@@ -74,7 +75,7 @@ jobs:
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
           ONLY_ACTIVE_ARCH=NO \
-          build || true
+          build
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v3

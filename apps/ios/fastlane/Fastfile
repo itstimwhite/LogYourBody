@@ -47,77 +47,239 @@ platform :ios do
       reporter: "json"
     )
   end
+  
+  desc "Validate provisioning profile"
+  lane :validate_profile do |options|
+    # Get profile path from environment or parameter
+    profile_path = options[:profile_path] || ENV["PROVISIONING_PROFILE_PATH"] || "~/Library/MobileDevice/Provisioning Profiles/*.mobileprovision"
+    
+    # Find the most recent profile if using wildcard
+    if profile_path.include?("*")
+      profiles = Dir.glob(File.expand_path(profile_path))
+      UI.user_error!("No provisioning profiles found") if profiles.empty?
+      profile_path = profiles.max_by { |f| File.mtime(f) }
+    end
+    
+    UI.message("Validating provisioning profile: #{profile_path}")
+    
+    # Decode the profile
+    profile_content = sh("security cms -D -i '#{profile_path}'", log: false)
+    
+    # Parse the plist
+    require 'plist'
+    profile_data = Plist.parse_xml(profile_content)
+    
+    # Extract key information
+    app_id = profile_data["Entitlements"]["application-identifier"]
+    team_id = profile_data["TeamIdentifier"]&.first
+    name = profile_data["Name"]
+    uuid = profile_data["UUID"]
+    expiry = profile_data["ExpirationDate"]
+    
+    UI.message("Profile Name: #{name}")
+    UI.message("App ID: #{app_id}")
+    UI.message("Team ID: #{team_id}")
+    UI.message("UUID: #{uuid}")
+    UI.message("Expires: #{expiry}")
+    
+    # Validate required capabilities
+    entitlements = profile_data["Entitlements"] || {}
+    required_capabilities = {
+      "HealthKit" => entitlements["com.apple.developer.healthkit"],
+      "Sign in with Apple" => entitlements["com.apple.developer.applesignin"],
+      "Associated Domains" => entitlements["com.apple.developer.associated-domains"],
+      "App Groups" => entitlements["com.apple.security.application-groups"]
+    }
+    
+    missing_capabilities = []
+    required_capabilities.each do |name, value|
+      if value.nil? || (value.is_a?(Array) && value.empty?)
+        missing_capabilities << name
+        UI.error("Missing capability: #{name}")
+      else
+        UI.success("✓ #{name}")
+      end
+    end
+    
+    # Check expiration
+    if expiry < Time.now
+      UI.user_error!("Provisioning profile has expired!")
+    elsif expiry < Time.now + (30 * 24 * 60 * 60) # 30 days
+      UI.important("⚠️  Profile expires in less than 30 days: #{expiry}")
+    end
+    
+    # Check app ID matches
+    expected_app_id = options[:expected_app_id] || "*.LogYourBody.LogYourBody"
+    unless app_id.end_with?(expected_app_id.sub("*", ""))
+      UI.user_error!("App ID mismatch! Expected: #{expected_app_id}, Got: #{app_id}")
+    end
+    
+    # Fail if missing capabilities
+    unless missing_capabilities.empty?
+      UI.user_error!("Provisioning profile is missing required capabilities: #{missing_capabilities.join(', ')}")
+    end
+    
+    UI.success("Provisioning profile validation passed!")
+    
+    # Return profile info for use in other lanes
+    {
+      uuid: uuid,
+      name: name,
+      team_id: team_id,
+      app_id: app_id,
+      expiry: expiry
+    }
+  end
 
-  desc "Run tests"
-  lane :test do
+  desc "Run tests with configurable options"
+  lane :test do |options|
     # Use absolute path from current directory
     proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
     
+    # Configure test options
+    test_scheme = options[:scheme] || scheme
+    test_device = options[:device] || "iPhone 16"
+    test_configuration = options[:configuration] || "Debug"
+    output_types = options[:output_types] || "junit"
+    output_dir = options[:output_directory] || "./test_output"
+    
     run_tests(
       project: proj_path,
-      scheme: scheme,
-      device: "iPhone 16",
+      scheme: test_scheme,
+      device: test_device,
+      configuration: test_configuration,
       clean: true,
-      code_coverage: true
+      code_coverage: true,
+      output_types: output_types,
+      output_directory: output_dir,
+      result_bundle: true,
+      disable_concurrent_testing: true,
+      skip_build: options[:skip_build] || false
     )
   end
+  
+  desc "Generic build lane with configurable parameters"
+  lane :build do |options|
+    # Get parameters with defaults
+    build_scheme = options[:scheme] || scheme
+    build_configuration = options[:configuration] || "Debug"
+    export_method = options[:export_method] || "development"
+    
+    # Determine iOS directory
+    ios_dir = File.expand_path("..", Dir.pwd.end_with?("/fastlane") ? Dir.pwd : "#{Dir.pwd}/fastlane")
+    project_path = File.join(ios_dir, project)
+    
+    # Handle version management
+    if options[:version_number]
+      increment_version_number(
+        version_number: options[:version_number],
+        xcodeproj: project_path
+      )
+    end
+    
+    # Handle build number - use timestamp if not provided
+    build_number = options[:build_number] || Time.now.strftime("%Y%m%d%H%M%S")
+    increment_build_number(
+      build_number: build_number,
+      xcodeproj: project_path
+    )
+    
+    # Get the actual build and version numbers for logging
+    version = get_version_number(xcodeproj: project_path)
+    build = get_build_number(xcodeproj: project_path)
+    UI.message("Building version #{version} (#{build})")
+    
+    # Build options based on export method
+    build_options = {
+      project: File.join(ios_dir, project),
+      scheme: build_scheme,
+      configuration: build_configuration,
+      clean: options[:clean] != false, # Default to true
+      output_directory: options[:output_directory] || "./build",
+      output_name: options[:output_name] || build_scheme,
+      buildlog_path: options[:buildlog_path] || "./buildlog",
+      skip_package_dependencies_resolution: true,
+      disable_package_automatic_updates: true,
+      cloned_source_packages_path: "SourcePackages"
+    }
+    
+    # Add export options for non-development builds
+    if export_method != "development"
+      build_options[:export_method] = export_method
+      build_options[:export_team_id] = ENV["APPLE_TEAM_ID"]
+      
+      # Handle signing based on configuration
+      if build_configuration == "Release" && export_method == "app-store"
+        build_options[:export_options] = {
+          teamID: ENV["APPLE_TEAM_ID"],
+          provisioningProfiles: {
+            "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"] || "Github CI App Store"
+          },
+          compileBitcode: false,
+          uploadBitcode: false,
+          uploadSymbols: true,
+          signingStyle: "manual"
+        }
+      else
+        build_options[:skip_codesigning] = true
+      end
+    else
+      # Development builds
+      build_options[:skip_archive] = true
+      build_options[:skip_codesigning] = true
+      build_options[:destination] = "generic/platform=iOS Simulator"
+    end
+    
+    # Add any additional xcargs
+    if options[:xcargs]
+      build_options[:xcargs] = options[:xcargs]
+    end
+    
+    # Clean build artifacts if requested
+    if options[:clean_artifacts] != false
+      clean_build_artifacts
+    end
+    
+    # Build the app
+    build_app(build_options)
+    
+    # Return build info for use in other lanes
+    {
+      output_path: File.join(build_options[:output_directory], "#{build_options[:output_name]}.ipa"),
+      buildlog_path: build_options[:buildlog_path]
+    }
+  end
 
+  desc "Quick build check for CI rapid validation"
+  lane :build_check do |options|
+    # This is a quick compilation check without archiving
+    build(
+      scheme: options[:scheme] || scheme,
+      configuration: "Debug",
+      export_method: "development",
+      clean_artifacts: false,
+      xcargs: "CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO"
+    )
+  end
+  
   desc "Build for development"
   lane :build_dev do
-    build_app(
-      project: project,
-      scheme: scheme,
+    # Use the generic build lane
+    build(
       configuration: "Debug",
-      skip_archive: true,
-      skip_codesigning: true,
-      destination: "generic/platform=iOS Simulator"
+      export_method: "development"
     )
   end
 
   desc "Build and upload Alpha to TestFlight (dev branch - rapid)"
   lane :alpha do |options|
-    # Ensure we have a clean state
-    clean_build_artifacts
-    
-    # Skip app_store_connect_api_key due to OpenSSL curve issue on GitHub Actions
-    # The upload_to_testflight action will use the API key environment variables directly
-    
-    # Build number should be passed in
-    if options[:build_number]
-      ios_dir = File.expand_path("..", Dir.pwd)
-      increment_build_number(
-        build_number: options[:build_number],
-        xcodeproj: File.join(ios_dir, project)
-      )
-    end
-    
-    # Build the app (fast, minimal processing)
-    # When running from bundle exec, we're in the fastlane directory
-    ios_dir = File.expand_path("..", Dir.pwd)
-    
-    # Widget has been removed from Xcode project
-    
-    build_app(
-      project: File.join(ios_dir, project),
-      scheme: scheme,
+    # Use the shared build lane
+    build_result = build(
       configuration: "Release",
       export_method: "app-store",
-      export_team_id: ENV["APPLE_TEAM_ID"],
-      export_options: {
-        teamID: ENV["APPLE_TEAM_ID"],
-        provisioningProfiles: {
-          "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"] || "Github CI App Store"
-        },
-        compileBitcode: false,
-        uploadBitcode: false,
-        uploadSymbols: true,
-        signingStyle: "manual"
-      },
-      # Speed optimizations
-      skip_package_dependencies_resolution: true,
-      disable_package_automatic_updates: true,
-      cloned_source_packages_path: "SourcePackages",
-      skip_profile_detection: true
+      build_number: options[:build_number],
+      output_directory: "./build",
+      clean_artifacts: true
     )
     
     # Read release notes if provided

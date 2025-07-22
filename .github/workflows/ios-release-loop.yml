@@ -233,7 +233,7 @@ jobs:
       with:
         name: ios-release-build
         path: apps/ios/build/*.ipa
-        retention-days: 30
+        retention-days: 14
     
     - name: Cleanup
       if: always()
