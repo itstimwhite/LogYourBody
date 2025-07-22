@@ -114,9 +114,6 @@
 		ADDC47FD2E2D89F3003C97E7 /* Components/PhotoAnchoredTimelineSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B0A2E25B10600123456 /* Components/PhotoAnchoredTimelineSlider.swift */; };
 		ADDC47FE2E2D89F3003C97E7 /* SkeletonLoaders.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8D57BE85A4043A0A831CFE4 /* SkeletonLoaders.swift */; };
 		ADDC47FF2E2D89F3003C97E7 /* UIComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA923002E22EF4600B82C49 /* UIComponents.swift */; };
-		ADDC48002E2D89F3003C97E7 /* LogYourBodyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD723ACE2E15FA5C002376C6 /* LogYourBodyTests.swift */; };
-		ADDC48012E2D89F3003C97E7 /* LogYourBodyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD722F112E15FA5A002376C6 /* LogYourBodyUITests.swift */; };
-		ADDC48022E2D89F3003C97E7 /* LogYourBodyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD722F122E15FA5A002376C6 /* LogYourBodyUITestsLaunchTests.swift */; };
 		ADDC486A2E2D8A4C003C97E7 /* ccpa-compliance.md in Resources */ = {isa = PBXBuildFile; fileRef = ADDC48672E2D8A4C003C97E7 /* ccpa-compliance.md */; };
 		ADDC486B2E2D8A4C003C97E7 /* open-source-licenses.md in Resources */ = {isa = PBXBuildFile; fileRef = ADDC48692E2D8A4C003C97E7 /* open-source-licenses.md */; };
 		ADDC486C2E2D8A4C003C97E7 /* gdpr-compliance.md in Resources */ = {isa = PBXBuildFile; fileRef = ADDC48682E2D8A4C003C97E7 /* gdpr-compliance.md */; };
@@ -1044,9 +1041,6 @@
 				ADDC47FD2E2D89F3003C97E7 /* Components/PhotoAnchoredTimelineSlider.swift in Sources */,
 				ADDC47FE2E2D89F3003C97E7 /* SkeletonLoaders.swift in Sources */,
 				ADDC47FF2E2D89F3003C97E7 /* UIComponents.swift in Sources */,
-				ADDC48002E2D89F3003C97E7 /* LogYourBodyTests.swift in Sources */,
-				ADDC48012E2D89F3003C97E7 /* LogYourBodyUITests.swift in Sources */,
-				ADDC48022E2D89F3003C97E7 /* LogYourBodyUITestsLaunchTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
