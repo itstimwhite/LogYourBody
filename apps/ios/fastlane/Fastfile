@@ -48,12 +48,12 @@ platform :ios do
       # On GitHub Actions, check for OpenSSL compatibility
       begin
         # Try to initialize the API key
-        if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"]
+        if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_ISSUER_ID"]
           if ENV["APP_STORE_CONNECT_API_KEY_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_PATH"])
             # Use key from file
             app_store_connect_api_key(
               key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-              issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+              issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
               key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
               duration: 1200,
               in_house: false
@@ -63,7 +63,7 @@ platform :ios do
             # Use key from environment variable
             app_store_connect_api_key(
               key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-              issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+              issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
               key: ENV["APP_STORE_CONNECT_API_KEY"],
               duration: 1200,
               in_house: false
@@ -90,7 +90,7 @@ platform :ios do
         UI.message("Using App Store Connect API key for local development")
         app_store_connect_api_key(
           key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-          issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+          issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
           key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
           duration: 1200,
           in_house: false
@@ -427,6 +427,51 @@ platform :ios do
     )
   end
   
+  desc "PR verification - lint, build, and test"
+  lane :pr_verify do |options|
+    # Use absolute path from current directory
+    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    
+    # Run SwiftLint first
+    UI.message("Running SwiftLint...")
+    swiftlint(
+      mode: :lint,
+      strict: true,
+      raise_if_swiftlint_error: false, # Don't fail on lint errors
+      reporter: "github-actions-logging"
+    )
+    
+    # Build for testing
+    UI.message("Building for testing...")
+    build_app(
+      project: proj_path,
+      scheme: scheme,
+      destination: "platform=iOS Simulator,name=iPhone 16",
+      derived_data_path: "build",
+      build_for_testing: true,
+      skip_archive: true,
+      skip_codesigning: true,
+      clean: true,
+      xcargs: "CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO -quiet",
+      buildlog_path: "./buildlog",
+      xcodebuild_formatter: "xcbeautify --renderer github-actions"
+    )
+    
+    # Run unit tests
+    UI.message("Running unit tests...")
+    run_tests(
+      project: proj_path,
+      scheme: scheme,
+      device: "iPhone 16",
+      test_without_building: true,
+      only_testing: "LogYourBodyTests",
+      code_coverage: false,
+      xcargs: "CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO -quiet",
+      fail_build: false, # Don't fail the whole lane on test failures
+      xcodebuild_formatter: "xcbeautify --renderer github-actions"
+    )
+  end
+  
   desc "Build for development"
   lane :build_dev do
     # Use the generic build lane
@@ -591,11 +636,11 @@ platform :ios do
   desc "Submit existing IPA to App Store"
   lane :submit_app_store do |options|
     # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
       # Use environment variables directly
       app_store_connect_api_key(
         key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
         key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
         duration: 1200, # 20 minutes
         in_house: false
@@ -641,11 +686,11 @@ platform :ios do
     clean_build_artifacts
     
     # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
       # Use environment variables directly
       app_store_connect_api_key(
         key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
         key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
         duration: 1200, # 20 minutes
         in_house: false
@@ -694,22 +739,59 @@ platform :ios do
     clean_build_artifacts
   end
 
+  desc "Setup provisioning with match (readonly mode for CI)"
+  lane :setup_provisioning do |options|
+    # Get the match type from options or environment
+    match_type = options[:type] || ENV["MATCH_TYPE"] || "appstore"
+    readonly = options[:readonly] != false # Default to readonly for CI
+    
+    # If using match with git repository
+    if ENV["MATCH_GIT_URL"]
+      match(
+        type: match_type,
+        app_identifier: "LogYourBody.LogYourBody",
+        readonly: readonly,
+        git_url: ENV["MATCH_GIT_URL"],
+        git_branch: ENV["MATCH_GIT_BRANCH"] || "master",
+        keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
+        keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
+      )
+    else
+      # Fallback to manual provisioning profile if match is not configured
+      UI.important("Match git repository not configured, using manual provisioning profile")
+      
+      # Install profile from base64 encoded secret
+      if ENV["IOS_PROVISIONING_PROFILE_BASE64"]
+        require 'tempfile'
+        require 'base64'
+        
+        # Create temp file for the profile
+        profile_file = Tempfile.new(['provision', '.mobileprovision'])
+        profile_file.write(Base64.decode64(ENV["IOS_PROVISIONING_PROFILE_BASE64"]))
+        profile_file.close
+        
+        # Install the profile
+        install_provisioning_profile(path: profile_file.path)
+        
+        # Validate it
+        validate_profile(profile_path: profile_file.path)
+        
+        # Clean up
+        profile_file.unlink
+      else
+        UI.user_error!("No provisioning profile available. Set up match or provide IOS_PROVISIONING_PROFILE_BASE64")
+      end
+    end
+  end
+  
   desc "Create development certificates and profiles"
   lane :setup_certificates do
-    match(
-      type: "development",
-      app_identifier: "LogYourBody.LogYourBody",
-      readonly: false
-    )
+    setup_provisioning(type: "development", readonly: false)
   end
 
   desc "Create distribution certificates and profiles"
   lane :setup_distribution do
-    match(
-      type: "appstore",
-      app_identifier: "LogYourBody.LogYourBody",
-      readonly: false
-    )
+    setup_provisioning(type: "appstore", readonly: false)
   end
 
   error do |lane, exception|

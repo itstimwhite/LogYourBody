@@ -91,78 +91,19 @@ jobs:
         p12-password: ${{ secrets.IOS_P12_PASSWORD }}
         keychain-password: ${{ secrets.IOS_P12_PASSWORD }}
     
-    - name: Download Provisioning Profile
+    - name: Setup Provisioning Profile
       run: |
-        mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
-        # Use printf to handle multi-line base64 correctly
-        printf '%s' "${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}" | base64 --decode > provision.mobileprovision
-        
-        # Extract UUID and install with proper name
-        uuid=$(/usr/libexec/PlistBuddy -c "Print :UUID" /dev/stdin <<< $(security cms -D -i provision.mobileprovision))
-        cp provision.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${uuid}.mobileprovision
-        
-        echo "PROVISIONING_PROFILE_UUID=${uuid}" >> $GITHUB_ENV
-        
-        # Validate provisioning profile
-        security cms -D -i provision.mobileprovision > profile_info.plist
-        app_id=$(/usr/libexec/PlistBuddy -c "Print :Entitlements:application-identifier" profile_info.plist)
-        team_id=$(/usr/libexec/PlistBuddy -c "Print :TeamIdentifier:0" profile_info.plist)
-        
-        # Mask sensitive information before any output
-        echo "::add-mask::${app_id}"
-        echo "::add-mask::${team_id}"
-        echo "::add-mask::${uuid}"
-        
-        echo "Provisioning profile installed and validated successfully"
-        
-        # Check for required capabilities
-        echo "Checking required capabilities..."
-        capabilities_ok=true
-        
-        # Check for HealthKit
-        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.healthkit" profile_info.plist &>/dev/null; then
-          echo "::warning::Missing HealthKit capability"
-          capabilities_ok=false
-        fi
-        
-        # Check for App Groups
-        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.security.application-groups:0" profile_info.plist &>/dev/null; then
-          echo "::warning::Missing App Groups capability"
-          capabilities_ok=false
-        fi
-        
-        # Check for Associated Domains
-        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.associated-domains" profile_info.plist &>/dev/null; then
-          echo "::warning::Missing Associated Domains capability"
-          capabilities_ok=false
-        else
-          echo "✓ Associated Domains found"
-        fi
-        
-        # Check for Sign in with Apple
-        if ! /usr/libexec/PlistBuddy -c "Print :Entitlements:com.apple.developer.applesignin" profile_info.plist &>/dev/null; then
-          echo "::warning::Missing Sign in with Apple capability"
-          capabilities_ok=false
-        fi
-        
-        # Verify it matches our expected values
-        if [[ ! "$app_id" =~ "LogYourBody.LogYourBody" ]]; then
-          echo "::error::Provisioning profile app ID mismatch. Expected LogYourBody.LogYourBody, got ${app_id}"
-          exit 1
-        fi
-        
-        if [[ "$capabilities_ok" == "false" ]]; then
-          echo "::error::Provisioning profile is missing required capabilities. Please regenerate the profile with all required entitlements."
-          exit 1
-        fi
-        
-        rm -f profile_info.plist
+        cd apps/ios
+        bundle exec fastlane setup_provisioning
+      env:
+        IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
+        MATCH_TYPE: "appstore"
     
     - name: Setup App Store Connect API Key
       run: |
         # Parse the JSON and set environment variables for Fastlane
         echo "APP_STORE_CONNECT_API_KEY_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key_id')" >> $GITHUB_ENV
-        echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.issuer_id')" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_ISSUER_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.issuer_id')" >> $GITHUB_ENV
         
         # Write the key content to a secure temp file
         ASC_KEY_FILE=$(mktemp)
