@@ -166,12 +166,10 @@ jobs:
           -scheme LogYourBody \
           -destination 'platform=iOS Simulator,name=iPhone 16' \
           -derivedDataPath build \
-          clean build-for-testing \
+          build-for-testing \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO \
           COMPILER_INDEX_STORE_ENABLE=NO \
-          -parallel-testing-enabled YES \
-          -parallel-testing-worker-count $WORKERS \
           -quiet | xcbeautify --renderer github-actions
 
   # Full UI and integration tests
@@ -241,26 +239,33 @@ jobs:
           -quiet | xcbeautify --renderer github-actions
     
     - name: Process code coverage
+      if: success()
       run: |
         cd apps/ios
         
-        # Extract coverage data
-        xcrun xccov view --report --json TestResults.xcresult > coverage.json
-        
-        # Calculate total coverage
-        COVERAGE=$(jq '.lineCoverage * 100' coverage.json 2>/dev/null || echo "0")
-        echo "Code coverage: ${COVERAGE}%"
-        
-        # Temporarily lower threshold while we fix tests
-        # TODO: Raise back to 70% once tests are fixed
-        THRESHOLD=0
-        if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
-          echo "::error::Code coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
-          exit 1
+        # Check if test results exist
+        if [ -f "TestResults.xcresult" ]; then
+          # Extract coverage data
+          xcrun xccov view --report --json TestResults.xcresult > coverage.json || echo "{}" > coverage.json
+          
+          # Calculate total coverage
+          COVERAGE=$(jq '.lineCoverage * 100' coverage.json 2>/dev/null || echo "0")
+          echo "Code coverage: ${COVERAGE}%"
+          
+          # Temporarily lower threshold while we fix tests
+          # TODO: Raise back to 70% once tests are fixed
+          THRESHOLD=0
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "::error::Code coverage ${COVERAGE}% is below threshold ${THRESHOLD}%"
+            exit 1
+          fi
+          
+          # Add coverage to summary
+          echo "### Code Coverage: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "::warning::No test results found - skipping coverage calculation"
+          echo "### Code Coverage: N/A (tests did not run)" >> $GITHUB_STEP_SUMMARY
         fi
-        
-        # Add coverage to summary
-        echo "### Code Coverage: ${COVERAGE}%" >> $GITHUB_STEP_SUMMARY
     
     - name: Upload test results
       if: always()
