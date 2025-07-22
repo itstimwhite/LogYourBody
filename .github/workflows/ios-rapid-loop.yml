@@ -251,7 +251,7 @@ jobs:
           groups:"Internal Testers" 2>&1 | tee fastlane.log
         
         # Check for errors and surface them in the summary
-        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" fastlane.log; then
+        if grep -E "error:|Error:|ERROR:|Failed|FAILED|EXPORT FAILED|No profiles|exportArchive.*failed" fastlane.log; then
           echo "::error::Build errors detected - see highlighted lines above"
           exit 1
         fi
