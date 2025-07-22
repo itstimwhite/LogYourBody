@@ -37,6 +37,67 @@ platform :ios do
       UI.user_error!("Project file not found at: #{project_path}")
     end
   end
+  
+  desc "Setup App Store Connect API Key authentication"
+  private_lane :setup_app_store_connect_api do |options|
+    # Skip if explicitly disabled
+    return if options[:skip_asc_api] == true
+    
+    # Check if we're in an environment that supports the API key
+    if ENV["CI"] && ENV["GITHUB_ACTIONS"]
+      # On GitHub Actions, check for OpenSSL compatibility
+      begin
+        # Try to initialize the API key
+        if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"]
+          if ENV["APP_STORE_CONNECT_API_KEY_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_PATH"])
+            # Use key from file
+            app_store_connect_api_key(
+              key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+              issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+              key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+              duration: 1200,
+              in_house: false
+            )
+            UI.success("✅ App Store Connect API key configured from file")
+          elsif ENV["APP_STORE_CONNECT_API_KEY"]
+            # Use key from environment variable
+            app_store_connect_api_key(
+              key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+              issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+              key: ENV["APP_STORE_CONNECT_API_KEY"],
+              duration: 1200,
+              in_house: false
+            )
+            UI.success("✅ App Store Connect API key configured from environment")
+          else
+            UI.important("⚠️  App Store Connect API key not fully configured, will use fallback authentication")
+          end
+        else
+          UI.message("App Store Connect API key not configured, using fallback authentication")
+        end
+      rescue => e
+        if e.message.include?("invalid curve name") || e.message.include?("OpenSSL")
+          UI.important("⚠️  OpenSSL curve compatibility issue detected, falling back to app-specific password")
+          # Set environment variable to skip API key in subsequent calls
+          ENV["FASTLANE_USE_APP_SPECIFIC_PASSWORD"] = "true"
+        else
+          raise e
+        end
+      end
+    else
+      # Local development - try API key if available
+      if ENV["APP_STORE_CONNECT_API_KEY_ID"]
+        UI.message("Using App Store Connect API key for local development")
+        app_store_connect_api_key(
+          key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+          issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+          key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+          duration: 1200,
+          in_house: false
+        )
+      end
+    end
+  end
 
   desc "Run SwiftLint"
   lane :lint do
@@ -154,7 +215,111 @@ platform :ios do
       output_directory: output_dir,
       result_bundle: true,
       disable_concurrent_testing: true,
-      skip_build: options[:skip_build] || false
+      skip_build: options[:skip_build] || false,
+      test_without_building: options[:test_without_building] || false,
+      only_testing: options[:only_testing],
+      xcargs: options[:xcargs]
+    )
+  end
+  
+  desc "Run UI tests"
+  lane :test_ui do |options|
+    # Use absolute path from current directory
+    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    
+    # Configure test options
+    test_scheme = options[:scheme] || scheme
+    test_device = options[:device] || "iPhone 16"
+    test_configuration = options[:configuration] || "Debug"
+    output_dir = options[:output_directory] || "./test_output"
+    
+    # Run UI tests specifically
+    run_tests(
+      project: proj_path,
+      scheme: test_scheme,
+      device: test_device,
+      configuration: test_configuration,
+      clean: options[:clean] != false,
+      code_coverage: true,
+      output_types: "junit",
+      output_directory: output_dir,
+      result_bundle: true,
+      disable_concurrent_testing: false,
+      skip_build: options[:skip_build] || false,
+      test_without_building: options[:test_without_building] || false,
+      only_testing: options[:only_testing] || "LogYourBodyUITests"
+    )
+  end
+  
+  desc "Run snapshot tests for UI regression"
+  lane :snapshot do |options|
+    # Use absolute path from current directory
+    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    
+    # Configure test options
+    test_scheme = options[:scheme] || scheme
+    test_device = options[:device] || "iPhone 16"
+    test_configuration = options[:configuration] || "Debug"
+    
+    # Run snapshot tests specifically
+    run_tests(
+      project: proj_path,
+      scheme: test_scheme,
+      device: test_device,
+      configuration: test_configuration,
+      clean: false,
+      skip_build: options[:skip_build] || false,
+      test_without_building: options[:test_without_building] || true,
+      only_testing: "LogYourBodyUITests/SnapshotTests",
+      output_types: "junit",
+      output_directory: "./snapshot_output",
+      result_bundle: true
+    )
+  end
+  
+  desc "Run tests with sanitizers enabled"
+  lane :test_sanitizers do |options|
+    # Use absolute path from current directory
+    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    
+    # Configure test options
+    test_scheme = options[:scheme] || scheme
+    test_device = options[:device] || "iPhone 16"
+    test_configuration = options[:configuration] || "Debug"
+    
+    # Sanitizer type (address, thread, or undefined)
+    sanitizer_type = options[:sanitizer] || "address"
+    
+    # Build xcargs based on sanitizer type
+    sanitizer_xcargs = case sanitizer_type
+    when "address"
+      "-enableAddressSanitizer YES -enableThreadSanitizer NO"
+    when "thread"
+      "-enableAddressSanitizer NO -enableThreadSanitizer YES"
+    when "undefined"
+      "-enableUndefinedBehaviorSanitizer YES"
+    else
+      UI.user_error!("Unknown sanitizer type: #{sanitizer_type}. Use 'address', 'thread', or 'undefined'")
+    end
+    
+    # Add common sanitizer flags
+    sanitizer_xcargs += " CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO"
+    
+    # Run tests with sanitizers
+    run_tests(
+      project: proj_path,
+      scheme: test_scheme,
+      device: test_device,
+      configuration: test_configuration,
+      clean: false,
+      skip_build: options[:skip_build] || false,
+      test_without_building: options[:test_without_building] || true,
+      xcargs: sanitizer_xcargs,
+      output_types: "junit",
+      output_directory: "./sanitizer_output",
+      result_bundle: true,
+      disable_concurrent_testing: false,
+      fail_build: false # Don't fail the build on sanitizer issues
     )
   end
   
@@ -273,6 +438,9 @@ platform :ios do
 
   desc "Build and upload Alpha to TestFlight (dev branch - rapid)"
   lane :alpha do |options|
+    # Setup App Store Connect API authentication
+    setup_app_store_connect_api
+    
     # Use the shared build lane
     build_result = build(
       configuration: "Release",
@@ -299,8 +467,6 @@ platform :ios do
       groups: test_groups,
       changelog: release_notes,
       distribute_external: false
-      # Fastlane will automatically use FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD
-      # if APP_STORE_CONNECT_API_KEY is not configured via app_store_connect_api_key
     )
     
     # Clean up
@@ -312,36 +478,8 @@ platform :ios do
     # Ensure we have a clean state
     clean_build_artifacts
     
-    # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
-      # Use environment variables directly
-      app_store_connect_api_key(
-        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
-        duration: 1200, # 20 minutes
-        in_house: false
-      )
-    elsif ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"])
-      # Fallback to JSON parsing
-      require 'json'
-      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"]))
-      
-      # Create a temporary file with just the key content
-      key_file = Tempfile.new(['asc_key', '.p8'])
-      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
-      key_file.close
-      
-      app_store_connect_api_key(
-        key_id: api_key_data['key_id'],
-        issuer_id: api_key_data['issuer_id'],
-        key_filepath: key_file.path,
-        duration: 1200, # 20 minutes
-        in_house: api_key_data['in_house'] || false
-      )
-      
-      # Clean up temp file will happen automatically
-    end
+    # Setup App Store Connect API authentication
+    setup_app_store_connect_api
     
     # Increment build number
     build_number = Time.now.strftime("%Y%m%d%H%M%S")
@@ -435,36 +573,8 @@ platform :ios do
 
   desc "Upload existing IPA to TestFlight"
   lane :upload_testflight do |options|
-    # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
-      # Use environment variables directly
-      app_store_connect_api_key(
-        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
-        duration: 1200, # 20 minutes
-        in_house: false
-      )
-    elsif ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"])
-      # Fallback to JSON parsing
-      require 'json'
-      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"]))
-      
-      # Create a temporary file with just the key content
-      key_file = Tempfile.new(['asc_key', '.p8'])
-      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
-      key_file.close
-      
-      app_store_connect_api_key(
-        key_id: api_key_data['key_id'],
-        issuer_id: api_key_data['issuer_id'],
-        key_filepath: key_file.path,
-        duration: 1200, # 20 minutes
-        in_house: api_key_data['in_house'] || false
-      )
-      
-      # Clean up temp file will happen automatically
-    end
+    # Setup App Store Connect API authentication
+    setup_app_store_connect_api
     
     # Upload IPA
     upload_to_testflight(

@@ -9,6 +9,10 @@ inputs:
     description: 'Working directory for iOS project'
     required: false
     default: 'apps/ios'
+  create-config-files:
+    description: 'Create placeholder config files for CI builds'
+    required: false
+    default: 'false'
 
 runs:
   using: 'composite'
@@ -86,3 +90,19 @@ runs:
         echo "xcbeautify: $(xcbeautify --version || echo 'Not installed')"
         echo "Ruby: $(ruby --version)"
         echo "Bundler: $(bundle --version)"
+
+    - name: Create placeholder config files
+      if: inputs.create-config-files == 'true'
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        # Create Supabase config
+        echo "// CI Placeholder" > Supabase.xcconfig
+        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
+        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        
+        # Create LogYourBody config
+        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
+        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+        
+        echo "✅ Created placeholder config files for CI build"

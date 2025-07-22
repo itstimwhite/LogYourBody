@@ -82,6 +82,7 @@ jobs:
       with:
         xcode-version: '16.1'
         working-directory: apps/ios
+        create-config-files: 'true'
     
     - name: Import Code Signing Certificates
       uses: apple-actions/import-codesign-certs@v5
@@ -157,18 +158,21 @@ jobs:
         
         rm -f profile_info.plist
     
-    - name: Create config files
+    - name: Setup App Store Connect API Key
       run: |
-        cd apps/ios
+        # Parse the JSON and set environment variables for Fastlane
+        echo "APP_STORE_CONNECT_API_KEY_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key_id')" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_KEY_ISSUER_ID=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.issuer_id')" >> $GITHUB_ENV
         
-        # Create Supabase config
-        echo "// CI Placeholder" > Supabase.xcconfig
-        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
-        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
+        # Write the key content to a secure temp file
+        ASC_KEY_FILE=$(mktemp)
+        echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key' > "$ASC_KEY_FILE"
+        echo "APP_STORE_CONNECT_API_KEY_PATH=$ASC_KEY_FILE" >> $GITHUB_ENV
+        echo "ASC_KEY_FILE=$ASC_KEY_FILE" >> $GITHUB_ENV
         
-        # Create LogYourBody config
-        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
-        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+        # Also set the raw key for Fastlane fallback
+        echo "APP_STORE_CONNECT_API_KEY=$(echo '${{ secrets.ASC_API_KEY_JSON }}' | jq -r '.key')" >> $GITHUB_ENV
+    
     
     - name: Build and upload to TestFlight
       run: |
@@ -194,6 +198,7 @@ jobs:
         IOS_PROVISIONING_PROFILE_NAME: ${{ secrets.IOS_PROVISIONING_PROFILE_NAME }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "180"
         FASTLANE_XCODEBUILD_SETTINGS_RETRIES: "10"
+        # Fallback authentication if API key fails
         FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
         FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
     
@@ -206,8 +211,9 @@ jobs:
         if [ -n "$ASC_KEY_FILE" ] && [ -f "$ASC_KEY_FILE" ]; then
           rm -f "$ASC_KEY_FILE"
         fi
-        # Clean up any other temp files
+        # Clean up any other temp API key files
         rm -f /tmp/AuthKey_*.p8 2>/dev/null || true
+        rm -f /var/folders/*/T/tmp.* 2>/dev/null || true
     
     - name: Post deployment status
       uses: actions/github-script@v7
