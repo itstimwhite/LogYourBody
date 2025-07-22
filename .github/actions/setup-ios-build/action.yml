@@ -26,36 +26,14 @@ runs:
       with:
         xcode-version: ${{ inputs.xcode-version }}
     
-    - name: Cache Homebrew tools
-      if: inputs.install-tools == 'true'
-      uses: actions/cache@v4
-      with:
-        path: |
-          /opt/homebrew/bin/swiftlint
-          /opt/homebrew/bin/xcbeautify
-          /opt/homebrew/Cellar/swiftlint
-          /opt/homebrew/Cellar/xcbeautify
-        key: ${{ runner.os }}-homebrew-tools-${{ inputs.xcode-version }}
-        restore-keys: |
-          ${{ runner.os }}-homebrew-tools-
-    
-    - name: Install SwiftLint and xcbeautify
+    - name: Install Homebrew dependencies
       if: inputs.install-tools == 'true'
       shell: bash
       run: |
+        cd apps/ios
         export PATH="/opt/homebrew/bin:$PATH"
-        if ! command -v swiftlint &> /dev/null; then
-          echo "Installing SwiftLint..."
-          brew install swiftlint
-        else
-          echo "SwiftLint already installed"
-        fi
-        if ! command -v xcbeautify &> /dev/null; then
-          echo "Installing xcbeautify..."
-          brew install xcbeautify
-        else
-          echo "xcbeautify already installed"
-        fi
+        echo "Installing Homebrew dependencies with bundle..."
+        brew bundle --no-upgrade
     
     - name: Cache Ruby dependencies
       if: inputs.setup-ruby == 'true'

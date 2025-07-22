@@ -24,6 +24,7 @@ jobs:
   setup:
     if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: macos-14
+    timeout-minutes: 10
     outputs:
       cache-key: ${{ steps.cache-key.outputs.key }}
     steps:
@@ -542,6 +543,7 @@ jobs:
     needs: [build, test]
     if: github.ref == 'refs/heads/preview' && github.event_name == 'push'
     runs-on: macos-14
+    timeout-minutes: 30
     environment:
       name: Preview
       url: https://testflight.apple.com
