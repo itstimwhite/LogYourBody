@@ -200,7 +200,7 @@ platform :ios do
       export_options: {
         teamID: ENV["APPLE_TEAM_ID"],
         provisioningProfiles: {
-          "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"] || "Github CI App Store"
+          "LogYourBody.LogYourBody" => ENV["PROVISIONING_PROFILE_SPECIFIER"] || ENV["PROVISIONING_PROFILE_UUID"]
         },
         compileBitcode: false,
         uploadBitcode: false,
@@ -255,7 +255,7 @@ platform :ios do
       export_options: {
         teamID: ENV["APPLE_TEAM_ID"],
         provisioningProfiles: {
-          "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"] || "Github CI App Store"
+          "LogYourBody.LogYourBody" => ENV["PROVISIONING_PROFILE_SPECIFIER"] || ENV["PROVISIONING_PROFILE_UUID"]
         },
         compileBitcode: false,
         uploadBitcode: false,

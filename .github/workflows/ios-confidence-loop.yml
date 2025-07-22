@@ -523,6 +523,7 @@ jobs:
         cp provision.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/${uuid}.mobileprovision
         
         echo "PROVISIONING_PROFILE_UUID=${uuid}" >> $GITHUB_ENV
+        echo "PROVISIONING_PROFILE_SPECIFIER=${uuid}" >> $GITHUB_ENV
         
         # Validate provisioning profile
         security cms -D -i provision.mobileprovision > profile_info.plist
