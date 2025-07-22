@@ -79,12 +79,17 @@ platform :ios do
     # Ensure we have a clean state
     clean_build_artifacts
     
-    # Skip app_store_connect_api_key due to OpenSSL curve issue
-    # Fastlane will use these environment variables automatically:
-    # FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD
-    # APP_STORE_CONNECT_API_KEY_ID
-    # APP_STORE_CONNECT_API_KEY_ISSUER_ID
-    # APP_STORE_CONNECT_API_KEY
+    # Set up App Store Connect API key if available
+    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+      # Use environment variables directly
+      app_store_connect_api_key(
+        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
+        duration: 1200, # 20 minutes
+        in_house: false
+      )
+    end
     
     # Build number should be passed in
     if options[:build_number]
