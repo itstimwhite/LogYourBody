@@ -121,7 +121,7 @@ platform :ios do
       skip_package_dependencies_resolution: true,
       disable_package_automatic_updates: true,
       cloned_source_packages_path: "SourcePackages",
-      skip_profile_detection: false
+      skip_profile_detection: true
     )
     
     # Read release notes if provided
@@ -200,7 +200,7 @@ platform :ios do
       export_options: {
         teamID: ENV["APPLE_TEAM_ID"],
         provisioningProfiles: {
-          "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"] || "Github CI App Store"
+          "LogYourBody.LogYourBody" => "Github CI App Store"
         },
         compileBitcode: false,
         uploadBitcode: false,
@@ -211,7 +211,7 @@ platform :ios do
       skip_package_dependencies_resolution: true,
       disable_package_automatic_updates: true,
       cloned_source_packages_path: "SourcePackages",
-      skip_profile_detection: false
+      skip_profile_detection: true
     )
     
     # Upload to TestFlight
@@ -255,7 +255,7 @@ platform :ios do
       export_options: {
         teamID: ENV["APPLE_TEAM_ID"],
         provisioningProfiles: {
-          "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"] || "Github CI App Store"
+          "LogYourBody.LogYourBody" => "Github CI App Store"
         },
         compileBitcode: false,
         uploadBitcode: false,
