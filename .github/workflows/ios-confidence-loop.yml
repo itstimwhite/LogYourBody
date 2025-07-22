@@ -33,47 +33,12 @@ jobs:
       id: cache-key
       run: echo "key=${{ runner.os }}-ios-${{ hashFiles('**/Package.resolved', '**/project.pbxproj', '**/Gemfile.lock') }}" >> $GITHUB_OUTPUT
     
-    - name: Setup Xcode
-      uses: maxim-lobanov/setup-xcode@v1
+    - name: Setup iOS build environment
+      uses: ./.github/actions/setup-ios-build
       with:
         xcode-version: '16.1'
-    
-    - name: Cache Dependencies
-      uses: actions/cache@v4
-      with:
-        path: |
-          apps/ios/vendor/bundle
-          /opt/homebrew
-          ~/Library/Developer/Xcode/DerivedData/ModuleCache.noindex
-          ~/Library/Caches/org.swift.swiftpm
-        key: ${{ steps.cache-key.outputs.key }}
-        restore-keys: |
-          ${{ runner.os }}-ios-
-    
-    - name: Install Dependencies
-      run: |
-        cd apps/ios
-        
-        # Install brew dependencies
-        if ! command -v swiftlint &> /dev/null; then
-          brew install swiftlint
-        fi
-        if ! command -v xcbeautify &> /dev/null; then
-          brew install xcbeautify
-        fi
-        
-        # Install Ruby dependencies
-        gem install bundler:2.4.10
-        bundle config path vendor/bundle
-        bundle install --jobs 4 --retry 3
-        
-        # Create config files
-        echo "// CI Placeholder" > Supabase.xcconfig
-        echo "SUPABASE_URL = https://placeholder.supabase.co" >> Supabase.xcconfig
-        echo "SUPABASE_ANON_KEY = placeholder-key" >> Supabase.xcconfig
-        
-        echo "// CI Placeholder" > LogYourBody/Config.xcconfig
-        echo "CLERK_PUBLISHABLE_KEY = placeholder-clerk-key" >> LogYourBody/Config.xcconfig
+        setup-ruby: 'true'
+        create-config-files: 'true'
 
   # Lint job runs in parallel
   lint:
@@ -267,13 +232,21 @@ jobs:
           echo "### Code Coverage: N/A (tests did not run)" >> $GITHUB_STEP_SUMMARY
         fi
     
+    - name: Compress test results
+      if: failure()
+      run: |
+        cd apps/ios
+        if [ -d "TestResults.xcresult" ]; then
+          zip -r TestResults.zip TestResults.xcresult
+        fi
+    
     - name: Upload test results
-      if: always()
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: ios-test-results
         path: |
-          apps/ios/TestResults.xcresult
+          apps/ios/TestResults.zip
           apps/ios/coverage.json
         retention-days: 7
 
@@ -282,7 +255,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-14
     timeout-minutes: 30
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule'
     steps:
     - uses: actions/checkout@v4
     
@@ -344,13 +317,21 @@ jobs:
           -parallel-testing-worker-count $WORKERS \
           -quiet | xcbeautify --renderer github-actions || true
     
+    - name: Compress and upload sanitizer results
+      if: failure()
+      run: |
+        cd apps/ios/build/Logs/Test
+        if ls *.xcresult 1> /dev/null 2>&1; then
+          zip -r sanitizer-results.zip *.xcresult
+        fi
+      shell: bash
+      
     - name: Upload sanitizer results
-      if: always()
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: ios-sanitizer-results
-        path: |
-          apps/ios/build/Logs/Test/*.xcresult
+        path: apps/ios/build/Logs/Test/sanitizer-results.zip
         retention-days: 7
 
   # Snapshot tests for UI regression - runs only on nightly schedule
@@ -358,7 +339,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-14
     timeout-minutes: 20
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule'
     steps:
     - uses: actions/checkout@v4
     
@@ -411,14 +392,21 @@ jobs:
           test-without-building \
           -quiet | xcbeautify --renderer github-actions
     
+    - name: Compress and upload snapshot results
+      if: failure()
+      run: |
+        cd apps/ios
+        if [ -d "build/Logs/Test" ] && ls build/Logs/Test/*.xcresult 1> /dev/null 2>&1; then
+          zip -r snapshot-results.zip build/Logs/Test/*.xcresult __Snapshots__/
+        fi
+      shell: bash
+      
     - name: Upload snapshot results
-      if: always()
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: ios-snapshot-results
-        path: |
-          apps/ios/build/Logs/Test/*.xcresult
-          apps/ios/__Snapshots__/
+        path: apps/ios/snapshot-results.zip
         retention-days: 7
 
   # Performance profiling - runs only on nightly schedule
@@ -426,7 +414,7 @@ jobs:
     needs: [setup, build]
     runs-on: macos-14
     timeout-minutes: 25
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'schedule'
     steps:
     - uses: actions/checkout@v4
     
@@ -490,13 +478,21 @@ jobs:
           jq -r '.metrics.testsMetrics[] | select(.identifier | contains("performance")) | 
           "\(.identifier): \(.measurements[].value) \(.measurements[].unit)"' || true
     
+    - name: Compress and upload performance results
+      if: failure()
+      run: |
+        cd apps/ios/build/Logs/Test
+        if ls *.xcresult 1> /dev/null 2>&1; then
+          zip -r performance-results.zip *.xcresult
+        fi
+      shell: bash
+      
     - name: Upload performance results
-      if: always()
+      if: failure()
       uses: actions/upload-artifact@v4
       with:
         name: ios-performance-results
-        path: |
-          apps/ios/build/Logs/Test/*.xcresult
+        path: apps/ios/build/Logs/Test/performance-results.zip
         retention-days: 7
 
   # Status check job that other workflows can depend on
