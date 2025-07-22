@@ -83,4 +83,4 @@ jobs:
         name: ios-pr-test-results
         path: |
           apps/ios/build/Logs/Test/*.xcresult
-        retention-days: 7
+        retention-days: 3

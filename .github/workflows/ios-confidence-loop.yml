@@ -161,7 +161,7 @@ jobs:
         path: |
           apps/ios/TestResults.zip
           apps/ios/coverage.json
-        retention-days: 7
+        retention-days: 3
 
   # Sanitizer test job - runs only on nightly schedule
   test-sanitizers:
@@ -212,7 +212,7 @@ jobs:
       with:
         name: ios-sanitizer-results
         path: apps/ios/build/Logs/Test/sanitizer-results.zip
-        retention-days: 7
+        retention-days: 3
 
   # Snapshot tests for UI regression - runs only on nightly schedule
   snapshot-tests:
@@ -262,7 +262,7 @@ jobs:
       with:
         name: ios-snapshot-results
         path: apps/ios/snapshot-results.zip
-        retention-days: 7
+        retention-days: 3
 
   # Performance profiling - runs only on nightly schedule
   performance-tests:
@@ -323,7 +323,7 @@ jobs:
       with:
         name: ios-performance-results
         path: apps/ios/build/Logs/Test/performance-results.zip
-        retention-days: 7
+        retention-days: 3
 
   # Status check job that other workflows can depend on
   ios-confidence-status:
