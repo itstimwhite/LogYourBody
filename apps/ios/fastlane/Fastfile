@@ -412,9 +412,26 @@ platform :ios do
     end
     
     # Add provisioning profile specifier if available from Match
-    if ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"] && export_method == "app-store"
-      profile_name = ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"]
-      build_options[:xcargs] += " PROVISIONING_PROFILE_SPECIFIER='#{profile_name}'"
+    if export_method == "app-store"
+      # Debug: Print available Match environment variables
+      UI.message("=== Match Environment Variables ===")
+      ENV.each do |key, value|
+        if key.start_with?("sigh_") || key.include?("MATCH_")
+          UI.message("#{key}: #{value}")
+        end
+      end
+      UI.message("APPLE_TEAM_ID: #{ENV["APPLE_TEAM_ID"]}")
+      UI.message("=================================")
+      
+      if ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"]
+        profile_name = ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"]
+        build_options[:xcargs] += " PROVISIONING_PROFILE_SPECIFIER='#{profile_name}'"
+        build_options[:xcargs] += " CODE_SIGN_IDENTITY='iPhone Distribution'"
+        build_options[:xcargs] += " DEVELOPMENT_TEAM='#{ENV["APPLE_TEAM_ID"]}'"
+      else
+        UI.error("Match did not set provisioning profile environment variable!")
+        UI.error("Expected: sigh_LogYourBody.LogYourBody_appstore_profile-name")
+      end
     end
     
     # Clean build artifacts if requested
