@@ -423,7 +423,7 @@ jobs:
         bundle exec fastlane match appstore --readonly
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        MATCH_GIT_URL: "https://github.com/itstimwhite/certificates.git"
+        MATCH_GIT_URL: "https://${{ secrets.MATCH_GIT_PAT }}@github.com/itstimwhite/certificates.git"
         MATCH_KEYCHAIN_NAME: "login.keychain"
         MATCH_KEYCHAIN_PASSWORD: ""
     

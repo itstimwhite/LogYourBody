@@ -7,6 +7,14 @@ echo ""
 # Ensure we're in the iOS directory
 cd "$(dirname "$0")"
 
+# Set up authentication if PAT is provided
+if [ -n "$MATCH_GIT_PAT" ]; then
+    export MATCH_GIT_URL="https://${MATCH_GIT_PAT}@github.com/itstimwhite/certificates.git"
+    echo "Using PAT for authentication..."
+else
+    echo "No MATCH_GIT_PAT found. You may need to authenticate manually."
+fi
+
 # Check if certificates already exist
 echo "Checking existing certificates..."
 bundle exec fastlane match appstore --readonly || {
