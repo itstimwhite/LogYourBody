@@ -120,6 +120,9 @@ jobs:
           "in_house": false
         }
         EOF
+        
+        # Set API key path for subsequent steps
+        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
       
     - name: Sync Certificates with Match
       run: |
@@ -130,7 +133,6 @@ jobs:
         
         bundle exec fastlane match appstore --readonly
       env:
-        APP_STORE_CONNECT_API_KEY_PATH: ${{ env.APP_STORE_CONNECT_API_KEY_PATH || secrets.APP_STORE_CONNECT_API_KEY_PATH || './fastlane/api_key.json' }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_URL: "https://github.com/itstimwhite/certificates.git"
         MATCH_KEYCHAIN_NAME: "login.keychain"
