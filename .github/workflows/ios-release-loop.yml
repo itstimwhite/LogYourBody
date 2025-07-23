@@ -125,20 +125,11 @@ jobs:
         echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
       
     - name: Sync Certificates with Match
-      run: |
-        cd apps/ios
-        if [ -z "$MATCH_GIT_URL" ] || [ -z "$MATCH_GIT_BASIC_AUTHORIZATION" ]; then
-          echo "::error::Missing MATCH_GIT_URL or MATCH_GIT_BASIC_AUTHORIZATION secrets. See .github/workflows/ios-secrets-setup.md"
-          exit 1
-        fi
-        bundle exec fastlane match appstore
-      env:
-        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        # Conditionally use the private repo URL from secrets; fallback to public if empty
-        MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL != '' && secrets.MATCH_GIT_URL || 'https://github.com/itstimwhite/certificates.git' }}
-        MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-        MATCH_KEYCHAIN_NAME: "login.keychain"
-        MATCH_KEYCHAIN_PASSWORD: ""
+      uses: ./.github/actions/sync-match
+      with:
+        match_password: ${{ secrets.MATCH_PASSWORD }}
+        match_git_url: ${{ secrets.MATCH_GIT_URL }}
+        match_git_basic: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
     
     - name: Set Environment Variables for Build
       run: |
