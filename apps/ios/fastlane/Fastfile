@@ -760,7 +760,10 @@ platform :ios do
     # If using match with git repository
     if ENV["MATCH_GIT_URL"]
       begin
-        match(
+        # Get API key path if available
+        api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
+        
+        match_params = {
           type: match_type,
           app_identifier: "LogYourBody.LogYourBody",
           readonly: readonly,
@@ -770,7 +773,15 @@ platform :ios do
           keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
           keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || "",
           verbose: true
-        )
+        }
+        
+        # Add api_key_path if available
+        if api_key_path && File.exist?(api_key_path)
+          match_params[:api_key_path] = api_key_path
+          UI.message("Using API key from: #{api_key_path}")
+        end
+        
+        match(match_params)
       rescue => e
         if e.message.include?("No code signing identity found") && readonly
           UI.error("No certificates found in Match repository. Run locally with MATCH_READONLY=false to create them.")

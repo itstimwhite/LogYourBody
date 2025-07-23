@@ -146,6 +146,7 @@ jobs:
       run: |
         cd apps/ios
         rm -f release_notes.txt
+        rm -f fastlane/api_key.json
         # Clean up the App Store Connect key file
         if [ -n "$ASC_KEY_FILE" ] && [ -f "$ASC_KEY_FILE" ]; then
           rm -f "$ASC_KEY_FILE"
