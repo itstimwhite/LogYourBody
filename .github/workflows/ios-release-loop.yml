@@ -127,11 +127,15 @@ jobs:
     - name: Sync Certificates with Match
       run: |
         cd apps/ios
+        if [ -z "$MATCH_GIT_URL" ] || [ -z "$MATCH_GIT_BASIC_AUTHORIZATION" ]; then
+          echo "::error::Missing MATCH_GIT_URL or MATCH_GIT_BASIC_AUTHORIZATION secrets. See .github/workflows/ios-secrets-setup.md"
+          exit 1
+        fi
         bundle exec fastlane match appstore --readonly
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        # Use private repo URL from secrets if set, otherwise default to public repo URL
-        MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL || 'https://github.com/itstimwhite/certificates.git' }}
+        # Conditionally use the private repo URL from secrets; fallback to public if empty
+        MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL != '' && secrets.MATCH_GIT_URL || 'https://github.com/itstimwhite/certificates.git' }}
         MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
         MATCH_KEYCHAIN_NAME: "login.keychain"
         MATCH_KEYCHAIN_PASSWORD: ""
