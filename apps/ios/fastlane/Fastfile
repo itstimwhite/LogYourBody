@@ -105,7 +105,8 @@ platform :ios do
       mode: :lint,
       strict: true,
       raise_if_swiftlint_error: true,
-      reporter: "json"
+      reporter: "json",
+      executable: "swiftlint"
     )
   end
   
@@ -163,9 +164,11 @@ platform :ios do
     end
     
     # Check expiration
-    if expiry < Time.now
+    expiry_time = expiry.to_time
+    now = Time.now
+    if expiry_time < now
       UI.user_error!("Provisioning profile has expired!")
-    elsif expiry < Time.now + (30 * 24 * 60 * 60) # 30 days
+    elsif expiry_time < now + (30 * 24 * 60 * 60) # 30 days
       UI.important("⚠️  Profile expires in less than 30 days: #{expiry}")
     end
     
