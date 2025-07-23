@@ -84,6 +84,11 @@ jobs:
         working-directory: apps/ios
         create-config-files: 'true'
     
+    - name: Install Compatible OpenSSL
+      run: |
+        brew install openssl@1.1
+        echo "/usr/local/opt/openssl@1.1/bin" >> $GITHUB_PATH
+        
     - name: Setup Match Authentication
       run: |
         cd apps/ios
