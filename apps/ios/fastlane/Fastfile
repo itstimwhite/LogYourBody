@@ -792,42 +792,31 @@ platform :ios do
           verbose: true
         }
         
-        # If we're in CI and have API key credentials, create a temporary JSON file for Match
+        # In CI, we need to handle API key authentication differently due to OpenSSL issues
         if ENV["CI"] && ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY"]
-          require 'json'
-          require 'tempfile'
+          UI.message("CI environment detected - setting up Spaceship token for Match")
+          
+          # Since we can't use app_store_connect_api_key due to OpenSSL issues,
+          # we'll use a different approach: set up Spaceship token directly
           require 'base64'
           
-          UI.message("Creating temporary API key file for Match...")
-          
-          # Decode the base64 key
-          key_content = Base64.decode64(ENV["APP_STORE_CONNECT_API_KEY"])
-          
-          # Create a temporary JSON file
-          api_key_file = Tempfile.new(['api_key', '.json'])
-          api_key_data = {
-            "key_id" => ENV["APP_STORE_CONNECT_API_KEY_ID"],
-            "issuer_id" => ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-            "key" => key_content,
-            "duration" => 1200,
-            "in_house" => false
+          # Create a token hash that Spaceship can use
+          token_hash = {
+            key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+            issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+            key: Base64.decode64(ENV["APP_STORE_CONNECT_API_KEY"]),
+            duration: 1200,
+            in_house: false
           }
-          api_key_file.write(JSON.pretty_generate(api_key_data))
-          api_key_file.close
           
-          # Pass the file path to Match
-          match_params[:api_key_path] = api_key_file.path
-          UI.message("Using API key file: #{api_key_file.path}")
+          # Set the Spaceship token directly
+          ENV["SPACESHIP_CONNECT_API_KEY"] = token_hash.to_json
           
-          begin
-            match(match_params)
-          ensure
-            # Clean up the temporary file
-            api_key_file.unlink if api_key_file
-          end
+          # Now run Match - it should pick up the token
+          match(match_params)
         else
           # Use the already established session or no API key
-          UI.message("Using pre-configured App Store Connect API session or no API key")
+          UI.message("Using pre-configured App Store Connect API session")
           match(match_params)
         end
       rescue => e
