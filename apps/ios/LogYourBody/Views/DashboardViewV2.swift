@@ -429,7 +429,7 @@ struct DashboardViewV2: View {
             }
             
             // Steps
-            if let steps = selectedDateMetrics?.stepCount {
+            if let steps = selectedDateMetrics?.steps {
                 MetricStripItem(
                     icon: "figure.walk",
                     value: formatNumber(steps),
