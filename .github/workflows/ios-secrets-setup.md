@@ -33,20 +33,8 @@ Set up these secrets in your GitHub repository settings:
 - **Secret Name**: `APP_STORE_APP_ID`
 - **Value**: 6470661673
 
-### 8. Match Git Authentication (for private repository)
-
-You can use either Option A or Option B:
-
-#### Option A: Match Git Basic Authorization (Recommended)
-- **Secret Name**: `MATCH_GIT_BASIC_AUTHORIZATION`
-- **Value**: Base64 encoded "username:personal_access_token"
-- **How to create**: 
-  1. Create a GitHub Personal Access Token with `repo` scope
-  2. Run: `echo -n "your-github-username:your-personal-access-token" | base64`
-  3. Use the output as the secret value
-
-#### Option B: Match Git Token
-- **Secret Name**: `MATCH_GIT_TOKEN`
+### 8. Match Git Personal Access Token (for private repository)
+- **Secret Name**: `MATCH_GIT_PAT`
 - **Value**: Your GitHub Personal Access Token
 - **How to create**: 
   1. Go to GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)

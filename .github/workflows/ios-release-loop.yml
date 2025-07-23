@@ -124,22 +124,13 @@ jobs:
         # Set API key path for subsequent steps
         echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
       
-    - name: Setup Match Git Authentication
-      run: |
-        # Extract token from basic auth
-        # Basic auth is base64 encoded "username:token"
-        DECODED=$(echo "${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}" | base64 -d)
-        GIT_TOKEN=$(echo "$DECODED" | cut -d: -f2)
-        
-        # Export for Match to use
-        echo "MATCH_GIT_URL=https://${GIT_TOKEN}@github.com/itstimwhite/certificates.git" >> $GITHUB_ENV
-    
     - name: Sync Certificates with Match
       run: |
         cd apps/ios
         bundle exec fastlane match appstore --readonly
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_URL: "https://${{ secrets.MATCH_GIT_PAT }}@github.com/itstimwhite/certificates.git"
         MATCH_KEYCHAIN_NAME: "login.keychain"
         MATCH_KEYCHAIN_PASSWORD: ""
     
