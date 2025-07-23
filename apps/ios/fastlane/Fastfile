@@ -748,6 +748,9 @@ platform :ios do
     match_type = options[:type] || ENV["MATCH_TYPE"] || "appstore"
     readonly = options[:readonly] != false # Default to readonly for CI
     
+    # Setup App Store Connect API authentication first
+    setup_app_store_connect_api
+    
     # If using match with git repository
     if ENV["MATCH_GIT_URL"]
       match(

@@ -13,16 +13,6 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Prepare MATCH_GIT_URL with credentials
-      shell: bash
-      run: |
-        if [ -n "${{ inputs.match_git_basic }}" ]; then
-          # Embed basic auth credentials into the git URL
-          git_url_with_auth="${{ inputs.match_git_url/https:\/\//https:\/\/${{ inputs.match_git_basic }}@}}"
-        else
-          git_url_with_auth="${{ inputs.match_git_url }}"
-        fi
-        echo "MATCH_GIT_URL=$git_url_with_auth" >> $GITHUB_ENV
     - name: Setup Ruby and Bundler
       uses: ./.github/actions/setup-ruby-bundler
       with:
@@ -32,7 +22,15 @@ runs:
       shell: bash
       run: |
         cd apps/ios
-        bundle exec fastlane setup_provisioning
+        if [ -z "$MATCH_GIT_URL" ] || [ -z "$MATCH_GIT_BASIC_AUTHORIZATION" ]; then
+          echo "::error::Missing MATCH_GIT_URL or MATCH_GIT_BASIC_AUTHORIZATION secrets. See .github/workflows/ios-secrets-setup.md"
+          exit 1
+        fi
+        # Use our setup_provisioning lane which handles API key setup properly
+        bundle exec fastlane setup_provisioning type:appstore
       env:
         MATCH_PASSWORD: ${{ inputs.match_password }}
-        MATCH_KEYCHAIN_PASSWORD: ${{ inputs.match_password }}
+        MATCH_GIT_URL: ${{ inputs.match_git_url }}
+        MATCH_GIT_BASIC_AUTHORIZATION: ${{ inputs.match_git_basic }}
+        MATCH_KEYCHAIN_NAME: login.keychain
+        MATCH_KEYCHAIN_PASSWORD: 
