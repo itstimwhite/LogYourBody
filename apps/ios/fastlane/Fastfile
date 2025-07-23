@@ -378,10 +378,15 @@ platform :ios do
       
       # Handle signing based on configuration
       if build_configuration == "Release" && export_method == "app-store"
+        # Use the provisioning profile from Match
+        profile_name = ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"] || 
+                      ENV["IOS_PROVISIONING_PROFILE_NAME"] || 
+                      "match AppStore LogYourBody.LogYourBody"
+        
         build_options[:export_options] = {
           teamID: ENV["APPLE_TEAM_ID"],
           provisioningProfiles: {
-            "LogYourBody.LogYourBody" => ENV["IOS_PROVISIONING_PROFILE_NAME"] || "Github CI App Store"
+            "LogYourBody.LogYourBody" => profile_name
           },
           compileBitcode: false,
           uploadBitcode: false,
@@ -401,6 +406,14 @@ platform :ios do
     # Add any additional xcargs
     if options[:xcargs]
       build_options[:xcargs] = options[:xcargs]
+    else
+      build_options[:xcargs] = ""
+    end
+    
+    # Add provisioning profile specifier if available from Match
+    if ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"] && export_method == "app-store"
+      profile_name = ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"]
+      build_options[:xcargs] += " PROVISIONING_PROFILE_SPECIFIER='#{profile_name}'"
     end
     
     # Clean build artifacts if requested
