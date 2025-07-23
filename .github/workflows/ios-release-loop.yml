@@ -127,14 +127,11 @@ jobs:
     - name: Sync Certificates with Match
       run: |
         cd apps/ios
-        # Set up git credential helper for Match
-        git config --global credential.helper store
-        echo "https://${{ secrets.MATCH_GIT_TOKEN }}@github.com" > ~/.git-credentials
-        
         bundle exec fastlane match appstore --readonly
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_URL: "https://github.com/itstimwhite/certificates.git"
+        MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
         MATCH_KEYCHAIN_NAME: "login.keychain"
         MATCH_KEYCHAIN_PASSWORD: ""
     
@@ -182,8 +179,6 @@ jobs:
       run: |
         cd apps/ios
         rm -f app_store_connect_api_key.json
-        # Clean up git credentials
-        rm -f ~/.git-credentials
 
   deploy-testflight:
     name: Deploy to TestFlight
@@ -269,8 +264,6 @@ jobs:
       run: |
         cd apps/ios
         rm -f app_store_connect_api_key.json
-        # Clean up git credentials
-        rm -f ~/.git-credentials
         rm -f release_notes.txt
 
   deploy-app-store:
@@ -344,8 +337,6 @@ jobs:
       run: |
         cd apps/ios
         rm -f app_store_connect_api_key.json
-        # Clean up git credentials
-        rm -f ~/.git-credentials
 
   create-release:
     name: Create Release

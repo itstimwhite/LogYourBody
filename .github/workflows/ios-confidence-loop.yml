@@ -402,10 +402,6 @@ jobs:
     - name: Setup Match Authentication
       run: |
         cd apps/ios
-        # Set up git credential helper for Match
-        git config --global credential.helper store
-        echo "https://${{ secrets.MATCH_GIT_TOKEN }}@github.com" > ~/.git-credentials
-        
         # Create API key file from secret
         mkdir -p fastlane
         cat > fastlane/api_key.json << 'EOF'
@@ -428,6 +424,7 @@ jobs:
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_URL: "https://github.com/itstimwhite/certificates.git"
+        MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
         MATCH_KEYCHAIN_NAME: "login.keychain"
         MATCH_KEYCHAIN_PASSWORD: ""
     
@@ -467,5 +464,3 @@ jobs:
         cd apps/ios
         rm -f release_notes.txt
         rm -f fastlane/api_key.json
-        # Clean up git credentials
-        rm -f ~/.git-credentials
