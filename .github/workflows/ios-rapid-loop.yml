@@ -102,6 +102,17 @@ jobs:
         # Set API key path for subsequent steps
         echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
       
+    - name: Test Git Access
+      run: |
+        # Test if we can access the certificates repo
+        echo "Testing git access to certificates repository..."
+        
+        # Try with basic auth in URL
+        git ls-remote https://${{ secrets.MATCH_GIT_TOKEN }}@github.com/itstimwhite/certificates.git HEAD || echo "Direct token auth failed"
+        
+        # Try with authorization header
+        git -c http.extraheader="Authorization: Basic ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}" ls-remote https://github.com/itstimwhite/certificates.git HEAD || echo "Basic auth header failed"
+    
     - name: Sync Certificates with Match
       run: |
         cd apps/ios
