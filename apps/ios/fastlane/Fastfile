@@ -77,9 +77,12 @@ platform :ios do
         end
       rescue => e
         if e.message.include?("invalid curve name") || e.message.include?("OpenSSL")
-          UI.important("⚠️  OpenSSL curve compatibility issue detected, falling back to app-specific password")
-          # Set environment variable to skip API key in subsequent calls
-          ENV["FASTLANE_USE_APP_SPECIFIC_PASSWORD"] = "true"
+          UI.error("❌ OpenSSL curve compatibility issue detected")
+          UI.error("Error details: #{e.message}")
+          UI.error("This is a known issue with GitHub Actions runners. Please ensure:")
+          UI.error("1. The API key JSON file is properly formatted")
+          UI.error("2. The runner has the correct OpenSSL version")
+          raise e
         else
           raise e
         end
@@ -776,6 +779,9 @@ platform :ios do
         # Get API key path if available
         api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
         
+        # Ensure API key is set up before calling match
+        setup_app_store_connect_api
+        
         match_params = {
           type: match_type,
           app_identifier: "LogYourBody.LogYourBody",
@@ -788,11 +794,8 @@ platform :ios do
           verbose: true
         }
         
-        # Add api_key_path if available
-        if api_key_path && File.exist?(api_key_path)
-          match_params[:api_key_path] = api_key_path
-          UI.message("Using API key from: #{api_key_path}")
-        end
+        # Don't pass api_key_path to match - use the already established session
+        UI.message("Using pre-configured App Store Connect API session")
         
         match(match_params)
       rescue => e
