@@ -109,20 +109,12 @@ jobs:
     - name: Setup Match Authentication
       run: |
         cd apps/ios
-        # Create API key file from secret
-        mkdir -p fastlane
-        cat > fastlane/api_key.json << 'EOF'
-        {
-          "key_id": "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}",
-          "issuer_id": "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}",
-          "key": "${{ secrets.APP_STORE_CONNECT_API_KEY }}",
-          "duration": 1200,
-          "in_house": false
-        }
-        EOF
-        
-        # Set API key path for subsequent steps
-        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
+        # Set API key environment variables directly to avoid OpenSSL curve issues
+        echo "APP_STORE_CONNECT_API_KEY_ID=${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_ISSUER_ID=${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_KEY<<EOF" >> $GITHUB_ENV
+        echo "${{ secrets.APP_STORE_CONNECT_API_KEY }}" >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
       
     - name: Sync Certificates with Match
       uses: ./.github/actions/sync-match
@@ -134,7 +126,6 @@ jobs:
     - name: Set Environment Variables for Build
       run: |
         cd apps/ios
-        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
         echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
         echo "APP_STORE_APP_ID=${{ secrets.APP_STORE_APP_ID }}" >> $GITHUB_ENV
     
@@ -174,7 +165,7 @@ jobs:
       if: always()
       run: |
         cd apps/ios
-        rm -f app_store_connect_api_key.json
+        # API key is now handled via environment variables
 
   deploy-testflight:
     name: Deploy to TestFlight
@@ -204,7 +195,6 @@ jobs:
     - name: Set Environment Variables for Build
       run: |
         cd apps/ios
-        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
         echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
         echo "APP_STORE_APP_ID=${{ secrets.APP_STORE_APP_ID }}" >> $GITHUB_ENV
     
@@ -259,7 +249,7 @@ jobs:
       if: always()
       run: |
         cd apps/ios
-        rm -f app_store_connect_api_key.json
+        # API key is now handled via environment variables
         rm -f release_notes.txt
 
   deploy-app-store:
@@ -290,7 +280,6 @@ jobs:
     - name: Set Environment Variables for Build
       run: |
         cd apps/ios
-        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
         echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
         echo "APP_STORE_APP_ID=${{ secrets.APP_STORE_APP_ID }}" >> $GITHUB_ENV
     
@@ -332,7 +321,7 @@ jobs:
       if: always()
       run: |
         cd apps/ios
-        rm -f app_store_connect_api_key.json
+        # API key is now handled via environment variables
 
   create-release:
     name: Create Release
