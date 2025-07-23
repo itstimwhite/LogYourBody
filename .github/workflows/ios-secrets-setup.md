@@ -40,10 +40,21 @@ Set up these secrets in your GitHub repository settings:
   1. Go to GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)
   2. Click "Generate new token" (classic)
   3. Give it a descriptive name like "Match Certificates Access"
-  4. Select the `repo` scope (Full control of private repositories)
-  5. Click "Generate token"
-  6. Copy the token value (starts with `ghp_` or similar)
-  7. Use this token value directly as the secret (not base64 encoded)
+  4. Select the following scopes:
+     - **repo** (Full control of private repositories) - Required for:
+       - Reading the certificates repository
+       - Writing/updating certificates when Match creates new ones
+       - Accessing private repository contents
+  5. Set expiration (recommend 90 days and rotate regularly)
+  6. Click "Generate token"
+  7. Copy the token value (starts with `ghp_` or `github_pat_`)
+  8. Use this token value directly as the secret (not base64 encoded)
+
+**Important**: The token needs `repo` scope because Match needs to:
+- Clone the private certificates repository
+- Read existing certificates and profiles
+- Push new certificates when they're created/renewed
+- Access all repository contents (certificates are stored encrypted)
 
 ## Setting Up Secrets
 
