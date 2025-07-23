@@ -106,27 +106,38 @@ jobs:
         working-directory: apps/ios
         create-config-files: 'true'
     
-    - name: Import Code Signing Certificates
-      uses: apple-actions/import-codesign-certs@v5
-      with:
-        p12-file-base64: ${{ secrets.IOS_P12_BASE64 }}
-        p12-password: ${{ secrets.IOS_P12_PASSWORD }}
-        keychain-password: ${{ secrets.IOS_P12_PASSWORD }}
-    
-    - name: Setup Provisioning Profile
+    - name: Setup Match Authentication
       run: |
         cd apps/ios
-        bundle exec fastlane setup_provisioning
+        # Create API key file from secret
+        mkdir -p fastlane
+        cat > fastlane/api_key.json << 'EOF'
+        {
+          "key_id": "${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}",
+          "issuer_id": "${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}",
+          "key": "${{ secrets.APP_STORE_CONNECT_API_KEY }}",
+          "duration": 1200,
+          "in_house": false
+        }
+        EOF
+      
+    - name: Sync Certificates with Match
+      run: |
+        cd apps/ios
+        bundle exec fastlane match appstore --readonly
       env:
-        IOS_PROVISIONING_PROFILE_BASE64: ${{ secrets.IOS_PROVISIONING_PROFILE_BASE64 }}
-        MATCH_TYPE: "appstore"
+        APP_STORE_CONNECT_API_KEY_PATH: "./fastlane/api_key.json"
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        MATCH_GIT_URL: "https://github.com/itstimwhite/certificates.git"
+        MATCH_KEYCHAIN_NAME: "login.keychain"
+        MATCH_KEYCHAIN_PASSWORD: ""
     
-    - name: Setup App Store Connect API Key
+    - name: Set Environment Variables for Build
       run: |
         cd apps/ios
-        # Use printf to avoid issues with special characters
-        printf '%s' '${{ secrets.ASC_API_KEY_JSON }}' > app_store_connect_api_key.json
-        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
+        echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
+        echo "APP_STORE_APP_ID=${{ secrets.APP_STORE_APP_ID }}" >> $GITHUB_ENV
     
     - name: Update version and build
       run: |
@@ -191,12 +202,12 @@ jobs:
         xcode-version: '16.1'
         working-directory: apps/ios
     
-    - name: Setup App Store Connect API Key
+    - name: Set Environment Variables for Build
       run: |
         cd apps/ios
-        # Use printf to avoid issues with special characters
-        printf '%s' '${{ secrets.ASC_API_KEY_JSON }}' > app_store_connect_api_key.json
-        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
+        echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
+        echo "APP_STORE_APP_ID=${{ secrets.APP_STORE_APP_ID }}" >> $GITHUB_ENV
     
     - name: Run Fastlane Precheck
       run: |
@@ -277,12 +288,12 @@ jobs:
         xcode-version: '16.1'
         working-directory: apps/ios
     
-    - name: Setup App Store Connect API Key
+    - name: Set Environment Variables for Build
       run: |
         cd apps/ios
-        # Use printf to avoid issues with special characters
-        printf '%s' '${{ secrets.ASC_API_KEY_JSON }}' > app_store_connect_api_key.json
-        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/app_store_connect_api_key.json" >> $GITHUB_ENV
+        echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
+        echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
+        echo "APP_STORE_APP_ID=${{ secrets.APP_STORE_APP_ID }}" >> $GITHUB_ENV
     
     - name: Run Fastlane Precheck
       run: |
