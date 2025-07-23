@@ -36,6 +36,9 @@ Set up these secrets in your GitHub repository settings:
 ### 8. Match Git Basic Authorization (for private repository)
 - **Secret Name**: `MATCH_GIT_BASIC_AUTHORIZATION`
 - **Value**: Base64 encoded "username:personal_access_token"
+- **Notes**:
+- - The GitHub personal access token must include the **repo** scope (read & write) so that Match can clone and push certificates and provisioning profiles when creating or renewing them.
+- - Insufficient permissions will result in clone or push failures during CI.
 - **How to create**: 
   1. Get your GitHub username (e.g., `itstimwhite`)
   2. Create a GitHub Personal Access Token:
