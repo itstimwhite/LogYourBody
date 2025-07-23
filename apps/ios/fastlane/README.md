@@ -175,6 +175,14 @@ Create development certificates and profiles
 
 Create distribution certificates and profiles
 
+### ios regenerate_profiles
+
+```sh
+[bundle exec] fastlane ios regenerate_profiles
+```
+
+Force regenerate all provisioning profiles with Match
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

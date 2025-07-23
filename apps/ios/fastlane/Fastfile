@@ -887,6 +887,31 @@ platform :ios do
   lane :setup_distribution do
     setup_provisioning(type: "appstore", readonly: false)
   end
+  
+  desc "Force regenerate all provisioning profiles with Match"
+  lane :regenerate_profiles do
+    # Force regenerate profiles with proper capabilities
+    UI.important("Regenerating provisioning profiles with all capabilities...")
+    
+    # Match will automatically detect and include the capabilities from the Xcode project
+    match(
+      type: "appstore",
+      force: true,
+      force_for_new_devices: true,
+      app_identifier: "LogYourBody.LogYourBody",
+      git_url: ENV["MATCH_GIT_URL"] || "https://github.com/itstimwhite/certificates.git",
+      git_branch: ENV["MATCH_GIT_BRANCH"] || "master",
+      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
+      verbose: true
+    )
+    
+    UI.success("Provisioning profiles regenerated!")
+    UI.message("The new profiles include all capabilities from your entitlements file:")
+    UI.message("- Sign in with Apple")
+    UI.message("- HealthKit")
+    UI.message("- Associated Domains")
+    UI.message("- App Groups")
+  end
 
   error do |lane, exception|
     # Handle errors
