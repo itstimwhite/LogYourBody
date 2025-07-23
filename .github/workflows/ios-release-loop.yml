@@ -131,7 +131,7 @@ jobs:
           echo "::error::Missing MATCH_GIT_URL or MATCH_GIT_BASIC_AUTHORIZATION secrets. See .github/workflows/ios-secrets-setup.md"
           exit 1
         fi
-        bundle exec fastlane match appstore --readonly
+        bundle exec fastlane match appstore
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         # Conditionally use the private repo URL from secrets; fallback to public if empty
