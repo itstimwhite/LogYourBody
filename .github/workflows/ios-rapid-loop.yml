@@ -102,16 +102,15 @@ jobs:
         # Set API key path for subsequent steps
         echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
       
-    - name: Test Git Access
+    - name: Setup Match Git Authentication
       run: |
-        # Test if we can access the certificates repo
-        echo "Testing git access to certificates repository..."
+        # Extract token from basic auth
+        # Basic auth is base64 encoded "username:token"
+        DECODED=$(echo "${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}" | base64 -d)
+        GIT_TOKEN=$(echo "$DECODED" | cut -d: -f2)
         
-        # Try with basic auth in URL
-        git ls-remote https://${{ secrets.MATCH_GIT_TOKEN }}@github.com/itstimwhite/certificates.git HEAD || echo "Direct token auth failed"
-        
-        # Try with authorization header
-        git -c http.extraheader="Authorization: Basic ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}" ls-remote https://github.com/itstimwhite/certificates.git HEAD || echo "Basic auth header failed"
+        # Export for Match to use
+        echo "MATCH_GIT_URL=https://${GIT_TOKEN}@github.com/itstimwhite/certificates.git" >> $GITHUB_ENV
     
     - name: Sync Certificates with Match
       run: |
@@ -119,8 +118,6 @@ jobs:
         bundle exec fastlane match appstore --readonly
       env:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        MATCH_GIT_URL: "https://github.com/itstimwhite/certificates.git"
-        MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
         MATCH_KEYCHAIN_NAME: "login.keychain"
         MATCH_KEYCHAIN_PASSWORD: ""
     
