@@ -7,12 +7,13 @@ echo ""
 # Ensure we're in the iOS directory
 cd "$(dirname "$0")"
 
-# Set up authentication if PAT is provided
-if [ -n "$MATCH_GIT_PAT" ]; then
-    export MATCH_GIT_URL="https://${MATCH_GIT_PAT}@github.com/itstimwhite/certificates.git"
-    echo "Using PAT for authentication..."
+# Set up authentication if basic auth is provided
+if [ -n "$MATCH_GIT_BASIC_AUTHORIZATION" ]; then
+    echo "Using basic authorization for authentication..."
+    export MATCH_GIT_URL="https://github.com/itstimwhite/certificates.git"
 else
-    echo "No MATCH_GIT_PAT found. You may need to authenticate manually."
+    echo "No MATCH_GIT_BASIC_AUTHORIZATION found. You may need to authenticate manually."
+    echo "Set it with: export MATCH_GIT_BASIC_AUTHORIZATION=\$(echo -n 'username:token' | base64)"
 fi
 
 # Check if certificates already exist

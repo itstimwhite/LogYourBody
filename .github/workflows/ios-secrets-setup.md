@@ -33,22 +33,28 @@ Set up these secrets in your GitHub repository settings:
 - **Secret Name**: `APP_STORE_APP_ID`
 - **Value**: 6470661673
 
-### 8. Match Git Personal Access Token (for private repository)
-- **Secret Name**: `MATCH_GIT_PAT`
-- **Value**: Your GitHub Personal Access Token
+### 8. Match Git Basic Authorization (for private repository)
+- **Secret Name**: `MATCH_GIT_BASIC_AUTHORIZATION`
+- **Value**: Base64 encoded "username:personal_access_token"
 - **How to create**: 
-  1. Go to GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)
-  2. Click "Generate new token" (classic)
-  3. Give it a descriptive name like "Match Certificates Access"
-  4. Select the following scopes:
-     - **repo** (Full control of private repositories) - Required for:
-       - Reading the certificates repository
-       - Writing/updating certificates when Match creates new ones
-       - Accessing private repository contents
-  5. Set expiration (recommend 90 days and rotate regularly)
-  6. Click "Generate token"
-  7. Copy the token value (starts with `ghp_` or `github_pat_`)
-  8. Use this token value directly as the secret (not base64 encoded)
+  1. Get your GitHub username (e.g., `itstimwhite`)
+  2. Create a GitHub Personal Access Token:
+     - Go to GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)
+     - Click "Generate new token" (classic)
+     - Give it a descriptive name like "Match Certificates Access"
+     - Select the `repo` scope (Full control of private repositories)
+     - Set expiration (recommend 90 days and rotate regularly)
+     - Click "Generate token"
+     - Copy the token value (starts with `ghp_` or `github_pat_`)
+  3. Encode your credentials:
+     ```bash
+     echo -n "your-github-username:your-personal-access-token" | base64
+     ```
+     For example:
+     ```bash
+     echo -n "itstimwhite:github_pat_11AILQMSY0..." | base64
+     ```
+  4. Use the base64 output as the secret value
 
 **Important**: The token needs `repo` scope because Match needs to:
 - Clone the private certificates repository
