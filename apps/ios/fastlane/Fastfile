@@ -78,12 +78,9 @@ platform :ios do
         end
       rescue => e
         if e.message.include?("invalid curve name") || e.message.include?("OpenSSL")
-          UI.error("❌ OpenSSL curve compatibility issue detected")
-          UI.error("Error details: #{e.message}")
-          UI.error("This is a known issue with GitHub Actions runners. Please ensure:")
-          UI.error("1. The API key JSON file is properly formatted")
-          UI.error("2. The runner has the correct OpenSSL version")
-          raise e
+          UI.important("⚠️  OpenSSL curve compatibility issue detected - using workaround")
+          UI.message("Will pass API key directly to Match to bypass this issue")
+          # Don't raise the error - we'll handle authentication in Match directly
         else
           raise e
         end
@@ -780,7 +777,7 @@ platform :ios do
         # Get API key path if available
         api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
         
-        # Ensure API key is set up before calling match
+        # Try to set up API key first
         setup_app_store_connect_api
         
         match_params = {
@@ -795,10 +792,44 @@ platform :ios do
           verbose: true
         }
         
-        # Don't pass api_key_path to match - use the already established session
-        UI.message("Using pre-configured App Store Connect API session")
-        
-        match(match_params)
+        # If we're in CI and have API key credentials, create a temporary JSON file for Match
+        if ENV["CI"] && ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY"]
+          require 'json'
+          require 'tempfile'
+          require 'base64'
+          
+          UI.message("Creating temporary API key file for Match...")
+          
+          # Decode the base64 key
+          key_content = Base64.decode64(ENV["APP_STORE_CONNECT_API_KEY"])
+          
+          # Create a temporary JSON file
+          api_key_file = Tempfile.new(['api_key', '.json'])
+          api_key_data = {
+            "key_id" => ENV["APP_STORE_CONNECT_API_KEY_ID"],
+            "issuer_id" => ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+            "key" => key_content,
+            "duration" => 1200,
+            "in_house" => false
+          }
+          api_key_file.write(JSON.pretty_generate(api_key_data))
+          api_key_file.close
+          
+          # Pass the file path to Match
+          match_params[:api_key_path] = api_key_file.path
+          UI.message("Using API key file: #{api_key_file.path}")
+          
+          begin
+            match(match_params)
+          ensure
+            # Clean up the temporary file
+            api_key_file.unlink if api_key_file
+          end
+        else
+          # Use the already established session or no API key
+          UI.message("Using pre-configured App Store Connect API session or no API key")
+          match(match_params)
+        end
       rescue => e
         if e.message.include?("No code signing identity found") && readonly
           UI.error("No certificates found in Match repository. Run locally with MATCH_READONLY=false to create them.")
