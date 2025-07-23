@@ -27,10 +27,13 @@ runs:
           exit 1
         fi
         # Use our setup_provisioning lane which handles API key setup properly
-        bundle exec fastlane setup_provisioning type:appstore
+        # Run in readonly mode since certificates exist
+        bundle exec fastlane setup_provisioning type:appstore readonly:true
       env:
         MATCH_PASSWORD: ${{ inputs.match_password }}
         MATCH_GIT_URL: ${{ inputs.match_git_url }}
         MATCH_GIT_BASIC_AUTHORIZATION: ${{ inputs.match_git_basic }}
         MATCH_KEYCHAIN_NAME: login.keychain
         MATCH_KEYCHAIN_PASSWORD: 
+        FL_OUTPUT_DIR: ./logs
+        FASTLANE_HIDE_TIMESTAMP: true
