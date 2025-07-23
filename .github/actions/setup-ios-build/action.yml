@@ -41,7 +41,8 @@ runs:
         # Check if tools are already available
         if ! command -v swiftlint &> /dev/null; then
           echo "Installing SwiftLint..."
-          brew install swiftlint || {
+          # Try to link first if already installed
+          brew link swiftlint 2>/dev/null || brew install swiftlint || {
             echo "::warning::Failed to install SwiftLint via Homebrew"
             # Fallback: Download binary directly
             SWIFTLINT_VERSION="0.57.0"
