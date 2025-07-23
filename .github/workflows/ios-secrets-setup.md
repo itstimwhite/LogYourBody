@@ -77,3 +77,42 @@ Set up these secrets in your GitHub repository settings:
 - The API key should be the raw private key content, not base64 encoded
 - Make sure there are no extra spaces or newlines when copying values
 - The Match password should be the one you just changed to
+
+## Initial Certificate Setup
+
+The first time you set up Match, you need to create the certificates locally:
+
+1. Clone this repository locally
+2. Navigate to the iOS directory:
+   ```bash
+   cd apps/ios
+   ```
+
+3. Set up environment variables:
+   ```bash
+   export MATCH_GIT_URL='https://github.com/itstimwhite/certificates.git'
+   export MATCH_PASSWORD='your-secure-password'
+   export MATCH_READONLY=false
+   export APP_STORE_CONNECT_API_KEY_ID='V9NW6ZGUK3'
+   export APP_STORE_CONNECT_API_ISSUER_ID='c195f569-ff16-40fa-aaff-4fe94e8139ad'
+   export APP_STORE_CONNECT_API_KEY='-----BEGIN PRIVATE KEY-----
+   ... your key content ...
+   -----END PRIVATE KEY-----'
+   export APPLE_TEAM_ID='6P36X5723P'
+   ```
+
+4. Create the certificates and provisioning profiles:
+   ```bash
+   bundle install
+   bundle exec fastlane setup_provisioning type:appstore
+   ```
+
+5. Commit and push the changes to your certificates repository
+
+## Troubleshooting
+
+### OpenSSL Curve Name Error
+If you encounter "invalid curve name" errors on GitHub Actions, the setup_provisioning lane includes error handling for this. The API key setup is handled in the Fastfile rather than through Match directly to work around OpenSSL compatibility issues.
+
+### No Code Signing Identity Found
+This error occurs when the certificates repository is empty. You must run the "Initial Certificate Setup" steps above locally first to create the certificates. GitHub Actions runs in readonly mode by default and cannot create new certificates.

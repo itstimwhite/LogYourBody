@@ -748,20 +748,42 @@ platform :ios do
     match_type = options[:type] || ENV["MATCH_TYPE"] || "appstore"
     readonly = options[:readonly] != false # Default to readonly for CI
     
+    # For initial setup or if explicitly set, disable readonly
+    if ENV["MATCH_FORCE_ENTERPRISE"] == "true" || ENV["MATCH_READONLY"] == "false"
+      readonly = false
+      UI.important("Match running in read-write mode - will create certificates if needed")
+    end
+    
     # Setup App Store Connect API authentication first
     setup_app_store_connect_api
     
     # If using match with git repository
     if ENV["MATCH_GIT_URL"]
-      match(
-        type: match_type,
-        app_identifier: "LogYourBody.LogYourBody",
-        readonly: readonly,
-        git_url: ENV["MATCH_GIT_URL"],
-        git_branch: ENV["MATCH_GIT_BRANCH"] || "master",
-        keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
-        keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || ""
-      )
+      begin
+        match(
+          type: match_type,
+          app_identifier: "LogYourBody.LogYourBody",
+          readonly: readonly,
+          git_url: ENV["MATCH_GIT_URL"],
+          git_branch: ENV["MATCH_GIT_BRANCH"] || "master",
+          keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
+          keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || "",
+          verbose: true
+        )
+      rescue => e
+        if e.message.include?("No code signing identity found") && readonly
+          UI.error("No certificates found in Match repository. Run locally with MATCH_READONLY=false to create them.")
+          UI.error("Instructions:")
+          UI.error("1. Clone this repository locally")
+          UI.error("2. cd apps/ios")
+          UI.error("3. export MATCH_GIT_URL='https://github.com/itstimwhite/certificates.git'")
+          UI.error("4. export MATCH_READONLY=false")
+          UI.error("5. bundle exec fastlane setup_provisioning type:appstore")
+          raise e
+        else
+          raise e
+        end
+      end
     else
       # Fallback to manual provisioning profile if match is not configured
       UI.important("Match git repository not configured, using manual provisioning profile")
