@@ -106,8 +106,7 @@ jobs:
       env:
         APP_STORE_CONNECT_API_KEY_PATH: "./fastlane/api_key.json"
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-        MATCH_GIT_URL: "https://github.com/itstimwhite/certificates.git"
-        MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+        MATCH_GIT_URL: "https://${{ secrets.MATCH_GIT_TOKEN }}@github.com/itstimwhite/certificates.git"
         MATCH_KEYCHAIN_NAME: "login.keychain"
         MATCH_KEYCHAIN_PASSWORD: ""
     

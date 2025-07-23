@@ -23,13 +23,69 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 Run SwiftLint
 
+### ios validate_profile
+
+```sh
+[bundle exec] fastlane ios validate_profile
+```
+
+Validate provisioning profile
+
 ### ios test
 
 ```sh
 [bundle exec] fastlane ios test
 ```
 
-Run tests
+Run tests with configurable options
+
+### ios test_ui
+
+```sh
+[bundle exec] fastlane ios test_ui
+```
+
+Run UI tests
+
+### ios snapshot
+
+```sh
+[bundle exec] fastlane ios snapshot
+```
+
+Run snapshot tests for UI regression
+
+### ios test_sanitizers
+
+```sh
+[bundle exec] fastlane ios test_sanitizers
+```
+
+Run tests with sanitizers enabled
+
+### ios build
+
+```sh
+[bundle exec] fastlane ios build
+```
+
+Generic build lane with configurable parameters
+
+### ios build_check
+
+```sh
+[bundle exec] fastlane ios build_check
+```
+
+Quick build check for CI rapid validation
+
+### ios pr_verify
+
+```sh
+[bundle exec] fastlane ios pr_verify
+```
+
+PR verification - lint, build, and test
 
 ### ios build_dev
 
@@ -94,6 +150,14 @@ Submit existing IPA to App Store
 ```
 
 Deploy to App Store (build + upload)
+
+### ios setup_provisioning
+
+```sh
+[bundle exec] fastlane ios setup_provisioning
+```
+
+Setup provisioning with match (readonly mode for CI)
 
 ### ios setup_certificates
 
