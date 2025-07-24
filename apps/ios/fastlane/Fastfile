@@ -811,25 +811,19 @@ platform :ios do
         
         # In CI, we need to handle API key authentication differently due to OpenSSL issues
         if ENV["CI"] && ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY"]
-          UI.message("CI environment detected - setting up Spaceship token for Match")
+          UI.message("CI environment detected - passing API key to Match")
           
-          # Since we can't use app_store_connect_api_key due to OpenSSL issues,
-          # we'll use a different approach: set up Spaceship token directly
-          require 'base64'
-          
-          # Create a token hash that Spaceship can use
-          token_hash = {
+          # Pass API key directly to Match
+          match_params[:api_key] = {
             key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
             issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-            key: ENV["APP_STORE_CONNECT_API_KEY"], # Keep as base64 string
+            key: ENV["APP_STORE_CONNECT_API_KEY"],
+            is_key_content_base64: false,
             duration: 1200,
             in_house: false
           }
           
-          # Set the Spaceship token directly
-          ENV["SPACESHIP_CONNECT_API_KEY"] = token_hash.to_json
-          
-          # Now run Match - it should pick up the token
+          # Now run Match with API key
           match(match_params)
         else
           # Use the already established session or no API key
