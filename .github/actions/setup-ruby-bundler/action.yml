@@ -27,14 +27,19 @@ runs:
         ruby-version: ${{ inputs.ruby-version }}
         bundler-cache: false  # We'll handle caching ourselves for better control
 
+    - name: Get Ruby version
+      id: ruby-version
+      shell: bash
+      run: echo "version=$(ruby -v | awk '{print $2}')" >> $GITHUB_OUTPUT
+
     - name: Cache Ruby dependencies
       uses: actions/cache@v4
       id: bundler-cache
       with:
         path: ${{ inputs.working-directory }}/vendor/bundle
-        key: ${{ runner.os }}-${{ inputs.cache-key-prefix }}-${{ hashFiles(format('{0}/Gemfile.lock', inputs.working-directory)) }}
+        key: ${{ runner.os }}-${{ inputs.cache-key-prefix }}-ruby-${{ steps.ruby-version.outputs.version }}-${{ hashFiles(format('{0}/Gemfile.lock', inputs.working-directory)) }}
         restore-keys: |
-          ${{ runner.os }}-${{ inputs.cache-key-prefix }}-
+          ${{ runner.os }}-${{ inputs.cache-key-prefix }}-ruby-${{ steps.ruby-version.outputs.version }}-
 
     - name: Install Bundler
       shell: bash
