@@ -27,6 +27,7 @@ jobs:
           match_password: ${{ secrets.MATCH_PASSWORD }}
           match_git_url: ${{ secrets.MATCH_GIT_URL }}
           match_git_basic: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          match_git_branch: ${{ secrets.MATCH_GIT_BRANCH || 'master' }}
         env:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}

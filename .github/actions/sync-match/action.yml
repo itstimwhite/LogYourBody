@@ -10,6 +10,9 @@ inputs:
   match_git_basic:
     description: 'Basic auth credentials for git (username:password), embedded in URL'
     required: false
+  match_git_branch:
+    description: 'Git branch to use for Match certificates'
+    required: false
 runs:
   using: 'composite'
   steps:
@@ -33,6 +36,7 @@ runs:
         MATCH_PASSWORD: ${{ inputs.match_password }}
         MATCH_GIT_URL: ${{ inputs.match_git_url }}
         MATCH_GIT_BASIC_AUTHORIZATION: ${{ inputs.match_git_basic }}
+        MATCH_GIT_BRANCH: ${{ inputs.match_git_branch }}
         MATCH_KEYCHAIN_NAME: login.keychain
         MATCH_KEYCHAIN_PASSWORD: 
         FL_OUTPUT_DIR: ./logs
