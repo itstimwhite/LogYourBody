@@ -1,0 +1,78 @@
+name: Regenerate Certificates Now
+
+on:
+  workflow_dispatch:
+
+jobs:
+  regenerate:
+    name: Regenerate Certificates
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup iOS build environment
+        uses: ./.github/actions/setup-ios-build
+        with:
+          xcode-version: '15.4'
+
+      - name: Setup Ruby and install dependencies
+        uses: ./.github/actions/setup-ruby-bundler
+        with:
+          working-directory: apps/ios
+          cache-key-prefix: 'regenerate-certs'
+
+      - name: Regenerate all certificates
+        working-directory: apps/ios
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_GIT_BRANCH: ${{ secrets.MATCH_GIT_BRANCH || 'main' }}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          echo "🚀 Starting certificate regeneration..."
+          
+          # Use the regenerate_profiles lane which handles everything
+          bundle exec fastlane regenerate_profiles
+          
+          echo "✅ Certificate regeneration complete!"
+
+      - name: Test certificates with Match
+        working-directory: apps/ios
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_GIT_BRANCH: ${{ secrets.MATCH_GIT_BRANCH || 'main' }}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          echo "🧪 Testing certificate sync..."
+          
+          # Test that we can sync certificates in readonly mode
+          bundle exec fastlane setup_provisioning type:appstore readonly:true
+          
+          echo "✅ Certificates verified!"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Certificate Regeneration Summary"
+          echo ""
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "✅ Certificates regenerated successfully!"
+            echo ""
+            echo "Next steps:"
+            echo "1. Test the build workflow to ensure certificates work"
+            echo "2. Monitor the monthly regeneration workflow"
+          else
+            echo "❌ Certificate regeneration failed"
+            echo "Please check the logs above for details"
+          fi

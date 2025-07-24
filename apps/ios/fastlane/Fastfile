@@ -778,11 +778,18 @@ platform :ios do
     # Get the match type from options or environment
     match_type = options[:type] || ENV["MATCH_TYPE"] || "appstore"
     readonly = options[:readonly] != false # Default to readonly for CI
+    force = options[:force] || false
     
     # For initial setup or if explicitly set, disable readonly
     if ENV["MATCH_FORCE_ENTERPRISE"] == "true" || ENV["MATCH_READONLY"] == "false"
       readonly = false
       UI.important("Match running in read-write mode - will create certificates if needed")
+    end
+    
+    # Force regeneration if requested
+    if force
+      readonly = false
+      UI.important("Force regeneration requested - will create new certificates")
     end
     
     # Setup App Store Connect API authentication first
@@ -806,7 +813,9 @@ platform :ios do
           git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
           keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
           keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || "",
-          verbose: true
+          verbose: true,
+          force: force,
+          force_for_new_devices: force
         }
         
         # Debug: Check if password is present
@@ -901,17 +910,18 @@ platform :ios do
     # Force regenerate profiles with proper capabilities
     UI.important("Regenerating provisioning profiles with all capabilities...")
     
-    # Match will automatically detect and include the capabilities from the Xcode project
-    match(
-      type: "appstore",
-      force: true,
-      force_for_new_devices: true,
-      app_identifier: "LogYourBody.LogYourBody",
-      git_url: ENV["MATCH_GIT_URL"] || "https://github.com/itstimwhite/certificates.git",
-      git_branch: ENV["MATCH_GIT_BRANCH"] || "master",
-      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
-      verbose: true
-    )
+    # Setup API key authentication
+    setup_app_store_connect_api
+    
+    # Regenerate both types
+    ["appstore", "development"].each do |type|
+      UI.message("Regenerating #{type} certificates and profiles...")
+      setup_provisioning(
+        type: type,
+        force: true,
+        readonly: false
+      )
+    end
     
     UI.success("Provisioning profiles regenerated!")
     UI.message("The new profiles include all capabilities from your entitlements file:")
