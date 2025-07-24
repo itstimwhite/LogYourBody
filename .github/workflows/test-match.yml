@@ -27,10 +27,10 @@ jobs:
           match_password: ${{ secrets.MATCH_PASSWORD }}
           match_git_url: ${{ secrets.MATCH_GIT_URL }}
           match_git_basic: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-          match_keychain_password: ${{ secrets.MATCH_KEYCHAIN_PASSWORD }}
-          app_store_connect_api_key_id: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-          app_store_connect_api_key_issuer_id: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
-          app_store_connect_api_key: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
 
       - name: Verify Match certificates
         run: |
