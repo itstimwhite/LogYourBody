@@ -812,6 +812,13 @@ platform :ios do
         # Debug: Check if password is present
         if ENV["MATCH_PASSWORD"]
           UI.message("Match password is set (length: #{ENV["MATCH_PASSWORD"].length})")
+          # Check for special characters
+          if ENV["MATCH_PASSWORD"].include?("$")
+            UI.message("Password contains $ character")
+          end
+          if ENV["MATCH_PASSWORD"].include?("@")
+            UI.message("Password contains @ character")
+          end
         else
           UI.error("MATCH_PASSWORD environment variable is not set!")
         end
