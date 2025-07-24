@@ -23,6 +23,60 @@ jobs:
           working-directory: apps/ios
           cache-key-prefix: 'regenerate-certs'
 
+      - name: Nuke existing certificates
+        working-directory: apps/ios
+        env:
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_GIT_BRANCH: ${{ secrets.MATCH_GIT_BRANCH || 'main' }}
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          echo "🔥 Nuking all existing certificates..."
+          
+          # Run the nuke_all_certs lane
+          bundle exec fastlane nuke_all_certs || echo "Some certificates may not have existed"
+          
+          echo "✅ Certificate nuking complete!"
+
+      - name: Clean certificates repository
+        env:
+          MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_GIT_BRANCH: ${{ secrets.MATCH_GIT_BRANCH || 'main' }}
+        run: |
+          echo "🗑️ Cleaning certificates repository..."
+          
+          # Extract the auth token from base64
+          AUTH_HEADER=$(echo $MATCH_GIT_BASIC_AUTHORIZATION | base64 -d)
+          
+          # Clone with authentication
+          cd /tmp
+          rm -rf certificates-temp
+          git clone https://${AUTH_HEADER}@github.com/itstimwhite/certificates.git certificates-temp
+          cd certificates-temp
+          git checkout $MATCH_GIT_BRANCH || git checkout -b $MATCH_GIT_BRANCH
+          
+          # Clean all certificate files
+          rm -rf certs profiles
+          mkdir -p certs profiles
+          touch certs/.gitkeep profiles/.gitkeep
+          
+          # Commit and push
+          git add -A
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config user.name "GitHub Actions"
+          git commit -m "Clean repository for certificate regeneration" || echo "Nothing to commit"
+          git push origin $MATCH_GIT_BRANCH
+          
+          cd -
+          rm -rf /tmp/certificates-temp
+          
+          echo "✅ Repository cleaned!"
+
       - name: Regenerate all certificates
         working-directory: apps/ios
         env:

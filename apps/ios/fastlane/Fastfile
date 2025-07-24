@@ -905,6 +905,42 @@ platform :ios do
     setup_provisioning(type: "appstore", readonly: false)
   end
   
+  desc "Nuke all certificates from Apple Developer Portal"
+  lane :nuke_all_certs do
+    # Setup API key authentication
+    setup_app_store_connect_api
+    
+    UI.important("🔥 Nuking all certificates from Apple Developer Portal...")
+    
+    # Nuke distribution certificates
+    begin
+      match_nuke(
+        type: "distribution",
+        team_id: ENV["APPLE_TEAM_ID"],
+        skip_confirmation: true,
+        api_key_path: nil  # Don't use file path, use the established session
+      )
+      UI.success("✅ Distribution certificates nuked")
+    rescue => e
+      UI.message("Distribution nuke failed (may not exist): #{e.message}")
+    end
+    
+    # Nuke development certificates
+    begin
+      match_nuke(
+        type: "development", 
+        team_id: ENV["APPLE_TEAM_ID"],
+        skip_confirmation: true,
+        api_key_path: nil  # Don't use file path, use the established session
+      )
+      UI.success("✅ Development certificates nuked")
+    rescue => e
+      UI.message("Development nuke failed (may not exist): #{e.message}")
+    end
+    
+    UI.success("🔥 All certificates nuked!")
+  end
+
   desc "Force regenerate all provisioning profiles with Match"
   lane :regenerate_profiles do
     # Force regenerate profiles with proper capabilities
