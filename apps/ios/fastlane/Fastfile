@@ -821,7 +821,7 @@ platform :ios do
           token_hash = {
             key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
             issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-            key: Base64.decode64(ENV["APP_STORE_CONNECT_API_KEY"]),
+            key: ENV["APP_STORE_CONNECT_API_KEY"], # Keep as base64 string
             duration: 1200,
             in_house: false
           }
