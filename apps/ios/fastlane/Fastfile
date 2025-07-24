@@ -809,6 +809,13 @@ platform :ios do
           verbose: true
         }
         
+        # Debug: Check if password is present
+        if ENV["MATCH_PASSWORD"]
+          UI.message("Match password is set (length: #{ENV["MATCH_PASSWORD"].length})")
+        else
+          UI.error("MATCH_PASSWORD environment variable is not set!")
+        end
+        
         # In CI, we need to handle API key authentication differently due to OpenSSL issues
         if ENV["CI"] && ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY"]
           UI.message("CI environment detected - passing API key to Match")
