@@ -18,8 +18,8 @@ app_identifier(["LogYourBody.LogYourBody"])
 # Note: API key setup is handled in Fastfile to work around OpenSSL curve issues
 # Do not set api_key_path here - it will be handled by setup_app_store_connect_api lane
 
-# Use API key authentication
-api_key_path(ENV["APP_STORE_CONNECT_API_KEY_PATH"] || "./fastlane/api_key.json")
+# API key authentication is handled in the Fastfile, not here
+# api_key_path(ENV["APP_STORE_CONNECT_API_KEY_PATH"] || "./fastlane/api_key.json")
 
 # For all available options run `fastlane match --help`
 # Remove the # in the beginning of the line to enable the other options
