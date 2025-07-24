@@ -802,7 +802,7 @@ platform :ios do
           app_identifier: "LogYourBody.LogYourBody",
           readonly: readonly,
           git_url: ENV["MATCH_GIT_URL"],
-          git_branch: ENV["MATCH_GIT_BRANCH"] || "master",
+          git_branch: ENV["MATCH_GIT_BRANCH"] || "main",
           git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
           keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
           keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || "",
