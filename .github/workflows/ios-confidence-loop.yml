@@ -149,7 +149,7 @@ jobs:
         RESULT_BUNDLE="${{ matrix.test-type.name }}.xcresult"
         if [ -d "$RESULT_BUNDLE" ]; then
           # Extract test summary
-          xcrun xcresulttool get --path "$RESULT_BUNDLE" --format json > test-summary.json
+          xcrun xcresulttool get --legacy --path "$RESULT_BUNDLE" --format json > test-summary.json
           
           # Parse and display results
           TESTS_COUNT=$(jq '.metrics.testsCount.value // 0' test-summary.json)
@@ -285,7 +285,7 @@ jobs:
         
         if [ -d "performance.xcresult" ]; then
           # Extract performance metrics
-          xcrun xcresulttool get --path performance.xcresult --format json > perf-results.json
+          xcrun xcresulttool get --legacy --path performance.xcresult --format json > perf-results.json
           
           echo "### Performance Test Results" >> $GITHUB_STEP_SUMMARY
           

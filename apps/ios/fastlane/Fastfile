@@ -201,8 +201,9 @@ platform :ios do
 
   desc "Run tests with configurable options"
   lane :test do |options|
-    # Use absolute path from current directory
-    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    # Use absolute path from iOS directory
+    ios_dir = File.expand_path("..", Dir.pwd)
+    proj_path = File.join(ios_dir, "LogYourBody.xcodeproj")
     
     # Configure test options
     test_scheme = options[:scheme] || scheme
@@ -231,8 +232,9 @@ platform :ios do
   
   desc "Run UI tests"
   lane :test_ui do |options|
-    # Use absolute path from current directory
-    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    # Use absolute path from iOS directory
+    ios_dir = File.expand_path("..", Dir.pwd)
+    proj_path = File.join(ios_dir, "LogYourBody.xcodeproj")
     
     # Configure test options
     test_scheme = options[:scheme] || scheme
@@ -279,8 +281,9 @@ platform :ios do
   
   desc "Run snapshot tests for UI regression"
   lane :ui_snapshot do |options|
-    # Use absolute path from current directory
-    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    # Use absolute path from iOS directory
+    ios_dir = File.expand_path("..", Dir.pwd)
+    proj_path = File.join(ios_dir, "LogYourBody.xcodeproj")
     
     # Configure test options
     test_scheme = options[:scheme] || scheme
@@ -305,8 +308,9 @@ platform :ios do
   
   desc "Run tests with sanitizers enabled"
   lane :test_sanitizers do |options|
-    # Use absolute path from current directory
-    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    # Use absolute path from iOS directory
+    ios_dir = File.expand_path("..", Dir.pwd)
+    proj_path = File.join(ios_dir, "LogYourBody.xcodeproj")
     
     # Configure test options
     test_scheme = options[:scheme] || scheme
@@ -482,8 +486,9 @@ platform :ios do
   
   desc "PR verification - lint, build, and test"
   lane :pr_verify do |options|
-    # Use absolute path from current directory
-    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    # Use absolute path from iOS directory
+    ios_dir = File.expand_path("..", Dir.pwd)
+    proj_path = File.join(ios_dir, "LogYourBody.xcodeproj")
     
     # Run SwiftLint first
     UI.message("Running SwiftLint...")
@@ -626,8 +631,9 @@ platform :ios do
   desc "Build for CI"
   lane :ci_build do
     # This lane is specifically for CI environments
-    # Use absolute path from current directory
-    proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
+    # Use absolute path from iOS directory
+    ios_dir = File.expand_path("..", Dir.pwd)
+    proj_path = File.join(ios_dir, "LogYourBody.xcodeproj")
     
     build_app(
       project: proj_path,
