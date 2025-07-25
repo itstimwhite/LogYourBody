@@ -29,23 +29,24 @@ runs:
           echo "::error::Missing MATCH_GIT_URL or MATCH_GIT_BASIC_AUTHORIZATION secrets. See .github/workflows/ios-secrets-setup.md"
           exit 1
         fi
-        # Use our setup_provisioning lane which handles API key setup properly
-        # Run in readonly mode since certificates exist
-        bundle exec fastlane setup_provisioning type:appstore readonly:true
+        # Run Match directly to ensure environment variables are available
+        bundle exec fastlane run match \
+          type:appstore \
+          readonly:true \
+          app_identifier:"LogYourBody.LogYourBody" \
+          team_id:"$APPLE_TEAM_ID" \
+          api_key_path:"$APP_STORE_CONNECT_API_KEY_PATH" \
+          verbose:true
         
         # Export Match environment variables for subsequent steps
         echo "Exporting Match environment variables..."
-        # Use a temporary file to avoid subshell issues
-        env | grep "^sigh_" > /tmp/match_env_vars.txt || true
-        if [ -f /tmp/match_env_vars.txt ]; then
-          while IFS= read -r line; do
+        # Use process substitution to avoid subshell issues
+        while IFS= read -r line; do
+          if [[ "$line" == sigh_* ]]; then
             echo "$line" >> $GITHUB_ENV
             echo "Exported: $line"
-          done < /tmp/match_env_vars.txt
-          rm -f /tmp/match_env_vars.txt
-        else
-          echo "No sigh_ environment variables found"
-        fi
+          fi
+        done < <(env | grep "^sigh_" || true)
       env:
         MATCH_PASSWORD: ${{ inputs.match_password }}
         MATCH_GIT_URL: ${{ inputs.match_git_url }}
