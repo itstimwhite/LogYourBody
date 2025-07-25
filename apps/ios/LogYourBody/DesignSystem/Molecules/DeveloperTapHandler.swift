@@ -55,16 +55,16 @@ struct DeveloperTapIndicator: View {
         DeveloperTapHandler(
             onUnlock: { /* Developer mode unlocked */ },
             content: { tapCount in
-            HStack {
-                Text("Version 1.0.0")
-                if tapCount > 0 {
-                    Spacer()
-                    DeveloperTapIndicator(remainingTaps: 7 - tapCount)
+                HStack {
+                    Text("Version 1.0.0")
+                    if tapCount > 0 {
+                        Spacer()
+                        DeveloperTapIndicator(remainingTaps: 7 - tapCount)
+                    }
                 }
-            }
-            .padding()
-            .background(Color(.systemGray6))
-            .cornerRadius(8)
+                .padding()
+                .background(Color(.systemGray6))
+                .cornerRadius(8)
             }
         )
         

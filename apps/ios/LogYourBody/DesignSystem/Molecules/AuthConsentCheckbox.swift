@@ -10,7 +10,7 @@ struct AuthConsentCheckbox: View {
     @Binding var isChecked: Bool
     let text: String
     let linkText: String
-    let onLinkTap: () -> Void
+    let url: URL
     
     var body: some View {
         HStack(alignment: .top, spacing: 12) {
@@ -29,13 +29,10 @@ struct AuthConsentCheckbox: View {
                         .font(.system(size: 14))
                         .foregroundColor(.appTextSecondary)
                     
-                    Button(action: onLinkTap) {
-                        Text(linkText)
-                            .font(.system(size: 14))
-                            .foregroundColor(.appPrimary)
-                            .underline()
-                    }
-                    .buttonStyle(PlainButtonStyle())
+                    Link(linkText, destination: url)
+                        .font(.system(size: 14))
+                        .foregroundColor(.appPrimary)
+                        .underline()
                 }
                 .multilineTextAlignment(.leading)
                 
@@ -58,21 +55,21 @@ struct AuthConsentCheckbox: View {
             isChecked: .constant(true),
             text: "LogYourBody's terms of service",
             linkText: "Terms of Service",
-            onLinkTap: {}
+            url: URL(string: "https://logyourbody.com/terms")!
         )
         
         AuthConsentCheckbox(
             isChecked: .constant(false),
             text: "How we handle your data",
             linkText: "Privacy Policy",
-            onLinkTap: {}
+            url: URL(string: "https://logyourbody.com/privacy")!
         )
         
         AuthConsentCheckbox(
             isChecked: .constant(false),
             text: "Important health information",
             linkText: "Health Disclaimer",
-            onLinkTap: {}
+            url: URL(string: "https://logyourbody.com/health-disclaimer")!
         )
     }
     .padding()

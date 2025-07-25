@@ -1,4 +1,4 @@
-# GitHub Actions Secrets for iOS CI/CD with Match
+thes# GitHub Actions Secrets for iOS CI/CD with Match
 
 Set up these secrets in your GitHub repository settings:
 

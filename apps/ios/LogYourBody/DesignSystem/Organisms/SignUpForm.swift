@@ -16,9 +16,9 @@ struct SignUpForm: View {
     
     let onSignUp: () -> Void
     let onAppleSignIn: () -> Void
-    let onShowTerms: () -> Void
-    let onShowPrivacy: () -> Void
-    let onShowHealthDisclaimer: () -> Void
+    let termsURL: URL
+    let privacyURL: URL
+    let healthDisclaimerURL: URL
     
     @FocusState private var focusedField: Field?
     
@@ -84,21 +84,21 @@ struct SignUpForm: View {
                     isChecked: $agreedToTerms,
                     text: "LogYourBody's terms of service",
                     linkText: "Terms of Service",
-                    onLinkTap: onShowTerms
+                    url: termsURL
                 )
                 
                 AuthConsentCheckbox(
                     isChecked: $agreedToPrivacy,
                     text: "How we handle your data",
                     linkText: "Privacy Policy",
-                    onLinkTap: onShowPrivacy
+                    url: privacyURL
                 )
                 
                 AuthConsentCheckbox(
                     isChecked: $agreedToHealthDisclaimer,
                     text: "Important health information",
                     linkText: "Health Disclaimer",
-                    onLinkTap: onShowHealthDisclaimer
+                    url: healthDisclaimerURL
                 )
             }
             
@@ -143,9 +143,9 @@ struct SignUpForm: View {
                 agreedToHealthDisclaimer: .constant(false),
                 onSignUp: {},
                 onAppleSignIn: {},
-                onShowTerms: {},
-                onShowPrivacy: {},
-                onShowHealthDisclaimer: {}
+                termsURL: URL(string: "https://logyourbody.com/terms")!,
+                privacyURL: URL(string: "https://logyourbody.com/privacy")!,
+                healthDisclaimerURL: URL(string: "https://logyourbody.com/health-disclaimer")!
             )
             .padding(.horizontal, 24)
         }

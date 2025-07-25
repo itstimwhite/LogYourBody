@@ -191,6 +191,14 @@ Nuke all certificates from Apple Developer Portal
 
 Force regenerate all provisioning profiles with Match
 
+### ios notify_success
+
+```sh
+[bundle exec] fastlane ios notify_success
+```
+
+Post-build success actions
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

@@ -67,9 +67,9 @@ struct SignUpView: View {
                                 await authManager.signInWithAppleOAuth()
                             }
                         },
-                        onShowTerms: { showTermsSheet = true },
-                        onShowPrivacy: { showPrivacySheet = true },
-                        onShowHealthDisclaimer: { showHealthDisclaimerSheet = true }
+                        termsURL: URL(string: "https://logyourbody.com/terms")!,
+                        privacyURL: URL(string: "https://logyourbody.com/privacy")!,
+                        healthDisclaimerURL: URL(string: "https://logyourbody.com/health-disclaimer")!
                     )
                     .padding(.horizontal, 24)
                     
