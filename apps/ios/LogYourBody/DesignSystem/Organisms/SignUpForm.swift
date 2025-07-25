@@ -80,21 +80,21 @@ struct SignUpForm: View {
             
             // Privacy Consent
             VStack(spacing: 16) {
-                ConsentCheckbox(
+                AuthConsentCheckbox(
                     isChecked: $agreedToTerms,
                     text: "LogYourBody's terms of service",
                     linkText: "Terms of Service",
                     onLinkTap: onShowTerms
                 )
                 
-                ConsentCheckbox(
+                AuthConsentCheckbox(
                     isChecked: $agreedToPrivacy,
                     text: "How we handle your data",
                     linkText: "Privacy Policy",
                     onLinkTap: onShowPrivacy
                 )
                 
-                ConsentCheckbox(
+                AuthConsentCheckbox(
                     isChecked: $agreedToHealthDisclaimer,
                     text: "Important health information",
                     linkText: "Health Disclaimer",
@@ -112,7 +112,7 @@ struct SignUpForm: View {
             )
             
             // Divider
-            AuthDivider()
+            DSAuthDivider()
             
             // Apple Sign In
             SocialLoginButton(

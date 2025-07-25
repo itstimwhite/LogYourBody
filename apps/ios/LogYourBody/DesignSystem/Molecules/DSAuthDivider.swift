@@ -1,12 +1,12 @@
 //
-// AuthDivider.swift
+// DSAuthDivider.swift
 // LogYourBody
 //
 import SwiftUI
 
-// MARK: - AuthDivider Molecule
+// MARK: - DSAuthDivider Molecule
 
-struct AuthDivider: View {
+struct DSAuthDivider: View {
     let text: String
     
     init(text: String = "or") {
@@ -35,13 +35,13 @@ struct AuthDivider: View {
 
 #Preview {
     VStack(spacing: 40) {
-        AuthDivider()
+        DSAuthDivider()
         
-        AuthDivider(text: "or continue with")
+        DSAuthDivider(text: "or continue with")
         
         VStack(spacing: 16) {
             DSAuthButton(title: "Sign In", action: {})
-            AuthDivider()
+            DSAuthDivider()
             SocialLoginButton(provider: .apple, action: {})
         }
     }

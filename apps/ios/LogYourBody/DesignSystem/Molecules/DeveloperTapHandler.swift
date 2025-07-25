@@ -66,6 +66,7 @@ struct DeveloperTapIndicator: View {
             .background(Color(.systemGray6))
             .cornerRadius(8)
             }
+        )
         
         Text("Tap 7 times to unlock developer mode")
             .font(.caption)

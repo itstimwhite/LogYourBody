@@ -1,12 +1,12 @@
 //
-// ConsentCheckbox.swift
+// AuthConsentCheckbox.swift
 // LogYourBody
 //
 import SwiftUI
 
-// MARK: - ConsentCheckbox Molecule
+// MARK: - AuthConsentCheckbox Molecule
 
-struct ConsentCheckbox: View {
+struct AuthConsentCheckbox: View {
     @Binding var isChecked: Bool
     let text: String
     let linkText: String
@@ -54,21 +54,21 @@ struct ConsentCheckbox: View {
 
 #Preview {
     VStack(spacing: 20) {
-        ConsentCheckbox(
+        AuthConsentCheckbox(
             isChecked: .constant(true),
             text: "LogYourBody's terms of service",
             linkText: "Terms of Service",
             onLinkTap: {}
         )
         
-        ConsentCheckbox(
+        AuthConsentCheckbox(
             isChecked: .constant(false),
             text: "How we handle your data",
             linkText: "Privacy Policy",
             onLinkTap: {}
         )
         
-        ConsentCheckbox(
+        AuthConsentCheckbox(
             isChecked: .constant(false),
             text: "Important health information",
             linkText: "Health Disclaimer",

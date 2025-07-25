@@ -70,7 +70,7 @@ struct LoginForm: View {
             )
             
             // Divider
-            AuthDivider()
+            DSAuthDivider()
             
             // Apple Sign In
             SocialLoginButton(
