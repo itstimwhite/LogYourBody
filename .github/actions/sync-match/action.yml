@@ -23,8 +23,8 @@ runs:
         cache-key-prefix: 'match-gems'
     - name: Sync certificates and provisioning profiles
       shell: bash
+      working-directory: apps/ios
       run: |
-        cd apps/ios
         if [ -z "$MATCH_GIT_URL" ] || [ -z "$MATCH_GIT_BASIC_AUTHORIZATION" ]; then
           echo "::error::Missing MATCH_GIT_URL or MATCH_GIT_BASIC_AUTHORIZATION secrets. See .github/workflows/ios-secrets-setup.md"
           exit 1
