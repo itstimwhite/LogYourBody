@@ -431,9 +431,6 @@ jobs:
         match_git_basic: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
         match_git_branch: 'main'
       env:
-        APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
-        APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     
     - name: Get version info
