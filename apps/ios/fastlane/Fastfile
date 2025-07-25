@@ -264,6 +264,7 @@ platform :ios do
   
   # Helper method to bump build number based on TestFlight
   def bump_build_number
+    setup_app_store_connect_api if lane_context[SharedValues::APP_STORE_CONNECT_API_KEY].nil?
     api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
     
     latest_build_number = latest_testflight_build_number(
@@ -385,8 +386,6 @@ platform :ios do
     version = get_version_number(xcodeproj: project_path)
     build = get_build_number(xcodeproj: project_path)
     UI.message("Building version #{version} (#{build})")
-    UI.header("🔧 Build options:")
-    UI.message(build_options.map { |k, v| "#{k}: #{v}" }.join("\n"))
     
     # Build options based on export method
     build_options = {
@@ -461,6 +460,9 @@ platform :ios do
       end
     end
     
+    UI.header("🔧 Build options:")
+    UI.message(build_options.map { |k, v| "#{k}: #{v}" }.join("\n"))
+    
     # Clean build artifacts if requested
     if options[:clean_artifacts] != false
       clean_build_artifacts
@@ -484,7 +486,7 @@ platform :ios do
       configuration: "Debug",
       export_method: "development",
       clean_artifacts: false,
-      xcargs: "CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO"
+      xcargs: "#{options[:xcargs]} CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO"
     )
   end
   
@@ -570,6 +572,7 @@ platform :ios do
     test_groups = options[:groups] ? options[:groups].split(",") : ["Internal Testers"]
     
     upload_to_testflight(
+      ipa: build_result[:output_path],
       skip_waiting_for_build_processing: true,
       apple_id: ENV["APP_STORE_APP_ID"],
       team_id: ENV["APPLE_TEAM_ID"],
@@ -599,31 +602,17 @@ platform :ios do
     )
     
     # Build the app
-    build_app(
-      project: project,
-      scheme: scheme,
+    build_result = build(
       configuration: "Release",
       export_method: "app-store",
-      export_team_id: ENV["APPLE_TEAM_ID"],
-      export_options: {
-        teamID: ENV["APPLE_TEAM_ID"],
-        provisioningProfiles: {
-          "LogYourBody.LogYourBody" => ENV["PROVISIONING_PROFILE_SPECIFIER"] || ENV["PROVISIONING_PROFILE_UUID"]
-        },
-        compileBitcode: false,
-        uploadBitcode: false,
-        uploadSymbols: true,
-        signingStyle: "manual"
-      },
-      # Speed optimizations
-      skip_package_dependencies_resolution: true,
-      disable_package_automatic_updates: true,
-      cloned_source_packages_path: "SourcePackages",
-      skip_profile_detection: true
+      build_number: build_number,
+      output_directory: "./build",
+      clean_artifacts: true
     )
     
     # Upload to TestFlight
     upload_to_testflight(
+      ipa: build_result[:output_path],
       skip_waiting_for_build_processing: true,
       apple_id: ENV["APP_STORE_APP_ID"],
       team_id: ENV["APPLE_TEAM_ID"],
@@ -702,37 +691,7 @@ platform :ios do
 
   desc "Submit existing IPA to App Store"
   lane :submit_app_store do |options|
-    # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
-      # Use environment variables directly
-      app_store_connect_api_key(
-        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-        issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
-        duration: 1200, # 20 minutes
-        in_house: false
-      )
-    elsif ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"])
-      # Fallback to JSON parsing
-      require 'json'
-      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"]))
-      
-      # Create a temporary file with just the key content
-      key_file = Tempfile.new(['asc_key', '.p8'])
-      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
-      key_file.close
-      
-      app_store_connect_api_key(
-        key_id: api_key_data['key_id'],
-        issuer_id: api_key_data['issuer_id'],
-        key_filepath: key_file.path,
-        duration: 1200, # 20 minutes
-        in_house: api_key_data['in_house'] || false
-      )
-      
-      # Clean up temp file will happen automatically
-    end
-    
+    setup_app_store_connect_api
     # Upload to App Store Connect
     upload_to_app_store(
       ipa: options[:ipa_path],
@@ -752,36 +711,7 @@ platform :ios do
     # Ensure we have a clean state
     clean_build_artifacts
     
-    # Set up App Store Connect API key if available
-    if ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_ISSUER_ID"] && ENV["APP_STORE_CONNECT_API_KEY_PATH"]
-      # Use environment variables directly
-      app_store_connect_api_key(
-        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-        issuer_id: ENV["APP_STORE_CONNECT_API_ISSUER_ID"],
-        key_filepath: ENV["APP_STORE_CONNECT_API_KEY_PATH"],
-        duration: 1200, # 20 minutes
-        in_house: false
-      )
-    elsif ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"] && File.exist?(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"])
-      # Fallback to JSON parsing
-      require 'json'
-      api_key_data = JSON.parse(File.read(ENV["APP_STORE_CONNECT_API_KEY_JSON_PATH"]))
-      
-      # Create a temporary file with just the key content
-      key_file = Tempfile.new(['asc_key', '.p8'])
-      key_file.write(api_key_data['key'].gsub('\\n', "\n"))
-      key_file.close
-      
-      app_store_connect_api_key(
-        key_id: api_key_data['key_id'],
-        issuer_id: api_key_data['issuer_id'],
-        key_filepath: key_file.path,
-        duration: 1200, # 20 minutes
-        in_house: api_key_data['in_house'] || false
-      )
-      
-      # Clean up temp file will happen automatically
-    end
+    setup_app_store_connect_api
     
     # Build the app
     build_app(
