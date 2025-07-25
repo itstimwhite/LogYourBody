@@ -912,26 +912,43 @@ platform :ios do
     
     UI.important("🔥 Nuking all certificates from Apple Developer Portal...")
     
-    # Nuke distribution certificates
+    # Set up match parameters that work with our authentication
+    match_params = {
+      git_url: ENV["MATCH_GIT_URL"],
+      git_branch: ENV["MATCH_GIT_BRANCH"] || "main",
+      git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
+      team_id: ENV["APPLE_TEAM_ID"],
+      skip_confirmation: true
+    }
+    
+    # In CI, we need to handle API key authentication differently
+    if ENV["CI"] && ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY"]
+      match_params[:api_key] = {
+        key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
+        issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
+        key: ENV["APP_STORE_CONNECT_API_KEY"],
+        is_key_content_base64: false,
+        duration: 1200,
+        in_house: false
+      }
+    end
+    
+    # Nuke app store certificates
     begin
       match_nuke(
-        type: "distribution",
-        team_id: ENV["APPLE_TEAM_ID"],
-        skip_confirmation: true,
-        api_key_path: nil  # Don't use file path, use the established session
+        **match_params,
+        type: "appstore"
       )
-      UI.success("✅ Distribution certificates nuked")
+      UI.success("✅ App Store certificates nuked")
     rescue => e
-      UI.message("Distribution nuke failed (may not exist): #{e.message}")
+      UI.message("App Store nuke failed (may not exist): #{e.message}")
     end
     
     # Nuke development certificates
     begin
       match_nuke(
-        type: "development", 
-        team_id: ENV["APPLE_TEAM_ID"],
-        skip_confirmation: true,
-        api_key_path: nil  # Don't use file path, use the established session
+        **match_params,
+        type: "development"
       )
       UI.success("✅ Development certificates nuked")
     rescue => e
