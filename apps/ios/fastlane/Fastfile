@@ -17,6 +17,7 @@ require 'json'
 fastlane_version "2.219.0"
 
 default_platform :ios
+ENV["FASTLANE_DONT_STORE_PASSWORD"] = "1" if ENV["CI"]
 
 platform :ios do
   
@@ -39,6 +40,7 @@ platform :ios do
     unless File.exist?(project_path)
       UI.user_error!("Project file not found at: #{project_path}")
     end
+    UI.message("🏁 Fastlane environment initialized for #{ENV['CI'] ? 'CI' : 'local'} build")
   end
   
   desc "Setup App Store Connect API Key authentication"
@@ -383,6 +385,8 @@ platform :ios do
     version = get_version_number(xcodeproj: project_path)
     build = get_build_number(xcodeproj: project_path)
     UI.message("Building version #{version} (#{build})")
+    UI.header("🔧 Build options:")
+    UI.message(build_options.map { |k, v| "#{k}: #{v}" }.join("\n"))
     
     # Build options based on export method
     build_options = {
@@ -501,18 +505,20 @@ platform :ios do
     
     # Build for testing
     UI.message("Building for testing...")
-    build_app(
+    xcodebuild(
       project: proj_path,
       scheme: scheme,
       destination: "platform=iOS Simulator,name=iPhone 16",
       derived_data_path: "build",
-      build_for_testing: true,
-      skip_archive: true,
-      skip_codesigning: true,
+      build: true,
+      test: false,
       clean: true,
-      xcargs: "CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO -quiet",
-      buildlog_path: "./buildlog",
-      xcodebuild_formatter: "xcbeautify --renderer github-actions"
+      build_settings: {
+        "CODE_SIGNING_REQUIRED" => "NO",
+        "CODE_SIGNING_ALLOWED" => "NO",
+        "COMPILER_INDEX_STORE_ENABLE" => "NO"
+      },
+      xcargs: "-quiet"
     )
     
     # Run unit tests
@@ -574,6 +580,7 @@ platform :ios do
     
     # Clean up
     clean_build_artifacts
+    notify_success(context: 'alpha')
   end
 
   desc "Build and upload to TestFlight (preview branch - beta)"
@@ -626,6 +633,7 @@ platform :ios do
     
     # Clean up
     clean_build_artifacts
+    notify_success(context: 'beta')
   end
 
   desc "Build for CI"
@@ -796,6 +804,7 @@ platform :ios do
     
     # Clean up
     clean_build_artifacts
+    notify_success(context: 'release')
   end
 
   desc "Setup provisioning with match (readonly mode for CI)"
@@ -986,7 +995,14 @@ platform :ios do
 
   error do |lane, exception|
     # Handle errors
-    UI.error("Something went wrong in lane #{lane}: #{exception.message}")
+    UI.error("🔥 Lane #{lane} failed with error: #{exception.message}")
+    UI.error("🔍 Backtrace:\n#{exception.backtrace.join("\n")}")
+  end
+
+  desc "Post-build success actions"
+  lane :notify_success do |options|
+    UI.success("🎉 Build succeeded for #{options[:context] || 'unknown context'}")
+    # Add Slack or Discord integration here if desired
   end
 
 end
