@@ -84,10 +84,17 @@ jobs:
         working-directory: apps/ios
         create-config-files: 'true'
     
-    - name: Install Compatible OpenSSL
+    - name: Configure OpenSSL for Curve Compatibility
       run: |
-        brew install openssl@1.1
-        echo "/usr/local/opt/openssl@1.1/bin" >> $GITHUB_PATH
+        # Ensure we're using the latest OpenSSL with proper curve support
+        brew upgrade openssl || brew install openssl
+        
+        # Configure OpenSSL to use widely supported curves
+        export OPENSSL_CONF=/dev/null
+        
+        # Set environment variables for proper TLS configuration
+        echo "RUBY_OPENSSL_CONF=/dev/null" >> $GITHUB_ENV
+        echo "SSL_CERT_FILE=$(brew --prefix)/etc/ca-certificates/cert.pem" >> $GITHUB_ENV
         
     - name: Setup Match Authentication
       run: |
