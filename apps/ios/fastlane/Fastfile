@@ -505,33 +505,16 @@ platform :ios do
       reporter: "github-actions-logging"
     )
     
-    # Build for testing
-    UI.message("Building for testing...")
-    xcodebuild(
-      project: proj_path,
-      scheme: scheme,
-      destination: "platform=iOS Simulator,name=iPhone 16",
-      derived_data_path: "build",
-      build: true,
-      test: false,
-      clean: true,
-      build_settings: {
-        "CODE_SIGNING_REQUIRED" => "NO",
-        "CODE_SIGNING_ALLOWED" => "NO",
-        "COMPILER_INDEX_STORE_ENABLE" => "NO"
-      },
-      xcargs: "-quiet"
-    )
-    
-    # Run unit tests
-    UI.message("Running unit tests...")
+    # Build and run unit tests
+    UI.message("Building and running unit tests...")
     run_tests(
       project: proj_path,
       scheme: scheme,
       device: "iPhone 16",
-      test_without_building: true,
+      clean: true,
       only_testing: "LogYourBodyTests",
       code_coverage: false,
+      derived_data_path: "build",
       xcargs: "CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO COMPILER_INDEX_STORE_ENABLE=NO -quiet",
       fail_build: false, # Don't fail the whole lane on test failures
       xcodebuild_formatter: "xcbeautify --renderer github-actions"
