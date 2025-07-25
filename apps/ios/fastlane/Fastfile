@@ -384,6 +384,9 @@ platform :ios do
                       ENV["IOS_PROVISIONING_PROFILE_NAME"] || 
                       "match AppStore LogYourBody.LogYourBody"
         
+        profile_uuid = ENV["sigh_LogYourBody.LogYourBody_appstore"] || 
+                      ENV["IOS_PROVISIONING_PROFILE_UUID"]
+        
         build_options[:export_options] = {
           teamID: ENV["APPLE_TEAM_ID"],
           provisioningProfiles: {
@@ -394,6 +397,11 @@ platform :ios do
           uploadSymbols: true,
           signingStyle: "manual"
         }
+        
+        # Add xcargs to specify the provisioning profile UUID if available
+        if profile_uuid
+          build_options[:xcargs] = "PROVISIONING_PROFILE_SPECIFIER='#{profile_uuid}'"
+        end
       else
         build_options[:skip_codesigning] = true
       end

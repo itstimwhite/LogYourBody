@@ -13,6 +13,13 @@ inputs:
   match_git_branch:
     description: 'Git branch to use for Match certificates'
     required: false
+outputs:
+  profile_uuid:
+    description: 'The UUID of the provisioning profile'
+    value: ${{ steps.match.outputs.profile_uuid }}
+  profile_name:
+    description: 'The name of the provisioning profile'
+    value: ${{ steps.match.outputs.profile_name }}
 runs:
   using: 'composite'
   steps:
@@ -22,6 +29,7 @@ runs:
         working-directory: apps/ios
         cache-key-prefix: 'match-gems'
     - name: Sync certificates and provisioning profiles
+      id: match
       shell: bash
       working-directory: apps/ios
       run: |
@@ -33,9 +41,20 @@ runs:
         # Run in readonly mode since certificates exist
         bundle exec fastlane setup_provisioning type:appstore readonly:true
         
-        # Match sets environment variables that are only available within the Fastlane process
-        # Since the provisioning profile is installed correctly (as shown by validate_profile),
-        # we'll let Xcode find it automatically rather than trying to export Match variables
+        # Export the provisioning profile info for use in later steps
+        # Check if the profile was installed and get its details
+        PROFILE_PATH="$HOME/Library/MobileDevice/Provisioning Profiles/"
+        LATEST_PROFILE=$(ls -t "$PROFILE_PATH"*.mobileprovision 2>/dev/null | head -1)
+        
+        if [ -n "$LATEST_PROFILE" ]; then
+          # Extract UUID from filename
+          PROFILE_UUID=$(basename "$LATEST_PROFILE" .mobileprovision)
+          echo "profile_uuid=$PROFILE_UUID" >> $GITHUB_OUTPUT
+          echo "profile_name=match AppStore LogYourBody.LogYourBody" >> $GITHUB_OUTPUT
+          echo "Found provisioning profile: $PROFILE_UUID"
+        else
+          echo "Warning: Could not find installed provisioning profile"
+        fi
       env:
         MATCH_PASSWORD: ${{ inputs.match_password }}
         MATCH_GIT_URL: ${{ inputs.match_git_url }}
