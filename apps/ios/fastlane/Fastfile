@@ -429,8 +429,10 @@ platform :ios do
         build_options[:xcargs] += " CODE_SIGN_IDENTITY='iPhone Distribution'"
         build_options[:xcargs] += " DEVELOPMENT_TEAM='#{ENV["APPLE_TEAM_ID"]}'"
       else
-        UI.error("Match did not set provisioning profile environment variable!")
-        UI.error("Expected: sigh_LogYourBody.LogYourBody_appstore_profile-name")
+        UI.important("Match environment variables not available - letting Xcode auto-select provisioning profile")
+        # Set basic signing parameters and let Xcode find the provisioning profile
+        build_options[:xcargs] += " CODE_SIGN_IDENTITY='iPhone Distribution'"
+        build_options[:xcargs] += " DEVELOPMENT_TEAM='#{ENV["APPLE_TEAM_ID"]}'"
       end
     end
     

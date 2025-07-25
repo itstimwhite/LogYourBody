@@ -29,24 +29,13 @@ runs:
           echo "::error::Missing MATCH_GIT_URL or MATCH_GIT_BASIC_AUTHORIZATION secrets. See .github/workflows/ios-secrets-setup.md"
           exit 1
         fi
-        # Run Match directly to ensure environment variables are available
-        bundle exec fastlane run match \
-          type:appstore \
-          readonly:true \
-          app_identifier:"LogYourBody.LogYourBody" \
-          team_id:"$APPLE_TEAM_ID" \
-          api_key_path:"$APP_STORE_CONNECT_API_KEY_PATH" \
-          verbose:true
+        # Use our setup_provisioning lane which handles API key setup properly
+        # Run in readonly mode since certificates exist
+        bundle exec fastlane setup_provisioning type:appstore readonly:true
         
-        # Export Match environment variables for subsequent steps
-        echo "Exporting Match environment variables..."
-        # Use process substitution to avoid subshell issues
-        while IFS= read -r line; do
-          if [[ "$line" == sigh_* ]]; then
-            echo "$line" >> $GITHUB_ENV
-            echo "Exported: $line"
-          fi
-        done < <(env | grep "^sigh_" || true)
+        # Match sets environment variables that are only available within the Fastlane process
+        # Since the provisioning profile is installed correctly (as shown by validate_profile),
+        # we'll let Xcode find it automatically rather than trying to export Match variables
       env:
         MATCH_PASSWORD: ${{ inputs.match_password }}
         MATCH_GIT_URL: ${{ inputs.match_git_url }}
