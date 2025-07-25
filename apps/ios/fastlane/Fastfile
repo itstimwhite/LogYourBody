@@ -815,7 +815,8 @@ platform :ios do
           keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || "",
           verbose: true,
           force: force,
-          force_for_new_devices: force
+          force_for_new_devices: force,
+          template_name: "#{match_type}.plist"
         }
         
         # Debug: Check if password is present
