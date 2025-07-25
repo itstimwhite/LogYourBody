@@ -35,9 +35,17 @@ runs:
         
         # Export Match environment variables for subsequent steps
         echo "Exporting Match environment variables..."
-        env | grep "^sigh_" | while read -r line; do
-          echo "$line" >> $GITHUB_ENV
-        done
+        # Use a temporary file to avoid subshell issues
+        env | grep "^sigh_" > /tmp/match_env_vars.txt || true
+        if [ -f /tmp/match_env_vars.txt ]; then
+          while IFS= read -r line; do
+            echo "$line" >> $GITHUB_ENV
+            echo "Exported: $line"
+          done < /tmp/match_env_vars.txt
+          rm -f /tmp/match_env_vars.txt
+        else
+          echo "No sigh_ environment variables found"
+        fi
       env:
         MATCH_PASSWORD: ${{ inputs.match_password }}
         MATCH_GIT_URL: ${{ inputs.match_git_url }}
