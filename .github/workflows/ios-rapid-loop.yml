@@ -84,18 +84,6 @@ jobs:
         working-directory: apps/ios
         create-config-files: 'true'
     
-    - name: Configure OpenSSL for Curve Compatibility
-      run: |
-        # Ensure we're using the latest OpenSSL with proper curve support
-        brew upgrade openssl || brew install openssl
-        
-        # Configure OpenSSL to use widely supported curves
-        export OPENSSL_CONF=/dev/null
-        
-        # Set environment variables for proper TLS configuration
-        echo "RUBY_OPENSSL_CONF=/dev/null" >> $GITHUB_ENV
-        echo "SSL_CERT_FILE=$(brew --prefix)/etc/ca-certificates/cert.pem" >> $GITHUB_ENV
-        
     - name: Setup Match Authentication
       run: |
         cd apps/ios
@@ -116,7 +104,6 @@ jobs:
       
       
     - name: Sync Certificates with Match
-      id: match
       uses: ./.github/actions/sync-match
       with:
         match_password: ${{ secrets.MATCH_PASSWORD }}
@@ -155,13 +142,6 @@ jobs:
         This is an automated alpha build from the dev branch.
         For internal testing only.
         EOF
-        
-        # Export provisioning profile info if available
-        if [ -n "${{ steps.match.outputs.profile_uuid }}" ]; then
-          export IOS_PROVISIONING_PROFILE_UUID="${{ steps.match.outputs.profile_uuid }}"
-          export IOS_PROVISIONING_PROFILE_NAME="${{ steps.match.outputs.profile_name }}"
-          echo "Using provisioning profile: $IOS_PROVISIONING_PROFILE_NAME ($IOS_PROVISIONING_PROFILE_UUID)"
-        fi
         
         # Use Fastlane alpha lane with build number from rapid-checks
         bundle exec fastlane alpha \

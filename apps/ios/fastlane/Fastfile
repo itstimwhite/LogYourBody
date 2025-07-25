@@ -25,6 +25,9 @@ platform :ios do
   project = "LogYourBody.xcodeproj"
   
   before_all do
+    # Setup CI environment if running in CI
+    setup_ci if ENV['CI']
+    
     # Set up environment
     ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "180"
     ENV["FASTLANE_XCODEBUILD_SETTINGS_RETRIES"] = "10"
@@ -255,6 +258,25 @@ platform :ios do
     )
   end
   
+  # Helper method to bump build number based on TestFlight
+  def bump_build_number
+    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+    
+    latest_build_number = latest_testflight_build_number(
+      api_key: api_key,
+      initial_build_number: 0,
+      app_identifier: "LogYourBody.LogYourBody"
+    )
+    
+    new_build_number = latest_build_number + 1
+    increment_build_number(
+      build_number: new_build_number,
+      xcodeproj: project
+    )
+    
+    return new_build_number
+  end
+  
   desc "Run snapshot tests for UI regression"
   lane :ui_snapshot do |options|
     # Use absolute path from current directory
@@ -379,29 +401,14 @@ platform :ios do
       
       # Handle signing based on configuration
       if build_configuration == "Release" && export_method == "app-store"
-        # Use the provisioning profile from Match
-        profile_name = ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"] || 
-                      ENV["IOS_PROVISIONING_PROFILE_NAME"] || 
-                      "match AppStore LogYourBody.LogYourBody"
-        
-        profile_uuid = ENV["sigh_LogYourBody.LogYourBody_appstore"] || 
-                      ENV["IOS_PROVISIONING_PROFILE_UUID"]
-        
+        # Let sync_code_signing handle the provisioning profiles
         build_options[:export_options] = {
           teamID: ENV["APPLE_TEAM_ID"],
-          provisioningProfiles: {
-            "LogYourBody.LogYourBody" => profile_name
-          },
+          method: "app-store",
           compileBitcode: false,
           uploadBitcode: false,
-          uploadSymbols: true,
-          signingStyle: "manual"
+          uploadSymbols: true
         }
-        
-        # Add xcargs to specify the provisioning profile UUID if available
-        if profile_uuid
-          build_options[:xcargs] = "PROVISIONING_PROFILE_SPECIFIER='#{profile_uuid}'"
-        end
       else
         build_options[:skip_codesigning] = true
       end
@@ -807,64 +814,29 @@ platform :ios do
     # Setup App Store Connect API authentication first
     setup_app_store_connect_api
     
+    # Get API key from lane context
+    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+    
     # If using match with git repository
     if ENV["MATCH_GIT_URL"]
       begin
-        # Get API key path if available
-        api_key_path = ENV["APP_STORE_CONNECT_API_KEY_PATH"]
-        
-        # Try to set up API key first
-        setup_app_store_connect_api
-        
-        match_params = {
+        # Use sync_code_signing for better CI compatibility
+        sync_code_signing(
           type: match_type,
-          app_identifier: "LogYourBody.LogYourBody",
+          app_identifier: ["LogYourBody.LogYourBody"],
           readonly: readonly,
+          api_key: api_key,
           git_url: ENV["MATCH_GIT_URL"],
           git_branch: ENV["MATCH_GIT_BRANCH"] || "main",
           git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
-          keychain_name: ENV["MATCH_KEYCHAIN_NAME"] || "login.keychain",
-          keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || "",
+          team_id: ENV["APPLE_TEAM_ID"],
+          generate_apple_certs: !readonly,
+          skip_provisioning_profiles: false,
+          platform: "ios",
           verbose: true,
           force: force,
-          force_for_new_devices: force
-        }
-        
-        # Debug: Check if password is present
-        if ENV["MATCH_PASSWORD"]
-          UI.message("Match password is set (length: #{ENV["MATCH_PASSWORD"].length})")
-          # Check for special characters
-          if ENV["MATCH_PASSWORD"].include?("$")
-            UI.message("Password contains $ character")
-          end
-          if ENV["MATCH_PASSWORD"].include?("@")
-            UI.message("Password contains @ character")
-          end
-        else
-          UI.error("MATCH_PASSWORD environment variable is not set!")
-        end
-        
-        # In CI, we need to handle API key authentication differently due to OpenSSL issues
-        if ENV["CI"] && ENV["APP_STORE_CONNECT_API_KEY_ID"] && ENV["APP_STORE_CONNECT_API_KEY"]
-          UI.message("CI environment detected - passing API key to Match")
-          
-          # Pass API key directly to Match
-          match_params[:api_key] = {
-            key_id: ENV["APP_STORE_CONNECT_API_KEY_ID"],
-            issuer_id: ENV["APP_STORE_CONNECT_API_KEY_ISSUER_ID"],
-            key: ENV["APP_STORE_CONNECT_API_KEY"],
-            is_key_content_base64: false,
-            duration: 1200,
-            in_house: false
-          }
-          
-          # Now run Match with API key
-          match(match_params)
-        else
-          # Use the already established session or no API key
-          UI.message("Using pre-configured App Store Connect API session")
-          match(match_params)
-        end
+          force_for_new_devices: !readonly && match_type == "development"
+        )
       rescue => e
         if e.message.include?("No code signing identity found") && readonly
           UI.error("No certificates found in Match repository. Run locally with MATCH_READONLY=false to create them.")
