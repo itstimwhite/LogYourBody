@@ -121,6 +121,12 @@ jobs:
         APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     
+    - name: Validate Provisioning Profile
+      run: |
+        cd apps/ios
+        echo "🔍 Validating provisioning profile capabilities..."
+        bundle exec fastlane validate_profile || echo "Validation failed - continuing anyway to see build error"
+        
     - name: Set Environment Variables for Build
       run: |
         cd apps/ios
