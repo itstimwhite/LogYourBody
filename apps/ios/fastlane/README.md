@@ -47,10 +47,10 @@ Run tests with configurable options
 
 Run UI tests
 
-### ios snapshot
+### ios ui_snapshot
 
 ```sh
-[bundle exec] fastlane ios snapshot
+[bundle exec] fastlane ios ui_snapshot
 ```
 
 Run snapshot tests for UI regression
@@ -174,6 +174,14 @@ Create development certificates and profiles
 ```
 
 Create distribution certificates and profiles
+
+### ios nuke_all_certs
+
+```sh
+[bundle exec] fastlane ios nuke_all_certs
+```
+
+Nuke all certificates from Apple Developer Portal
 
 ### ios regenerate_profiles
 
