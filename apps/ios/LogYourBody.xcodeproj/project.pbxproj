@@ -107,7 +107,6 @@
 		ADDC47F72E2D89F3003C97E7 /* AnimatedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38B2E24A948001F82A8 /* AnimatedTabView.swift */; };
 		ADDC47F82E2D89F3003C97E7 /* Components/DashboardComponents.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B002E25B10100123456 /* Components/DashboardComponents.swift */; };
 		ADDC47F92E2D89F3003C97E7 /* Components/DashboardMetricCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD5C4B022E25B10200123456 /* Components/DashboardMetricCards.swift */; };
-		ADE6D3B02E24AE51001F82A8 /* LiquidGlassCTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D3AF2E24AE51001F82A8 /* LiquidGlassCTAButton.swift */; };
 		ADDC47FA2E2D89F3003C97E7 /* DietPhaseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38C2E24A948001F82A8 /* DietPhaseCard.swift */; };
 		ADDC47FB2E2D89F3003C97E7 /* LiquidGlassTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38D2E24A948001F82A8 /* LiquidGlassTabBar.swift */; };
 		ADDC47FC2E2D89F3003C97E7 /* LiquidGlassTimelineSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D38E2E24A948001F82A8 /* LiquidGlassTimelineSlider.swift */; };
@@ -136,6 +135,7 @@
 		ADDC48922E2D8A73003C97E7 /* HeightInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC488D2E2D8A73003C97E7 /* HeightInputView.swift */; };
 		ADDC48932E2D8A73003C97E7 /* GenderInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC488C2E2D8A73003C97E7 /* GenderInputView.swift */; };
 		ADDC48942E2D8A73003C97E7 /* NameInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADDC488E2E2D8A73003C97E7 /* NameInputView.swift */; };
+		ADE6D3B02E24AE51001F82A8 /* LiquidGlassCTAButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADE6D3AF2E24AE51001F82A8 /* LiquidGlassCTAButton.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1189,7 +1189,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LogYourBody/LogYourBody.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 20250722195814;
 				DEVELOPMENT_ASSET_PATHS = "\"LogYourBody/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
@@ -1210,7 +1210,7 @@
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBody;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore LogYourBody.LogYourBody";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1223,7 +1223,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = LogYourBody/LogYourBody.entitlements;
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 20250722195814;
 				DEVELOPMENT_ASSET_PATHS = "\"LogYourBody/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
@@ -1244,7 +1244,7 @@
 				MARKETING_VERSION = 1.2.0;
 				PRODUCT_BUNDLE_IDENTIFIER = LogYourBody.LogYourBody;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = "match AppStore LogYourBody.LogYourBody";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
