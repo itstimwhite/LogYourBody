@@ -256,7 +256,7 @@ platform :ios do
   end
   
   desc "Run snapshot tests for UI regression"
-  lane :snapshot do |options|
+  lane :ui_snapshot do |options|
     # Use absolute path from current directory
     proj_path = File.expand_path("../LogYourBody.xcodeproj", __FILE__)
     
