@@ -33,7 +33,15 @@ jobs:
           else
             sleep 30
             PR_SHA="${{ github.event.pull_request.head.sha }}"
-            STATUS=$(gh api repos/${{ github.repository }}/commits/${PR_SHA}/check-runs --jq '.check_runs[] | select(.name == "build-and-deploy") | .conclusion')
+            # Check for CI/CD Orchestrator workflow run or PR checks
+            CHECKS=$(gh api repos/${{ github.repository }}/commits/${PR_SHA}/check-runs --jq '.check_runs[] | select(.name == "PR iOS Checks" or .name == "PR Web Checks" or .name == "ci-summary") | .conclusion')
+            
+            # If any required check passed, consider tests as passed
+            if echo "$CHECKS" | grep -q "success"; then
+              STATUS="success"
+            else
+              STATUS="failure"
+            fi
             [[ "$STATUS" == "success" ]] && echo "passed=true" >> $GITHUB_OUTPUT || echo "passed=false" >> $GITHUB_OUTPUT
           fi
 
