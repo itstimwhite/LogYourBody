@@ -975,7 +975,7 @@ platform :ios do
       enable_services: {
         app_group: "on",
         associated_domains: "on",
-        healthkit: "on",
+        health_kit: "on",
         sign_in_with_apple: "on"
       }
     )
