@@ -32,6 +32,12 @@ runs:
         # Use our setup_provisioning lane which handles API key setup properly
         # Run in readonly mode since certificates exist
         bundle exec fastlane setup_provisioning type:appstore readonly:true
+        
+        # Export Match environment variables for subsequent steps
+        echo "Exporting Match environment variables..."
+        env | grep "^sigh_" | while read -r line; do
+          echo "$line" >> $GITHUB_ENV
+        done
       env:
         MATCH_PASSWORD: ${{ inputs.match_password }}
         MATCH_GIT_URL: ${{ inputs.match_git_url }}
