@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/ios/**'
       - '.github/workflows/ios-rapid-loop.yml'
+      - '.github/workflows/ios-testflight-deploy.yml'
   workflow_dispatch:
 
 concurrency:
@@ -64,15 +65,15 @@ jobs:
         # Use Fastlane for consistent build process with automatic log collation
         bundle exec fastlane build_check
 
-  deploy-alpha:
-    name: Deploy TestFlight Alpha
+  build-release:
+    name: Build Release
     needs: rapid-checks
     if: needs.rapid-checks.result == 'success'
     runs-on: macos-14
-    timeout-minutes: 10
-    environment:
-      name: development
-      url: https://testflight.apple.com
+    timeout-minutes: 20
+    outputs:
+      artifact_name: ${{ steps.artifact-name.outputs.name }}
+      version_name: ${{ steps.version.outputs.version }}
     
     steps:
     - uses: actions/checkout@v4
@@ -84,7 +85,7 @@ jobs:
         working-directory: apps/ios
         create-config-files: 'true'
     
-    - name: Setup Match Authentication
+    - name: Setup App Store Connect Authentication
       run: |
         cd apps/ios
         # Create API key file from secret
@@ -99,93 +100,81 @@ jobs:
         }
         EOFKEY
         
-        # Set API key path for subsequent steps
         echo "APP_STORE_CONNECT_API_KEY_PATH=$(pwd)/fastlane/api_key.json" >> $GITHUB_ENV
-      
-      
+    
     - name: Sync Certificates with Match
       uses: ./.github/actions/sync-match
       with:
         match_password: ${{ secrets.MATCH_PASSWORD }}
         match_git_url: ${{ secrets.MATCH_GIT_URL }}
         match_git_basic: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
-        match_git_branch: ${{ secrets.MATCH_GIT_BRANCH || 'main' }}
+        match_git_branch: 'main'
       env:
         APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
-        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+        APP_STORE_CONNECT_API_KEY_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ISSUER_ID }}
         APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
     
-    - name: Validate Provisioning Profile
+    - name: Get version info
+      id: version
       run: |
         cd apps/ios
-        echo "🔍 Validating provisioning profile capabilities..."
-        bundle exec fastlane validate_profile || echo "Validation failed - continuing anyway to see build error"
-        
-    - name: Set Environment Variables for Build
-      run: |
-        cd apps/ios
-        echo "APP_STORE_CONNECT_API_KEY_ID=${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}" >> $GITHUB_ENV
-        echo "APP_STORE_CONNECT_API_ISSUER_ID=${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}" >> $GITHUB_ENV
-        echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
-        echo "APP_STORE_APP_ID=${{ secrets.APP_STORE_APP_ID }}" >> $GITHUB_ENV
+        VERSION=$(bundle exec fastlane run get_version_number | grep "Result:" | awk '{print $2}')
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
+        echo "Version: $VERSION"
     
-    - name: Build and upload to TestFlight
+    - name: Build app
       run: |
         cd apps/ios
         
-        # Create release notes
-        cat > release_notes.txt << EOF
-        Alpha Build ${{ needs.rapid-checks.outputs.timestamp }}
-        Commit: ${{ needs.rapid-checks.outputs.short_sha }}
-        
-        This is an automated alpha build from the dev branch.
-        For internal testing only.
-        EOF
-        
-        # Use Fastlane alpha lane with build number from rapid-checks
-        bundle exec fastlane alpha \
+        # Build the app using the build lane
+        bundle exec fastlane build \
+          scheme:"LogYourBody" \
+          configuration:"Release" \
+          export_method:"app-store" \
           build_number:"${{ needs.rapid-checks.outputs.build_number }}" \
-          release_notes_file:release_notes.txt \
-          groups:"Internal Testers"
+          output_directory:"./build" \
+          output_name:"LogYourBody"
       env:
         APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: "180"
         FASTLANE_XCODEBUILD_SETTINGS_RETRIES: "10"
+    
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v4
+      id: artifact
+      with:
+        name: ios-build-${{ needs.rapid-checks.outputs.build_number }}
+        path: apps/ios/build/*.ipa
+        retention-days: 7
+    
+    - name: Set artifact output
+      id: artifact-name
+      run: |
+        echo "name=ios-build-${{ needs.rapid-checks.outputs.build_number }}" >> $GITHUB_OUTPUT
     
     - name: Cleanup
       if: always()
       run: |
         cd apps/ios
-        rm -f release_notes.txt
-        # Clean up the App Store Connect key file
-        if [ -n "$ASC_KEY_FILE" ] && [ -f "$ASC_KEY_FILE" ]; then
-          rm -f "$ASC_KEY_FILE"
-        fi
-        # Clean up any other temp API key files
+        rm -f fastlane/api_key.json
         rm -f /tmp/AuthKey_*.p8 2>/dev/null || true
-        rm -f /var/folders/*/T/tmp.* 2>/dev/null || true
-    
-    - name: Post deployment status
-      uses: actions/github-script@v7
-      with:
-        script: |
-          const timestamp = '${{ needs.rapid-checks.outputs.timestamp }}';
-          const shortSha = '${{ needs.rapid-checks.outputs.short_sha }}';
-          
-          const body = `📱 **iOS Alpha Deployed to TestFlight!**
-          
-          - **Build**: ${timestamp}
-          - **Commit**: ${shortSha}
-          - **Time**: < 15 minutes ⚡
-          - **TestFlight**: Available for internal testers
-          
-          This is an alpha build for rapid testing. Full tests run nightly on preview.`;
-          
-          github.rest.repos.createCommitComment({
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            commit_sha: context.sha,
-            body: body
-          });
+  
+  deploy-testflight:
+    name: Deploy to TestFlight
+    needs: [rapid-checks, build-release]
+    if: needs.build-release.result == 'success'
+    uses: ./.github/workflows/ios-testflight-deploy.yml
+    with:
+      distribution_group: alpha
+      build_number: ${{ needs.rapid-checks.outputs.build_number }}
+      version_name: ${{ needs.build-release.outputs.version_name }}
+      artifact_name: ${{ needs.build-release.outputs.artifact_name }}
+      environment: development
+      release_notes: |
+        Alpha Build ${{ needs.rapid-checks.outputs.timestamp }}
+        Commit: ${{ needs.rapid-checks.outputs.short_sha }}
+        
+        This is an automated alpha build from the dev branch.
+        For internal testing only.
+    secrets: inherit

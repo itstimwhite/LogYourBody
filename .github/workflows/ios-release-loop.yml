@@ -184,53 +184,14 @@ jobs:
     name: Deploy to TestFlight
     needs: [validate-release, build-release]
     if: github.event.inputs.release_type != 'app_store'
-    runs-on: macos-14
-    timeout-minutes: 20
-    environment:
-      name: production-testflight
-      url: https://testflight.apple.com
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Download build artifact
-      uses: actions/download-artifact@v4
-      with:
-        name: ios-release-build
-        path: apps/ios/build
-    
-    - name: Setup iOS Build Environment
-      uses: ./.github/actions/setup-ios-build
-      with:
-        xcode-version: '16.1'
-        working-directory: apps/ios
-    
-    - name: Set Environment Variables for Build
-      run: |
-        cd apps/ios
-        echo "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}" >> $GITHUB_ENV
-        echo "APP_STORE_APP_ID=${{ secrets.APP_STORE_APP_ID }}" >> $GITHUB_ENV
-    
-    - name: Run Fastlane Precheck
-      run: |
-        cd apps/ios
-        bundle exec fastlane precheck 2>&1 | tee precheck.log
-        
-        # Check for errors and surface them in the summary
-        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" precheck.log; then
-          echo "::error::Precheck errors detected - see highlighted lines above"
-          exit 1
-        fi
-      env:
-        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
-    
-    - name: Upload to TestFlight
-      run: |
-        cd apps/ios
-        
-        # Create release notes
-        cat > release_notes.txt << EOF
+    uses: ./.github/workflows/ios-testflight-deploy.yml
+    with:
+      distribution_group: production
+      build_number: ${{ needs.validate-release.outputs.build_number }}
+      version_name: ${{ needs.validate-release.outputs.version }}
+      artifact_name: ios-release-build
+      environment: production-testflight
+      release_notes: |
         Version ${{ needs.validate-release.outputs.version }}
         Build ${{ needs.validate-release.outputs.build_number }}
         
@@ -241,29 +202,7 @@ jobs:
         - Ready for production release
         
         Please test thoroughly before App Store submission.
-        EOF
-        
-        # Upload to TestFlight
-        bundle exec fastlane upload_testflight \
-          ipa_path:build/*.ipa \
-          groups:"Production Testers,Beta Testers" \
-          changelog_file:release_notes.txt 2>&1 | tee upload.log
-        
-        # Check for errors and surface them in the summary
-        if grep -E "error:|duplicate|signing|Error:|ERROR:|Failed|FAILED" upload.log; then
-          echo "::error::Upload errors detected - see highlighted lines above"
-          exit 1
-        fi
-      env:
-        APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
-        APP_STORE_APP_ID: ${{ secrets.APP_STORE_APP_ID }}
-    
-    - name: Cleanup
-      if: always()
-      run: |
-        cd apps/ios
-        # API key is now handled via environment variables
-        rm -f release_notes.txt
+    secrets: inherit
 
   deploy-app-store:
     name: Deploy to App Store
