@@ -425,14 +425,13 @@ platform :ios do
       
       if ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"]
         profile_name = ENV["sigh_LogYourBody.LogYourBody_appstore_profile-name"]
-        build_options[:xcargs] += " PROVISIONING_PROFILE_SPECIFIER='#{profile_name}'"
+        build_options[:xcargs] = " PROVISIONING_PROFILE_SPECIFIER='#{profile_name}'"
         build_options[:xcargs] += " CODE_SIGN_IDENTITY='iPhone Distribution'"
         build_options[:xcargs] += " DEVELOPMENT_TEAM='#{ENV["APPLE_TEAM_ID"]}'"
       else
-        UI.important("Match environment variables not available - letting Xcode auto-select provisioning profile")
-        # Set basic signing parameters and let Xcode find the provisioning profile
-        build_options[:xcargs] += " CODE_SIGN_IDENTITY='iPhone Distribution'"
-        build_options[:xcargs] += " DEVELOPMENT_TEAM='#{ENV["APPLE_TEAM_ID"]}'"
+        UI.important("Match environment variables not available - letting Xcode use project settings")
+        # Don't override code signing settings - use what's in the Xcode project
+        # This allows Swift Package dependencies to use automatic signing
       end
     end
     
