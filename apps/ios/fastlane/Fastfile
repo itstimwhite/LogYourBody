@@ -429,9 +429,12 @@ platform :ios do
         build_options[:xcargs] += " CODE_SIGN_IDENTITY='iPhone Distribution'"
         build_options[:xcargs] += " DEVELOPMENT_TEAM='#{ENV["APPLE_TEAM_ID"]}'"
       else
-        UI.important("Match environment variables not available - letting Xcode use project settings")
-        # Don't override code signing settings - use what's in the Xcode project
-        # This allows Swift Package dependencies to use automatic signing
+        UI.important("Match environment variables not available - using automatic provisioning profile selection")
+        # Use automatic signing which will select the correct profile based on capabilities
+        # The profile was installed by Match, so Xcode should find it
+        build_options[:export_options] ||= {}
+        build_options[:export_options][:signingStyle] = "automatic"
+        build_options[:export_options][:teamID] = ENV["APPLE_TEAM_ID"]
       end
     end
     
