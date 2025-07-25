@@ -815,8 +815,7 @@ platform :ios do
           keychain_password: ENV["MATCH_KEYCHAIN_PASSWORD"] || "",
           verbose: true,
           force: force,
-          force_for_new_devices: force,
-          template_name: "#{match_type}.plist"
+          force_for_new_devices: force
         }
         
         # Debug: Check if password is present
@@ -966,6 +965,21 @@ platform :ios do
     
     # Setup API key authentication
     setup_app_store_connect_api
+    
+    # First ensure App ID has all required capabilities enabled
+    UI.message("Ensuring App ID has all required capabilities...")
+    produce(
+      app_identifier: "LogYourBody.LogYourBody",
+      team_id: ENV["APPLE_TEAM_ID"],
+      skip_itc: true, # Skip iTunes Connect, only update Developer Portal
+      enable_services: {
+        app_group: "on",
+        associated_domains: "on",
+        healthkit: "on",
+        sign_in_with_apple: "on"
+      }
+    )
+    UI.success("✅ App ID capabilities configured")
     
     # Regenerate both types
     ["appstore", "development"].each do |type|
