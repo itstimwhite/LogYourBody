@@ -814,18 +814,14 @@ platform :ios do
     # Setup App Store Connect API authentication first
     setup_app_store_connect_api
     
-    # Get API key from lane context
-    api_key = lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
-    
     # If using match with git repository
     if ENV["MATCH_GIT_URL"]
       begin
-        # Use sync_code_signing for better CI compatibility
-        sync_code_signing(
+        # Build match parameters
+        match_params = {
           type: match_type,
           app_identifier: ["LogYourBody.LogYourBody"],
           readonly: readonly,
-          api_key: api_key,
           git_url: ENV["MATCH_GIT_URL"],
           git_branch: ENV["MATCH_GIT_BRANCH"] || "main",
           git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"],
@@ -836,7 +832,16 @@ platform :ios do
           verbose: true,
           force: force,
           force_for_new_devices: !readonly && match_type == "development"
-        )
+        }
+        
+        # Add API key if available
+        if lane_context[SharedValues::APP_STORE_CONNECT_API_KEY]
+          # API key is already configured via setup_app_store_connect_api
+          UI.message("Using App Store Connect API key from lane context")
+        end
+        
+        # Use match instead of sync_code_signing
+        match(match_params)
       rescue => e
         if e.message.include?("No code signing identity found") && readonly
           UI.error("No certificates found in Match repository. Run locally with MATCH_READONLY=false to create them.")
