@@ -344,14 +344,14 @@ platform :ios do
       scheme: test_scheme,
       device: test_device,
       configuration: test_configuration,
-      clean: false,
+      clean: true,  # Clean build to ensure fresh state for sanitizers
       skip_build: false,
       test_without_building: false,
       xcargs: sanitizer_xcargs,
       output_types: "junit",
       output_directory: "./sanitizer_output",
       result_bundle: true,
-      disable_concurrent_testing: false,
+      disable_concurrent_testing: true,  # Sanitizers work better with serial execution
       fail_build: false # Don't fail the build on sanitizer issues
     )
   end
