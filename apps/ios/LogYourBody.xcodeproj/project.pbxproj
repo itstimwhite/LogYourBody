@@ -11,12 +11,14 @@
 		3CD3199B3979B906B642DB4E /* LegalDocumentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCD81BE70A7B449921973AEA /* LegalDocumentRow.swift */; };
 		3E3EA4841197E3CDEC1064A9 /* DSAuthButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = B888A15870B6A31C76F2AB16 /* DSAuthButton.swift */; };
 		4C2DA948F919366D436CEF26 /* DSIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458AAF24645E3634CCF88E16 /* DSIcon.swift */; };
+		4CB3264FD89D8A576F4D3216 /* DSSecureFieldTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9236F1BD97B242DE57230CA5 /* DSSecureFieldTests.swift */; };
 		5763B6723CDF6F551543599B /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4590E4EDF067461157CAE028 /* ErrorStateView.swift */; };
 		5B2F64647650AAF5937280BD /* DSDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2465B2ED058FAFC5389161E /* DSDivider.swift */; };
 		65DB278F8C39AC800B53D93C /* DSButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = F26BF217DF4BEE2BDB74046C /* DSButton.swift */; };
 		6E12FF06B7836C9AFAEC5560 /* AuthFormField.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBB847A2050F3135D62950A1 /* AuthFormField.swift */; };
 		7063273108B46C6BAE9E8682 /* OTPField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22BF10E43507028B75EE0B6B /* OTPField.swift */; };
 		7244EF0EC36788731EA69D2D /* SocialLoginButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A65AF31E24C0B8890ABB203D /* SocialLoginButton.swift */; };
+		8EB4C03137AE767612E22661 /* ErrorStateViewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E398BD7ECF8C45915CC8071 /* ErrorStateViewTests.swift */; };
 		936AD43A357EA14452357BE4 /* DocumentHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A28294A184FBD2E6E0D43EF /* DocumentHeader.swift */; };
 		943F92706B6E58D43C5D7C82 /* BiometricAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB2ACF16AEA86A36EDAD936 /* BiometricAuthView.swift */; };
 		959266B6DE7EC1EDC2A2177D /* DSAuthDivider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFEB1A3F5D9DF386EE0836D /* DSAuthDivider.swift */; };
@@ -164,6 +166,7 @@
 		F032D524300252FDE4C30601 /* SignUpForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2013EF479280EB0CB67121E /* SignUpForm.swift */; };
 		F0451813784DE99328797E5F /* DSText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 05F19CFBFEA440516AFCE98B /* DSText.swift */; };
 		F0A6090ABF6B0497684F9816 /* LoadingIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D90F6DA60C58AF02CF23737 /* LoadingIndicator.swift */; };
+		F291D5AACA947CF71A80B5F9 /* DSAuthButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 45E5CCB0C11F488C1D62F557 /* DSAuthButtonTests.swift */; };
 		FE28F6428506E763B1BD001E /* AuthConsentCheckbox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1424DF5DCE3F9859106AB687 /* AuthConsentCheckbox.swift */; };
 /* End PBXBuildFile section */
 
@@ -201,19 +204,21 @@
 		0401CF23AE214F20C7EB5886 /* DeveloperTapHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeveloperTapHandler.swift; path = DesignSystem/Molecules/DeveloperTapHandler.swift; sourceTree = "<group>"; };
 		05F19CFBFEA440516AFCE98B /* DSText.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSText.swift; path = DesignSystem/Atoms/DSText.swift; sourceTree = "<group>"; };
 		0AB2ACF16AEA86A36EDAD936 /* BiometricAuthView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = BiometricAuthView.swift; path = DesignSystem/Organisms/BiometricAuthView.swift; sourceTree = "<group>"; };
-		0C0A555F024415F0A854A3D1 /* ConsentCheckbox.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConsentCheckbox.swift; path = DesignSystem/Molecules/ConsentCheckbox.swift; sourceTree = "<group>"; };
 		0D90F6DA60C58AF02CF23737 /* LoadingIndicator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LoadingIndicator.swift; path = DesignSystem/Atoms/LoadingIndicator.swift; sourceTree = "<group>"; };
 		1424DF5DCE3F9859106AB687 /* AuthConsentCheckbox.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AuthConsentCheckbox.swift; path = DesignSystem/Molecules/AuthConsentCheckbox.swift; sourceTree = "<group>"; };
 		1A28294A184FBD2E6E0D43EF /* DocumentHeader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DocumentHeader.swift; path = DesignSystem/Molecules/DocumentHeader.swift; sourceTree = "<group>"; };
 		22BF10E43507028B75EE0B6B /* OTPField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = OTPField.swift; path = DesignSystem/Molecules/OTPField.swift; sourceTree = "<group>"; };
 		458AAF24645E3634CCF88E16 /* DSIcon.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSIcon.swift; path = DesignSystem/Atoms/DSIcon.swift; sourceTree = "<group>"; };
 		4590E4EDF067461157CAE028 /* ErrorStateView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ErrorStateView.swift; path = DesignSystem/Molecules/ErrorStateView.swift; sourceTree = "<group>"; };
+		45E5CCB0C11F488C1D62F557 /* DSAuthButtonTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSAuthButtonTests.swift; path = LogYourBodyTests/DesignSystem/Atoms/DSAuthButtonTests.swift; sourceTree = "<group>"; };
+		4E398BD7ECF8C45915CC8071 /* ErrorStateViewTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ErrorStateViewTests.swift; path = LogYourBodyTests/DesignSystem/Molecules/ErrorStateViewTests.swift; sourceTree = "<group>"; };
 		564FBAB78ABE3EBE48189BF8 /* DSTextField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSTextField.swift; path = DesignSystem/Atoms/DSTextField.swift; sourceTree = "<group>"; };
 		629DBB90EB2F0C9F3D9D1105 /* VerificationForm.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = VerificationForm.swift; path = DesignSystem/Organisms/VerificationForm.swift; sourceTree = "<group>"; };
 		7CFEB1A3F5D9DF386EE0836D /* DSAuthDivider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSAuthDivider.swift; path = DesignSystem/Molecules/DSAuthDivider.swift; sourceTree = "<group>"; };
 		7D0FE397063AA257AA67F731 /* LoginForm.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LoginForm.swift; path = DesignSystem/Organisms/LoginForm.swift; sourceTree = "<group>"; };
 		7EF9F0EEBB2D999F7FEEF7D0 /* DSAuthLink.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSAuthLink.swift; path = DesignSystem/Atoms/DSAuthLink.swift; sourceTree = "<group>"; };
 		82670AD733C4BBFF727489CC /* MarkdownView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MarkdownView.swift; path = DesignSystem/Organisms/MarkdownView.swift; sourceTree = "<group>"; };
+		9236F1BD97B242DE57230CA5 /* DSSecureFieldTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSSecureFieldTests.swift; path = LogYourBodyTests/DesignSystem/Atoms/DSSecureFieldTests.swift; sourceTree = "<group>"; };
 		9C89CCE0BFAE9B2ACB9A017B /* UserHeaderSection.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = UserHeaderSection.swift; path = DesignSystem/Organisms/UserHeaderSection.swift; sourceTree = "<group>"; };
 		9ED9F05E697F00813F824903 /* LogoutButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LogoutButton.swift; path = DesignSystem/Molecules/LogoutButton.swift; sourceTree = "<group>"; };
 		A65AF31E24C0B8890ABB203D /* SocialLoginButton.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SocialLoginButton.swift; path = DesignSystem/Molecules/SocialLoginButton.swift; sourceTree = "<group>"; };
@@ -414,7 +419,6 @@
 		BBB847A2050F3135D62950A1 /* AuthFormField.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AuthFormField.swift; path = DesignSystem/Molecules/AuthFormField.swift; sourceTree = "<group>"; };
 		C8D57BE85A4043A0A831CFE4 /* SkeletonLoaders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SkeletonLoaders.swift; path = Components/SkeletonLoaders.swift; sourceTree = "<group>"; };
 		CCD81BE70A7B449921973AEA /* LegalDocumentRow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LegalDocumentRow.swift; path = DesignSystem/Molecules/LegalDocumentRow.swift; sourceTree = "<group>"; };
-		DE73821C7E8158E7F18352E0 /* AuthDivider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = AuthDivider.swift; path = DesignSystem/Molecules/AuthDivider.swift; sourceTree = "<group>"; };
 		E2465B2ED058FAFC5389161E /* DSDivider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DSDivider.swift; path = DesignSystem/Atoms/DSDivider.swift; sourceTree = "<group>"; };
 		EBA1CD2B48A471ACA4D8CD1A /* DeveloperToolsList.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DeveloperToolsList.swift; path = DesignSystem/Organisms/DeveloperToolsList.swift; sourceTree = "<group>"; };
 		F2013EF479280EB0CB67121E /* SignUpForm.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SignUpForm.swift; path = DesignSystem/Organisms/SignUpForm.swift; sourceTree = "<group>"; };
@@ -450,6 +454,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0D09F39EA8F6241DE176F54C /* Molecules */ = {
+			isa = PBXGroup;
+			children = (
+				4E398BD7ECF8C45915CC8071 /* ErrorStateViewTests.swift */,
+			);
+			name = Molecules;
+			sourceTree = "<group>";
+		};
 		24F7761465400B9619818144 /* Atoms */ = {
 			isa = PBXGroup;
 			children = (
@@ -511,6 +523,15 @@
 			name = Molecules;
 			sourceTree = "<group>";
 		};
+		896E3815B745A313FCD93C78 /* DesignSystem */ = {
+			isa = PBXGroup;
+			children = (
+				E2FAA44836BF86292509B5E3 /* Atoms */,
+				0D09F39EA8F6241DE176F54C /* Molecules */,
+			);
+			name = DesignSystem;
+			sourceTree = "<group>";
+		};
 		AD0054EA2E2197600029E0FF /* Legal */ = {
 			isa = PBXGroup;
 			children = (
@@ -564,6 +585,7 @@
 			isa = PBXGroup;
 			children = (
 				AD723ACE2E15FA5C002376C6 /* LogYourBodyTests.swift */,
+				896E3815B745A313FCD93C78 /* DesignSystem */,
 			);
 			path = LogYourBodyTests;
 			sourceTree = "<group>";
@@ -886,6 +908,15 @@
 			name = Organisms;
 			sourceTree = "<group>";
 		};
+		E2FAA44836BF86292509B5E3 /* Atoms */ = {
+			isa = PBXGroup;
+			children = (
+				9236F1BD97B242DE57230CA5 /* DSSecureFieldTests.swift */,
+				45E5CCB0C11F488C1D62F557 /* DSAuthButtonTests.swift */,
+			);
+			name = Atoms;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1040,6 +1071,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				AD7D30A72E1490810072AA5B /* LogYourBodyTests.swift in Sources */,
+				4CB3264FD89D8A576F4D3216 /* DSSecureFieldTests.swift in Sources */,
+				F291D5AACA947CF71A80B5F9 /* DSAuthButtonTests.swift in Sources */,
+				8EB4C03137AE767612E22661 /* ErrorStateViewTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

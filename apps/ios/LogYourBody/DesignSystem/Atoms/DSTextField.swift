@@ -32,7 +32,7 @@ struct DSTextField: View {
             )
             .keyboardType(keyboardType)
             .textContentType(textContentType)
-            .autocapitalization(autocapitalization)
+            .textInputAutocapitalization(autocapitalization)
             .disabled(isDisabled)
             .focused($isFocused)
             .animation(.easeInOut(duration: 0.2), value: isFocused)
