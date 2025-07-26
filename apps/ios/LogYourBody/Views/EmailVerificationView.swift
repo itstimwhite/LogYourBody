@@ -46,7 +46,7 @@ struct EmailVerificationView: View {
                     VerificationForm(
                         verificationCode: $verificationCode,
                         isLoading: $isLoading,
-                        email: authManager.pendingEmail ?? "",
+                        email: "", // TODO: Add public getter for pending email in AuthManager
                         onVerify: verifyCode,
                         onResend: resendCode
                     )
