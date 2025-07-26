@@ -81,14 +81,13 @@ NEXT_PUBLIC_REVENUECAT_API_KEY_GOOGLE=your_google_key
 
 ## Key Project Information
 
-- **Framework**: Next.js 15.3.3 with App Router
+- **Framework**: Next.js 15.3.5 with App Router
 - **Language**: TypeScript with strict mode
 - **Database**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS + shadcn/ui
 - **Authentication**: Supabase Auth with SMS support
 - **State Management**: React Context + Hooks
 - **Testing**: Jest + React Testing Library
-- **Mobile**: Capacitor for iOS/Android
 
 ## Development Commands
 

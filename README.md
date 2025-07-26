@@ -45,7 +45,7 @@ Modern web application built with Next.js that offers:
 - **Real-time Updates**: Live synchronization across devices
 
 **Tech Stack:**
-- Next.js 14 (App Router)
+- Next.js 15.3.5 (App Router)
 - TypeScript
 - Tailwind CSS
 - Supabase
