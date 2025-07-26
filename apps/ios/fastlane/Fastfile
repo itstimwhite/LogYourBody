@@ -347,6 +347,7 @@ platform :ios do
       clean: true,  # Clean build to ensure fresh state for sanitizers
       skip_build: false,
       test_without_building: false,
+      derived_data_path: "DerivedData",  # Use consistent derived data path
       xcargs: sanitizer_xcargs,
       output_types: "junit",
       output_directory: "./sanitizer_output",
