@@ -5,6 +5,7 @@
 import SwiftUI
 
 // MARK: - DSAuthButton Atom
+// Legacy wrapper for BaseButton - use BaseButton directly for new code
 
 struct DSAuthButton: View {
     enum Style {
@@ -12,25 +13,14 @@ struct DSAuthButton: View {
         case secondary
         case social
         
-        var backgroundColor: Color {
+        var baseStyle: ButtonConfiguration.ButtonStyleVariant {
             switch self {
             case .primary:
-                return .white
+                return .custom(background: .white, foreground: .black)
             case .secondary:
-                return Color(.systemGray6)
+                return .custom(background: Color(.systemGray6), foreground: .appText)
             case .social:
-                return .white
-            }
-        }
-        
-        var foregroundColor: Color {
-            switch self {
-            case .primary:
-                return .black
-            case .secondary:
-                return .appText
-            case .social:
-                return .black
+                return .social
             }
         }
     }
@@ -59,32 +49,18 @@ struct DSAuthButton: View {
     }
     
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: style.foregroundColor))
-                        .scaleEffect(0.8)
-                } else {
-                    if let icon = icon {
-                        Image(systemName: icon)
-                            .font(.system(size: 18))
-                    }
-                    
-                    Text(title)
-                        .font(.system(size: 17, weight: .semibold))
-                }
-            }
-            .foregroundColor(isEnabled ? style.foregroundColor : .appTextSecondary)
-            .frame(height: 48)
-            .frame(maxWidth: .infinity)
-            .background(isEnabled ? style.backgroundColor : Color.appBorder)
-            .cornerRadius(10)
-            .animation(.easeInOut(duration: 0.2), value: isEnabled)
-        }
-        .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isLoading ? 0.98 : 1.0)
-        .disabled(!isEnabled || isLoading)
+        BaseButton(
+            title,
+            configuration: ButtonConfiguration(
+                style: style.baseStyle,
+                size: .medium,
+                isLoading: isLoading,
+                isEnabled: isEnabled,
+                fullWidth: true,
+                icon: icon
+            ),
+            action: action
+        )
     }
 }
 

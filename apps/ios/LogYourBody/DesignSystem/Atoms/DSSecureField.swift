@@ -5,6 +5,7 @@
 import SwiftUI
 
 // MARK: - DSSecureField Atom
+// Legacy wrapper for BaseTextField - use BaseTextField directly for new code
 
 struct DSSecureField: View {
     @Binding var text: String
@@ -12,43 +13,14 @@ struct DSSecureField: View {
     var textContentType: UITextContentType? = .password
     var isDisabled: Bool = false
     
-    @State private var isSecure: Bool = true
-    @FocusState private var isFocused: Bool
-    
     var body: some View {
-        HStack(spacing: 12) {
-            Group {
-                if isSecure {
-                    SecureField(placeholder, text: $text)
-                } else {
-                    TextField(placeholder, text: $text)
-                }
-            }
-            .font(.system(size: 16))
-            .foregroundColor(.appText)
-            .textContentType(textContentType)
-            .disabled(isDisabled)
-            .focused($isFocused)
-            
-            // Toggle visibility button
-            Button(action: { isSecure.toggle() }, label: {
-                Image(systemName: isSecure ? "eye.slash.fill" : "eye.fill")
-                    .font(.system(size: 16))
-                    .foregroundColor(.appTextSecondary)
-            })
-            .disabled(isDisabled)
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .background(
-            RoundedRectangle(cornerRadius: 10)
-                .fill(Color(.systemGray6))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(isFocused ? Color.appPrimary : Color.clear, lineWidth: 1)
-                )
+        BaseTextField(
+            text: $text,
+            placeholder: placeholder,
+            configuration: .password,
+            textContentType: textContentType
         )
-        .animation(.easeInOut(duration: 0.2), value: isFocused)
+        .disabled(isDisabled)
     }
 }
 

@@ -5,6 +5,7 @@
 import SwiftUI
 
 // MARK: - Design System Button Atom
+// Legacy wrapper for BaseButton - use BaseButton directly for new code
 
 struct DSButton: View {
     let title: String
@@ -17,19 +18,11 @@ struct DSButton: View {
         case secondary
         case tertiary
         
-        var backgroundColor: Color {
+        var baseStyle: ButtonConfiguration.ButtonStyleVariant {
             switch self {
-            case .primary: return .appPrimary
-            case .secondary: return .appCard
-            case .tertiary: return .clear
-            }
-        }
-        
-        var foregroundColor: Color {
-            switch self {
-            case .primary: return .white
-            case .secondary: return .appPrimary
-            case .tertiary: return .appPrimary
+            case .primary: return .primary
+            case .secondary: return .secondary
+            case .tertiary: return .tertiary
             }
         }
     }
@@ -39,32 +32,24 @@ struct DSButton: View {
         case medium
         case large
         
-        var padding: EdgeInsets {
+        var baseSize: ButtonConfiguration.ButtonSizeVariant {
             switch self {
-            case .small: return EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16)
-            case .medium: return EdgeInsets(top: 12, leading: 24, bottom: 12, trailing: 24)
-            case .large: return EdgeInsets(top: 16, leading: 32, bottom: 16, trailing: 32)
-            }
-        }
-        
-        var font: Font {
-            switch self {
-            case .small: return .caption
-            case .medium: return .body
-            case .large: return .headline
+            case .small: return .small
+            case .medium: return .medium
+            case .large: return .large
             }
         }
     }
     
     var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(size.font)
-                .foregroundColor(style.foregroundColor)
-                .padding(size.padding)
-                .background(style.backgroundColor)
-                .cornerRadius(8)
-        }
+        BaseButton(
+            title,
+            configuration: ButtonConfiguration(
+                style: style.baseStyle,
+                size: size.baseSize
+            ),
+            action: action
+        )
     }
 }
 

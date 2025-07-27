@@ -70,33 +70,29 @@ struct SocialLoginButton: View {
     }
     
     var body: some View {
-        Button(action: action) {
-            HStack(spacing: 8) {
-                if isLoading {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: provider.foregroundColor))
-                        .scaleEffect(0.8)
-                } else {
-                    Image(systemName: provider.icon)
-                        .font(.system(size: 18, weight: .medium))
-                    
-                    Text(provider.title)
-                        .font(.system(size: 17, weight: .medium))
+        BaseButton(
+            provider.title,
+            configuration: ButtonConfiguration(
+                style: .custom(
+                    background: provider.backgroundColor,
+                    foreground: provider.foregroundColor
+                ),
+                size: .medium,
+                isLoading: isLoading,
+                fullWidth: true,
+                icon: provider.icon
+            ),
+            action: action
+        )
+        .overlay(
+            // Add border for certain providers
+            Group {
+                if provider == .apple || provider == .google {
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.appBorder, lineWidth: 1)
                 }
             }
-            .foregroundColor(provider.foregroundColor)
-            .frame(height: 48)
-            .frame(maxWidth: .infinity)
-            .background(provider.backgroundColor)
-            .cornerRadius(10)
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.appBorder, lineWidth: provider == .apple || provider == .google ? 1 : 0)
-            )
-        }
-        .buttonStyle(PlainButtonStyle())
-        .scaleEffect(isLoading ? 0.98 : 1.0)
-        .disabled(isLoading)
+        )
     }
 }
 

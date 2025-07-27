@@ -10,18 +10,21 @@ struct LogoutButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        BaseButton(configuration: ButtonConfiguration(
+            style: .custom(background: Color(.systemBackground), foreground: .red),
+            size: .medium,
+            fullWidth: true,
+            icon: "rectangle.portrait.and.arrow.right"
+        ), action: action) {
             HStack {
-                Label("Log Out", systemImage: "rectangle.portrait.and.arrow.right")
+                Image(systemName: "rectangle.portrait.and.arrow.right")
                     .font(.system(size: 16))
-                    .foregroundColor(.red)
+                Text("Log Out")
+                    .font(.system(size: 16, weight: .semibold))
                 Spacer()
             }
-            .padding()
-            .background(Color(.systemBackground))
-            .cornerRadius(10)
+            .foregroundColor(.red)
         }
-        .buttonStyle(PlainButtonStyle())
     }
 }
 

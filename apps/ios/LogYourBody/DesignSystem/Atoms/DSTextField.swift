@@ -5,6 +5,7 @@
 import SwiftUI
 
 // MARK: - DSTextField Atom
+// Legacy wrapper for BaseTextField - use BaseTextField directly for new code
 
 struct DSTextField: View {
     @Binding var text: String
@@ -14,28 +15,15 @@ struct DSTextField: View {
     var autocapitalization: TextInputAutocapitalization = .sentences
     var isDisabled: Bool = false
     
-    @FocusState private var isFocused: Bool
-    
     var body: some View {
-        TextField(placeholder, text: $text)
-            .font(.system(size: 16))
-            .foregroundColor(.appText)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(Color(.systemGray6))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(isFocused ? Color.appPrimary : Color.clear, lineWidth: 1)
-                    )
-            )
-            .keyboardType(keyboardType)
-            .textContentType(textContentType)
-            .textInputAutocapitalization(autocapitalization)
-            .disabled(isDisabled)
-            .focused($isFocused)
-            .animation(.easeInOut(duration: 0.2), value: isFocused)
+        BaseTextField(
+            text: $text,
+            placeholder: placeholder,
+            keyboardType: keyboardType,
+            textContentType: textContentType,
+            autocapitalization: autocapitalization
+        )
+        .disabled(isDisabled)
     }
 }
 
