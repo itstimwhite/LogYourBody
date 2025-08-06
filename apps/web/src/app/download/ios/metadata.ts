@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'LogYourBody for iOS - Your Body. Decoded.',
     description: 'The only app that tracks FFMI, body fat percentage, and progress photos with scientific accuracy. Download free on App Store.',
-    url: 'https://logyourbody.com/download/ios',
+    url: 'https://jov.ie/download/ios',
     siteName: 'LogYourBody',
     images: [
       {

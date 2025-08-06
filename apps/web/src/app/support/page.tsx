@@ -37,10 +37,10 @@ export default function SupportPage() {
               Get help from our support team. We typically respond within 24 hours.
             </p>
             <a
-              href="mailto:support@logyourbody.com"
+              href="mailto:tim@jov.ie"
               className="inline-flex items-center text-white hover:text-gray-300 transition-colors"
             >
-              support@logyourbody.com
+              tim@jov.ie
               <ExternalLink className="w-4 h-4 ml-2" />
             </a>
           </div>
@@ -156,8 +156,8 @@ export default function SupportPage() {
           <h2 className="text-2xl font-medium text-white mb-4">Need more help?</h2>
           <p className="text-gray-400 mb-6">
             If you couldn't find what you're looking for, please email us at{' '}
-            <a href="mailto:support@logyourbody.com" className="text-white hover:text-gray-300">
-              support@logyourbody.com
+            <a href="mailto:tim@jov.ie" className="text-white hover:text-gray-300">
+              tim@jov.ie
             </a>{' '}
             and we'll get back to you as soon as possible.
           </p>

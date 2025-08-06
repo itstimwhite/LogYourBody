@@ -74,7 +74,7 @@ export default function AboutPage() {
     {
       name: "Tim White",
       role: "Founder & Developer",
-      bio: "Passionate about creating tools that help people understand their bodies better. 10+ years in software development with a focus on health and fitness technology.",
+      bio: "Self-taught developer based in Los Angeles, passionate about creating tools that help people understand their bodies better. Previously worked at Big MGMT in NYC building internal tools for music artists and licensing deals, and at Bravo Media as a consultant on projects for Google, Hulu, T-Mobile, Netflix, and the NFL. Proficient in Next.js, TypeScript, Tailwind CSS, Supabase, and uses AI agents including Claude Code, Copilot, Cursor, Sweep, and Codex for accelerated development.",
       avatar: "TW",
     },
   ];

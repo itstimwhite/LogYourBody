@@ -15,7 +15,7 @@ The LogYourBody team takes security seriously. If you believe you have found a s
 
 ### Please do NOT report security vulnerabilities through public GitHub issues.
 
-Instead, please report them via email to **security@logyourbody.com** or directly to **tim@timwhite.dev**.
+Instead, please report them via email to **tim@jov.ie**.
 
 Please include the following information in your report:
 
@@ -105,8 +105,8 @@ If you discover a security vulnerability, we will:
 
 For security-related questions or concerns, please contact:
 
-- **Security Email**: security@logyourbody.com
-- **General Contact**: tim@timwhite.dev
+- **Security Email**: tim@jov.ie
+- **Phone**: 732.668.2148
 - **GitHub**: [@itstimwhite](https://github.com/itstimwhite)
 
 Thank you for helping keep LogYourBody and our users safe!

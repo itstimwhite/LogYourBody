@@ -98,7 +98,7 @@ export function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://status.logyourbody.com"
+                    href="https://status.jov.ie"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-gray-400 transition hover:text-white"

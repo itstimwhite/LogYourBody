@@ -466,7 +466,7 @@ export default function SecurityPage() {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <Mail className="h-4 w-4 text-linear-text-secondary" />
-                        <span className="text-linear-text">security@logyourbody.com</span>
+                        <span className="text-linear-text">tim@jov.ie</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <Github className="h-4 w-4 text-linear-text-secondary" />

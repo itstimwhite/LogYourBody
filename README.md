@@ -147,7 +147,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Support
 
-For support, email support@logyourbody.com or open an issue on GitHub.
+For support, email tim@jov.ie or open an issue on GitHub.
 
 ---
 

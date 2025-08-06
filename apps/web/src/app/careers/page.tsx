@@ -87,7 +87,7 @@ Please find my resume attached, and I'd love to discuss how I can contribute to 
 Best regards,
 [Your Name]`);
     
-    window.open(`mailto:careers@logyourbody.com?subject=${subject}&body=${body}`, '_blank');
+    window.open(`mailto:tim@jov.ie?subject=${subject}&body=${body}`, '_blank');
   };
 
   return (
@@ -288,7 +288,7 @@ Best regards,
                 <Button
                   variant="ghost"
                   className="border border-linear-border/50 text-linear-text-secondary hover:bg-linear-border/30 hover:text-linear-text px-8 py-4 text-base rounded-xl transition-all backdrop-blur-sm"
-                  onClick={() => window.open("mailto:careers@logyourbody.com", '_blank')}
+                  onClick={() => window.open("mailto:tim@jov.ie", '_blank')}
                 >
                   <Mail className="h-4 w-4 mr-2" />
                   Get in Touch

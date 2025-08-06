@@ -32,14 +32,14 @@ export const metadata: Metadata = {
     address: false,
     telephone: false,
   },
-  metadataBase: new URL("https://logyourbody.com"),
+  metadataBase: new URL("https://jov.ie"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://logyourbody.com",
+    url: "https://jov.ie",
     siteName: "LogYourBody",
     title: "LogYourBody - Body Composition Tracker",
     description: "Track your body composition with precision. Monitor body fat percentage, weight, FFMI, and lean body mass.",

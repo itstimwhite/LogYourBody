@@ -41,19 +41,20 @@ export const APP_CONFIG = {
   
   // Contact
   contact: {
-    support: 'support@logyourbody.com',
-    privacy: 'privacy@logyourbody.com',
-    legal: 'legal@logyourbody.com',
-    careers: 'careers@logyourbody.com',
+    support: 'tim@jov.ie',
+    privacy: 'tim@jov.ie',
+    legal: 'tim@jov.ie',
+    careers: 'tim@jov.ie',
+    phone: '732.668.2148',
   },
   
   // Company Info
   company: {
     address: {
-      street: '123 Fitness Street',
-      city: 'San Francisco',
+      street: 'Los Angeles',
+      city: 'Los Angeles',
       state: 'CA',
-      zip: '94105',
+      zip: '90210',
       country: 'USA',
     },
     founded: 2023,
@@ -77,8 +78,8 @@ export const APP_CONFIG = {
   
   // API & Backend
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.logyourbody.com',
-    websocketUrl: process.env.NEXT_PUBLIC_WS_URL || 'wss://api.logyourbody.com',
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://api.jov.ie',
+    websocketUrl: process.env.NEXT_PUBLIC_WS_URL || 'wss://api.jov.ie',
   },
   
   // Analytics & Tracking
