@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/contexts/ClerkAuthContext';
+// import { useEffect } from 'react';
+// import { useRouter } from 'next/navigation';
+// import { useAuth } from '@/contexts/ClerkAuthContext';
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -35,14 +35,15 @@ import { APP_CONFIG } from "@/constants/app";
 
 export default function HomePage() {
   const [isAnnual, setIsAnnual] = useState(true);
-  const { user } = useAuth();
-  const router = useRouter();
+  // const { user } = useAuth();
+  // const router = useRouter();
 
-  useEffect(() => {
-    if (user) {
-      router.push('/dashboard');
-    }
-  }, [user, router]);
+  // Temporarily disabled for theme testing
+  // useEffect(() => {
+  //   if (user) {
+  //     router.push('/dashboard');
+  //   }
+  // }, [user, router]);
 
   const pricing = APP_CONFIG.pricing;
 
@@ -110,7 +111,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#08090a] font-inter">
+    <div className="min-h-screen bg-background font-inter">
       <Header onFeatureClick={handleFeatureClick} showFeatures={true} />
 
       {/* Main Content */}
@@ -127,14 +128,14 @@ export default function HomePage() {
               <div className="max-w-4xl mx-auto">
                 <h1
                   id="hero-heading"
-                  className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-[1.05]"
+                  className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-foreground mb-6 leading-[1.05]"
                 >
                   Track your body.
                   <br />
                   Transform your life.
                 </h1>
                 
-                <p className="text-xl md:text-2xl text-white/60 mb-10 max-w-2xl mx-auto leading-[1.5] font-normal">
+                <p className="text-xl md:text-2xl text-muted-foreground mb-10 max-w-2xl mx-auto leading-[1.5] font-normal">
                   Professional body composition tracking that shows you exactly how you're transforming.
                 </p>
 
@@ -143,7 +144,7 @@ export default function HomePage() {
                   <Link href="/download/ios">
                     <Button
                       size="lg"
-                      className="bg-white text-black px-8 py-6 text-base font-medium rounded-full hover:bg-white/90 transition-all shadow-2xl"
+                      className="bg-foreground text-background px-8 py-6 text-base font-medium rounded-full hover:bg-foreground/90 transition-all shadow-2xl"
                     >
                       Download for iOS
                     </Button>
@@ -152,7 +153,7 @@ export default function HomePage() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="border-white/10 text-white hover:bg-white/5 px-8 py-6 text-base rounded-full"
+                      className="border-border text-foreground hover:bg-accent px-8 py-6 text-base rounded-full"
                     >
                       See it in action
                     </Button>
@@ -160,7 +161,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Trust indicators - Linear Style */}
-                <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-white/40">
+                <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <Check className="h-4 w-4" />
                     <span>Free to try</span>
@@ -187,10 +188,10 @@ export default function HomePage() {
                 <Sparkles className="h-3 w-3 mr-1" />
                 AI-Powered Feature
               </Badge>
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
                 Zero-Click Progress Photos
               </h2>
-              <p className="text-xl text-white/60 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Upload once. Our AI-AutoEdit™ instantly crops, aligns, color-corrects & removes backgrounds for flawless, uniform shots—every time.
               </p>
             </div>
@@ -199,32 +200,32 @@ export default function HomePage() {
             <div className="rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 p-8 md:p-12">
               <div className="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                  <h3 className="text-2xl font-semibold text-white mb-6">
+                  <h3 className="text-2xl font-semibold text-foreground mb-6">
                     Why We're Different
                   </h3>
                   <ul className="space-y-4 text-lg">
                     <li className="flex items-start gap-3">
                       <Check className="h-5 w-5 text-purple-400 mt-1" />
-                      <span className="text-white/80">
-                        <strong className="text-white">No Manual Cropping</strong>—perfection happens automatically
+                      <span className="text-foreground/80">
+                        <strong className="text-foreground">No Manual Cropping</strong>—perfection happens automatically
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <Check className="h-5 w-5 text-purple-400 mt-1" />
-                      <span className="text-white/80">
-                        <strong className="text-white">Consistent Angles</strong>—AI ensures perfect alignment every time
+                      <span className="text-foreground/80">
+                        <strong className="text-foreground">Consistent Angles</strong>—AI ensures perfect alignment every time
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <Check className="h-5 w-5 text-purple-400 mt-1" />
-                      <span className="text-white/80">
-                        <strong className="text-white">Privacy First</strong>—optional "Remove Originals" deletes photos from camera roll
+                      <span className="text-foreground/80">
+                        <strong className="text-foreground">Privacy First</strong>—optional "Remove Originals" deletes photos from camera roll
                       </span>
                     </li>
                     <li className="flex items-start gap-3">
                       <Check className="h-5 w-5 text-purple-400 mt-1" />
-                      <span className="text-white/80">
-                        <strong className="text-white">Face Blurring (Coming Soon)</strong>—protect your identity while tracking progress
+                      <span className="text-foreground/80">
+                        <strong className="text-foreground">Face Blurring (Coming Soon)</strong>—protect your identity while tracking progress
                       </span>
                     </li>
                   </ul>
@@ -234,7 +235,7 @@ export default function HomePage() {
                   <div className="aspect-square bg-gradient-to-br from-purple-500/20 to-purple-600/10 rounded-2xl border border-purple-500/20 flex items-center justify-center">
                     <div className="text-center">
                       <Camera className="h-16 w-16 text-purple-400 mx-auto mb-4" />
-                      <p className="text-white/60">AI-powered photo processing</p>
+                      <p className="text-muted-foreground">AI-powered photo processing</p>
                     </div>
                   </div>
                 </div>

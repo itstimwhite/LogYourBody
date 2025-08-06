@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useAuth } from '@/contexts/ClerkAuthContext';
+// import { useAuth } from '@/contexts/ClerkAuthContext'; // Temporarily disabled
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import {
@@ -35,7 +35,7 @@ import { Prefooter } from "./Prefooter";
 
 export function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(true); // Default to annual for savings
-  const { } = useAuth();
+  // const { } = useAuth(); // Temporarily disabled for theme testing
 
 
   const pricing = {
@@ -118,12 +118,12 @@ export function LandingPage() {
   };
 
   return (
-    <div className="min-h-svh bg-linear-bg font-inter">
+    <div className="min-h-svh bg-background font-inter">
       
       {/* Skip Links */}
       <div className="sr-only z-50 focus:not-sr-only focus:absolute focus:left-4 focus:top-4">
         <button
-          className="rounded bg-linear-purple px-4 py-2 text-linear-text focus:ring-2 focus:ring-linear-purple/50"
+          className="rounded bg-primary px-4 py-2 text-primary-foreground focus:ring-2 focus:ring-primary/50"
           onClick={() => document.getElementById("main-content")?.focus()}
         >
           Skip to main content
@@ -149,7 +149,7 @@ export function LandingPage() {
                 {/* Clear Value Prop */}
                 <h1
                   id="hero-heading"
-                  className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-linear-text mb-4"
+                  className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4"
                 >
                   Track body fat percentage,
                   <br />
@@ -157,7 +157,7 @@ export function LandingPage() {
                 </h1>
                 
                 {/* One-liner explanation */}
-                <p className="text-lg sm:text-xl text-linear-text-secondary max-w-2xl mx-auto mb-8">
+                <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
                   Professional body composition tracking with FFMI calculations and progress photos. 
                   Syncs with Apple Health.
                 </p>
@@ -166,18 +166,18 @@ export function LandingPage() {
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-6">
                   <Link href="/download/ios">
                     <Button
-                      className="bg-linear-purple text-white px-8 py-3 text-base font-semibold rounded-lg hover:bg-linear-purple/90 transition-all shadow-md"
+                      className="bg-primary text-primary-foreground px-8 py-3 text-base font-semibold rounded-lg hover:bg-primary/90 transition-all shadow-md"
                     >
                       Start Free Trial
                     </Button>
                   </Link>
-                  <Link href="/demo" className="text-linear-text-secondary hover:text-linear-text transition-colors underline underline-offset-4">
+                  <Link href="/demo" className="text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
                     Watch 2-min demo
                   </Link>
                 </div>
                 
                 {/* Trust indicators */}
-                <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-linear-text-tertiary">
+                <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-muted-foreground">
                   <span>No credit card required</span>
                   <span>•</span>
                   <span>10,000+ active users</span>

@@ -36,12 +36,12 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/[0.08] bg-black/40 backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-black/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-xl backdrop-saturate-150 supports-[backdrop-filter]:bg-background/95">
       <div className="mx-auto max-w-7xl">
         <nav className="flex h-16 items-center justify-between px-6 lg:px-8" aria-label="Global">
         <div className="flex items-center gap-x-12">
           <Link href="/" className="flex items-center">
-            <span className="text-base font-semibold text-white">LogYourBody</span>
+            <span className="text-base font-semibold text-foreground">LogYourBody</span>
           </Link>
           {/* Desktop navigation */}
           <div className="hidden lg:flex lg:gap-x-8">
@@ -50,7 +50,7 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
           )}
           {showFeatures && (
             <button
-              className="text-sm font-medium text-white/60 transition-colors hover:text-white"
+              className="text-sm font-medium text-foreground/60 transition-colors hover:text-foreground"
               onClick={() => scrollToSection('pricing')}
             >
               Pricing
@@ -61,8 +61,8 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
             className={cn(
               "text-sm font-medium transition-colors",
               isActive("/about") 
-                ? "text-white" 
-                : "text-white/60 hover:text-white"
+                ? "text-foreground" 
+                : "text-foreground/60 hover:text-foreground"
             )}
           >
             About
@@ -72,8 +72,8 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
             className={cn(
               "text-sm font-medium transition-colors",
               isActive("/blog") 
-                ? "text-white" 
-                : "text-white/60 hover:text-white"
+                ? "text-foreground" 
+                : "text-foreground/60 hover:text-foreground"
             )}
           >
             Blog
@@ -83,8 +83,8 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
             className={cn(
               "text-sm font-medium transition-colors",
               isActive("/download/ios") 
-                ? "text-white" 
-                : "text-white/60 hover:text-white"
+                ? "text-foreground" 
+                : "text-foreground/60 hover:text-foreground"
             )}
           >
             iOS
@@ -96,7 +96,7 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
         <div className="flex lg:hidden">
           <button
             type="button"
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-white/60 hover:text-white"
+            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-foreground/60 hover:text-foreground"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             <span className="sr-only">Open main menu</span>
@@ -112,7 +112,7 @@ export function Header({ onFeatureClick, showFeatures = false }: HeaderProps) {
         <div className="hidden lg:flex lg:items-center lg:gap-x-4">
           <Link
             href="/download/ios"
-            className="rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-all hover:bg-white/90"
+            className="rounded-full bg-foreground px-4 py-2 text-sm font-medium text-background transition-all hover:bg-foreground/90"
           >
             Download App
           </Link>

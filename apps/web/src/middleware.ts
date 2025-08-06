@@ -1,35 +1,10 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-  '/log(.*)',
-  '/api/weights(.*)',
-  '/api/auth/delete-account',
-  '/onboarding(.*)',
-  '/settings(.*)',
-  '/photos(.*)',
-  '/steps(.*)',
-  '/import(.*)',
-])
-
-const _isPublicRoute = createRouteMatcher([
-  '/signin(.*)',
-  '/signup(.*)',
-  '/login(.*)', // Keep for backwards compatibility
-  '/',
-  '/forgot-password(.*)',
-  '/terms(.*)',
-  '/privacy(.*)',
-  '/about(.*)',
-  '/blog(.*)',
-  '/mobile(.*)',
-])
-
-export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) {
-    await auth.protect()
-  }
-})
+// Temporarily disabled Clerk middleware for theme testing
+export function middleware(_request: NextRequest) {
+  return NextResponse.next()
+}
 
 export const config = {
   matcher: [
